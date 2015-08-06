@@ -12,6 +12,7 @@ namespace WiM.Handlers
 {
     public abstract class HandlerBase
     {
+        //test branch
         // will be automatically injected by DI in OpenRasta
         // must be public
         public ICommunicationContext Context { get; set; }

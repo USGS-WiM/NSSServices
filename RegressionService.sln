@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegressionService", "RegressionService\RegressionService.csproj", "{44E99A8B-3782-44AC-823F-D6455E7DC192}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegressionService.Tests", "RegressionService.Tests\RegressionService.Tests.csproj", "{311EE314-87F7-4176-8A05-2CEB988D3E53}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3E934754-8387-45EF-9561-81E7AAFB08C8}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeSeries", "TimeSeries\TimeSeries.csproj", "{9BCE0767-ECB2-412F-9BF6-FA6281B47D80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSSDB", "NSSDB\NSSDB.csproj", "{800AA32C-C6F5-4661-B13A-FEAA25FFCE50}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44E99A8B-3782-44AC-823F-D6455E7DC192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44E99A8B-3782-44AC-823F-D6455E7DC192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44E99A8B-3782-44AC-823F-D6455E7DC192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44E99A8B-3782-44AC-823F-D6455E7DC192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{311EE314-87F7-4176-8A05-2CEB988D3E53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{311EE314-87F7-4176-8A05-2CEB988D3E53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{311EE314-87F7-4176-8A05-2CEB988D3E53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{311EE314-87F7-4176-8A05-2CEB988D3E53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BCE0767-ECB2-412F-9BF6-FA6281B47D80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BCE0767-ECB2-412F-9BF6-FA6281B47D80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BCE0767-ECB2-412F-9BF6-FA6281B47D80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BCE0767-ECB2-412F-9BF6-FA6281B47D80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{800AA32C-C6F5-4661-B13A-FEAA25FFCE50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{800AA32C-C6F5-4661-B13A-FEAA25FFCE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{800AA32C-C6F5-4661-B13A-FEAA25FFCE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{800AA32C-C6F5-4661-B13A-FEAA25FFCE50}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

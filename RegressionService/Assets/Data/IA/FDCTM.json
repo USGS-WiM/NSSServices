@@ -1,0 +1,138 @@
+﻿{
+    //regression Equations are of the form
+    //D(id) = 10^ex1*DRNAREA^ex2*10^ex3*10^ex4
+    "modeltype": "FDCTM",
+    "description": "Flow Duration Curve Transfer Method Model",
+    "statecode": "IA",
+    "nwis_station_id": "12345678",
+    "message": "Populate definition file and submit",
+
+    "parameters": [
+        {
+            "name": "Drainage Area",
+            "code": "drnarea",
+            "description" : "Area in square miles",
+            "unit": "square miles",
+            "value": -999,
+            "limits": {
+                "min": 15.5,
+                "max": 7782
+            }
+        },
+        {
+
+            "name": "Mean Annual Precip",
+            "code": "precip",
+            "description" : "Mean Annual Precipitation",
+            "unit": "inch",
+            "value": -999,
+            "limits": {
+                "min": 27.7,
+                "max": 38.8
+            }
+        },
+        {
+            "name": "Relative Stream Density",
+            "code": "rsd",
+            "description" : "(First Order Streams * DRNAREA / sum of Stream Lengths ^2)",
+            "unit": "",
+            "value": -999,
+            "limits": {
+                "min": 0.22,
+                "max": 0.49
+            }
+        },
+        {
+
+            "name": "Hydrograph Separation Analysis",
+            "code": "hysep",
+            "description" : "Percent of area covered by Hydrograph Separation",
+            "unit": "percent",
+            "value": -999,
+            "limits": {
+                "min": 20.3,
+                "max": 78.0
+            }
+        },
+        {
+
+            "name": "Stream Variability Index",
+            "code": "stream_var",
+            "description" : "Streamflow Variability Index",
+            "unit": "",
+            "value": -999,
+            "limits": {
+                "min": 0.21,
+                "max": 0.76
+            }
+        },
+        {
+
+            "name": "Percent Area Soil Type B",
+            "code": "SSURGOB",
+            "description": "Percent of area in hydric soil 'B' defined by SSURGO",
+            "unit": "percent area",
+            "value": -999,
+            "limits": {
+                "min": 5.7,
+                "max": 99.4
+            }
+        },        
+        {
+
+            "name": "Percent Area Soil Type C",
+            "code": "SSURGOC",
+            "description" : "Percent of area in hydric soil 'C' defined by SSURGO",
+            "unit": "percent area",
+            "value": -999,
+            "limits": {
+                "min": 0.09,
+                "max": 83.5
+            }
+        },
+        {
+
+            "name": "Percent Area Soil Type D",
+            "code": "SSURGOD",
+            "description" : "Percent of area in hydric soil 'D' defined by SSURGO",
+            "unit": "percent area",
+            "value": -999,
+            "limits": {
+                "min": 0,
+                "max": 57.0
+            }
+        }
+    ],
+    "regressions": [
+        {   "probability": 0.01,
+            "equation": "10^-0.717*drnarea^0.974*10^(0.045*precip)*10^(0.003*SSURGOC)" },
+        {   "probability": 0.05,
+            "equation": "10^-2.039*drnarea^1.110*10^(0.051*precip)*10^(1.142*rsd)" },
+        {   "probability": 0.10,
+            "equation": "10^-1.977*drnarea^1.133*10^(0.038*precip)*10^(1.362*rsd)" },
+        {   "probability": 0.15,
+            "equation": "10^-2.603*drnarea^1.113*10^(0.009*hysep)*10^(0.055*precip)" },
+        {   "probability": 0.20,
+            "equation": "10^-2.726*drnarea^1.102*10^(0.011*hysep)*10^(0.053*precip)" },
+        {   "probability": 0.30,
+            "equation": "10^-2.931*drnarea^1.085*10^(0.014*hysep)*10^(0.051*precip)" },
+        {   "probability": 0.40,
+            "equation": "10^-3.187*drnarea^1.075*10^(0.017*hysep)*10^(0.050*precip)" },
+        {   "probability": 0.50,
+            "equation": "10^-3.449*drnarea^1.065*10^(0.020*hysep)*10^(0.050*precip)"  },
+        {   "probability": 0.60,
+            "equation": "10^-3.770*drnarea^1.066*10^(0.024*hysep)*10^(0.049*precip)"  },    
+        {   "probability": 0.70,
+            "equation": "10^-4.083*drnarea^1.079*10^(0.027*hysep)*10^(0.047*precip)"  },    
+        {   "probability": 0.80,
+            "equation": "10^-0.883*drnarea^1.179*10^(-2.050*stream_var)*10^(0.006*SSURGOB)"  },    
+        {   "probability": 0.85,
+            "equation": "10^-0.888*drnarea^1.207*10^(-2.365*stream_var)*10^(0.006*SSURGOB)"  },    
+        {   "probability": 0.90,
+            "equation": "10^-0.970*drnarea^1.241*10^(-2.716*stream_var)*10^(0.007*SSURGOB)"  },    
+        {   "probability": 0.95,
+            "equation": "10^-1.225*drnarea^1.317*10^(-3.170*stream_var)*10^(0.008*SSURGOB)"  },    
+        {   "probability": 0.99,
+            "equation": "10^-0.18302282*drnarea^1.37420784*10^(-4.60344452*stream_var)*10^(-0.01341188*SSURGOD)" }
+    ]     
+}

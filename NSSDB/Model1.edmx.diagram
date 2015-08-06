@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="5c22e98137924ee1877f68c8a322deb2" Name="Diagram1">
+        <EntityTypeShape EntityType="nssModel.UNIT_TYPE" Width="1.5" PointX="0.625" PointY="0.625" IsExpanded="false" />
+        <EntityTypeShape EntityType="nssModel.UNIT" Width="1.5" PointX="3.125" PointY="0.625" IsExpanded="true" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

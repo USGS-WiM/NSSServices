@@ -1,0 +1,63 @@
+﻿{
+    "modeltype": "FLA",
+    "description": "Flow Anywhere Model",
+    "startdate": "1900-01-01",
+    "enddate": "1900-01-01",
+    "statecode": "IA",
+    "nwis_station_id": "12345678",
+    "message": "Populate definition file and submit",
+    "regions":  [{
+        "region": 1,
+        "parameters": [
+            {
+                "name": "Drainage Area",
+                "code": "drnarea",
+                "unit": "square miles",
+                "value": -999,
+                "limits": {
+                    "min": 34.3,
+                    "max": 4310.0
+                }
+            }
+        ],
+        "constant1": "1.06",
+        "constant2": "1.20",
+        "constant3": "0.979"
+        },
+        {
+        "region": 2,
+        "parameters": [
+            {
+                "name": "Drainage Area",
+                "code": "drnarea",
+                "unit": "square miles",
+                "value": -999,
+                "limits": {
+                    "min": 56.1,
+                    "max": 3425.0
+                }
+            }
+        ],
+        "constant1": "1.52",
+        "constant2": "1.05",
+        "constant3": "0.922"
+        },
+        {
+        "region": 3,
+        "parameters": [
+            {
+                "name": "Drainage Area",
+                "code": "drnarea",
+                "unit": "square miles",
+                "value": -999,
+                "limits": {
+                    "min": 2.60,
+                    "max": 5464.0
+                }
+            }
+        ],
+        "constant1": "3.30",
+        "constant2": "1.07",
+        "constant3": "0.800"
+        }]
+}

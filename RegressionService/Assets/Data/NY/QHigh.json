@@ -1,0 +1,478 @@
+﻿{
+	//regression Equations are of the form
+	//D(id) = 10^ex1*DRNAREA^ex2*10^ex3*10^ex4
+	"modeltype" : "Qhigh",
+	"description" : "Peak discharge regression equations",
+	"statecode" : "NY",
+	"message" : "Populate definition file and submit",
+	"regions":  [
+		{"region": 1,
+		"parameters" : [{
+			"name" : "Drainage Area",
+			"code" : "DRNAREA",
+			"description" : "Area in square miles",
+			"unit" : "square miles",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.54,
+				"max" : 4500.00
+			}
+			}, {
+			"name" : "Basin Storage",
+			"code" : "STORAGE",
+			"description" : "Percentage of total drainage area shown as lakes, ponds and swamps",
+			"unit" : "percent area",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.00,
+				"max" : 28.92
+			}
+			}, {
+			"name" : "Mean Annual Precipitation",
+			"code" : "PRECIP",
+			"description" : "Mean annual precipitation in inches",
+			"unit" : "inches",
+			"value" : -999,
+			"limits" : {
+				"min" : 29.49,
+				"max" : 56.10
+			}
+			}, {
+			"name" : "Lag Factor",
+			"code" : "LAGFACTOR",
+			"description" : "Basin Lag factor",
+			"unit" : "unitless",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.004,
+				"max" : 15.229
+			}
+			}, {
+			"name" : "Percent Forested",
+			"code" : "FOREST",
+			"description" : "Percent of area covered by forest",
+			"unit" : "percent area",
+			"value" : -999,
+			"limits" : {
+				"min" : 23.83,
+				"max" : 99.61
+			}
+		}],
+		"regressions" : [{
+			"interval" : 1.25,
+			"equation" : "69.0*DRNAREA^0.972*(1+STORAGE)^-0.160*PRECIP^1.859*(1+LAGFACTOR)^-0.355*(80+FOREST)^-1.514"
+			}, {
+			"interval" : 1.5,
+			"equation" : "144.0*DRNAREA^0.973*(1+STORAGE)^-0.164*PRECIP^1.718*(1+LAGFACTOR)^-0.383*(80+FOREST)^-1.519"
+			}, {
+			"interval" : 2,
+			"equation" : "299.0*DRNAREA^0.972*(1+STORAGE)^-0.169*PRECIP^1.576*(1+LAGFACTOR)^-0.411*(80+FOREST)^-1.518"
+			}, {
+			"interval" : 5,
+			"equation" : "1180.0*DRNAREA^0.970*(1+STORAGE)^-0.178*PRECIP^1.335*(1+LAGFACTOR)^-0.460*(80+FOREST)^-1.530"
+			}, {
+			"interval" : 10,
+			"equation" : "2310.0*DRNAREA^0.968*(1+STORAGE)^-0.184*PRECIP^1.241*(1+LAGFACTOR)^-0.482*(80+FOREST)^-1.549"
+			}, {
+			"interval" : 25,
+			"equation" : "4580.0*DRNAREA^0.965*(1+STORAGE)^-0.192*PRECIP^1.167*(1+LAGFACTOR)^-0.500*(80+FOREST)^-1.582"
+			}, {
+			"interval" : 50,
+			"equation" : "7030.0*DRNAREA^0.963*(1+STORAGE)^-0.197*PRECIP^1.131*(1+LAGFACTOR)^-0.511*(80+FOREST)^-1.610"
+			}, {
+			"interval" : 100,
+			"equation" : "10300.0*DRNAREA^0.962*(1+STORAGE)^-0.202*PRECIP^1.106*(1+LAGFACTOR)^-0.520*(80+FOREST)^-1.638"
+			}, {
+			"interval" : 200,
+			"equation" : "14500.0*DRNAREA^0.960*(1+STORAGE)^-0.206*PRECIP^1.086*(1+LAGFACTOR)^-0.528*(80+FOREST)^-1.667"
+			}, {
+			"interval" : 500,
+			"equation" : "22000.0*DRNAREA^0.959*(1+STORAGE)^-0.210*PRECIP^1.067*(1+LAGFACTOR)^-0.539*(80+FOREST)^-1.704"
+			}]
+	},
+	{"region": 2,
+		"parameters" : [{
+			"name" : "Drainage Area",
+			"code" : "DRNAREA",
+			"description" : "Area in square miles",
+			"unit" : "square miles",
+			"value" : -999,
+			"limits" : {
+				"min" : 1.93,
+				"max" : 996.00
+			}
+			}, {
+			"name" : "Basin Storage",
+			"code" : "STORAGE",			
+			"description" : "Percentage of total drainage area shown as lakes, ponds and swamps",
+			"unit" : "percent area",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.00,
+				"max" : 11.88
+			}
+			}, {
+			"name" : "Lag Factor",
+			"code" : "LAGFACTOR",
+			"description" : "Basin Lag factor",
+			"unit" : "unitless",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.014,
+				"max" : 6.997
+			}
+			}, {
+			"name" : "Mean Annual Runoff",
+			"code" : "MAR",
+			"description" : "Mean annual runoff in inches",
+			"unit" : "inches",
+			"value" : -999,
+			"limits" : {
+				"min" : 16.03,
+				"max" : 33.95
+			}
+			}
+		],
+	"regressions" : [{
+			"interval" : 1.25,
+			"equation" : "32.2*DRNAREA^0.943*(5+STORAGE)^-0.943*(1+LAGFACTOR)^-0.294*MAR^0.588"
+			}, {
+			"interval" : 1.5,
+			"equation" : "32.5*DRNAREA^0.936*(5+STORAGE)^-0.962*(1+LAGFACTOR)^-0.306*MAR^0.672"
+			}, {
+			"interval" : 2,
+			"equation" : "33.3*DRNAREA^0.928*(5+STORAGE)^-0.976*(1+LAGFACTOR)^-0.318*MAR^0.759"
+			}, {
+			"interval" : 5,
+			"equation" : "37.6*DRNAREA^0.914*(5+STORAGE)^-0.985*(1+LAGFACTOR)^-0.356*MAR^0.905"
+			}, {
+			"interval" : 10,
+			"equation" : "41.6*DRNAREA^0.909*(5+STORAGE)^-0.977*(1+LAGFACTOR)^-0.385*MAR^0.968"
+			}, {
+			"interval" : 25,
+			"equation" : "46.5*DRNAREA^0.905*(5+STORAGE)^-0.958*(1+LAGFACTOR)^-0.418*MAR^1.029"
+			}, {
+			"interval" : 50,
+			"equation" : "49.7*DRNAREA^0.902*(5+STORAGE)^-0.939*(1+LAGFACTOR)^-0.441*MAR^1.068"
+			}, {
+			"interval" : 100,
+			"equation" : "52.3*DRNAREA^0.900*(5+STORAGE)^-0.918*(1+LAGFACTOR)^-0.461*MAR^1.104"
+			}, {
+			"interval" : 200,
+			"equation" : "54.3*DRNAREA^0.898*(5+STORAGE)^-0.894*(1+LAGFACTOR)^-0.479*MAR^1.138"
+			}, {
+			"interval" : 500,
+			"equation" : "55.9*DRNAREA^0.895*(5+STORAGE)^-0.860*(1+LAGFACTOR)^-0.500*MAR^1.183"
+			}
+
+	]},
+	{"region": 3,
+	"parameters" : [{
+			"name" : "Drainage Area",
+			"code" : "DRNAREA",
+			"description" : "Area in square miles",
+			"unit" : "square miles",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.41,
+				"max" : 3480.00
+			}
+		}, {
+			"name" : "Lag Factor",
+			"code" : "LAGFACTOR",
+			"description" : "Basin Lag factor",
+			"unit" : "unitless",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.002,
+				"max" : 20.582
+			}
+		}, {
+			"name" : "Mean Annual Runoff",
+			"code" : "MAR",
+			"description" : "Mean annual runoff in inches",
+			"unit" : "inches",
+			"value" : -999,
+			"limits" : {
+				"min" : 49.00,
+				"max" : 100.00
+			}
+		}, {
+			"name" : "Seasonal maximum snow depth",
+			"code" : "MXSNO",
+			"description" : "Seasonal maximum snow depth, 50th percentile, in inches",
+			"unit" : "inches",
+			"value" : -999,
+			"limits" : {
+				"min" : 13.02,
+				"max" : 20.42
+			}
+		}
+	],
+	"regressions" : [{
+			"interval" : 1.25,
+			"equation" : "0.038*DRNAREA^0.959*(1+LAGFACTOR)^-0.141*MAR^1.234*MXSNO^1.037"
+		}, {
+			"interval" : 1.5,
+			"equation" : "0.052*DRNAREA^0.961*(1+LAGFACTOR)^-0.161*MAR^1.142*MXSNO^1.110"
+		}, {
+			"interval" : 2,
+			"equation" : "0.051*DRNAREA^0.962*(1+LAGFACTOR)^-0.179*MAR^1.009*MXSNO^1.360"
+		}, {
+			"interval" : 5,
+			"equation" : "0.083*DRNAREA^0.965*(1+LAGFACTOR)^-0.215*MAR^0.776*MXSNO^1.632"
+		}, {
+			"interval" : 10,
+			"equation" : "0.103*DRNAREA^0.963*(1+LAGFACTOR)^-0.228*MAR^0.658*MXSNO^1.794"
+		}, {
+			"interval" : 25,
+			"equation" : "0.117*DRNAREA^0.957*(1+LAGFACTOR)^-0.239*MAR^0.524*MXSNO^2.016"
+		}, {
+			"interval" : 50,
+			"equation" : "0.119*DRNAREA^0.953*(1+LAGFACTOR)^-0.244*MAR^0.430*MXSNO^2.195"
+		}, {
+			"interval" : 100,
+			"equation" : "0.115*DRNAREA^0.951*(1+LAGFACTOR)^-0.249*MAR^0.341*MXSNO^2.375"
+		}, {
+			"interval" : 200,
+			"equation" : "0.111*DRNAREA^0.949*(1+LAGFACTOR)^-0.253*MAR^0.255*MXSNO^2.547"
+		}, {
+			"interval" : 500,
+			"equation" : "0.105*DRNAREA^0.948*(1+LAGFACTOR)^-0.258*MAR^0.147*MXSNO^2.759"
+		}
+
+	]
+	},
+	{"region": 4,
+		"parameters" : [{
+			"name" : "Drainage Area",
+			"code" : "DRNAREA",
+			"description" : "Area in square miles",
+			"unit" : "square miles",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.61,
+				"max" : 3941.00
+			}
+		}, {
+			"name" : "Basin Storage",
+			"code" : "STORAGE",
+			"description" : "Percentage of total drainage area shown as lakes, ponds and swamps",
+			"unit" : "percent area",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.00,
+				"max" : 7.72
+			}
+		}, {
+			"name" : "Mean Annual Runoff",
+			"code" : "MAR",
+			"description" : "Mean annual runoff in inches",
+			"unit" : "inches",
+			"value" : -999,
+			"limits" : {
+				"min" : 19.84,
+				"max" : 26.09
+			}
+		}, {
+			"name" : "Slope Ratio",
+			"code" : "SLOPERATIO",
+			"description" : "Ratio of main channel slope to basin slope",
+			"unit" : "unitless",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.006,
+				"max" : 0.438
+			}
+		}
+	],
+	"regressions" : [{
+			"interval" : 1.25,
+			"equation" : "0.037*DRNAREA^1.029*(.5+STORAGE)^-0.104*MAR^2.308*SLOPERATIO^0.317"
+		}, {
+			"interval" : 1.5,
+			"equation" : "0.064*DRNAREA^1.022*(.5+STORAGE)^-0.120*MAR^2.205*SLOPERATIO^0.320"
+		}, {
+			"interval" : 2,
+			"equation" : "0.115*DRNAREA^1.012*(.5+STORAGE)^-0.139*MAR^2.092*SLOPERATIO^0.319"
+		}, {
+			"interval" : 5,
+			"equation" : "0.424*DRNAREA^0.992*(.5+STORAGE)^-0.189*MAR^1.822*SLOPERATIO^0.316"
+		}, {
+			"interval" : 10,
+			"equation" : "0.829*DRNAREA^0.981*(.5+STORAGE)^-0.219*MAR^1.685*SLOPERATIO^0.314"
+		}, {
+			"interval" : 25,
+			"equation" : "1.58*DRNAREA^0.970*(.5+STORAGE)^-0.250*MAR^1.559*SLOPERATIO^0.312"
+		}, {
+			"interval" : 50,
+			"equation" : "2.33*DRNAREA^0.963*(.5+STORAGE)^-0.269*MAR^1.489*SLOPERATIO^0.312"
+		}, {
+			"interval" : 100,
+			"equation" : "3.24*DRNAREA^0.957*(.5+STORAGE)^-0.285*MAR^1.431*SLOPERATIO^0.312"
+		}, {
+			"interval" : 200,
+			"equation" : "4.35*DRNAREA^0.952*(.5+STORAGE)^-0.300*MAR^1.380*SLOPERATIO^0.313"
+		}, {
+			"interval" : 500,
+			"equation" : "6.16*DRNAREA^0.946*(.5+STORAGE)^-0.317*MAR^1.320*SLOPERATIO^0.315"
+		}
+
+	]
+	},
+	{"region": 5,
+		"parameters" : [{
+			"name" : "Drainage Area",
+			"code" : "DRNAREA",
+			"description" : "Area in square miles",
+			"unit" : "square miles",
+			"value" : -999,
+			"limits" : {
+				"min" : 1.70,
+				"max" : 4773.00
+			}
+		}, {
+			"name" : "Main-channel 10-85 slope",
+			"code" : "CSL10_85",
+			"description" : "Main-channel 10-85 slope, in feet per mile",
+			"unit" : "feet per mile",
+			"value" : -999,
+			"limits" : {
+				"min" : 2.76,
+				"max" : 222.55
+			}
+		}, {
+			"name" : "Mean Annual Precipitation",
+			"code" : "PRECIP",
+			"description" : "Mean annual precipitation in inches",
+			"unit" : "inches",
+			"value" : -999,
+			"limits" : {
+				"min" : 31.64,
+				"max" : 49.79
+			}
+		}
+	],
+	"regressions" : [{
+			"interval" : 1.25,
+			"equation" : "0.020*DRNAREA^0.971*CSL10_85^0.377*PRECIP^1.625"
+		}, {
+			"interval" : 1.5,
+			"equation" : "0.040*DRNAREA^0.968*CSL10_85^0.402*PRECIP^1.468"
+		}, {
+			"interval" : 2,
+			"equation" : "0.083*DRNAREA^0.965*CSL10_85^0.431*PRECIP^1.305"
+		}, {
+			"interval" : 5,
+			"equation" : "0.322*DRNAREA^0.965*CSL10_85^0.498*PRECIP^0.995"
+		}, {
+			"interval" : 10,
+			"equation" : "0.597*DRNAREA^0.967*CSL10_85^0.538*PRECIP^0.853"
+		}, {
+			"interval" : 25,
+			"equation" : "1.05*DRNAREA^0.972*CSL10_85^0.581*PRECIP^0.724"
+		}, {
+			"interval" : 50,
+			"equation" : "1.46*DRNAREA^0.976*CSL10_85^0.610*PRECIP^0.651"
+		}, {
+			"interval" : 100,
+			"equation" : "1.91*DRNAREA^0.980*CSL10_85^0.636*PRECIP^0.590"
+		}, {
+			"interval" : 200,
+			"equation" : "2.43*DRNAREA^0.984*CSL10_85^0.659*PRECIP^0.536"
+		}, {
+			"interval" : 500,
+			"equation" : "3.22*DRNAREA^0.989*CSL10_85^0.688*PRECIP^0.473"
+		}
+
+	]	
+	},
+	{"region": 6,
+	"parameters" : [{
+			"name" : "Drainage Area",
+			"code" : "DRNAREA",
+			"description" : "Area in square miles",
+			"unit" : "square miles",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.58,
+				"max" : 2467.00
+			}
+		}, {
+			"name" : "Basin Storage",
+			"code" : "STORAGE",
+			"description" : "Percentage of total drainage area shown as lakes, ponds and swamps",
+			"unit" : "percent area",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.00,
+				"max" : 5.98
+			}
+		}, {
+			"name" : "Mean Annual Runoff",
+			"code" : "MAR",
+			"description" : "Mean annual runoff in inches",
+			"unit" : "inches",
+			"value" : -999,
+			"limits" : {
+				"min" : 9.49,
+				"max" : 22.77
+			}
+		}, {
+			"name" : "Above 1200 ft elevation",
+			"code" : "EL1200",
+			"description" : "Percentage of basin at or above 1200 ft elevation",
+			"unit" : "percent area",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.00,
+				"max" : 100.00
+			}
+		}, {
+			"name" : "Slope Ratio",
+			"code" : "SLOPERATIO",
+			"description" : "Ratio of main channel slope to basin slope",
+			"unit" : "unitless",
+			"value" : -999,
+			"limits" : {
+				"min" : 0.019,
+				"max" : 0.698
+			}
+		}
+	],
+	"regressions" : [{
+			"interval" : 1.25,
+			"equation" : "4.50*DRNAREA^0.811*(.5+STORAGE)^-.270*MAR^0.840*(1+EL1200)^0.066*SLOPERATIO^0.168"
+		}, {
+			"interval" : 1.5,
+			"equation" : "6.36*DRNAREA^0.809*(.5+STORAGE)^-.265*MAR^0.790*(1+EL1200)^0.079*SLOPERATIO^0.190"
+		}, {
+			"interval" : 2,
+			"equation" : "8.98*DRNAREA^0.807*(.5+STORAGE)^-.258*MAR^0.740*(1+EL1200)^0.093*SLOPERATIO^0.209"
+		}, {
+			"interval" : 5,
+			"equation" : "17.1*DRNAREA^0.807*(.5+STORAGE)^-.234*MAR^0.646*(1+EL1200)^0.120*SLOPERATIO^0.248"
+		}, {
+			"interval" : 10,
+			"equation" : "23.4*DRNAREA^0.810*(.5+STORAGE)^-.218*MAR^0.600*(1+EL1200)^0.133*SLOPERATIO^0.268"
+		}, {
+			"interval" : 25,
+			"equation" : "32.1*DRNAREA^0.815*(.5+STORAGE)^-.200*MAR^0.555*(1+EL1200)^0.148*SLOPERATIO^0.290"
+		}, {
+			"interval" : 50,
+			"equation" : "39.0*DRNAREA^0.819*(.5+STORAGE)^-.188*MAR^0.528*(1+EL1200)^0.157*SLOPERATIO^0.305"
+		}, {
+			"interval" : 100,
+			"equation" : "46.0*DRNAREA^0.823*(.5+STORAGE)^-.177*MAR^0.505*(1+EL1200)^0.166*SLOPERATIO^0.318"
+		}, {
+			"interval" : 200,
+			"equation" : "53.2*DRNAREA^0.828*(.5+STORAGE)^-.167*MAR^0.487*(1+EL1200)^0.173*SLOPERATIO^0.330"
+		}, {
+			"interval" : 500,
+			"equation" : "62.7*DRNAREA^0.834*(.5+STORAGE)^-.155*MAR^0.466*(1+EL1200)^0.183*SLOPERATIO^0.345"
+		}
+
+	]
+	}
+	]
+}

@@ -33,10 +33,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data.Entity.EF6, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -54,49 +54,98 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model1.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model1.Context.tt</DependentUpon>
+    <Compile Include="Citation.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model1.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model1.tt</DependentUpon>
+    <Compile Include="Equation.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model1.Designer.cs">
+    <Compile Include="EquationError.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EquationType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EquationTypeDisplayName.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EquationUnitType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ErrorType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="nssEntities.cs" />
+    <Compile Include="NSSEntityModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Model1.edmx</DependentUpon>
+      <DependentUpon>NSSEntityModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NSSEntityModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NSSEntityModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NSSEntityModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="PredictionInterval.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UNIT.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+    <Compile Include="Region.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="UNIT_TYPE.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
+    <Compile Include="StatisticGroupType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SubRegion.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UnitConversionFactor.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UnitSystemType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UnitType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Variable.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VariableType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="VariableUnitType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <EntityDeploy Include="Model1.edmx">
+    <EntityDeploy Include="NSSEntityModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Model1.Designer.cs</LastGenOutput>
+      <LastGenOutput>NSSEntityModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="Model1.Context.tt">
+    <None Include="NSSEntityModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Model1.edmx</DependentUpon>
-      <LastGenOutput>Model1.Context.cs</LastGenOutput>
+      <DependentUpon>NSSEntityModel.edmx</DependentUpon>
+      <LastGenOutput>NSSEntityModel.Context.cs</LastGenOutput>
     </None>
-    <None Include="Model1.edmx.diagram">
-      <DependentUpon>Model1.edmx</DependentUpon>
+    <None Include="NSSEntityModel.edmx.diagram">
+      <DependentUpon>NSSEntityModel.edmx</DependentUpon>
     </None>
-    <None Include="Model1.tt">
+    <None Include="NSSEntityModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Model1.edmx</DependentUpon>
-      <LastGenOutput>Model1.cs</LastGenOutput>
+      <DependentUpon>NSSEntityModel.edmx</DependentUpon>
+      <LastGenOutput>NSSEntityModel.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

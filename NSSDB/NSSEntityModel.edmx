@@ -1,0 +1,1011 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="nssModel.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.6" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Citation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="longtext" Nullable="false" />
+          <Property Name="Author" Type="tinytext" Nullable="false" />
+          <Property Name="CitationURL" Type="tinytext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Equation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubRegionID" Type="int" />
+          <Property Name="RegionID" Type="int" Nullable="false" />
+          <Property Name="PredictionIntervalID" Type="int" />
+          <Property Name="CitationID" Type="int" />
+          <Property Name="UnitTypeID" Type="int" Nullable="false" />
+          <Property Name="Equation" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="DA_Exponent" Type="double" />
+          <Property Name="OrderIndex" Type="int" />
+          <Property Name="EquationTypeID" Type="int" Nullable="false" />
+          <Property Name="StatisticGroupTypeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EquationErrors">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EquationID" Type="int" Nullable="false" />
+          <Property Name="ErrorTypeID" Type="int" Nullable="false" />
+          <Property Name="Value" Type="double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EquationType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="tinytext" Nullable="false" />
+          <Property Name="Code" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="Description" Type="longtext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EquationTypeDisplayName">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EquationTypeID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="UserTypeID" Type="int" />
+        </EntityType>
+        <EntityType Name="EquationUnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EquationID" Type="int" Nullable="false" />
+          <Property Name="UnitTypeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ErrorType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="tinytext" Nullable="false" />
+          <Property Name="Code" Type="varchar" MaxLength="15" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PredictionInterval">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BasinCorrectionFactor" Type="double" />
+          <Property Name="Student_T_Statistic" Type="double" />
+          <Property Name="Variance" Type="double" />
+          <Property Name="XIRowVector" Type="varchar" MaxLength="255" />
+          <Property Name="CovarianceMatrix" Type="varchar" MaxLength="1000" />
+        </EntityType>
+        <EntityType Name="Region">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="Name" Type="tinytext" Nullable="false" />
+          <Property Name="Code" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StatisticGroupType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="text" Nullable="false" />
+          <Property Name="Code" Type="varchar" MaxLength="15" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SubRegion">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RegionID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="tinytext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UnitConversionFactor">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UnitTypeInID" Type="int" Nullable="false" />
+          <Property Name="UnitTypeOutID" Type="int" Nullable="false" />
+          <Property Name="Factor" Type="double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UnitSystemType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UnitSystem" Type="tinytext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Unit" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Abbr" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="UnitSystemTypeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="User" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="UnitSystemID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Variable">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EquationID" Type="int" Nullable="false" />
+          <Property Name="VariableTypeID" Type="int" Nullable="false" />
+          <Property Name="EquationTypeID" Type="int" />
+          <Property Name="UnitTypeID" Type="int" Nullable="false" />
+          <Property Name="MinValue" Type="double" />
+          <Property Name="MaxValue" Type="double" />
+          <Property Name="Comments" Type="tinytext" />
+        </EntityType>
+        <EntityType Name="VariableType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="tinytext" />
+          <Property Name="Description" Type="longtext" />
+          <Property Name="Code" Type="varchar" MaxLength="15" />
+        </EntityType>
+        <EntityType Name="VariableUnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="VariableID" Type="int" Nullable="false" />
+          <Property Name="UnitTypeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="nssModelStoreContainer">
+          <EntitySet Name="Citation" EntityType="Self.Citation" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="Equation" EntityType="Self.Equation" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="EquationErrors" EntityType="Self.EquationErrors" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="EquationType" EntityType="Self.EquationType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="EquationTypeDisplayName" EntityType="Self.EquationTypeDisplayName" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="EquationUnitType" EntityType="Self.EquationUnitType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="ErrorType" EntityType="Self.ErrorType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="PredictionInterval" EntityType="Self.PredictionInterval" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="Region" EntityType="Self.Region" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="StatisticGroupType" EntityType="Self.StatisticGroupType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="SubRegion" EntityType="Self.SubRegion" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="UnitConversionFactor" EntityType="Self.UnitConversionFactor" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="UnitSystemType" EntityType="Self.UnitSystemType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="UnitType" EntityType="Self.UnitType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="UserType" EntityType="Self.UserType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="Variable" EntityType="Self.Variable" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="VariableType" EntityType="Self.VariableType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="VariableUnitType" EntityType="Self.VariableUnitType" Schema="nss" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="nssModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Citation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Author" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CitationURL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Equations" Relationship="nssModel.CitationEquation" FromRole="Citation" ToRole="Equation" />
+        </EntityType>
+        <EntityType Name="Equation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SubRegionID" Type="Int32" />
+          <Property Name="RegionID" Type="Int32" Nullable="false" />
+          <Property Name="PredictionIntervalID" Type="Int32" />
+          <Property Name="CitationID" Type="Int32" />
+          <Property Name="UnitTypeID" Type="Int32" Nullable="false" />
+          <Property Name="Equation1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DA_Exponent" Type="Double" />
+          <Property Name="OrderIndex" Type="Int32" />
+          <Property Name="EquationTypeID" Type="Int32" Nullable="false" />
+          <Property Name="StatisticGroupTypeID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Variables" Relationship="nssModel.EquationVariable" FromRole="Equation" ToRole="Variable" />
+          <NavigationProperty Name="EquationUnitTypes" Relationship="nssModel.EquationEquationUnitType" FromRole="Equation" ToRole="EquationUnitType" />
+          <NavigationProperty Name="EquationType" Relationship="nssModel.EquationTypeEquation" FromRole="Equation" ToRole="EquationType" />
+          <NavigationProperty Name="StatisticGroupType" Relationship="nssModel.StatisticGroupTypeEquation" FromRole="Equation" ToRole="StatisticGroupType" />
+          <NavigationProperty Name="Region" Relationship="nssModel.RegionEquation" FromRole="Equation" ToRole="Region" />
+          <NavigationProperty Name="SubRegion" Relationship="nssModel.SubRegionEquation" FromRole="Equation" ToRole="SubRegion" />
+          <NavigationProperty Name="EquationErrors" Relationship="nssModel.EquationEquationError" FromRole="Equation" ToRole="EquationError" />
+          <NavigationProperty Name="PredictionInterval" Relationship="nssModel.EquationPredictionInterval" FromRole="Equation" ToRole="PredictionInterval" />
+          <NavigationProperty Name="Citation" Relationship="nssModel.CitationEquation" FromRole="Equation" ToRole="Citation" />
+          <NavigationProperty Name="UnitType" Relationship="nssModel.UnitTypeEquation" FromRole="Equation" ToRole="UnitType" />
+        </EntityType>
+        <EntityType Name="EquationError">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EquationID" Type="Int32" Nullable="false" />
+          <Property Name="ErrorTypeID" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Equation" Relationship="nssModel.EquationEquationError" FromRole="EquationError" ToRole="Equation" />
+          <NavigationProperty Name="ErrorType" Relationship="nssModel.ErrorTypeEquationError" FromRole="EquationError" ToRole="ErrorType" />
+        </EntityType>
+        <EntityType Name="EquationType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Equations" Relationship="nssModel.EquationTypeEquation" FromRole="EquationType" ToRole="Equation" />
+          <NavigationProperty Name="EquationTypeDisplayNames" Relationship="nssModel.EquationTypeEquationTypeDisplayName" FromRole="EquationType" ToRole="EquationTypeDisplayName" />
+          <NavigationProperty Name="Variables" Relationship="nssModel.EquationTypeVariable" FromRole="EquationType" ToRole="Variable" />
+        </EntityType>
+        <EntityType Name="EquationTypeDisplayName">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EquationTypeID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="UserTypeID" Type="Int32" />
+          <NavigationProperty Name="EquationType" Relationship="nssModel.EquationTypeEquationTypeDisplayName" FromRole="EquationTypeDisplayName" ToRole="EquationType" />
+          <NavigationProperty Name="UserType" Relationship="nssModel.UserTypeEquationTypeDisplayName" FromRole="EquationTypeDisplayName" ToRole="UserType" />
+        </EntityType>
+        <EntityType Name="EquationUnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EquationID" Type="Int32" Nullable="false" />
+          <Property Name="UnitTypeID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Equation" Relationship="nssModel.EquationEquationUnitType" FromRole="EquationUnitType" ToRole="Equation" />
+          <NavigationProperty Name="UnitType" Relationship="nssModel.UnitTypeEquationUnitType" FromRole="EquationUnitType" ToRole="UnitType" />
+        </EntityType>
+        <EntityType Name="ErrorType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="EquationErrors" Relationship="nssModel.ErrorTypeEquationError" FromRole="ErrorType" ToRole="EquationError" />
+        </EntityType>
+        <EntityType Name="PredictionInterval">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BasinCorrectionFactor" Type="Double" />
+          <Property Name="Student_T_Statistic" Type="Double" />
+          <Property Name="Variance" Type="Double" />
+          <Property Name="XIRowVector" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CovarianceMatrix" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Equation" Relationship="nssModel.EquationPredictionInterval" FromRole="PredictionInterval" ToRole="Equation" />
+        </EntityType>
+        <EntityType Name="Region">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Equations" Relationship="nssModel.RegionEquation" FromRole="Region" ToRole="Equation" />
+        </EntityType>
+        <EntityType Name="StatisticGroupType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Equations" Relationship="nssModel.StatisticGroupTypeEquation" FromRole="StatisticGroupType" ToRole="Equation" />
+        </EntityType>
+        <EntityType Name="SubRegion">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RegionID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Equations" Relationship="nssModel.SubRegionEquation" FromRole="SubRegion" ToRole="Equation" />
+        </EntityType>
+        <EntityType Name="UserType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="User" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="UnitSystemID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="EquationTypeDisplayNames" Relationship="nssModel.UserTypeEquationTypeDisplayName" FromRole="UserType" ToRole="EquationTypeDisplayName" />
+          <NavigationProperty Name="UnitSystemType" Relationship="nssModel.UnitSystemTypeUserType" FromRole="UserType" ToRole="UnitSystemType" />
+        </EntityType>
+        <EntityType Name="Variable">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EquationID" Type="Int32" Nullable="false" />
+          <Property Name="VariableTypeID" Type="Int32" Nullable="false" />
+          <Property Name="EquationTypeID" Type="Int32" Nullable="true" />
+          <Property Name="UnitTypeID" Type="Int32" Nullable="false" />
+          <Property Name="MinValue" Type="Double" />
+          <Property Name="MaxValue" Type="Double" />
+          <Property Name="Comments" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Equation" Relationship="nssModel.EquationVariable" FromRole="Variable" ToRole="Equation" />
+          <NavigationProperty Name="VariableType" Relationship="nssModel.VariableTypeVariable" FromRole="Variable" ToRole="VariableType" />
+          <NavigationProperty Name="VariableUnitTypes" Relationship="nssModel.VariableVariableUnitType" FromRole="Variable" ToRole="VariableUnitType" />
+          <NavigationProperty Name="UnitType" Relationship="nssModel.UnitTypeVariable" FromRole="Variable" ToRole="UnitType" />
+          <NavigationProperty Name="EquationType" Relationship="nssModel.EquationTypeVariable" FromRole="Variable" ToRole="EquationType" />
+        </EntityType>
+        <EntityType Name="VariableType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+          <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Variables" Relationship="nssModel.VariableTypeVariable" FromRole="VariableType" ToRole="Variable" />
+        </EntityType>
+        <EntityType Name="VariableUnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="VariableID" Type="Int32" Nullable="false" />
+          <Property Name="UnitTypeID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Variable" Relationship="nssModel.VariableVariableUnitType" FromRole="VariableUnitType" ToRole="Variable" />
+          <NavigationProperty Name="UnitType" Relationship="nssModel.UnitTypeVariableUnitType" FromRole="VariableUnitType" ToRole="UnitType" />
+        </EntityType>
+        <EntityContainer Name="nssEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Citations" EntityType="Self.Citation" />
+          <EntitySet Name="Equations" EntityType="Self.Equation" />
+          <EntitySet Name="EquationErrors" EntityType="Self.EquationError" />
+          <EntitySet Name="EquationTypes" EntityType="Self.EquationType" />
+          <EntitySet Name="EquationTypeDisplayNames" EntityType="Self.EquationTypeDisplayName" />
+          <EntitySet Name="EquationUnitTypes" EntityType="Self.EquationUnitType" />
+          <EntitySet Name="ErrorTypes" EntityType="Self.ErrorType" />
+          <EntitySet Name="PredictionIntervals" EntityType="Self.PredictionInterval" />
+          <EntitySet Name="Regions" EntityType="Self.Region" />
+          <EntitySet Name="StatisticGroupTypes" EntityType="Self.StatisticGroupType" />
+          <EntitySet Name="SubRegions" EntityType="Self.SubRegion" />
+          <EntitySet Name="UserTypes" EntityType="Self.UserType" />
+          <EntitySet Name="Variables" EntityType="Self.Variable" />
+          <EntitySet Name="VariableTypes" EntityType="Self.VariableType" />
+          <EntitySet Name="VariableUnitTypes" EntityType="Self.VariableUnitType" />
+          <EntitySet Name="UnitConversionFactors" EntityType="nssModel.UnitConversionFactor" />
+          <EntitySet Name="UnitSystemTypes" EntityType="nssModel.UnitSystemType" />
+          <EntitySet Name="UnitTypes" EntityType="nssModel.UnitType" />
+          <AssociationSet Name="EquationVariable" Association="nssModel.EquationVariable">
+            <End Role="Equation" EntitySet="Equations" />
+            <End Role="Variable" EntitySet="Variables" />
+          </AssociationSet>
+          <AssociationSet Name="EquationEquationUnitType" Association="nssModel.EquationEquationUnitType">
+            <End Role="Equation" EntitySet="Equations" />
+            <End Role="EquationUnitType" EntitySet="EquationUnitTypes" />
+          </AssociationSet>
+          <AssociationSet Name="VariableTypeVariable" Association="nssModel.VariableTypeVariable">
+            <End Role="VariableType" EntitySet="VariableTypes" />
+            <End Role="Variable" EntitySet="Variables" />
+          </AssociationSet>
+          <AssociationSet Name="VariableVariableUnitType" Association="nssModel.VariableVariableUnitType">
+            <End Role="Variable" EntitySet="Variables" />
+            <End Role="VariableUnitType" EntitySet="VariableUnitTypes" />
+          </AssociationSet>
+          <AssociationSet Name="EquationTypeEquation" Association="nssModel.EquationTypeEquation">
+            <End Role="EquationType" EntitySet="EquationTypes" />
+            <End Role="Equation" EntitySet="Equations" />
+          </AssociationSet>
+          <AssociationSet Name="EquationTypeEquationTypeDisplayName" Association="nssModel.EquationTypeEquationTypeDisplayName">
+            <End Role="EquationType" EntitySet="EquationTypes" />
+            <End Role="EquationTypeDisplayName" EntitySet="EquationTypeDisplayNames" />
+          </AssociationSet>
+          <AssociationSet Name="StatisticGroupTypeEquation" Association="nssModel.StatisticGroupTypeEquation">
+            <End Role="StatisticGroupType" EntitySet="StatisticGroupTypes" />
+            <End Role="Equation" EntitySet="Equations" />
+          </AssociationSet>
+          <AssociationSet Name="RegionEquation" Association="nssModel.RegionEquation">
+            <End Role="Region" EntitySet="Regions" />
+            <End Role="Equation" EntitySet="Equations" />
+          </AssociationSet>
+          <AssociationSet Name="SubRegionEquation" Association="nssModel.SubRegionEquation">
+            <End Role="SubRegion" EntitySet="SubRegions" />
+            <End Role="Equation" EntitySet="Equations" />
+          </AssociationSet>
+          <AssociationSet Name="EquationEquationError" Association="nssModel.EquationEquationError">
+            <End Role="Equation" EntitySet="Equations" />
+            <End Role="EquationError" EntitySet="EquationErrors" />
+          </AssociationSet>
+          <AssociationSet Name="ErrorTypeEquationError" Association="nssModel.ErrorTypeEquationError">
+            <End Role="ErrorType" EntitySet="ErrorTypes" />
+            <End Role="EquationError" EntitySet="EquationErrors" />
+          </AssociationSet>
+          <AssociationSet Name="EquationPredictionInterval" Association="nssModel.EquationPredictionInterval">
+            <End Role="Equation" EntitySet="Equations" />
+            <End Role="PredictionInterval" EntitySet="PredictionIntervals" />
+          </AssociationSet>
+          <AssociationSet Name="CitationEquation" Association="nssModel.CitationEquation">
+            <End Role="Citation" EntitySet="Citations" />
+            <End Role="Equation" EntitySet="Equations" />
+          </AssociationSet>
+          <AssociationSet Name="UnitTypeEquation" Association="nssModel.UnitTypeEquation">
+            <End Role="UnitType" EntitySet="UnitTypes" />
+            <End Role="Equation" EntitySet="Equations" />
+          </AssociationSet>
+          <AssociationSet Name="UnitTypeEquationUnitType" Association="nssModel.UnitTypeEquationUnitType">
+            <End Role="UnitType" EntitySet="UnitTypes" />
+            <End Role="EquationUnitType" EntitySet="EquationUnitTypes" />
+          </AssociationSet>
+          <AssociationSet Name="UnitTypeVariable" Association="nssModel.UnitTypeVariable">
+            <End Role="UnitType" EntitySet="UnitTypes" />
+            <End Role="Variable" EntitySet="Variables" />
+          </AssociationSet>
+          <AssociationSet Name="UnitTypeVariableUnitType" Association="nssModel.UnitTypeVariableUnitType">
+            <End Role="UnitType" EntitySet="UnitTypes" />
+            <End Role="VariableUnitType" EntitySet="VariableUnitTypes" />
+          </AssociationSet>
+          <AssociationSet Name="UnitSystemTypeUnitType" Association="nssModel.UnitSystemTypeUnitType">
+            <End Role="UnitSystemType" EntitySet="UnitSystemTypes" />
+            <End Role="UnitType" EntitySet="UnitTypes" />
+          </AssociationSet>
+          <AssociationSet Name="UnitTypeUnitConversionFactor" Association="nssModel.UnitTypeUnitConversionFactor">
+            <End Role="UnitType" EntitySet="UnitTypes" />
+            <End Role="UnitConversionFactor" EntitySet="UnitConversionFactors" />
+          </AssociationSet>
+          <AssociationSet Name="UnitTypeUnitConversionFactor1" Association="nssModel.UnitTypeUnitConversionFactor1">
+            <End Role="UnitType" EntitySet="UnitTypes" />
+            <End Role="UnitConversionFactor" EntitySet="UnitConversionFactors" />
+          </AssociationSet>
+          <AssociationSet Name="EquationTypeVariable" Association="nssModel.EquationTypeVariable">
+            <End Role="EquationType" EntitySet="EquationTypes" />
+            <End Role="Variable" EntitySet="Variables" />
+          </AssociationSet>
+          <AssociationSet Name="UserTypeEquationTypeDisplayName" Association="nssModel.UserTypeEquationTypeDisplayName">
+            <End Role="UserType" EntitySet="UserTypes" />
+            <End Role="EquationTypeDisplayName" EntitySet="EquationTypeDisplayNames" />
+          </AssociationSet>
+          <AssociationSet Name="UnitSystemTypeUserType" Association="nssModel.UnitSystemTypeUserType">
+            <End Role="UnitSystemType" EntitySet="UnitSystemTypes" />
+            <End Role="UserType" EntitySet="UserTypes" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="UnitConversionFactor">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UnitTypeInID" Type="Int32" Nullable="false" />
+          <Property Name="UnitTypeOutID" Type="Int32" Nullable="false" />
+          <Property Name="Factor" Type="Double" Nullable="false" />
+          <NavigationProperty Name="UnitTypeIn" Relationship="nssModel.UnitTypeUnitConversionFactor" FromRole="UnitConversionFactor" ToRole="UnitType" />
+          <NavigationProperty Name="UnitTypeOut" Relationship="nssModel.UnitTypeUnitConversionFactor1" FromRole="UnitConversionFactor" ToRole="UnitType" />
+        </EntityType>
+        <EntityType Name="UnitSystemType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UnitSystem" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="UnitTypes" Relationship="nssModel.UnitSystemTypeUnitType" FromRole="UnitSystemType" ToRole="UnitType" />
+          <NavigationProperty Name="UserTypes" Relationship="nssModel.UnitSystemTypeUserType" FromRole="UnitSystemType" ToRole="UserType" />
+        </EntityType>
+        <EntityType Name="UnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Unit" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Abbr" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="UnitSystemTypeID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Equations" Relationship="nssModel.UnitTypeEquation" FromRole="UnitType" ToRole="Equation" />
+          <NavigationProperty Name="EquationUnitTypes" Relationship="nssModel.UnitTypeEquationUnitType" FromRole="UnitType" ToRole="EquationUnitType" />
+          <NavigationProperty Name="Variables" Relationship="nssModel.UnitTypeVariable" FromRole="UnitType" ToRole="Variable" />
+          <NavigationProperty Name="VariableUnitTypes" Relationship="nssModel.UnitTypeVariableUnitType" FromRole="UnitType" ToRole="VariableUnitType" />
+          <NavigationProperty Name="UnitSystemType" Relationship="nssModel.UnitSystemTypeUnitType" FromRole="UnitType" ToRole="UnitSystemType" />
+          <NavigationProperty Name="UnitConversionFactorsIn" Relationship="nssModel.UnitTypeUnitConversionFactor" FromRole="UnitType" ToRole="UnitConversionFactor" />
+          <NavigationProperty Name="UnitConversionFactorsOut" Relationship="nssModel.UnitTypeUnitConversionFactor1" FromRole="UnitType" ToRole="UnitConversionFactor" />
+        </EntityType>
+        <Association Name="EquationVariable">
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="1" />
+          <End Type="nssModel.Variable" Role="Variable" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Equation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Variable">
+              <PropertyRef Name="EquationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="EquationEquationUnitType">
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="1" />
+          <End Type="nssModel.EquationUnitType" Role="EquationUnitType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Equation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EquationUnitType">
+              <PropertyRef Name="EquationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="VariableTypeVariable">
+          <End Type="nssModel.VariableType" Role="VariableType" Multiplicity="1" />
+          <End Type="nssModel.Variable" Role="Variable" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VariableType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Variable">
+              <PropertyRef Name="VariableTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="VariableVariableUnitType">
+          <End Type="nssModel.Variable" Role="Variable" Multiplicity="1" />
+          <End Type="nssModel.VariableUnitType" Role="VariableUnitType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Variable">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="VariableUnitType">
+              <PropertyRef Name="VariableID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="EquationTypeEquation">
+          <End Type="nssModel.EquationType" Role="EquationType" Multiplicity="1" />
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EquationType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="EquationTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="EquationTypeEquationTypeDisplayName">
+          <End Type="nssModel.EquationType" Role="EquationType" Multiplicity="1" />
+          <End Type="nssModel.EquationTypeDisplayName" Role="EquationTypeDisplayName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EquationType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EquationTypeDisplayName">
+              <PropertyRef Name="EquationTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="StatisticGroupTypeEquation">
+          <End Type="nssModel.StatisticGroupType" Role="StatisticGroupType" Multiplicity="1" />
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="StatisticGroupType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="StatisticGroupTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RegionEquation">
+          <End Type="nssModel.Region" Role="Region" Multiplicity="1" />
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Region">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="RegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="SubRegionEquation">
+          <End Type="nssModel.SubRegion" Role="SubRegion" Multiplicity="0..1" />
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SubRegion">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="SubRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="EquationEquationError">
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="1" />
+          <End Type="nssModel.EquationError" Role="EquationError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Equation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EquationError">
+              <PropertyRef Name="EquationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="ErrorTypeEquationError">
+          <End Type="nssModel.ErrorType" Role="ErrorType" Multiplicity="1" />
+          <End Type="nssModel.EquationError" Role="EquationError" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ErrorType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EquationError">
+              <PropertyRef Name="ErrorTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="EquationPredictionInterval">
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <End Type="nssModel.PredictionInterval" Role="PredictionInterval" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="PredictionInterval">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="PredictionIntervalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="CitationEquation">
+          <End Type="nssModel.Citation" Role="Citation" Multiplicity="0..1" />
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="CitationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UnitTypeEquation">
+          <End Type="nssModel.UnitType" Role="UnitType" Multiplicity="1" />
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="UnitTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UnitTypeEquationUnitType">
+          <End Type="nssModel.UnitType" Role="UnitType" Multiplicity="1" />
+          <End Type="nssModel.EquationUnitType" Role="EquationUnitType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EquationUnitType">
+              <PropertyRef Name="UnitTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UnitTypeVariable">
+          <End Type="nssModel.UnitType" Role="UnitType" Multiplicity="1" />
+          <End Type="nssModel.Variable" Role="Variable" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Variable">
+              <PropertyRef Name="UnitTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UnitTypeVariableUnitType">
+          <End Type="nssModel.UnitType" Role="UnitType" Multiplicity="1" />
+          <End Type="nssModel.VariableUnitType" Role="VariableUnitType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="VariableUnitType">
+              <PropertyRef Name="UnitTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UnitSystemTypeUnitType">
+          <End Type="nssModel.UnitSystemType" Role="UnitSystemType" Multiplicity="1" />
+          <End Type="nssModel.UnitType" Role="UnitType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitSystemType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UnitType">
+              <PropertyRef Name="UnitSystemTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UnitTypeUnitConversionFactor">
+          <End Type="nssModel.UnitType" Role="UnitType" Multiplicity="1" />
+          <End Type="nssModel.UnitConversionFactor" Role="UnitConversionFactor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UnitConversionFactor">
+              <PropertyRef Name="UnitTypeInID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UnitTypeUnitConversionFactor1">
+          <End Type="nssModel.UnitType" Role="UnitType" Multiplicity="1" />
+          <End Type="nssModel.UnitConversionFactor" Role="UnitConversionFactor" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UnitConversionFactor">
+              <PropertyRef Name="UnitTypeOutID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="EquationTypeVariable">
+          <End Type="nssModel.EquationType" Role="EquationType" Multiplicity="0..1" />
+          <End Type="nssModel.Variable" Role="Variable" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EquationType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Variable">
+              <PropertyRef Name="EquationTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UserTypeEquationTypeDisplayName">
+          <End Type="nssModel.UserType" Role="UserType" Multiplicity="0..1" />
+          <End Type="nssModel.EquationTypeDisplayName" Role="EquationTypeDisplayName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="EquationTypeDisplayName">
+              <PropertyRef Name="UserTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UnitSystemTypeUserType">
+          <End Type="nssModel.UnitSystemType" Role="UnitSystemType" Multiplicity="1" />
+          <End Type="nssModel.UserType" Role="UserType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitSystemType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="UserType">
+              <PropertyRef Name="UnitSystemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="nssModelStoreContainer" CdmEntityContainer="nssEntities">
+          <EntitySetMapping Name="Citations">
+            <EntityTypeMapping TypeName="nssModel.Citation">
+              <MappingFragment StoreEntitySet="Citation">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Author" ColumnName="Author" />
+                <ScalarProperty Name="CitationURL" ColumnName="CitationURL" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Equations">
+            <EntityTypeMapping TypeName="nssModel.Equation">
+              <MappingFragment StoreEntitySet="Equation">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="SubRegionID" ColumnName="SubRegionID" />
+                <ScalarProperty Name="RegionID" ColumnName="RegionID" />
+                <ScalarProperty Name="PredictionIntervalID" ColumnName="PredictionIntervalID" />
+                <ScalarProperty Name="CitationID" ColumnName="CitationID" />
+                <ScalarProperty Name="UnitTypeID" ColumnName="UnitTypeID" />
+                <ScalarProperty Name="Equation1" ColumnName="Equation" />
+                <ScalarProperty Name="DA_Exponent" ColumnName="DA_Exponent" />
+                <ScalarProperty Name="OrderIndex" ColumnName="OrderIndex" />
+                <ScalarProperty Name="EquationTypeID" ColumnName="EquationTypeID" />
+                <ScalarProperty Name="StatisticGroupTypeID" ColumnName="StatisticGroupTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EquationErrors">
+            <EntityTypeMapping TypeName="nssModel.EquationError">
+              <MappingFragment StoreEntitySet="EquationErrors">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="EquationID" ColumnName="EquationID" />
+                <ScalarProperty Name="ErrorTypeID" ColumnName="ErrorTypeID" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EquationTypes">
+            <EntityTypeMapping TypeName="nssModel.EquationType">
+              <MappingFragment StoreEntitySet="EquationType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EquationTypeDisplayNames">
+            <EntityTypeMapping TypeName="nssModel.EquationTypeDisplayName">
+              <MappingFragment StoreEntitySet="EquationTypeDisplayName">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="EquationTypeID" ColumnName="EquationTypeID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UserTypeID" ColumnName="UserTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EquationUnitTypes">
+            <EntityTypeMapping TypeName="nssModel.EquationUnitType">
+              <MappingFragment StoreEntitySet="EquationUnitType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="EquationID" ColumnName="EquationID" />
+                <ScalarProperty Name="UnitTypeID" ColumnName="UnitTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ErrorTypes">
+            <EntityTypeMapping TypeName="nssModel.ErrorType">
+              <MappingFragment StoreEntitySet="ErrorType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PredictionIntervals">
+            <EntityTypeMapping TypeName="nssModel.PredictionInterval">
+              <MappingFragment StoreEntitySet="PredictionInterval">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="BasinCorrectionFactor" ColumnName="BasinCorrectionFactor" />
+                <ScalarProperty Name="Student_T_Statistic" ColumnName="Student_T_Statistic" />
+                <ScalarProperty Name="Variance" ColumnName="Variance" />
+                <ScalarProperty Name="XIRowVector" ColumnName="XIRowVector" />
+                <ScalarProperty Name="CovarianceMatrix" ColumnName="CovarianceMatrix" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Regions">
+            <EntityTypeMapping TypeName="nssModel.Region">
+              <MappingFragment StoreEntitySet="Region">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StatisticGroupTypes">
+            <EntityTypeMapping TypeName="nssModel.StatisticGroupType">
+              <MappingFragment StoreEntitySet="StatisticGroupType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SubRegions">
+            <EntityTypeMapping TypeName="nssModel.SubRegion">
+              <MappingFragment StoreEntitySet="SubRegion">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="RegionID" ColumnName="RegionID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserTypes">
+            <EntityTypeMapping TypeName="nssModel.UserType">
+              <MappingFragment StoreEntitySet="UserType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="User" ColumnName="User" />
+                <ScalarProperty Name="UnitSystemID" ColumnName="UnitSystemID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Variables">
+            <EntityTypeMapping TypeName="nssModel.Variable">
+              <MappingFragment StoreEntitySet="Variable">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="EquationID" ColumnName="EquationID" />
+                <ScalarProperty Name="VariableTypeID" ColumnName="VariableTypeID" />
+                <ScalarProperty Name="EquationTypeID" ColumnName="EquationTypeID" />
+                <ScalarProperty Name="UnitTypeID" ColumnName="UnitTypeID" />
+                <ScalarProperty Name="MinValue" ColumnName="MinValue" />
+                <ScalarProperty Name="MaxValue" ColumnName="MaxValue" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VariableTypes">
+            <EntityTypeMapping TypeName="nssModel.VariableType">
+              <MappingFragment StoreEntitySet="VariableType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VariableUnitTypes">
+            <EntityTypeMapping TypeName="nssModel.VariableUnitType">
+              <MappingFragment StoreEntitySet="VariableUnitType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="VariableID" ColumnName="VariableID" />
+                <ScalarProperty Name="UnitTypeID" ColumnName="UnitTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnitConversionFactors">
+            <EntityTypeMapping TypeName="nssModel.UnitConversionFactor">
+              <MappingFragment StoreEntitySet="UnitConversionFactor">
+                <ScalarProperty Name="Factor" ColumnName="Factor" />
+                <ScalarProperty Name="UnitTypeOutID" ColumnName="UnitTypeOutID" />
+                <ScalarProperty Name="UnitTypeInID" ColumnName="UnitTypeInID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnitSystemTypes">
+            <EntityTypeMapping TypeName="nssModel.UnitSystemType">
+              <MappingFragment StoreEntitySet="UnitSystemType">
+                <ScalarProperty Name="UnitSystem" ColumnName="UnitSystem" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnitTypes">
+            <EntityTypeMapping TypeName="nssModel.UnitType">
+              <MappingFragment StoreEntitySet="UnitType">
+                <ScalarProperty Name="UnitSystemTypeID" ColumnName="UnitSystemTypeID" />
+                <ScalarProperty Name="Abbr" ColumnName="Abbr" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

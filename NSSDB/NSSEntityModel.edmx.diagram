@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="ed533d1b64f147aa9ff342fac0aeba9e" Name="Diagram1" ZoomLevel="64">
+        <EntityTypeShape EntityType="nssModel.Citation" Width="1.5" PointX="3.25" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.Equation" Width="1.5" PointX="6.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.EquationError" Width="1.5" PointX="6.875" PointY="9.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.EquationType" Width="1.5" PointX="9" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.EquationTypeDisplayName" Width="2" PointX="11.125" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.EquationUnitType" Width="1.75" PointX="5" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.ErrorType" Width="1.5" PointX="6.875" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.PredictionInterval" Width="1.5" PointX="5" PointY="9.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.Region" Width="1.5" PointX="11.125" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.StatisticGroupType" Width="1.5" PointX="11.125" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.SubRegion" Width="1.5" PointX="8.875" PointY="9.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.UserType" Width="1.5" PointX="11.875" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.Variable" Width="1.5" PointX="9" PointY="2.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.VariableType" Width="1.5" PointX="9" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.VariableUnitType" Width="1.5" PointX="5.375" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.UnitConversionFactor" Width="1.875" PointX="0.5" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.UnitSystemType" Width="1.5" PointX="0.5" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.UnitType" Width="1.5" PointX="3.25" PointY="5.25" IsExpanded="true" />
+        <AssociationConnector Association="nssModel.EquationVariable" />
+        <AssociationConnector Association="nssModel.EquationEquationUnitType" />
+        <AssociationConnector Association="nssModel.VariableTypeVariable" />
+        <AssociationConnector Association="nssModel.VariableVariableUnitType" />
+        <AssociationConnector Association="nssModel.EquationTypeEquation" />
+        <AssociationConnector Association="nssModel.EquationTypeEquationTypeDisplayName" />
+        <AssociationConnector Association="nssModel.StatisticGroupTypeEquation" />
+        <AssociationConnector Association="nssModel.RegionEquation" />
+        <AssociationConnector Association="nssModel.SubRegionEquation" />
+        <AssociationConnector Association="nssModel.EquationEquationError" />
+        <AssociationConnector Association="nssModel.ErrorTypeEquationError" />
+        <AssociationConnector Association="nssModel.EquationPredictionInterval" />
+        <AssociationConnector Association="nssModel.CitationEquation" />
+        <AssociationConnector Association="nssModel.UnitTypeEquation" />
+        <AssociationConnector Association="nssModel.UnitTypeEquationUnitType" />
+        <AssociationConnector Association="nssModel.UnitTypeVariable" ManuallyRouted="false" >
+        </AssociationConnector>
+        <AssociationConnector Association="nssModel.UnitTypeVariableUnitType" />
+        <AssociationConnector Association="nssModel.UnitSystemTypeUnitType" />
+        <AssociationConnector Association="nssModel.UnitTypeUnitConversionFactor" />
+        <AssociationConnector Association="nssModel.UnitTypeUnitConversionFactor1" />
+        <AssociationConnector Association="nssModel.EquationTypeVariable" />
+        <AssociationConnector Association="nssModel.UserTypeEquationTypeDisplayName" />
+        <AssociationConnector Association="nssModel.UnitSystemTypeUserType" ></AssociationConnector>
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

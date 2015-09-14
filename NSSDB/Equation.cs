@@ -23,16 +23,14 @@ namespace NSSDB
         }
     
         public int ID { get; set; }
-        public Nullable<int> SubRegionID { get; set; }
-        public int RegionID { get; set; }
         public Nullable<int> PredictionIntervalID { get; set; }
-        public Nullable<int> CitationID { get; set; }
         public int UnitTypeID { get; set; }
         public string Equation1 { get; set; }
         public Nullable<double> DA_Exponent { get; set; }
         public Nullable<int> OrderIndex { get; set; }
         public int EquationTypeID { get; set; }
         public int StatisticGroupTypeID { get; set; }
+        public int RegressionRegionID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Variable> Variables { get; set; }
@@ -40,12 +38,10 @@ namespace NSSDB
         public virtual ICollection<EquationUnitType> EquationUnitTypes { get; set; }
         public virtual EquationType EquationType { get; set; }
         public virtual StatisticGroupType StatisticGroupType { get; set; }
-        public virtual Region Region { get; set; }
-        public virtual SubRegion SubRegion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EquationError> EquationErrors { get; set; }
         public virtual PredictionInterval PredictionInterval { get; set; }
-        public virtual Citation Citation { get; set; }
         public virtual UnitType UnitType { get; set; }
+        public virtual RegressionRegion RegressionRegion { get; set; }
     }
 }

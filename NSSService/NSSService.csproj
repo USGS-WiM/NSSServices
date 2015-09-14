@@ -97,6 +97,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers\ScenarioHandler.cs" />
     <Compile Include="Handlers\EquationTypeDisplayNameHandler.cs" />
     <Compile Include="Handlers\VariableTypeHandler.cs" />
     <Compile Include="Handlers\VariableHandler.cs" />
@@ -104,28 +105,24 @@
     <Compile Include="Handlers\UnitTypeHandler.cs" />
     <Compile Include="Handlers\UnitSystemTypeHandler.cs" />
     <Compile Include="Handlers\UnitConversionFactorHandler.cs" />
-    <Compile Include="Handlers\SubRegionHandler.cs" />
+    <Compile Include="Handlers\RegressionRegionHandler.cs" />
     <Compile Include="Handlers\StatisticGroupTypeHandler.cs" />
     <Compile Include="Handlers\RegionHandler.cs" />
     <Compile Include="Handlers\PredictionIntervalHandler.cs" />
     <Compile Include="Handlers\EquationHandler.cs" />
     <Compile Include="Handlers\ErrorTypeHandler.cs" />
     <Compile Include="Handlers\NSSHandlerBase.cs" />
-    <Compile Include="Handlers\RegressionHandler.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Handlers\EquationTypeHandler.cs" />
     <Compile Include="Handlers\CitationHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\QRegression.cs" />
-    <Compile Include="Resources\FDCTM.cs" />
-    <Compile Include="Resources\FlowAnywhere.cs" />
-    <Compile Include="Resources\Hypermedia.cs" />
-    <Compile Include="Resources\Parameters.cs" />
-    <Compile Include="Resources\RegressionModel.cs" />
-    <Compile Include="Resources\Report.cs" />
+    <Compile Include="Resources\Parameter.cs" />
+    <Compile Include="Resources\Scenario.cs" />
+    <Compile Include="Resources\ScenarioParameterView.cs" />
     <Compile Include="Resources\Station.cs" />
     <Compile Include="Utilities\ExpressionOps.cs" />
     <Compile Include="Utilities\MathOps.cs" />
+    <Compile Include="Utilities\ServiceAgent\NSSDBServiceAgent.cs" />
     <Compile Include="Utilities\ServiceAgent\QRegressionServiceAgent.cs" />
     <Compile Include="Utilities\ServiceAgent\FDCTMServiceAgent.cs" />
     <Compile Include="Utilities\ServiceAgent\FlowAnywhereServiceAgent.cs" />

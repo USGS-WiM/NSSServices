@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using WiM.Exceptions;
 using NSSDB;
+using NSSService.Utilities.ServiceAgent;
 
 
 namespace NSSService.Handlers
@@ -35,10 +36,6 @@ namespace NSSService.Handlers
     public class PredictionIntervalHandler:NSSHandlerBase
     {
         #region Properties
-        public override string entityName
-        {
-            get { return "PredictionInterval"; }
-        }
         #endregion
         #region CRUD Methods
         #region GET Methods
@@ -48,9 +45,9 @@ namespace NSSService.Handlers
             List<PredictionInterval> entities = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entities = c.PredictionIntervals.OrderBy(e => e.ID).ToList();
+                    entities = sa.Select<PredictionInterval>().OrderBy(e => e.ID).ToList();
                 }//end using
 
                 //hypermedia
@@ -73,9 +70,9 @@ namespace NSSService.Handlers
             PredictionInterval entity = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entity = c.PredictionIntervals.FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<PredictionInterval>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia

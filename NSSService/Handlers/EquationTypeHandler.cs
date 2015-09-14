@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using WiM.Exceptions;
+using NSSService.Utilities.ServiceAgent;
 using NSSDB;
 
 
@@ -36,10 +37,6 @@ namespace NSSService.Handlers
     public class EquationTypeHandler:NSSHandlerBase
     {
         #region Properties
-        public override string entityName
-        {
-            get { return "entitys"; }
-        }
         #endregion
         #region CRUD Methods
         #region GET Methods
@@ -49,9 +46,9 @@ namespace NSSService.Handlers
             List<EquationType> entities = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entities = c.EquationTypes.OrderBy(e => e.ID).ToList();
+                    entities = sa.Select<EquationType>().OrderBy(e => e.ID).ToList();
                 }//end using
 
                 //hypermedia
@@ -69,25 +66,24 @@ namespace NSSService.Handlers
             }//end try
         }//end Get
         [HttpOperation(HttpMethod.GET, ForUriName = "GetEquationTypes")]
-        public OperationResult GetEquationTypes([Optional]string regions, [Optional] string subregions, [Optional]string statisticgroups)
+        public OperationResult GetEquationTypes(string region, [Optional] string regressionRegionIDs, [Optional]string statisticgroups)
         {
-            //?regions={regions}&subregions={subregions}&statisticgroups={statisticgroups}
-            List<string> regionList = null;
-            List<string> subRegionList=null;
+            //?region={region}&subregions={subregionIDs}&statisticgroups={statisticgroups}
+            List<string> regressionRegionIDList=null;
             List<string> statisticgroupList = null;
 
             List<EquationType> entities = null;
             try
             {
-                regionList = parse(regions);
-                subRegionList = parse(subregions);
+                if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
+
+                regressionRegionIDList = parse(regressionRegionIDs);
                 statisticgroupList = parse(statisticgroups);
 
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    IQueryable<EquationType> qentities = c.Equations.Include("EquationTypes,Regions").Where(e => regionList.Contains(e.Region.Code) || regionList.Contains(e.RegionID.ToString())).Select(e => e.EquationType).Distinct();
-
-                    entities = qentities.OrderBy(e => e.ID).ToList();
+                    entities = sa.GetEquations(region, regressionRegionIDList, statisticgroupList)
+                        .Select(e => e.EquationType).Distinct().OrderBy(e => e.ID).ToList();
                 }//end using
 
                 //hypermedia
@@ -110,9 +106,9 @@ namespace NSSService.Handlers
             EquationType entity = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entity = c.EquationTypes.FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<EquationType>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia
@@ -146,7 +142,5 @@ namespace NSSService.Handlers
         #region Enumerations
 
         #endregion
-
-
     }//end class
 }//end namespace

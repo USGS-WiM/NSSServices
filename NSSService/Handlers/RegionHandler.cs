@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using WiM.Exceptions;
 using NSSDB;
+using NSSService.Utilities.ServiceAgent;
 
 
 namespace NSSService.Handlers
@@ -35,10 +36,6 @@ namespace NSSService.Handlers
     public class RegionHandler:NSSHandlerBase
     {
         #region Properties
-        public override string entityName
-        {
-            get { return "Regions"; }
-        }
         #endregion
         #region CRUD Methods
         #region GET Methods
@@ -48,9 +45,9 @@ namespace NSSService.Handlers
             List<Region> entities = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entities = c.Regions.OrderBy(e => e.ID).ToList();
+                    entities = sa.Select<Region>().OrderBy(e => e.ID).ToList();
                 }//end using
 
                 //hypermedia
@@ -68,39 +65,17 @@ namespace NSSService.Handlers
             }//end try
         }//end Get
         [HttpOperation(HttpMethod.GET)]
-        public OperationResult get(Int32 ID)
+        public OperationResult get(string region)
         {
             Region entity = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entity = c.Regions.FirstOrDefault(e => e.ID == ID);
-                }//end using
+                    entity = sa.Select<Region>().FirstOrDefault(e => String.Equals(e.ID.ToString().Trim().ToLower(), 
+                                                        region.Trim().ToLower()) || String.Equals(e.Code.Trim().ToLower(), 
+                                                        region.Trim().ToLower()));
 
-                //hypermedia
-                //entities.CreateUri();
-
-                return new OperationResult.OK { ResponseResource = entity };
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-            finally
-            {
-
-            }//end try
-        }//end Get
-        [HttpOperation(HttpMethod.GET, ForUriName = "GetRegionByCode")]
-        public OperationResult GetRegionByCode(string regionCode)
-        {
-            Region entity = null;
-            try
-            {
-                using (nssEntities c = GetRDBContext())
-                {
-                    entity = c.Regions.FirstOrDefault(e => String.Equals(e.Code.ToUpper().Trim(),regionCode.ToUpper().Trim()));
                 }//end using
 
                 //hypermedia

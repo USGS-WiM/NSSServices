@@ -98,10 +98,13 @@
     <Compile Include="Region.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="StatisticGroupType.cs">
+    <Compile Include="RegionRegressionRegion.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="SubRegion.cs">
+    <Compile Include="RegressionRegion.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="StatisticGroupType.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="UnitConversionFactor.cs">

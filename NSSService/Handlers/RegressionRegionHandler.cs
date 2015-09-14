@@ -29,26 +29,53 @@ using System.Collections.Generic;
 using WiM.Exceptions;
 using NSSDB;
 using NSSService.Utilities.ServiceAgent;
+using System;
+using System.Data.Entity;
 
 
 namespace NSSService.Handlers
 {
-    public class UnitSystemTypeHandler : NSSHandlerBase
+    public class RegressionRegionHandler : NSSHandlerBase
     {
         #region Properties
-
         #endregion
         #region CRUD Methods
         #region GET Methods
         [HttpOperation(HttpMethod.GET)]
         public OperationResult get()
         {
-            List<UnitSystemType> entities = null;
+            List<RegressionRegion> entities = null;
             try
             {
                 using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entities = sa.Select<UnitSystemType>().OrderBy(e => e.ID).ToList();
+                    entities = sa.Select<RegressionRegion>().OrderBy(e => e.ID).ToList();
+                }//end using
+
+                //hypermedia
+                //entities.CreateUri();
+
+                return new OperationResult.OK { ResponseResource = entities };
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+            finally
+            {
+
+            }//end try
+        }//end Get
+        [HttpOperation(HttpMethod.GET, ForUriName = "GetRegressionRegion")]
+        public OperationResult GetRegressionRegion(string region)
+        {
+            List<RegressionRegion> entities = null;
+            try
+            {
+                using (NSSDBAgent sa = new NSSDBAgent())
+                {
+                    entities = sa.Select<RegionRegressionRegion>().Where(rrr => String.Equals(region.Trim().ToLower(), rrr.Region.Code.ToLower().Trim())
+                               || String.Equals(region.ToLower().Trim(), rrr.RegionID.ToString())).Select(r => r.RegressionRegion).ToList();
                 }//end using
 
                 //hypermedia
@@ -68,12 +95,12 @@ namespace NSSService.Handlers
         [HttpOperation(HttpMethod.GET)]
         public OperationResult get(Int32 ID)
         {
-            UnitSystemType entity = null;
+            RegressionRegion entity = null;
             try
             {
                 using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entity = sa.Select<UnitSystemType>().FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<RegressionRegion>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia

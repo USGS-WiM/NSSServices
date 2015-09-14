@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using WiM.Exceptions;
+using NSSService.Utilities.ServiceAgent;
 using NSSDB;
 
 
@@ -35,10 +36,6 @@ namespace NSSService.Handlers
     public class EquationTypeDisplayNameHandler : NSSHandlerBase
     {
         #region Properties
-        public override string entityName
-        {
-            get { return "entityDisplayName"; }
-        }
         #endregion
         #region CRUD Methods
         #region GET Methods
@@ -48,9 +45,9 @@ namespace NSSService.Handlers
             List<EquationTypeDisplayName> entities = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entities = c.EquationTypeDisplayNames.OrderBy(e => e.ID).ToList();
+                    entities = sa.Select<EquationTypeDisplayName>().OrderBy(e => e.ID).ToList();
                 }//end using
 
                 //hypermedia
@@ -73,9 +70,9 @@ namespace NSSService.Handlers
             EquationTypeDisplayName entity = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entity = c.EquationTypeDisplayNames.FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<EquationTypeDisplayName>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia

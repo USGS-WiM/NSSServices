@@ -19,10 +19,8 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubRegionID" Type="int" />
-          <Property Name="RegionID" Type="int" Nullable="false" />
+          <Property Name="RegressionRegionID" Type="int" Nullable="false" />
           <Property Name="PredictionIntervalID" Type="int" />
-          <Property Name="CitationID" Type="int" />
           <Property Name="UnitTypeID" Type="int" Nullable="false" />
           <Property Name="Equation" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DA_Exponent" Type="double" />
@@ -92,6 +90,24 @@
           <Property Name="Code" Type="varchar" MaxLength="15" Nullable="false" />
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
+        <EntityType Name="RegionRegressionRegion">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RegionID" Type="int" Nullable="false" />
+          <Property Name="RegressionRegionID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RegressionRegion">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="tinytext" Nullable="false" />
+          <Property Name="Code" Type="varchar" MaxLength="15" />
+          <Property Name="Description" Type="longtext" />
+          <Property Name="CitationID" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="StatisticGroupType">
           <Key>
             <PropertyRef Name="ID" />
@@ -99,14 +115,6 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="text" Nullable="false" />
           <Property Name="Code" Type="varchar" MaxLength="15" Nullable="false" />
-        </EntityType>
-        <EntityType Name="SubRegion">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RegionID" Type="int" Nullable="false" />
-          <Property Name="Name" Type="tinytext" Nullable="false" />
         </EntityType>
         <EntityType Name="UnitConversionFactor">
           <Key>
@@ -181,8 +189,9 @@
           <EntitySet Name="ErrorType" EntityType="Self.ErrorType" Schema="nss" store:Type="Tables" />
           <EntitySet Name="PredictionInterval" EntityType="Self.PredictionInterval" Schema="nss" store:Type="Tables" />
           <EntitySet Name="Region" EntityType="Self.Region" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="RegionRegressionRegion" EntityType="Self.RegionRegressionRegion" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="RegressionRegion" EntityType="Self.RegressionRegion" Schema="nss" store:Type="Tables" />
           <EntitySet Name="StatisticGroupType" EntityType="Self.StatisticGroupType" Schema="nss" store:Type="Tables" />
-          <EntitySet Name="SubRegion" EntityType="Self.SubRegion" Schema="nss" store:Type="Tables" />
           <EntitySet Name="UnitConversionFactor" EntityType="Self.UnitConversionFactor" Schema="nss" store:Type="Tables" />
           <EntitySet Name="UnitSystemType" EntityType="Self.UnitSystemType" Schema="nss" store:Type="Tables" />
           <EntitySet Name="UnitType" EntityType="Self.UnitType" Schema="nss" store:Type="Tables" />
@@ -203,17 +212,14 @@
           <Property Name="Title" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Author" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="CitationURL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Equations" Relationship="nssModel.CitationEquation" FromRole="Citation" ToRole="Equation" />
+          <NavigationProperty Name="RegressionRegions" Relationship="nssModel.CitationRegressionRegion" FromRole="Citation" ToRole="RegressionRegion" />
         </EntityType>
         <EntityType Name="Equation">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SubRegionID" Type="Int32" />
-          <Property Name="RegionID" Type="Int32" Nullable="false" />
           <Property Name="PredictionIntervalID" Type="Int32" />
-          <Property Name="CitationID" Type="Int32" />
           <Property Name="UnitTypeID" Type="Int32" Nullable="false" />
           <Property Name="Equation1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="DA_Exponent" Type="Double" />
@@ -224,12 +230,11 @@
           <NavigationProperty Name="EquationUnitTypes" Relationship="nssModel.EquationEquationUnitType" FromRole="Equation" ToRole="EquationUnitType" />
           <NavigationProperty Name="EquationType" Relationship="nssModel.EquationTypeEquation" FromRole="Equation" ToRole="EquationType" />
           <NavigationProperty Name="StatisticGroupType" Relationship="nssModel.StatisticGroupTypeEquation" FromRole="Equation" ToRole="StatisticGroupType" />
-          <NavigationProperty Name="Region" Relationship="nssModel.RegionEquation" FromRole="Equation" ToRole="Region" />
-          <NavigationProperty Name="SubRegion" Relationship="nssModel.SubRegionEquation" FromRole="Equation" ToRole="SubRegion" />
           <NavigationProperty Name="EquationErrors" Relationship="nssModel.EquationEquationError" FromRole="Equation" ToRole="EquationError" />
           <NavigationProperty Name="PredictionInterval" Relationship="nssModel.EquationPredictionInterval" FromRole="Equation" ToRole="PredictionInterval" />
-          <NavigationProperty Name="Citation" Relationship="nssModel.CitationEquation" FromRole="Equation" ToRole="Citation" />
           <NavigationProperty Name="UnitType" Relationship="nssModel.UnitTypeEquation" FromRole="Equation" ToRole="UnitType" />
+          <Property Name="RegressionRegionID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RegressionRegion" Relationship="nssModel.RegressionRegionEquation" FromRole="Equation" ToRole="RegressionRegion" />
         </EntityType>
         <EntityType Name="EquationError">
           <Key>
@@ -303,7 +308,7 @@
           <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <NavigationProperty Name="Equations" Relationship="nssModel.RegionEquation" FromRole="Region" ToRole="Equation" />
+          <NavigationProperty Name="RegionRegressionRegions" Relationship="nssModel.RegionRegionRegressionRegion" FromRole="Region" ToRole="RegionRegressionRegion" />
         </EntityType>
         <EntityType Name="StatisticGroupType">
           <Key>
@@ -313,15 +318,6 @@
           <Property Name="Name" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Equations" Relationship="nssModel.StatisticGroupTypeEquation" FromRole="StatisticGroupType" ToRole="Equation" />
-        </EntityType>
-        <EntityType Name="SubRegion">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RegionID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Equations" Relationship="nssModel.SubRegionEquation" FromRole="SubRegion" ToRole="Equation" />
         </EntityType>
         <EntityType Name="UserType">
           <Key>
@@ -382,7 +378,6 @@
           <EntitySet Name="PredictionIntervals" EntityType="Self.PredictionInterval" />
           <EntitySet Name="Regions" EntityType="Self.Region" />
           <EntitySet Name="StatisticGroupTypes" EntityType="Self.StatisticGroupType" />
-          <EntitySet Name="SubRegions" EntityType="Self.SubRegion" />
           <EntitySet Name="UserTypes" EntityType="Self.UserType" />
           <EntitySet Name="Variables" EntityType="Self.Variable" />
           <EntitySet Name="VariableTypes" EntityType="Self.VariableType" />
@@ -418,14 +413,6 @@
             <End Role="StatisticGroupType" EntitySet="StatisticGroupTypes" />
             <End Role="Equation" EntitySet="Equations" />
           </AssociationSet>
-          <AssociationSet Name="RegionEquation" Association="nssModel.RegionEquation">
-            <End Role="Region" EntitySet="Regions" />
-            <End Role="Equation" EntitySet="Equations" />
-          </AssociationSet>
-          <AssociationSet Name="SubRegionEquation" Association="nssModel.SubRegionEquation">
-            <End Role="SubRegion" EntitySet="SubRegions" />
-            <End Role="Equation" EntitySet="Equations" />
-          </AssociationSet>
           <AssociationSet Name="EquationEquationError" Association="nssModel.EquationEquationError">
             <End Role="Equation" EntitySet="Equations" />
             <End Role="EquationError" EntitySet="EquationErrors" />
@@ -437,10 +424,6 @@
           <AssociationSet Name="EquationPredictionInterval" Association="nssModel.EquationPredictionInterval">
             <End Role="Equation" EntitySet="Equations" />
             <End Role="PredictionInterval" EntitySet="PredictionIntervals" />
-          </AssociationSet>
-          <AssociationSet Name="CitationEquation" Association="nssModel.CitationEquation">
-            <End Role="Citation" EntitySet="Citations" />
-            <End Role="Equation" EntitySet="Equations" />
           </AssociationSet>
           <AssociationSet Name="UnitTypeEquation" Association="nssModel.UnitTypeEquation">
             <End Role="UnitType" EntitySet="UnitTypes" />
@@ -481,6 +464,24 @@
           <AssociationSet Name="UnitSystemTypeUserType" Association="nssModel.UnitSystemTypeUserType">
             <End Role="UnitSystemType" EntitySet="UnitSystemTypes" />
             <End Role="UserType" EntitySet="UserTypes" />
+          </AssociationSet>
+          <EntitySet Name="RegionRegressionRegions" EntityType="nssModel.RegionRegressionRegion" />
+          <EntitySet Name="RegressionRegions" EntityType="nssModel.RegressionRegion" />
+          <AssociationSet Name="CitationRegressionRegion" Association="nssModel.CitationRegressionRegion">
+            <End Role="Citation" EntitySet="Citations" />
+            <End Role="RegressionRegion" EntitySet="RegressionRegions" />
+          </AssociationSet>
+          <AssociationSet Name="RegressionRegionEquation" Association="nssModel.RegressionRegionEquation">
+            <End Role="RegressionRegion" EntitySet="RegressionRegions" />
+            <End Role="Equation" EntitySet="Equations" />
+          </AssociationSet>
+          <AssociationSet Name="RegressionRegionRegionRegressionRegion" Association="nssModel.RegressionRegionRegionRegressionRegion">
+            <End Role="RegressionRegion" EntitySet="RegressionRegions" />
+            <End Role="RegionRegressionRegion" EntitySet="RegionRegressionRegions" />
+          </AssociationSet>
+          <AssociationSet Name="RegionRegionRegressionRegion" Association="nssModel.RegionRegionRegressionRegion">
+            <End Role="Region" EntitySet="Regions" />
+            <End Role="RegionRegressionRegion" EntitySet="RegionRegressionRegions" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="UnitConversionFactor">
@@ -603,30 +604,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="RegionEquation">
-          <End Type="nssModel.Region" Role="Region" Multiplicity="1" />
-          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Region">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Equation">
-              <PropertyRef Name="RegionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="SubRegionEquation">
-          <End Type="nssModel.SubRegion" Role="SubRegion" Multiplicity="0..1" />
-          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SubRegion">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Equation">
-              <PropertyRef Name="SubRegionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="EquationEquationError">
           <End Type="nssModel.Equation" Role="Equation" Multiplicity="1" />
           <End Type="nssModel.EquationError" Role="EquationError" Multiplicity="*" />
@@ -660,18 +637,6 @@
             </Principal>
             <Dependent Role="Equation">
               <PropertyRef Name="PredictionIntervalID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="CitationEquation">
-          <End Type="nssModel.Citation" Role="Citation" Multiplicity="0..1" />
-          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Citation">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Equation">
-              <PropertyRef Name="CitationID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -795,6 +760,77 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="RegionRegressionRegion">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RegionID" Type="Int32" Nullable="false" />
+          <Property Name="RegressionRegionID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RegressionRegion" Relationship="nssModel.RegressionRegionRegionRegressionRegion" FromRole="RegionRegressionRegion" ToRole="RegressionRegion" />
+          <NavigationProperty Name="Region" Relationship="nssModel.RegionRegionRegressionRegion" FromRole="RegionRegressionRegion" ToRole="Region" />
+        </EntityType>
+        <EntityType Name="RegressionRegion">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+          <Property Name="CitationID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Citation" Relationship="nssModel.CitationRegressionRegion" FromRole="RegressionRegion" ToRole="Citation" />
+          <NavigationProperty Name="Equations" Relationship="nssModel.RegressionRegionEquation" FromRole="RegressionRegion" ToRole="Equation" />
+          <NavigationProperty Name="RegionRegressionRegions" Relationship="nssModel.RegressionRegionRegionRegressionRegion" FromRole="RegressionRegion" ToRole="RegionRegressionRegion" />
+        </EntityType>
+        <Association Name="CitationRegressionRegion">
+          <End Type="nssModel.Citation" Role="Citation" Multiplicity="1" />
+          <End Type="nssModel.RegressionRegion" Role="RegressionRegion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Citation">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RegressionRegion">
+              <PropertyRef Name="CitationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RegressionRegionEquation">
+          <End Type="nssModel.RegressionRegion" Role="RegressionRegion" Multiplicity="1" />
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegressionRegion">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="RegressionRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RegressionRegionRegionRegressionRegion">
+          <End Type="nssModel.RegressionRegion" Role="RegressionRegion" Multiplicity="1" />
+          <End Type="nssModel.RegionRegressionRegion" Role="RegionRegressionRegion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegressionRegion">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RegionRegressionRegion">
+              <PropertyRef Name="RegressionRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RegionRegionRegressionRegion">
+          <End Type="nssModel.Region" Role="Region" Multiplicity="1" />
+          <End Type="nssModel.RegionRegressionRegion" Role="RegionRegressionRegion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Region">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RegionRegressionRegion">
+              <PropertyRef Name="RegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -814,11 +850,9 @@
           <EntitySetMapping Name="Equations">
             <EntityTypeMapping TypeName="nssModel.Equation">
               <MappingFragment StoreEntitySet="Equation">
+                <ScalarProperty Name="RegressionRegionID" ColumnName="RegressionRegionID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="SubRegionID" ColumnName="SubRegionID" />
-                <ScalarProperty Name="RegionID" ColumnName="RegionID" />
                 <ScalarProperty Name="PredictionIntervalID" ColumnName="PredictionIntervalID" />
-                <ScalarProperty Name="CitationID" ColumnName="CitationID" />
                 <ScalarProperty Name="UnitTypeID" ColumnName="UnitTypeID" />
                 <ScalarProperty Name="Equation1" ColumnName="Equation" />
                 <ScalarProperty Name="DA_Exponent" ColumnName="DA_Exponent" />
@@ -906,15 +940,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="SubRegions">
-            <EntityTypeMapping TypeName="nssModel.SubRegion">
-              <MappingFragment StoreEntitySet="SubRegion">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="RegionID" ColumnName="RegionID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="UserTypes">
             <EntityTypeMapping TypeName="nssModel.UserType">
               <MappingFragment StoreEntitySet="UserType">
@@ -985,7 +1010,27 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="RegionRegressionRegions">
+            <EntityTypeMapping TypeName="nssModel.RegionRegressionRegion">
+              <MappingFragment StoreEntitySet="RegionRegressionRegion">
+                <ScalarProperty Name="RegressionRegionID" ColumnName="RegressionRegionID" />
+                <ScalarProperty Name="RegionID" ColumnName="RegionID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RegressionRegions">
+            <EntityTypeMapping TypeName="nssModel.RegressionRegion">
+              <MappingFragment StoreEntitySet="RegressionRegion">
+                <ScalarProperty Name="CitationID" ColumnName="CitationID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

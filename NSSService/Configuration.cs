@@ -41,27 +41,28 @@ using WiM.Codecs.json;
 using WiM.Codecs.xml;
 using NSSService.Handlers;
 using NSSDB;
+using NSSService.Resources;
 
 namespace NSSService
 {
     public class Configuration:IConfigurationSource
     {
         #region Private Field Properties
-        private string citationResource = "/citations";
-        private string EquationResource = "/equations";
-        private string EquationTypeResource = "/equationtypes";
-        private string EquationTypeDisplayNamesResource = "/equationtypedisplaynames";
-        private string ErrorTypeResource = "/errortypes";
-        private string PredictionIntervalResource = "/predictionintervals";
-        private string RegionResource = "/regions";
-        private string StatisticGroupTypeResource = "/statisticgrouptypes";
-        private string SubRegionResource = "/subregions";
-        private string UnitConversionFactorResource = "/conversionfactors";
-        private string UnitSystemTypeResource = "/unitsystems";
-        private string UnitTypeResource = "/unittypes";
-        private string UserTypeResource = "/usertypes";
-        private string VariableResource = "/variables";
-        private string VariableTypeResource = "/variabletypes";
+        public string citationResource = "citations";
+        private string equationTypeResource = "equationtypes";
+        private string equationTypeDisplayNamesResource = "equationnames";
+        private string errorTypeResource = "errors";
+        private string predictionIntervalResource = "predictionintervals";
+        private string regionResource = "regions";
+        private string statisticGroupTypeResource = "statisticgroups";
+        private string scenarioResource = "scenarios";
+        private string RegressionRegionResource = "regressionregions";
+        private string unitConversionFactorResource = "conversionfactors";
+        private string unitSystemTypeResource = "unitsystems";
+        private string unitTypeResource = "units";
+        private string userTypeResource = "users";
+        private string variableResource = "variables";
+        private string variableTypeResource = "variabletypes";
         #endregion
 
         public void Configure()
@@ -74,14 +75,14 @@ namespace NSSService
                 ResourceSpace.Uses.PipelineContributor<CrossDomainPipelineContributor>();
 
                 AddCitationEndpoints();
-                AddEquationEndpoints();
                 AddEquationTypeEndpoints();
                 AddEquationTypeDisplayNamesEndpoints();
                 AddErrorTypeEndpoints();
                 AddPredictionIntervalEndpoints();
                 AddRegionEndpoints();
+                AddScenarioEndpoints();
                 AddStatisticGroupTypeEndpoints();
-                AddSubRegionEndpoints();
+                AddRegionEquationEndpoints();
                 AddUnitConversionFactorEndpoints();
                 AddUnitSystemTypeEndpoints();
                 AddUnitTypeEndpoints();
@@ -89,17 +90,6 @@ namespace NSSService
                 AddVariableEndpoints();
                 AddVariableTypeEndpoints();
                 
-
-                //ResourceSpace.Has.ResourcesOfType<RegressionModel>()
-                //    .AtUri("/models/{ModelType}/def?state={stateID}&region={regionID}").Named("getStateModelDefinitions")
-                //    .And.AtUri("/models/{ModelType}/estimate?state={stateID}").Named("getModelEstimate")
-                //    .HandledBy<RegressionHandler>()
-                //    .TranscodedBy<JsonDotNetCodec>().ForMediaType("application/json;q=0.5").ForExtension("json");
-
-                //ResourceSpace.Has.ResourcesOfType<List<Report>>()
-                //    .AtUri("/reports?state={stateID}").Named("getStateReports")
-                //    .HandledBy<ReportHandler>()
-                //    .TranscodedBy<JsonDotNetCodec>().ForMediaType("application/json;q=0.5").ForExtension("json");
 
             }//end using
         }//end Configure
@@ -109,245 +99,248 @@ namespace NSSService
         {
             ResourceSpace.Has.ResourcesOfType<List<Citation>>()
                 .AtUri(citationResource)
+                .And.AtUri(citationResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}").Named("GetCitations")
+                .And.AtUri(regionResource + "/{region}/" + citationResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("GetCitations")
                 .HandledBy<CitationHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml")
+                .And.TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json");
+                
 
 
             ResourceSpace.Has.ResourcesOfType<Citation>()
                 .AtUri(citationResource + "/{ID}")
                 .HandledBy<CitationHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
-
-        }
-        private void AddEquationEndpoints()
-        {
-            ResourceSpace.Has.ResourcesOfType<List<Equation>>()
-                .AtUri(EquationResource)
-                .And.AtUri(EquationResource + "?region={regionid}&subregion={subregionid}&statisticgroup={statisticgroupid}&")
-                .HandledBy<EquationHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
-
-
-            ResourceSpace.Has.ResourcesOfType<Equation>()
-                .AtUri(EquationResource + "/{ID}")
-                .HandledBy<EquationHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8XmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddEquationTypeEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<EquationType>>()
-                .AtUri(EquationTypeResource)
-                .And.AtUri(EquationTypeResource + "?regions={regions}&subregions={subregions}&statisticgroups={statisticgroups}").Named("GetEquationTypes")
+                .AtUri(equationTypeResource)
+                .And.AtUri(equationTypeResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("GetEquationTypes")
+                .And.AtUri(regionResource + "/{region}/" + equationTypeResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("GetEquationTypes")
                 .HandledBy<EquationTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<EquationType>()
-                .AtUri(EquationTypeResource + "/{ID}")
+                .AtUri(equationTypeResource + "/{ID}")
                 .HandledBy<EquationTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddEquationTypeDisplayNamesEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<EquationTypeDisplayName>>()
-                .AtUri(EquationTypeDisplayNamesResource)
+                .AtUri(equationTypeDisplayNamesResource)
                 .HandledBy<EquationTypeDisplayNameHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<EquationTypeDisplayName>()
-                .AtUri(EquationTypeDisplayNamesResource + "/{ID}")
+                .AtUri(equationTypeDisplayNamesResource + "/{ID}")
                 .HandledBy<EquationTypeDisplayNameHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddErrorTypeEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<ErrorType>>()
-                .AtUri(ErrorTypeResource)
+                .AtUri(errorTypeResource)
                 .HandledBy<ErrorTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<ErrorType>()
-                .AtUri(ErrorTypeResource + "/{ID}")
+                .AtUri(errorTypeResource + "/{ID}")
                 .HandledBy<ErrorTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddPredictionIntervalEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<PredictionInterval>>()
-                .AtUri(PredictionIntervalResource)
+                .AtUri(predictionIntervalResource)
                 .HandledBy<PredictionIntervalHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<PredictionInterval>()
-                .AtUri(PredictionIntervalResource + "/{ID}")
+                .AtUri(predictionIntervalResource + "/{ID}")
                 .HandledBy<PredictionIntervalHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddRegionEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<Region>>()
-                .AtUri(RegionResource)
+                .AtUri(regionResource)
                 .HandledBy<RegionHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.4").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<Region>()
-                .AtUri(RegionResource + "/{ID}")
-                .And.AtUri(RegionResource + "?rcode={regionCode}").Named("GetRegionByCode")
+                .AtUri(regionResource + "/{region}")
                 .HandledBy<RegionHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
+        private void AddScenarioEndpoints() 
+                {
+                    ResourceSpace.Has.ResourcesOfType<List<Scenario>>()
+                        .AtUri(scenarioResource + "?region={region}&"+RegressionRegionResource+"={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}").Named("GetScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}").Named("GetScenarios")
+
+                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("EstimatesScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?subregion={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("EstimateScenarios")
+                        .HandledBy< ScenarioHandler>()
+                        .TranscodedBy<JsonDotNetCodec>().ForMediaType("application/json;q=0.5").ForExtension("json")
+                        .And.TranscodedBy<UTF8XmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
+                }
         private void AddStatisticGroupTypeEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<StatisticGroupType>>()
-                .AtUri(StatisticGroupTypeResource)
+                .AtUri(statisticGroupTypeResource)
+                .And.AtUri(statisticGroupTypeResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + equationTypeResource + "={equationtypeIDs}").Named("GetStatisticGroups")
+                .And.AtUri(regionResource + "/{region}/" + statisticGroupTypeResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + equationTypeResource + "={equationtypeIDs}").Named("GetStatisticGroups")
                 .HandledBy<StatisticGroupTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<StatisticGroupType>()
-                .AtUri(StatisticGroupTypeResource + "/{ID}")
+                .AtUri(statisticGroupTypeResource + "/{ID}")
                 .HandledBy<StatisticGroupTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
-        private void AddSubRegionEndpoints()
+        private void AddRegionEquationEndpoints()
         {
-            ResourceSpace.Has.ResourcesOfType<List<SubRegion>>()
-                .AtUri(SubRegionResource)
-                .HandledBy<SubRegionHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+            ResourceSpace.Has.ResourcesOfType<List<RegressionRegion>>()
+                .AtUri(RegressionRegionResource)
+                .And.AtUri(regionResource + "/{region}/" + RegressionRegionResource).Named("GetRegionSubregions")
+                .And.AtUri(RegressionRegionResource + "?region={region}").Named("GetRegionSubregions")
+                .HandledBy<RegressionRegionHandler>()
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")            
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
-            ResourceSpace.Has.ResourcesOfType<SubRegion>()
-                .AtUri(SubRegionResource + "/{ID}")
-                .HandledBy<SubRegionHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+            ResourceSpace.Has.ResourcesOfType<RegressionRegion>()
+                .AtUri(RegressionRegionResource + "/{ID}")
+                .HandledBy<RegressionRegionHandler>()
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddUnitConversionFactorEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<UnitConversionFactor>>()
-                .AtUri(UnitConversionFactorResource)
+                .AtUri(unitConversionFactorResource)
                 .HandledBy<UnitConversionFactorHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<UnitConversionFactor>()
-                .AtUri(UnitConversionFactorResource + "/{ID}")
+                .AtUri(unitConversionFactorResource + "/{ID}")
                 .HandledBy<UnitConversionFactorHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddUnitSystemTypeEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<UnitSystemType>>()
-                .AtUri(UnitSystemTypeResource)
+                .AtUri(unitSystemTypeResource)
                 .HandledBy<UnitSystemTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<UnitSystemType>()
-                .AtUri(UnitSystemTypeResource + "/{ID}")
+                .AtUri(unitSystemTypeResource + "/{ID}")
                 .HandledBy<UnitSystemTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddUnitTypeEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<UnitType>>()
-                .AtUri(UnitTypeResource)
+                .AtUri(unitTypeResource)
                 .HandledBy<UnitTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<UnitType>()
-                .AtUri(UnitTypeResource + "/{ID}")
+                .AtUri(unitTypeResource + "/{ID}")
                 .HandledBy<UnitTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddUserTypeEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<UserType>>()
-                .AtUri(UserTypeResource)
+                .AtUri(userTypeResource)
                 .HandledBy<UserTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<UserType>()
-                .AtUri(UserTypeResource + "/{ID}")
+                .AtUri(userTypeResource + "/{ID}")
                 .HandledBy<UserTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddVariableEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<Variable>>()
-                .AtUri(VariableResource)
+                .AtUri(variableResource)
                 .HandledBy<VariableHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<Variable>()
-                .AtUri(VariableResource + "/{ID}")
+                .AtUri(variableResource + "/{ID}")
                 .HandledBy<VariableHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
         private void AddVariableTypeEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<VariableType>>()
-                .AtUri(VariableTypeResource)
+                .AtUri(variableTypeResource)
                 .HandledBy<VariableTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
             ResourceSpace.Has.ResourcesOfType<VariableType>()
-                .AtUri(VariableTypeResource + "/{ID}")
+                .AtUri(variableTypeResource + "/{ID}")
                 .HandledBy<VariableTypeHandler>()
-                .TranscodedBy<JsonEntityDotNetCodec>(null).ForMediaType("application/json;q=0.9").ForExtension("json")
-                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>(null).ForMediaType("application/xml;q=0.4").ForExtension("xml");
+                .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
+                .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
+        
         #endregion
     }//end configuration
 }//end namespace

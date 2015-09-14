@@ -17,7 +17,7 @@ namespace NSSDB
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Citation()
         {
-            this.Equations = new HashSet<Equation>();
+            this.RegressionRegions = new HashSet<RegressionRegion>();
         }
     
         public int ID { get; set; }
@@ -26,6 +26,6 @@ namespace NSSDB
         public string CitationURL { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Equation> Equations { get; set; }
+        public virtual ICollection<RegressionRegion> RegressionRegions { get; set; }
     }
 }

@@ -43,10 +43,6 @@ namespace NSSService.Handlers
     public class CitationHandler:NSSHandlerBase
     {
         #region Properties
-        public override string entityName
-        {
-            get { return "Citations"; }
-        }
         #endregion
         #region CRUD Methods
         #region GET Methods
@@ -54,11 +50,49 @@ namespace NSSService.Handlers
         public OperationResult get()
         {
             List<Citation> entities = null;
+
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
+                {                    
+                    entities = sa.Select<Citation>().OrderBy(e => e.ID).ToList();
+                }//end using
+
+                //hypermedia
+                //entities.CreateUri();
+
+                return new OperationResult.OK { ResponseResource = entities };
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+            finally
+            {
+
+            }//end try
+        }//end Get
+        [HttpOperation(HttpMethod.GET, ForUriName = "GetCitations")]
+        public OperationResult GetCitations(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs )
+        {
+            //?region={region}&subregions={subregionIDs}&statisticgroups={statisticgroups}&equationtypes={equationtypeIDs}"
+            List<Citation> entities = null;
+            List<string> regressionRegionIDList = null;
+            List<string> statisticgroupList = null;
+            List<string> equationtypeList = null;
+
+            try
+            {
+                if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
+                regressionRegionIDList = parse(regressionRegionIDs);
+                statisticgroupList = parse(statisticgroups);
+                equationtypeList = parse(equationtypeIDs);
+
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entities = c.Citations.OrderBy(e => e.ID).ToList();
+                    entities = sa.GetEquations(region, regressionRegionIDList, statisticgroupList,equationtypeList)
+                        .Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID).ToList();
+
                 }//end using
 
                 //hypermedia
@@ -81,9 +115,9 @@ namespace NSSService.Handlers
             Citation entity = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entity = c.Citations.FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<Citation>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia
@@ -108,7 +142,7 @@ namespace NSSService.Handlers
             {
                 sa = new ServiceAgent();
 
-                return new OperationResult.OK { ResponseResource = sa.GetJsonFromFile<List<Report>>(stateID, "Reports") };
+                return new OperationResult.OK { ResponseResource = sa.GetJsonFromFile<List<Citation>>(stateID, "Reports") };
             }
             catch (Exception ex)
             {

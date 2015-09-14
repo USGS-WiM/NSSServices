@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using WiM.Exceptions;
 using NSSDB;
+using NSSService.Utilities.ServiceAgent;
 
 
 namespace NSSService.Handlers
@@ -35,10 +36,6 @@ namespace NSSService.Handlers
     public class UnitConversionFactorHandler : NSSHandlerBase
     {
         #region Properties
-        public override string entityName
-        {
-            get { return "UnitConversionFactors"; }
-        }
         #endregion
         #region CRUD Methods
         #region GET Methods
@@ -48,9 +45,9 @@ namespace NSSService.Handlers
             List<UnitConversionFactor> entities = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entities = c.UnitConversionFactors.OrderBy(e => e.ID).ToList();
+                    entities = sa.Select<UnitConversionFactor>().OrderBy(e => e.ID).ToList();
                 }//end using
 
                 //hypermedia
@@ -73,9 +70,9 @@ namespace NSSService.Handlers
             UnitConversionFactor entity = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entity = c.UnitConversionFactors.FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<UnitConversionFactor>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia

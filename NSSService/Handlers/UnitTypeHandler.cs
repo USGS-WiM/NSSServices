@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using WiM.Exceptions;
 using NSSDB;
+using NSSService.Utilities.ServiceAgent;
 
 
 namespace NSSService.Handlers
@@ -35,10 +36,7 @@ namespace NSSService.Handlers
     public class UnitTypeHandler : NSSHandlerBase
     {
         #region Properties
-        public override string entityName
-        {
-            get { return "UnitTypes"; }
-        }
+
         #endregion
         #region CRUD Methods
         #region GET Methods
@@ -48,9 +46,9 @@ namespace NSSService.Handlers
             List<UnitType> entities = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entities = c.UnitTypes.OrderBy(e => e.ID).ToList();
+                    entities = sa.Select<UnitType>().OrderBy(e => e.ID).ToList();
                 }//end using
 
                 //hypermedia
@@ -58,13 +56,9 @@ namespace NSSService.Handlers
 
                 return new OperationResult.OK { ResponseResource = entities };
             }
-            catch (BadRequestException ex)
-            {
-                return new OperationResult.BadRequest { ResponseResource = ex.Message.ToString() };
-            }
             catch (Exception ex)
             {
-                return new OperationResult.InternalServerError { ResponseResource = ex.Message.ToString() };
+                return HandleException(ex);
             }
             finally
             {
@@ -77,9 +71,9 @@ namespace NSSService.Handlers
             UnitType entity = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                using (NSSDBAgent sa = new NSSDBAgent())
                 {
-                    entity = c.UnitTypes.FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<UnitType>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia

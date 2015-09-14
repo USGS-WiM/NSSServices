@@ -84,7 +84,7 @@ namespace NSSService.Handlers
                 response = sa.GetJsonFromFile<RegressionModel>(stateID, ModelType);
 
                 if(!String.IsNullOrEmpty(regionID))
-                    response.Regions.RemoveAll(r => !String.Equals(r.Region.Trim().ToUpper(), regionID.Trim().ToUpper()));
+                    response.Regions.RemoveAll(r => !String.Equals(r.Region.Trim().ToLower(), regionID.Trim().ToLower()));
 
                 if (response != null)
                     response.LoadLinks(Context.ApplicationBaseUri.AbsoluteUri, linkType.e_individual);

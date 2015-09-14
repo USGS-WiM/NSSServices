@@ -24,33 +24,44 @@
 #endregion
 using OpenRasta.Web;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Runtime.InteropServices;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NSSService.Utilities.ServiceAgent;
+using NSSService.Resources;
 using WiM.Exceptions;
-using NSSDB;
 
+using System.Configuration;
 
 namespace NSSService.Handlers
 {
-    public class SubRegionHandler : NSSHandlerBase
+    public class ScenarioHandler:NSSHandlerBase
     {
         #region Properties
-        public override string entityName
-        {
-            get { return "SubRegions"; }
-        }
         #endregion
         #region CRUD Methods
         #region GET Methods
-        [HttpOperation(HttpMethod.GET)]
-        public OperationResult get()
+        [HttpOperation(HttpMethod.GET, ForUriName = "GetScenarios")]
+        public OperationResult GetScenarios(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs)
         {
-            List<SubRegion> entities = null;
+            List<string> statisticgroupList = null;
+            List<string> equationtypeList = null;
+            List<string> subregionList = null;
+            List<Scenario> entities = null;
             try
             {
-                using (nssEntities c = GetRDBContext())
+                if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
+                statisticgroupList = parse(statisticgroups);
+                equationtypeList = parse(equationtypeIDs);
+                subregionList = parse(regressionRegionIDs);
+
+                using (NSSDBAgent sa = new NSSDBAgent(true))
                 {
-                    entities = c.SubRegions.OrderBy(e => e.ID).ToList();
+                    entities = sa.GetScenarios(region, subregionList, statisticgroupList, equationtypeList).ToList();
                 }//end using
 
                 //hypermedia
@@ -67,31 +78,7 @@ namespace NSSService.Handlers
 
             }//end try
         }//end Get
-        [HttpOperation(HttpMethod.GET)]
-        public OperationResult get(Int32 ID)
-        {
-            SubRegion entity = null;
-            try
-            {
-                using (nssEntities c = GetRDBContext())
-                {
-                    entity = c.SubRegions.FirstOrDefault(e => e.ID == ID);
-                }//end using
 
-                //hypermedia
-                //entities.CreateUri();
-
-                return new OperationResult.OK { ResponseResource = entity };
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-            finally
-            {
-
-            }//end try
-        }//end Get
         #endregion
         #region PUT Methods
 
@@ -109,7 +96,5 @@ namespace NSSService.Handlers
         #region Enumerations
 
         #endregion
-
-
     }//end class
 }//end namespace

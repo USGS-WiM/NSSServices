@@ -47,7 +47,7 @@ namespace NSSService.Handlers
             List<RegressionRegion> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<RegressionRegion>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -72,7 +72,7 @@ namespace NSSService.Handlers
             List<RegressionRegion> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<RegionRegressionRegion>().Where(rrr => String.Equals(region.Trim().ToLower(), rrr.Region.Code.ToLower().Trim())
                                || String.Equals(region.ToLower().Trim(), rrr.RegionID.ToString())).Select(r => r.RegressionRegion).ToList();
@@ -98,7 +98,7 @@ namespace NSSService.Handlers
             RegressionRegion entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<RegressionRegion>().FirstOrDefault(e => e.ID == ID);
                 }//end using

@@ -45,7 +45,7 @@ namespace NSSService.Handlers
             List<Region> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<Region>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -70,7 +70,7 @@ namespace NSSService.Handlers
             Region entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<Region>().FirstOrDefault(e => String.Equals(e.ID.ToString().Trim().ToLower(), 
                                                         region.Trim().ToLower()) || String.Equals(e.Code.Trim().ToLower(), 

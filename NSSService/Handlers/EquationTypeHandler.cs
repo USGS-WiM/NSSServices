@@ -46,7 +46,7 @@ namespace NSSService.Handlers
             List<EquationType> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<EquationType>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -80,7 +80,7 @@ namespace NSSService.Handlers
                 regressionRegionIDList = parse(regressionRegionIDs);
                 statisticgroupList = parse(statisticgroups);
 
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.GetEquations(region, regressionRegionIDList, statisticgroupList)
                         .Select(e => e.EquationType).Distinct().OrderBy(e => e.ID).ToList();
@@ -106,7 +106,7 @@ namespace NSSService.Handlers
             EquationType entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<EquationType>().FirstOrDefault(e => e.ID == ID);
                 }//end using

@@ -46,7 +46,7 @@ namespace NSSService.Handlers
             List<UnitSystemType> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<UnitSystemType>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -71,7 +71,7 @@ namespace NSSService.Handlers
             UnitSystemType entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<UnitSystemType>().FirstOrDefault(e => e.ID == ID);
                 }//end using

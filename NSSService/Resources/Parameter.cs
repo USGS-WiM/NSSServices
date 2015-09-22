@@ -11,10 +11,11 @@ namespace NSSService.Resources
 {
     public class Parameter:IEquatable<Parameter>
     {
+        public Int32 ID { get; set; }
         public String Name { get; set; }
         public String Description { get; set; }
         public String Code { get; set; }
-        public String Unit { get; set; }
+        public SimpleUnitType UnitType { get; set; }
         public Double? Value { get; set; }
         public bool ShouldSerializeValue()
         { return Value.HasValue; }
@@ -29,7 +30,7 @@ namespace NSSService.Resources
             if (Object.ReferenceEquals(this, other)) return true;
 
             //Check whether the products' properties are equal.  
-            return Code.Equals(other.Code) && Name.Equals(other.Name);
+            return Name.Equals(other.Name);// && Name.Equals(other.Name);
         }
         // If Equals() returns true for a pair of objects   
         // then GetHashCode() must return the same value for these objects.  
@@ -41,10 +42,10 @@ namespace NSSService.Resources
             int hashProductName = Name == null ? 0 : Name.GetHashCode();
 
             //Get hash code for the Code field.  
-            int hashProductCode = Code.GetHashCode();
+            //int hashProductCode = ID.GetHashCode();
 
             //Calculate the hash code for the product.  
-            return hashProductName ^ hashProductCode;
+            return hashProductName;// ^ hashProductCode;
         }
     }//end PARAMETER
 

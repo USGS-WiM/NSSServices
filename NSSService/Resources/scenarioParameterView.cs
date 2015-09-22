@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NSSService.Resources
 {
-    class ScenarioParameterView
+    public class ScenarioParameterView
     {
             public int EquationID { get; set; }
             public int EquationTypeID { get; set; }
@@ -19,6 +19,7 @@ namespace NSSService.Resources
             public string StatisticGroupTypeName { get; set; }
             public int VariableID { get; set; }
             public int UnitTypeID { get; set; }
+            public String UnitName { get; set; }
             public string UnitAbbr { get; set; }
             public Double VariableMaxValue { get; set; }
             public Double VariableMinValue { get; set; }

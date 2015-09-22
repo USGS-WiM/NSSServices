@@ -45,7 +45,7 @@ namespace NSSService.Handlers
             List<ErrorType> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<ErrorType>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -74,7 +74,7 @@ namespace NSSService.Handlers
             ErrorType entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<ErrorType>().FirstOrDefault(e => e.ID == ID);
                 }//end using

@@ -46,22 +46,25 @@ namespace NSSService.Handlers
         #region CRUD Methods
         #region GET Methods
         [HttpOperation(HttpMethod.GET, ForUriName = "GetScenarios")]
-        public OperationResult GetScenarios(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs)
+        public OperationResult GetScenarios(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs, [Optional] string systemtypeID)
         {
             List<string> statisticgroupList = null;
             List<string> equationtypeList = null;
             List<string> subregionList = null;
             List<Scenario> entities = null;
+            Int32 unitsystemID = 0;
             try
             {
                 if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
                 statisticgroupList = parse(statisticgroups);
                 equationtypeList = parse(equationtypeIDs);
                 subregionList = parse(regressionRegionIDs);
+                unitsystemID = Convert.ToInt32(systemtypeID);
+                if (unitsystemID < 1) unitsystemID = 1;
 
-                using (NSSDBAgent sa = new NSSDBAgent(true))
+                using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.GetScenarios(region, subregionList, statisticgroupList, equationtypeList).ToList();
+                    entities = sa.GetScenarios(region, unitsystemID, subregionList, statisticgroupList, equationtypeList).ToList();
                 }//end using
 
                 //hypermedia
@@ -79,6 +82,44 @@ namespace NSSService.Handlers
             }//end try
         }//end Get
 
+        [HttpOperation(HttpMethod.GET, ForUriName = "EstimateScenarios")]
+        public OperationResult EstimateScenarios(string region, List<Scenario> scenarioList, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs, [Optional] string systemtypeID)
+        {
+            List<string> statisticgroupList = null;
+            List<string> equationtypeList = null;
+            List<string> subregionList = null;
+            List<Scenario> entities = null;
+            Int32 unitsystemID = 0;
+            try
+            {
+                if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
+                if (scenarioList == null || scenarioList.Count() < 1) throw new BadRequestException("scenario must be specified");
+                unitsystemID = Convert.ToInt32(systemtypeID);
+                if (unitsystemID < 1) unitsystemID = 1;
+                statisticgroupList = parse(statisticgroups);
+                equationtypeList = parse(equationtypeIDs);
+                subregionList = parse(regressionRegionIDs);
+
+                using (NSSAgent sa = new NSSAgent())
+                {
+                    entities = sa.EstimateScenarios(region,unitsystemID, scenarioList, subregionList, statisticgroupList, equationtypeList).ToList();
+                }//end using
+
+                //hypermedia
+                //entities.CreateUri();
+
+                return new OperationResult.OK { ResponseResource = entities };
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+            finally
+            {
+
+            }//end try
+        }//end Get
+        
         #endregion
         #region PUT Methods
 

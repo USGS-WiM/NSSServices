@@ -45,7 +45,7 @@ namespace NSSService.Handlers
             List<VariableType> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<VariableType>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -70,7 +70,7 @@ namespace NSSService.Handlers
             VariableType entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<VariableType>().FirstOrDefault(e => e.ID == ID);
                 }//end using

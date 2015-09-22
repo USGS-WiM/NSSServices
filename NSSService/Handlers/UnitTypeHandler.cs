@@ -26,6 +26,8 @@ using OpenRasta.Web;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Data.Entity;
 using WiM.Exceptions;
 using NSSDB;
 using NSSService.Utilities.ServiceAgent;
@@ -41,14 +43,21 @@ namespace NSSService.Handlers
         #region CRUD Methods
         #region GET Methods
         [HttpOperation(HttpMethod.GET)]
-        public OperationResult get()
+        public OperationResult get([Optional]string unitsystem)
         {
+            IQueryable<UnitType> usquery = null;
             List<UnitType> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.Select<UnitType>().OrderBy(e => e.ID).ToList();
+                    usquery = sa.Select<UnitType>();
+                    if (!string.IsNullOrEmpty(unitsystem))
+                        usquery = usquery.Where(e => String.Compare(unitsystem,e.UnitSystemType.ID.ToString(),true) == 0
+                                            || String.Compare(unitsystem, e.UnitSystemType.UnitSystem.Trim(),true) == 0 
+                                            || e.UnitSystemTypeID == 3);
+
+                    entities = usquery.ToList();
                 }//end using
 
                 //hypermedia
@@ -71,9 +80,9 @@ namespace NSSService.Handlers
             UnitType entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
-                    entity = sa.Select<UnitType>().FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<UnitType>().Include(p => p.UnitConversionFactorsIn).FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia

@@ -45,7 +45,7 @@ namespace NSSService.Handlers
             List<PredictionInterval> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<PredictionInterval>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -70,7 +70,7 @@ namespace NSSService.Handlers
             PredictionInterval entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<PredictionInterval>().FirstOrDefault(e => e.ID == ID);
                 }//end using

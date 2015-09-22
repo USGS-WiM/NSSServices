@@ -45,7 +45,7 @@ namespace NSSService.Handlers
             List<EquationTypeDisplayName> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<EquationTypeDisplayName>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -70,7 +70,7 @@ namespace NSSService.Handlers
             EquationTypeDisplayName entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<EquationTypeDisplayName>().FirstOrDefault(e => e.ID == ID);
                 }//end using

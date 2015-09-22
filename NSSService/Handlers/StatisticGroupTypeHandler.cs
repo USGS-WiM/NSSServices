@@ -46,7 +46,7 @@ namespace NSSService.Handlers
             List<StatisticGroupType> entities = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<StatisticGroupType>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -77,7 +77,7 @@ namespace NSSService.Handlers
                 if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
                 regressionRegionIDList = parse(regressionRegionIDs);
                 equationtypeList = parse(equationtypeIDs);
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.GetEquations(region, regressionRegionIDList,null,equationtypeList)
                                     .Select(e => e.StatisticGroupType).Distinct().ToList();
@@ -104,7 +104,7 @@ namespace NSSService.Handlers
             StatisticGroupType entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<StatisticGroupType>().FirstOrDefault(e => e.ID == ID);
                 }//end using

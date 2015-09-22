@@ -53,7 +53,7 @@ namespace NSSService.Handlers
 
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {                    
                     entities = sa.Select<Citation>().OrderBy(e => e.ID).ToList();
                 }//end using
@@ -88,7 +88,7 @@ namespace NSSService.Handlers
                 statisticgroupList = parse(statisticgroups);
                 equationtypeList = parse(equationtypeIDs);
 
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.GetEquations(region, regressionRegionIDList, statisticgroupList,equationtypeList)
                         .Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID).ToList();
@@ -115,13 +115,13 @@ namespace NSSService.Handlers
             Citation entity = null;
             try
             {
-                using (NSSDBAgent sa = new NSSDBAgent())
+                using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<Citation>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia
-                //entities.CreateUri();
+                entity.CreateUri("citations");
 
                 return new OperationResult.OK { ResponseResource = entity };
             }

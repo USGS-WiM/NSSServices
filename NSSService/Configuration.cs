@@ -199,11 +199,11 @@ namespace NSSService
         private void AddScenarioEndpoints() 
                 {
                     ResourceSpace.Has.ResourcesOfType<List<Scenario>>()
-                        .AtUri(scenarioResource + "?region={region}&"+RegressionRegionResource+"={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}").Named("GetScenarios")
-                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}").Named("GetScenarios")
+                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("GetScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("GetScenarios")
 
-                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("EstimatesScenarios")
-                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?subregion={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("EstimateScenarios")
+                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("EstimatesScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("EstimateScenarios")
                         .HandledBy< ScenarioHandler>()
                         .TranscodedBy<JsonDotNetCodec>().ForMediaType("application/json;q=0.5").ForExtension("json")
                         .And.TranscodedBy<UTF8XmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
@@ -279,7 +279,7 @@ namespace NSSService
         private void AddUnitTypeEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<UnitType>>()
-                .AtUri(unitTypeResource)
+                .AtUri(unitTypeResource + "?" + unitSystemTypeResource + "={unitsystem}")
                 .HandledBy<UnitTypeHandler>()
                 .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
                 .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");

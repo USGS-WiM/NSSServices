@@ -27,6 +27,7 @@
           <Property Name="OrderIndex" Type="int" />
           <Property Name="EquationTypeID" Type="int" Nullable="false" />
           <Property Name="StatisticGroupTypeID" Type="int" Nullable="false" />
+          <Property Name="EquivalentYears" Type="double" />
         </EntityType>
         <EntityType Name="EquationErrors">
           <Key>
@@ -76,7 +77,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="BasinCorrectionFactor" Type="double" />
+          <Property Name="BiasCorrectionFactor" Type="double" />
           <Property Name="Student_T_Statistic" Type="double" />
           <Property Name="Variance" Type="double" />
           <Property Name="XIRowVector" Type="varchar" MaxLength="255" />
@@ -235,6 +236,7 @@
           <NavigationProperty Name="UnitType" Relationship="nssModel.UnitTypeEquation" FromRole="Equation" ToRole="UnitType" />
           <Property Name="RegressionRegionID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="RegressionRegion" Relationship="nssModel.RegressionRegionEquation" FromRole="Equation" ToRole="RegressionRegion" />
+          <Property Name="EquivalentYears" Type="Double" />
         </EntityType>
         <EntityType Name="EquationError">
           <Key>
@@ -294,7 +296,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="BasinCorrectionFactor" Type="Double" />
+          <Property Name="BiasCorrectionFactor" Type="Double" />
           <Property Name="Student_T_Statistic" Type="Double" />
           <Property Name="Variance" Type="Double" />
           <Property Name="XIRowVector" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
@@ -850,6 +852,7 @@
           <EntitySetMapping Name="Equations">
             <EntityTypeMapping TypeName="nssModel.Equation">
               <MappingFragment StoreEntitySet="Equation">
+                <ScalarProperty Name="EquivalentYears" ColumnName="EquivalentYears" />
                 <ScalarProperty Name="RegressionRegionID" ColumnName="RegressionRegionID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="PredictionIntervalID" ColumnName="PredictionIntervalID" />
@@ -914,7 +917,7 @@
             <EntityTypeMapping TypeName="nssModel.PredictionInterval">
               <MappingFragment StoreEntitySet="PredictionInterval">
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="BasinCorrectionFactor" ColumnName="BasinCorrectionFactor" />
+                <ScalarProperty Name="BiasCorrectionFactor" ColumnName="BiasCorrectionFactor" />
                 <ScalarProperty Name="Student_T_Statistic" ColumnName="Student_T_Statistic" />
                 <ScalarProperty Name="Variance" ColumnName="Variance" />
                 <ScalarProperty Name="XIRowVector" ColumnName="XIRowVector" />

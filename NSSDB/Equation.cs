@@ -31,6 +31,7 @@ namespace NSSDB
         public int EquationTypeID { get; set; }
         public int StatisticGroupTypeID { get; set; }
         public int RegressionRegionID { get; set; }
+        public Nullable<double> EquivalentYears { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Variable> Variables { get; set; }

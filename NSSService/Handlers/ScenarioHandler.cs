@@ -82,7 +82,7 @@ namespace NSSService.Handlers
             }//end try
         }//end Get
 
-        [HttpOperation(HttpMethod.GET, ForUriName = "EstimateScenarios")]
+        [HttpOperation(HttpMethod.POST, ForUriName = "EstimateScenarios")]
         public OperationResult EstimateScenarios(string region, List<Scenario> scenarioList, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs, [Optional] string systemtypeID)
         {
             List<string> statisticgroupList = null;

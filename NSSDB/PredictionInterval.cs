@@ -21,7 +21,7 @@ namespace NSSDB
         }
     
         public int ID { get; set; }
-        public Nullable<double> BasinCorrectionFactor { get; set; }
+        public Nullable<double> BiasCorrectionFactor { get; set; }
         public Nullable<double> Student_T_Statistic { get; set; }
         public Nullable<double> Variance { get; set; }
         public string XIRowVector { get; set; }

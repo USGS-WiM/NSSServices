@@ -22,6 +22,8 @@ namespace NSSService.Resources
     public class RegressionResult : RegressionResultBase
     {
         public string Description { get; set; }
+        public Double? EquivalentYears { get; set; }
+        public IntervalBounds IntervalBounds { get; set; }
     }//end class
 
     public class Error
@@ -29,6 +31,11 @@ namespace NSSService.Resources
         public string Name { get; set; }
         public Double? Value { get; set; }
     }//end class
+    public class IntervalBounds
+    {
+        public double Lower { get; set; }
+        public double Upper { get; set; }
+    }
     public class SimpleUnitType
     {
         public Int32 ID { get; set; }

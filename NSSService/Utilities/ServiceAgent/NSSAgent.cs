@@ -12,6 +12,8 @@ using WiM.Authentication;
 
 using NSSDB;
 
+using Newtonsoft.Json;
+
 using NSSService.Resources;
 
 
@@ -160,30 +162,33 @@ namespace NSSService.Utilities.ServiceAgent
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
                 equery = GetEquations(region, regionEquationList, statisticgroupList, equationtypeList);
-                equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType");
+                equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType").Include("PredictionInterval");
 
                 foreach (Scenario scenario in scenarioList)
                 {
                     foreach (SimpleRegionEquation regressionregion in scenario.RegressionRegions)
                     {
-                        regressionregion.Results = new List<RegressionResultBase>();                       
-                     
+                        regressionregion.Results = new List<RegressionResultBase>();
                         EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).Select(e=>e).ToList();
                         
                         foreach (Equation equation in EquationList)
                         {
-                            eOps = new ExpressionOps(equation.Equation1, regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID)));
+                            var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
+                            eOps = new ExpressionOps(equation.Equation1,variables);
                             
                             if (!eOps.IsValid) break;// next equation
 
                             var unit = getUnit(equation.UnitType, systemtypeID);
+                            Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                             regressionregion.Results.Add(new RegressionResult()
                             {
                                 Equation = eOps.InfixExpression,
                                 Name = equation.EquationType.Name,
                                 Description = equation.EquationType.Description,
                                 Unit = unit,
-                                Errors = equation.EquationErrors.Select(e => new Error() {Name = e.ErrorType.Name, Value = e.Value }).ToList(),
+                                Errors = equation.EquationErrors.Select(e => new Error() {Name = e.ErrorType.Name, Value = e.Value }).ToList(), 
+                                EquivalentYears = paramsOutOfRange? null: equation.EquivalentYears,
+                                IntervalBounds = paramsOutOfRange? null: computeUncertainty(equation.PredictionInterval, variables, eOps.Value*unit.factor),
                                 Value = eOps.Value*unit.factor                               
                             });
 
@@ -261,17 +266,88 @@ namespace NSSService.Utilities.ServiceAgent
             }//end switch;
         
         }
+        private IntervalBounds computeUncertainty(PredictionInterval predictionInterval, Dictionary<string, double?> variables, Double Q)
+        {
+            //Prediction Intervals for the true value of a streamflow statistic obtained for an ungaged site can be 
+            //computed by use of a weighted regression equations corected for bias by:
+            //                 1/T(Q/BCF) < Q < T(Q/BCF)
+            // Where:   BCF is the bias correction factor for the equation
+            //          T = 10^[studentT*Si)
+            //          Si = [γ² + xi*U*xi']^0.5
+            //              where   γ² is the model error variance
+            //                      xi is a row vector of the logarithms of the basin characteristics for site i, augemented by a 1 as the first element
+            //                      U is the covariance matrix for site i, 
+            //                      xi' is the transposed xi.
+            //
+            //Tasker, G.D., and Driver, N.E., 1988, Nationwide regression models for predicting urban runoff water 
+            //              quality at unmonitored sites: Water Resources Bulletin, v. 24, no. 5, p. 1091–1101.
+            //Ries, K.G., and Friesz, P.J., Methods for Estimating Low-Flow Statistics for Massachusetts Streams http://pubs.usgs.gov/wri/wri004135/
+            //
+            double γ2 = -999;
+            double studentT = -999;
+            double[,] U = null;
+            List<double> rowVectorList;
+            double Si =-999;
+            Double BCF = 1;
+            double[,] xi = null;
+            double[,] xiprime = null;
 
+            double[,] xiu = null;
+            Double xiuxiprime = -999;
+            Double T = -999;
+
+            double lowerBound = -999;
+            double upperBound = -999;
+            try
+            {
+                if (!predictionInterval.Variance.HasValue || !predictionInterval.Student_T_Statistic.HasValue ||
+                    String.IsNullOrEmpty(predictionInterval.CovarianceMatrix) || string.IsNullOrEmpty(predictionInterval.XIRowVector) ||
+                    !predictionInterval.BiasCorrectionFactor.HasValue) return null;
+
+                rowVectorList = JsonConvert.DeserializeObject<List<string>>(predictionInterval.XIRowVector)
+                    .Select(x => new ExpressionOps(x, variables).Value).ToList();
+                //augement Xi with 1 as the first element
+                rowVectorList.Insert(0, 1);
+
+                xi = new double[1,rowVectorList.Count()];
+                xiprime = new double[rowVectorList.Count(),1];
+                for (int i = 0; i < rowVectorList.Count(); i++)
+                {
+                    xi[0,i] = rowVectorList[i];
+                    xiprime[i,0] = rowVectorList[i];
+                }//next i
+
+                BCF = predictionInterval.BiasCorrectionFactor.Value;
+                γ2 = predictionInterval.Variance.Value;
+                studentT = predictionInterval.Student_T_Statistic.Value;
+                U = JsonConvert.DeserializeObject<double[,]>(predictionInterval.CovarianceMatrix);
+                
+                xiu = MathOps.MatrixMultiply(xi, U);
+                xiuxiprime = MathOps.MatrixMultiply(xiu, xiprime)[0,0];
+
+                Si = Math.Pow(γ2 + xiuxiprime,0.5);
+                T = Math.Pow(10, studentT * Si);
+
+                lowerBound = 1 / T * (Q / BCF);
+                upperBound = T * (Q / BCF);
+                return new IntervalBounds() { Lower = lowerBound, Upper = upperBound };
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }//end try
+        }
         [DebuggerHidden]
-        private SimpleUnitType getUnit(UnitType unitType, int systemtypeID)
+        private SimpleUnitType getUnit(UnitType inUnitType, int OutSystemtypeID)
         {
             try 
 	        {
-                if (unitType.UnitSystemTypeID != systemtypeID)
+                if (inUnitType.UnitSystemTypeID != OutSystemtypeID)
                 {
-                    return unitType.UnitConversionFactorsIn.Where(u => u.UnitTypeOut.UnitSystemTypeID == systemtypeID)
+                    return inUnitType.UnitConversionFactorsIn.Where(u => u.UnitTypeOut.UnitSystemTypeID == OutSystemtypeID)
                         .Select(u => new SimpleUnitType()
                                         {
+                                            ID = u.UnitTypeOut.ID,
                                             Abbr = u.UnitTypeOut.Abbr,
                                             Unit = u.UnitTypeOut.Unit,
                                             factor = u.Factor
@@ -279,12 +355,12 @@ namespace NSSService.Utilities.ServiceAgent
 
                 }//end if
                 
-                return new SimpleUnitType() { Abbr = unitType.Abbr, Unit = unitType.Unit, factor = 1 };
+                return new SimpleUnitType() { Abbr = inUnitType.Abbr, Unit = inUnitType.Unit, factor = 1 };
 	        }
 	        catch (Exception)
 	        {
 
-                return new SimpleUnitType() { Abbr = unitType.Abbr, Unit = unitType.Unit, factor = 1 };
+                return new SimpleUnitType() { Abbr = inUnitType.Abbr, Unit = inUnitType.Unit, factor = 1 };
 	        }         
         }
         [DebuggerHidden]
@@ -292,7 +368,7 @@ namespace NSSService.Utilities.ServiceAgent
         {
             try
             {
-                return this.unitConversionFactors.Where(uf => uf.UnitTypeOutID == inUnitID && uf.UnitTypeIn.UnitSystemTypeID == OutUnitSystemTypeID).First().Factor;
+                return this.unitConversionFactors.Where(uf => uf.UnitTypeInID == inUnitID && uf.UnitTypeOut.UnitSystemTypeID == OutUnitSystemTypeID).First().Factor;
             }
             catch (Exception)
             {

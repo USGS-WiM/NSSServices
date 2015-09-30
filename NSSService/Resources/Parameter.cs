@@ -20,7 +20,29 @@ namespace NSSService.Resources
         public bool ShouldSerializeValue()
         { return Value.HasValue; }
         public Limit Limits { get; set; }
-        
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public Boolean OutOfRange 
+        {
+            get
+            {
+                try
+                {
+                    if (Value.HasValue && Limits != null && Limits.Min.HasValue && Limits.Max.HasValue && 
+                        Limits.Min <= Value.Value  && Value.Value <= Limits.Max)
+                        return false;
+                    return true;
+                }
+                catch
+                {
+                    return true;
+                }
+                
+            }
+        }
+
+        #region IEquatable Methods
         public bool Equals(Parameter other)
         {
             //Check whether the compared object is null.  
@@ -34,7 +56,6 @@ namespace NSSService.Resources
         }
         // If Equals() returns true for a pair of objects   
         // then GetHashCode() must return the same value for these objects.  
-
         public override int GetHashCode()
         {
 
@@ -47,6 +68,8 @@ namespace NSSService.Resources
             //Calculate the hash code for the product.  
             return hashProductName;// ^ hashProductCode;
         }
+        #endregion
+        
     }//end PARAMETER
 
     public class Limit

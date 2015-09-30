@@ -81,6 +81,14 @@ namespace NSSService.Tests
             Assert.IsNotNull(returnedObject);
         }//end method
         [TestMethod]
+        public void ScenarioEvaluateRequest()
+        {
+            List<Scenario> content = null;
+            List<Scenario> returnedObject = this.POSTRequest<List<Scenario>>(host + regionResource + "/IN/" + scenarioResource,content);
+
+            Assert.IsNotNull(returnedObject);
+        }//end method
+        [TestMethod]
         public void StatisticGroupTypeRequest()
         {
             List<StatisticGroupType> returnedObject = this.GETRequest<List<StatisticGroupType>>(host+statisticGroupTypeResource);

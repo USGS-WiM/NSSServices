@@ -9,13 +9,13 @@ namespace NSSService.Resources
     public class ScenarioParameterView
     {
             public int EquationID { get; set; }
-            public int EquationTypeID { get; set; }
+            public int RegressionTypeID { get; set; }
             public int StatisticGroupTypeID { get; set; }
             public int RegressionRegionID { get; set; }
             public string RegressionRegionName { get; set; }
             public string RegressionRegionCode { get; set; }
             public string StatisticGroupTypeCode { get; set; }
-            public string EquationTypeCode { get; set; }
+            public string RegressionTypeCode { get; set; }
             public string StatisticGroupTypeName { get; set; }
             public int VariableID { get; set; }
             public int UnitTypeID { get; set; }

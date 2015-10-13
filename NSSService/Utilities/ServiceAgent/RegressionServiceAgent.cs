@@ -305,7 +305,6 @@ namespace NSSService.Utilities.ServiceAgent
                 {
                     case "text/html":
                         throw new Exception(response.Content);
-                        break;
                     case "text/plain":
                         return response.Content;
                     default:

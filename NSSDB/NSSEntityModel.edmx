@@ -25,7 +25,7 @@
           <Property Name="Equation" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="DA_Exponent" Type="double" />
           <Property Name="OrderIndex" Type="int" />
-          <Property Name="EquationTypeID" Type="int" Nullable="false" />
+          <Property Name="RegressionTypeID" Type="int" Nullable="false" />
           <Property Name="StatisticGroupTypeID" Type="int" Nullable="false" />
           <Property Name="EquivalentYears" Type="double" />
         </EntityType>
@@ -37,24 +37,6 @@
           <Property Name="EquationID" Type="int" Nullable="false" />
           <Property Name="ErrorTypeID" Type="int" Nullable="false" />
           <Property Name="Value" Type="double" Nullable="false" />
-        </EntityType>
-        <EntityType Name="EquationType">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="tinytext" Nullable="false" />
-          <Property Name="Code" Type="varchar" MaxLength="15" Nullable="false" />
-          <Property Name="Description" Type="longtext" Nullable="false" />
-        </EntityType>
-        <EntityType Name="EquationTypeDisplayName">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="EquationTypeID" Type="int" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="45" Nullable="false" />
-          <Property Name="UserTypeID" Type="int" />
         </EntityType>
         <EntityType Name="EquationUnitType">
           <Key>
@@ -109,6 +91,24 @@
           <Property Name="Description" Type="longtext" />
           <Property Name="CitationID" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="RegressionType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="tinytext" Nullable="false" />
+          <Property Name="Code" Type="varchar" MaxLength="15" Nullable="false" />
+          <Property Name="Description" Type="longtext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RegressionTypeDisplayName">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RegressionTypeID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="45" Nullable="false" />
+          <Property Name="UserTypeID" Type="int" />
+        </EntityType>
         <EntityType Name="StatisticGroupType">
           <Key>
             <PropertyRef Name="ID" />
@@ -157,7 +157,7 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EquationID" Type="int" Nullable="false" />
           <Property Name="VariableTypeID" Type="int" Nullable="false" />
-          <Property Name="EquationTypeID" Type="int" />
+          <Property Name="RegressionTypeID" Type="int" />
           <Property Name="UnitTypeID" Type="int" Nullable="false" />
           <Property Name="MinValue" Type="double" />
           <Property Name="MaxValue" Type="double" />
@@ -184,14 +184,14 @@
           <EntitySet Name="Citation" EntityType="Self.Citation" Schema="nss" store:Type="Tables" />
           <EntitySet Name="Equation" EntityType="Self.Equation" Schema="nss" store:Type="Tables" />
           <EntitySet Name="EquationErrors" EntityType="Self.EquationErrors" Schema="nss" store:Type="Tables" />
-          <EntitySet Name="EquationType" EntityType="Self.EquationType" Schema="nss" store:Type="Tables" />
-          <EntitySet Name="EquationTypeDisplayName" EntityType="Self.EquationTypeDisplayName" Schema="nss" store:Type="Tables" />
           <EntitySet Name="EquationUnitType" EntityType="Self.EquationUnitType" Schema="nss" store:Type="Tables" />
           <EntitySet Name="ErrorType" EntityType="Self.ErrorType" Schema="nss" store:Type="Tables" />
           <EntitySet Name="PredictionInterval" EntityType="Self.PredictionInterval" Schema="nss" store:Type="Tables" />
           <EntitySet Name="Region" EntityType="Self.Region" Schema="nss" store:Type="Tables" />
           <EntitySet Name="RegionRegressionRegion" EntityType="Self.RegionRegressionRegion" Schema="nss" store:Type="Tables" />
           <EntitySet Name="RegressionRegion" EntityType="Self.RegressionRegion" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="RegressionType" EntityType="Self.RegressionType" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="RegressionTypeDisplayName" EntityType="Self.RegressionTypeDisplayName" Schema="nss" store:Type="Tables" />
           <EntitySet Name="StatisticGroupType" EntityType="Self.StatisticGroupType" Schema="nss" store:Type="Tables" />
           <EntitySet Name="UnitConversionFactor" EntityType="Self.UnitConversionFactor" Schema="nss" store:Type="Tables" />
           <EntitySet Name="UnitSystemType" EntityType="Self.UnitSystemType" Schema="nss" store:Type="Tables" />
@@ -225,11 +225,9 @@
           <Property Name="Equation1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="DA_Exponent" Type="Double" />
           <Property Name="OrderIndex" Type="Int32" />
-          <Property Name="EquationTypeID" Type="Int32" Nullable="false" />
           <Property Name="StatisticGroupTypeID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Variables" Relationship="nssModel.EquationVariable" FromRole="Equation" ToRole="Variable" />
           <NavigationProperty Name="EquationUnitTypes" Relationship="nssModel.EquationEquationUnitType" FromRole="Equation" ToRole="EquationUnitType" />
-          <NavigationProperty Name="EquationType" Relationship="nssModel.EquationTypeEquation" FromRole="Equation" ToRole="EquationType" />
           <NavigationProperty Name="StatisticGroupType" Relationship="nssModel.StatisticGroupTypeEquation" FromRole="Equation" ToRole="StatisticGroupType" />
           <NavigationProperty Name="EquationErrors" Relationship="nssModel.EquationEquationError" FromRole="Equation" ToRole="EquationError" />
           <NavigationProperty Name="PredictionInterval" Relationship="nssModel.EquationPredictionInterval" FromRole="Equation" ToRole="PredictionInterval" />
@@ -237,6 +235,8 @@
           <Property Name="RegressionRegionID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="RegressionRegion" Relationship="nssModel.RegressionRegionEquation" FromRole="Equation" ToRole="RegressionRegion" />
           <Property Name="EquivalentYears" Type="Double" />
+          <Property Name="RegressionTypeID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RegressionType" Relationship="nssModel.RegressionTypeEquation" FromRole="Equation" ToRole="RegressionType" />
         </EntityType>
         <EntityType Name="EquationError">
           <Key>
@@ -248,29 +248,6 @@
           <Property Name="Value" Type="Double" Nullable="false" />
           <NavigationProperty Name="Equation" Relationship="nssModel.EquationEquationError" FromRole="EquationError" ToRole="Equation" />
           <NavigationProperty Name="ErrorType" Relationship="nssModel.ErrorTypeEquationError" FromRole="EquationError" ToRole="ErrorType" />
-        </EntityType>
-        <EntityType Name="EquationType">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Code" Type="String" MaxLength="15" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Equations" Relationship="nssModel.EquationTypeEquation" FromRole="EquationType" ToRole="Equation" />
-          <NavigationProperty Name="EquationTypeDisplayNames" Relationship="nssModel.EquationTypeEquationTypeDisplayName" FromRole="EquationType" ToRole="EquationTypeDisplayName" />
-          <NavigationProperty Name="Variables" Relationship="nssModel.EquationTypeVariable" FromRole="EquationType" ToRole="Variable" />
-        </EntityType>
-        <EntityType Name="EquationTypeDisplayName">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="EquationTypeID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="UserTypeID" Type="Int32" />
-          <NavigationProperty Name="EquationType" Relationship="nssModel.EquationTypeEquationTypeDisplayName" FromRole="EquationTypeDisplayName" ToRole="EquationType" />
-          <NavigationProperty Name="UserType" Relationship="nssModel.UserTypeEquationTypeDisplayName" FromRole="EquationTypeDisplayName" ToRole="UserType" />
         </EntityType>
         <EntityType Name="EquationUnitType">
           <Key>
@@ -328,8 +305,8 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="User" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="UnitSystemID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="EquationTypeDisplayNames" Relationship="nssModel.UserTypeEquationTypeDisplayName" FromRole="UserType" ToRole="EquationTypeDisplayName" />
           <NavigationProperty Name="UnitSystemType" Relationship="nssModel.UnitSystemTypeUserType" FromRole="UserType" ToRole="UnitSystemType" />
+          <NavigationProperty Name="RegressionTypeDisplayNames" Relationship="nssModel.UserTypeRegressionTypeDisplayName" FromRole="UserType" ToRole="RegressionTypeDisplayName" />
         </EntityType>
         <EntityType Name="Variable">
           <Key>
@@ -338,7 +315,6 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="EquationID" Type="Int32" Nullable="false" />
           <Property Name="VariableTypeID" Type="Int32" Nullable="false" />
-          <Property Name="EquationTypeID" Type="Int32" Nullable="true" />
           <Property Name="UnitTypeID" Type="Int32" Nullable="false" />
           <Property Name="MinValue" Type="Double" />
           <Property Name="MaxValue" Type="Double" />
@@ -347,7 +323,8 @@
           <NavigationProperty Name="VariableType" Relationship="nssModel.VariableTypeVariable" FromRole="Variable" ToRole="VariableType" />
           <NavigationProperty Name="VariableUnitTypes" Relationship="nssModel.VariableVariableUnitType" FromRole="Variable" ToRole="VariableUnitType" />
           <NavigationProperty Name="UnitType" Relationship="nssModel.UnitTypeVariable" FromRole="Variable" ToRole="UnitType" />
-          <NavigationProperty Name="EquationType" Relationship="nssModel.EquationTypeVariable" FromRole="Variable" ToRole="EquationType" />
+          <Property Name="RegressionTypeID" Type="Int32" />
+          <NavigationProperty Name="RegressionType" Relationship="nssModel.RegressionTypeVariable" FromRole="Variable" ToRole="RegressionType" />
         </EntityType>
         <EntityType Name="VariableType">
           <Key>
@@ -373,8 +350,6 @@
           <EntitySet Name="Citations" EntityType="Self.Citation" />
           <EntitySet Name="Equations" EntityType="Self.Equation" />
           <EntitySet Name="EquationErrors" EntityType="Self.EquationError" />
-          <EntitySet Name="EquationTypes" EntityType="Self.EquationType" />
-          <EntitySet Name="EquationTypeDisplayNames" EntityType="Self.EquationTypeDisplayName" />
           <EntitySet Name="EquationUnitTypes" EntityType="Self.EquationUnitType" />
           <EntitySet Name="ErrorTypes" EntityType="Self.ErrorType" />
           <EntitySet Name="PredictionIntervals" EntityType="Self.PredictionInterval" />
@@ -402,14 +377,6 @@
           <AssociationSet Name="VariableVariableUnitType" Association="nssModel.VariableVariableUnitType">
             <End Role="Variable" EntitySet="Variables" />
             <End Role="VariableUnitType" EntitySet="VariableUnitTypes" />
-          </AssociationSet>
-          <AssociationSet Name="EquationTypeEquation" Association="nssModel.EquationTypeEquation">
-            <End Role="EquationType" EntitySet="EquationTypes" />
-            <End Role="Equation" EntitySet="Equations" />
-          </AssociationSet>
-          <AssociationSet Name="EquationTypeEquationTypeDisplayName" Association="nssModel.EquationTypeEquationTypeDisplayName">
-            <End Role="EquationType" EntitySet="EquationTypes" />
-            <End Role="EquationTypeDisplayName" EntitySet="EquationTypeDisplayNames" />
           </AssociationSet>
           <AssociationSet Name="StatisticGroupTypeEquation" Association="nssModel.StatisticGroupTypeEquation">
             <End Role="StatisticGroupType" EntitySet="StatisticGroupTypes" />
@@ -455,14 +422,6 @@
             <End Role="UnitType" EntitySet="UnitTypes" />
             <End Role="UnitConversionFactor" EntitySet="UnitConversionFactors" />
           </AssociationSet>
-          <AssociationSet Name="EquationTypeVariable" Association="nssModel.EquationTypeVariable">
-            <End Role="EquationType" EntitySet="EquationTypes" />
-            <End Role="Variable" EntitySet="Variables" />
-          </AssociationSet>
-          <AssociationSet Name="UserTypeEquationTypeDisplayName" Association="nssModel.UserTypeEquationTypeDisplayName">
-            <End Role="UserType" EntitySet="UserTypes" />
-            <End Role="EquationTypeDisplayName" EntitySet="EquationTypeDisplayNames" />
-          </AssociationSet>
           <AssociationSet Name="UnitSystemTypeUserType" Association="nssModel.UnitSystemTypeUserType">
             <End Role="UnitSystemType" EntitySet="UnitSystemTypes" />
             <End Role="UserType" EntitySet="UserTypes" />
@@ -484,6 +443,24 @@
           <AssociationSet Name="RegionRegionRegressionRegion" Association="nssModel.RegionRegionRegressionRegion">
             <End Role="Region" EntitySet="Regions" />
             <End Role="RegionRegressionRegion" EntitySet="RegionRegressionRegions" />
+          </AssociationSet>
+          <EntitySet Name="RegressionTypes" EntityType="nssModel.RegressionType" />
+          <EntitySet Name="RegressionTypeDisplayNames" EntityType="nssModel.RegressionTypeDisplayName" />
+          <AssociationSet Name="UserTypeRegressionTypeDisplayName" Association="nssModel.UserTypeRegressionTypeDisplayName">
+            <End Role="UserType" EntitySet="UserTypes" />
+            <End Role="RegressionTypeDisplayName" EntitySet="RegressionTypeDisplayNames" />
+          </AssociationSet>
+          <AssociationSet Name="RegressionTypeRegressionTypeDisplayName" Association="nssModel.RegressionTypeRegressionTypeDisplayName">
+            <End Role="RegressionType" EntitySet="RegressionTypes" />
+            <End Role="RegressionTypeDisplayName" EntitySet="RegressionTypeDisplayNames" />
+          </AssociationSet>
+          <AssociationSet Name="RegressionTypeVariable" Association="nssModel.RegressionTypeVariable">
+            <End Role="RegressionType" EntitySet="RegressionTypes" />
+            <End Role="Variable" EntitySet="Variables" />
+          </AssociationSet>
+          <AssociationSet Name="RegressionTypeEquation" Association="nssModel.RegressionTypeEquation">
+            <End Role="RegressionType" EntitySet="RegressionTypes" />
+            <End Role="Equation" EntitySet="Equations" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="UnitConversionFactor">
@@ -567,30 +544,6 @@
             </Principal>
             <Dependent Role="VariableUnitType">
               <PropertyRef Name="VariableID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="EquationTypeEquation">
-          <End Type="nssModel.EquationType" Role="EquationType" Multiplicity="1" />
-          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="EquationType">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Equation">
-              <PropertyRef Name="EquationTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="EquationTypeEquationTypeDisplayName">
-          <End Type="nssModel.EquationType" Role="EquationType" Multiplicity="1" />
-          <End Type="nssModel.EquationTypeDisplayName" Role="EquationTypeDisplayName" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="EquationType">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="EquationTypeDisplayName">
-              <PropertyRef Name="EquationTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -726,30 +679,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="EquationTypeVariable">
-          <End Type="nssModel.EquationType" Role="EquationType" Multiplicity="0..1" />
-          <End Type="nssModel.Variable" Role="Variable" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="EquationType">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Variable">
-              <PropertyRef Name="EquationTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="UserTypeEquationTypeDisplayName">
-          <End Type="nssModel.UserType" Role="UserType" Multiplicity="0..1" />
-          <End Type="nssModel.EquationTypeDisplayName" Role="EquationTypeDisplayName" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="UserType">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="EquationTypeDisplayName">
-              <PropertyRef Name="UserTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="UnitSystemTypeUserType">
           <End Type="nssModel.UnitSystemType" Role="UnitSystemType" Multiplicity="1" />
           <End Type="nssModel.UserType" Role="UserType" Multiplicity="*" />
@@ -833,6 +762,77 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="RegressionType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RegressionTypeDisplayNames" Relationship="nssModel.RegressionTypeRegressionTypeDisplayName" FromRole="RegressionType" ToRole="RegressionTypeDisplayName" />
+          <NavigationProperty Name="Variables" Relationship="nssModel.RegressionTypeVariable" FromRole="RegressionType" ToRole="Variable" />
+          <NavigationProperty Name="Equations" Relationship="nssModel.RegressionTypeEquation" FromRole="RegressionType" ToRole="Equation" />
+        </EntityType>
+        <EntityType Name="RegressionTypeDisplayName">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RegressionTypeID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+          <Property Name="UserTypeID" Type="Int32" />
+          <NavigationProperty Name="UserType" Relationship="nssModel.UserTypeRegressionTypeDisplayName" FromRole="RegressionTypeDisplayName" ToRole="UserType" />
+          <NavigationProperty Name="RegressionType" Relationship="nssModel.RegressionTypeRegressionTypeDisplayName" FromRole="RegressionTypeDisplayName" ToRole="RegressionType" />
+        </EntityType>
+        <Association Name="UserTypeRegressionTypeDisplayName">
+          <End Type="nssModel.UserType" Role="UserType" Multiplicity="0..1" />
+          <End Type="nssModel.RegressionTypeDisplayName" Role="RegressionTypeDisplayName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RegressionTypeDisplayName">
+              <PropertyRef Name="UserTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RegressionTypeRegressionTypeDisplayName">
+          <End Type="nssModel.RegressionType" Role="RegressionType" Multiplicity="1" />
+          <End Type="nssModel.RegressionTypeDisplayName" Role="RegressionTypeDisplayName" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegressionType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RegressionTypeDisplayName">
+              <PropertyRef Name="RegressionTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RegressionTypeVariable">
+          <End Type="nssModel.RegressionType" Role="RegressionType" Multiplicity="0..1" />
+          <End Type="nssModel.Variable" Role="Variable" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegressionType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Variable">
+              <PropertyRef Name="RegressionTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RegressionTypeEquation">
+          <End Type="nssModel.RegressionType" Role="RegressionType" Multiplicity="1" />
+          <End Type="nssModel.Equation" Role="Equation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegressionType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Equation">
+              <PropertyRef Name="RegressionTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -852,6 +852,7 @@
           <EntitySetMapping Name="Equations">
             <EntityTypeMapping TypeName="nssModel.Equation">
               <MappingFragment StoreEntitySet="Equation">
+                <ScalarProperty Name="RegressionTypeID" ColumnName="RegressionTypeID" />
                 <ScalarProperty Name="EquivalentYears" ColumnName="EquivalentYears" />
                 <ScalarProperty Name="RegressionRegionID" ColumnName="RegressionRegionID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
@@ -860,7 +861,6 @@
                 <ScalarProperty Name="Equation1" ColumnName="Equation" />
                 <ScalarProperty Name="DA_Exponent" ColumnName="DA_Exponent" />
                 <ScalarProperty Name="OrderIndex" ColumnName="OrderIndex" />
-                <ScalarProperty Name="EquationTypeID" ColumnName="EquationTypeID" />
                 <ScalarProperty Name="StatisticGroupTypeID" ColumnName="StatisticGroupTypeID" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -872,26 +872,6 @@
                 <ScalarProperty Name="EquationID" ColumnName="EquationID" />
                 <ScalarProperty Name="ErrorTypeID" ColumnName="ErrorTypeID" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EquationTypes">
-            <EntityTypeMapping TypeName="nssModel.EquationType">
-              <MappingFragment StoreEntitySet="EquationType">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Code" ColumnName="Code" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EquationTypeDisplayNames">
-            <EntityTypeMapping TypeName="nssModel.EquationTypeDisplayName">
-              <MappingFragment StoreEntitySet="EquationTypeDisplayName">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="EquationTypeID" ColumnName="EquationTypeID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="UserTypeID" ColumnName="UserTypeID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -955,10 +935,10 @@
           <EntitySetMapping Name="Variables">
             <EntityTypeMapping TypeName="nssModel.Variable">
               <MappingFragment StoreEntitySet="Variable">
+                <ScalarProperty Name="RegressionTypeID" ColumnName="RegressionTypeID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="EquationID" ColumnName="EquationID" />
                 <ScalarProperty Name="VariableTypeID" ColumnName="VariableTypeID" />
-                <ScalarProperty Name="EquationTypeID" ColumnName="EquationTypeID" />
                 <ScalarProperty Name="UnitTypeID" ColumnName="UnitTypeID" />
                 <ScalarProperty Name="MinValue" ColumnName="MinValue" />
                 <ScalarProperty Name="MaxValue" ColumnName="MaxValue" />
@@ -1029,6 +1009,26 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RegressionTypes">
+            <EntityTypeMapping TypeName="nssModel.RegressionType">
+              <MappingFragment StoreEntitySet="RegressionType">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RegressionTypeDisplayNames">
+            <EntityTypeMapping TypeName="nssModel.RegressionTypeDisplayName">
+              <MappingFragment StoreEntitySet="RegressionTypeDisplayName">
+                <ScalarProperty Name="UserTypeID" ColumnName="UserTypeID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="RegressionTypeID" ColumnName="RegressionTypeID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

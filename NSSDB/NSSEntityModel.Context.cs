@@ -28,8 +28,6 @@ namespace NSSDB
         public virtual DbSet<Citation> Citations { get; set; }
         public virtual DbSet<Equation> Equations { get; set; }
         public virtual DbSet<EquationError> EquationErrors { get; set; }
-        public virtual DbSet<EquationType> EquationTypes { get; set; }
-        public virtual DbSet<EquationTypeDisplayName> EquationTypeDisplayNames { get; set; }
         public virtual DbSet<EquationUnitType> EquationUnitTypes { get; set; }
         public virtual DbSet<ErrorType> ErrorTypes { get; set; }
         public virtual DbSet<PredictionInterval> PredictionIntervals { get; set; }
@@ -44,5 +42,7 @@ namespace NSSDB
         public virtual DbSet<UnitType> UnitTypes { get; set; }
         public virtual DbSet<RegionRegressionRegion> RegionRegressionRegions { get; set; }
         public virtual DbSet<RegressionRegion> RegressionRegions { get; set; }
+        public virtual DbSet<RegressionType> RegressionTypes { get; set; }
+        public virtual DbSet<RegressionTypeDisplayName> RegressionTypeDisplayNames { get; set; }
     }
 }

@@ -47,6 +47,7 @@ namespace NSSService.Handlers
         {
             IQueryable<UnitType> usquery = null;
             List<UnitType> entities = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
@@ -58,12 +59,16 @@ namespace NSSService.Handlers
                                             || e.UnitSystemTypeID == 3);
 
                     entities = usquery.ToList();
+                    
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);
+                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {
@@ -78,17 +83,20 @@ namespace NSSService.Handlers
         public OperationResult get(Int32 ID)
         {
             UnitType entity = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entity = sa.Select<UnitType>().Include(p => p.UnitConversionFactorsIn).FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<UnitType>().Include(p => p.UnitConversionFactorsIn).FirstOrDefault(e => e.ID == ID);                    
+                    msg.AddRange(sa.Messages);
+                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entity };
+                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {

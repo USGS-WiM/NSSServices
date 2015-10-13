@@ -12,14 +12,14 @@ namespace NSSDB
     using System;
     using System.Collections.Generic;
     
-    public partial class EquationType
+    public partial class RegressionType
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public EquationType()
+        public RegressionType()
         {
-            this.Equations = new HashSet<Equation>();
-            this.EquationTypeDisplayNames = new HashSet<EquationTypeDisplayName>();
+            this.RegressionTypeDisplayNames = new HashSet<RegressionTypeDisplayName>();
             this.Variables = new HashSet<Variable>();
+            this.Equations = new HashSet<Equation>();
         }
     
         public int ID { get; set; }
@@ -28,10 +28,10 @@ namespace NSSDB
         public string Description { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Equation> Equations { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<EquationTypeDisplayName> EquationTypeDisplayNames { get; set; }
+        public virtual ICollection<RegressionTypeDisplayName> RegressionTypeDisplayNames { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Variable> Variables { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Equation> Equations { get; set; }
     }
 }

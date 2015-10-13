@@ -43,17 +43,21 @@ namespace NSSService.Handlers
         public OperationResult get()
         {
             List<ErrorType> entities = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<ErrorType>().OrderBy(e => e.ID).ToList();
+                    
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (BadRequestException ex)
             {
@@ -72,17 +76,20 @@ namespace NSSService.Handlers
         public OperationResult get(Int32 ID)
         {
             ErrorType entity = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<ErrorType>().FirstOrDefault(e => e.ID == ID);
+                    
+                    msg.AddRange(sa.Messages);                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entity };
+                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {

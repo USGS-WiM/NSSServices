@@ -35,6 +35,7 @@ using NSSService.Utilities.ServiceAgent;
 using NSSService.Resources;
 using NSSDB;
 using WiM.Exceptions;
+using WiM.Hypermedia;
 
 using System.Configuration;
 
@@ -50,18 +51,19 @@ namespace NSSService.Handlers
         public OperationResult get()
         {
             List<Citation> entities = null;
-
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {                    
                     entities = sa.Select<Citation>().OrderBy(e => e.ID).ToList();
+                    
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);
+                    
                 }//end using
 
-                //hypermedia
-                //entities.CreateUri();
-
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {
@@ -73,30 +75,27 @@ namespace NSSService.Handlers
             }//end try
         }//end Get
         [HttpOperation(HttpMethod.GET, ForUriName = "GetCitations")]
-        public OperationResult GetCitations(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs )
+        public OperationResult GetCitations(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string regressiontypeIDs)
         {
             //?region={region}&subregions={subregionIDs}&statisticgroups={statisticgroups}&equationtypes={equationtypeIDs}"
             List<Citation> entities = null;
             List<string> regressionRegionIDList = null;
             List<string> statisticgroupList = null;
-            List<string> equationtypeList = null;
+            List<string> regressiontypeList = null;
 
             try
             {
                 if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
                 regressionRegionIDList = parse(regressionRegionIDs);
                 statisticgroupList = parse(statisticgroups);
-                equationtypeList = parse(equationtypeIDs);
+                regressiontypeList = parse(regressiontypeIDs);
 
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.GetEquations(region, regressionRegionIDList, statisticgroupList,equationtypeList)
+                    entities = sa.GetEquations(region, regressionRegionIDList, statisticgroupList,regressiontypeList)
                         .Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID).ToList();
 
                 }//end using
-
-                //hypermedia
-                //entities.CreateUri();
 
                 return new OperationResult.OK { ResponseResource = entities };
             }
@@ -109,21 +108,24 @@ namespace NSSService.Handlers
 
             }//end try
         }//end Get
-        [HttpOperation(HttpMethod.GET)]
-        public OperationResult get(Int32 ID)
+        [HttpOperation(HttpMethod.GET, ForUriName = "GetRegressionRegionCitations")]
+        public OperationResult GetRegressionRegionCitations(string regressionRegionIDs)
         {
-            Citation entity = null;
+            //?region={region}&subregions={subregionIDs}&statisticgroups={statisticgroups}&equationtypes={equationtypeIDs}"
+            List<Citation> entities = null;
+            List<string> regressionRegionIDList = null;
             try
             {
+                if (string.IsNullOrEmpty(regressionRegionIDs)) throw new BadRequestException("regression regions must be specified");
+                regressionRegionIDList = parse(regressionRegionIDs);
+
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entity = sa.Select<Citation>().FirstOrDefault(e => e.ID == ID);
+                    entities = sa.Select<RegressionRegion>().Where(rr=>regressionRegionIDList.Contains(rr.ID.ToString())).Select(rr=>rr.Citation).Distinct().ToList();
+
                 }//end using
 
-                //hypermedia
-                entity.CreateUri("citations");
-
-                return new OperationResult.OK { ResponseResource = entity };
+                return new OperationResult.OK { ResponseResource = entities };
             }
             catch (Exception ex)
             {
@@ -134,6 +136,32 @@ namespace NSSService.Handlers
 
             }//end try
         }//end Get
+        
+        [HttpOperation(HttpMethod.GET)]
+        public OperationResult get(Int32 ID)
+        {
+            Citation entity = null;
+            List<string> msg = new List<string>();
+            try
+            {
+                using (NSSAgent sa = new NSSAgent())
+                {
+                    entity = sa.Select<Citation>().FirstOrDefault(e => e.ID == ID);                    
+                    msg.AddRange(sa.Messages);                    
+                }//end using
+                
+                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";", msg) };
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+            finally
+            {
+
+            }//end try
+        }//end Get
+        
         [HttpOperation(HttpMethod.GET, ForUriName = "getStateReports")]
         public OperationResult getStateReports(String stateID)
         {

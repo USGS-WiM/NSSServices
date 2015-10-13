@@ -12,14 +12,14 @@ namespace NSSDB
     using System;
     using System.Collections.Generic;
     
-    public partial class EquationTypeDisplayName
+    public partial class RegressionTypeDisplayName
     {
         public int ID { get; set; }
-        public int EquationTypeID { get; set; }
+        public int RegressionTypeID { get; set; }
         public string Name { get; set; }
         public Nullable<int> UserTypeID { get; set; }
     
-        public virtual EquationType EquationType { get; set; }
         public virtual UserType UserType { get; set; }
+        public virtual RegressionType RegressionType { get; set; }
     }
 }

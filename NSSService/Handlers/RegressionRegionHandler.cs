@@ -45,17 +45,22 @@ namespace NSSService.Handlers
         public OperationResult get()
         {
             List<RegressionRegion> entities = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<RegressionRegion>().OrderBy(e => e.ID).ToList();
+                    
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);
+                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {
@@ -70,18 +75,23 @@ namespace NSSService.Handlers
         public OperationResult GetRegressionRegion(string region)
         {
             List<RegressionRegion> entities = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<RegionRegressionRegion>().Where(rrr => String.Equals(region.Trim().ToLower(), rrr.Region.Code.ToLower().Trim())
                                || String.Equals(region.ToLower().Trim(), rrr.RegionID.ToString())).Select(r => r.RegressionRegion).ToList();
+                    
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);
+                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {
@@ -96,17 +106,20 @@ namespace NSSService.Handlers
         public OperationResult get(Int32 ID)
         {
             RegressionRegion entity = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<RegressionRegion>().FirstOrDefault(e => e.ID == ID);
+                    
+                    msg.AddRange(sa.Messages);                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entity };
+                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {

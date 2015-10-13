@@ -43,17 +43,22 @@ namespace NSSService.Handlers
         public OperationResult get()
         {
             List<Region> entities = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<Region>().OrderBy(e => e.ID).ToList();
+                    
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);
+                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK{ ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {
@@ -68,6 +73,7 @@ namespace NSSService.Handlers
         public OperationResult get(string region)
         {
             Region entity = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
@@ -75,13 +81,14 @@ namespace NSSService.Handlers
                     entity = sa.Select<Region>().FirstOrDefault(e => String.Equals(e.ID.ToString().Trim().ToLower(), 
                                                         region.Trim().ToLower()) || String.Equals(e.Code.Trim().ToLower(), 
                                                         region.Trim().ToLower()));
-
+                   
+                    msg.AddRange(sa.Messages);
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entity };
+                return new OperationResult.OK { ResponseResource = entity , Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {

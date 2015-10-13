@@ -17,15 +17,15 @@ namespace NSSDB
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public UserType()
         {
-            this.EquationTypeDisplayNames = new HashSet<EquationTypeDisplayName>();
+            this.RegressionTypeDisplayNames = new HashSet<RegressionTypeDisplayName>();
         }
     
         public int ID { get; set; }
         public string User { get; set; }
         public int UnitSystemID { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<EquationTypeDisplayName> EquationTypeDisplayNames { get; set; }
         public virtual UnitSystemType UnitSystemType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RegressionTypeDisplayName> RegressionTypeDisplayNames { get; set; }
     }
 }

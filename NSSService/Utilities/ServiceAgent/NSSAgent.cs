@@ -162,7 +162,7 @@ namespace NSSService.Utilities.ServiceAgent
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
                 equery = GetEquations(region, regionEquationList, statisticgroupList, regressiontypeList);
-                equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType").Include("PredictionInterval");
+                equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType").Include("PredictionInterval").Include("Variables.VariableType").Include("Variables.UnitType");
 
                 foreach (Scenario scenario in scenarioList)
                 {
@@ -175,8 +175,9 @@ namespace NSSService.Utilities.ServiceAgent
                         {
                             Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                             if (paramsOutOfRange) sm("One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors");
-
-                            var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
+                            //equation variables
+                            var variables = regressionregion.Parameters.Where(e=>equation.Variables.Any(v=>v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code,true)==0).UnitType.UnitSystemTypeID));
+                            //var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
                             eOps = new ExpressionOps(equation.Equation1,variables);
                             
                             if (!eOps.IsValid) break;// next equation

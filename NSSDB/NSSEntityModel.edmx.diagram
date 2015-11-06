@@ -8,15 +8,13 @@
         <EntityTypeShape EntityType="nssModel.Citation" Width="1.5" PointX="9" PointY="12.5" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.Equation" Width="2" PointX="5.75" PointY="5.625" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.EquationError" Width="1.5" PointX="6.875" PointY="9.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="nssModel.EquationType" Width="1.5" PointX="9" PointY="5.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="nssModel.EquationTypeDisplayName" Width="2" PointX="11.125" PointY="5.625" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.EquationUnitType" Width="1.75" PointX="5" PointY="3.25" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.ErrorType" Width="1.5" PointX="6.875" PointY="11.625" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.PredictionInterval" Width="2" PointX="4.5" PointY="9.375" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.Region" Width="1.5" PointX="13.125" PointY="7.625" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.StatisticGroupType" Width="1.5" PointX="11.125" PointY="7.625" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.UserType" Width="1.5" PointX="11.875" PointY="0.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="nssModel.Variable" Width="1.5" PointX="9" PointY="2.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="nssModel.Variable" Width="1.5" PointX="9" PointY="2.625" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.VariableType" Width="1.5" PointX="9" PointY="0.5" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.VariableUnitType" Width="1.5" PointX="5.375" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="nssModel.UnitConversionFactor" Width="1.875" PointX="0.5" PointY="3.75" IsExpanded="true" />
@@ -26,8 +24,6 @@
         <AssociationConnector Association="nssModel.EquationEquationUnitType" />
         <AssociationConnector Association="nssModel.VariableTypeVariable" />
         <AssociationConnector Association="nssModel.VariableVariableUnitType" />
-        <AssociationConnector Association="nssModel.EquationTypeEquation" />
-        <AssociationConnector Association="nssModel.EquationTypeEquationTypeDisplayName" />
         <AssociationConnector Association="nssModel.StatisticGroupTypeEquation" />
         <AssociationConnector Association="nssModel.EquationEquationError" />
         <AssociationConnector Association="nssModel.ErrorTypeEquationError" />
@@ -40,15 +36,25 @@
         <AssociationConnector Association="nssModel.UnitSystemTypeUnitType" />
         <AssociationConnector Association="nssModel.UnitTypeUnitConversionFactor" />
         <AssociationConnector Association="nssModel.UnitTypeUnitConversionFactor1" />
-        <AssociationConnector Association="nssModel.EquationTypeVariable" />
-        <AssociationConnector Association="nssModel.UserTypeEquationTypeDisplayName" />
         <AssociationConnector Association="nssModel.UnitSystemTypeUserType" ></AssociationConnector>
         <EntityTypeShape EntityType="nssModel.RegionRegressionRegion" Width="2.375" PointX="12.125" PointY="9.875" />
         <EntityTypeShape EntityType="nssModel.RegressionRegion" Width="2.375" PointX="9" PointY="10" />
         <AssociationConnector Association="nssModel.CitationRegressionRegion" />
-        <AssociationConnector Association="nssModel.RegressionRegionEquation" />
+        <AssociationConnector Association="nssModel.RegressionRegionEquation" ManuallyRouted="true" >
+          <ConnectorPoint PointX="10.8125" PointY="10" />
+          <ConnectorPoint PointX="10.8125" PointY="9.1467706397928552" />
+          <ConnectorPoint PointX="8.817708091771534" PointY="9.1467706397928552" />
+          <ConnectorPoint PointX="8.817708091771534" PointY="8.49604051378518" />
+          <ConnectorPoint PointX="7.75" PointY="8.49604051378518" />
+        </AssociationConnector>
         <AssociationConnector Association="nssModel.RegressionRegionRegionRegressionRegion" />
         <AssociationConnector Association="nssModel.RegionRegionRegressionRegion" />
+        <EntityTypeShape EntityType="nssModel.RegressionType" Width="1.5" PointX="9" PointY="5.875" />
+        <EntityTypeShape EntityType="nssModel.RegressionTypeDisplayName" Width="2.25" PointX="11.75" PointY="3.75" />
+        <AssociationConnector Association="nssModel.UserTypeRegressionTypeDisplayName" />
+        <AssociationConnector Association="nssModel.RegressionTypeRegressionTypeDisplayName" />
+        <AssociationConnector Association="nssModel.RegressionTypeVariable" />
+        <AssociationConnector Association="nssModel.RegressionTypeEquation" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

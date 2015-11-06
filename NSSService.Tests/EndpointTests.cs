@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSSDB;
 using WiMServices.Test;
 using NSSService.Resources;
+using NSSService;
 
 
 namespace NSSService.Tests
@@ -15,22 +16,6 @@ namespace NSSService.Tests
     {
         #region Private Fields
         private string host = "http://localhost/";
-        public string citationResource = "citations";
-        private string equationTypeResource = "equationtypes";
-        private string equationTypeDisplayNamesResource = "equationnames";
-        private string errorTypeResource = "errors";
-        private string predictionIntervalResource = "predictionintervals";
-        private string regionResource = "regions";
-        private string statisticGroupTypeResource = "statisticgroups";
-        private string scenarioResource = "scenarios";
-        private string RegressionRegionResource = "regressionregions";
-        private string unitConversionFactorResource = "conversionfactors";
-        private string unitSystemTypeResource = "unitsystems";
-        private string unitTypeResource = "units";
-        private string userTypeResource = "users";
-        private string variableResource = "variables";
-        private string variableTypeResource = "variabletypes";
-
         #endregion
         #region Constructor
         public EndpointTests():base(new Configuration()){}
@@ -39,7 +24,7 @@ namespace NSSService.Tests
         [TestMethod]
         public void CitationRequest()
         {            
-            List<Citation> returnedObject = this.GETRequest<List<Citation>>(host+citationResource);
+            List<Citation> returnedObject = this.GETRequest<List<Citation>>(host+ Configuration.citationResource);
             Assert.IsTrue(returnedObject.Count > 0, returnedObject.Count.ToString());
             //Assert.IsFalse(true);
 
@@ -47,93 +32,94 @@ namespace NSSService.Tests
         [TestMethod]
         public void EquationTypeDisplayNameRequest()
         {
-            List<EquationTypeDisplayName> returnedObject = this.GETRequest<List<EquationTypeDisplayName>>(host+equationTypeDisplayNamesResource);
+            List<RegressionTypeDisplayName> returnedObject = this.GETRequest<List<RegressionTypeDisplayName>>(host + Configuration.regressionTypeDisplayNamesResource);
             Assert.IsTrue(returnedObject.Count > 0, returnedObject.Count.ToString());
         }//end method
         [TestMethod]
         public void EquationTypeRequest()
         {
-            List<EquationType> returnedObject = this.GETRequest<List<EquationType>>(host+equationTypeResource);
+            List<RegressionType> returnedObject = this.GETRequest<List<RegressionType>>(host + Configuration.regressionTypeResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void ErrorTypeRequest()
         {
-            List<ErrorType> returnedObject = this.GETRequest<List<ErrorType>>(host+errorTypeResource);
+            List<ErrorType> returnedObject = this.GETRequest<List<ErrorType>>(host + Configuration.errorTypeResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void PredictionIntervalRequest()
         {
-            List<PredictionInterval> returnedObject = this.GETRequest<List<PredictionInterval>>(host+predictionIntervalResource);
+            List<PredictionInterval> returnedObject = this.GETRequest<List<PredictionInterval>>(host + Configuration.predictionIntervalResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void RegionRequest()
         {
-            List<Region> returnedObject = this.GETRequest<List<Region>>(host+regionResource);
+            List<Region> returnedObject = this.GETRequest<List<Region>>(host + Configuration.regionResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void ScenarioRequest()
         {
-            Scenario returnedObject = this.GETRequest<Scenario>(host + regionResource+"/IN/"+scenarioResource);
+            List<Scenario> returnedObject = this.GETRequest<List<Scenario>>(host + Configuration.regionResource + "/IN/" + Configuration.scenarioResource);
             Assert.IsNotNull(returnedObject);
         }//end method
         [TestMethod]
         public void ScenarioEvaluateRequest()
         {
-            List<Scenario> content = null;
-            List<Scenario> returnedObject = this.POSTRequest<List<Scenario>>(host + regionResource + "/IN/" + scenarioResource,content);
-
-            Assert.IsNotNull(returnedObject);
+            //List<Scenario> content = null;
+            //List<Scenario> returnedObject = this.POSTRequest<List<Scenario>>(host + Configuration.regionResource + "/IN/" + Configuration.scenarioResource, content);
+            
+            //Assert.IsNotNull(returnedObject);
+            Assert.Inconclusive("Not yet implemented");
         }//end method
         [TestMethod]
         public void StatisticGroupTypeRequest()
         {
-            List<StatisticGroupType> returnedObject = this.GETRequest<List<StatisticGroupType>>(host+statisticGroupTypeResource);
+            List<StatisticGroupType> returnedObject = this.GETRequest<List<StatisticGroupType>>(host + Configuration.statisticGroupTypeResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void RegressionRegionRequest()
         {
-            List<RegressionRegion> returnedObject = this.GETRequest<List<RegressionRegion>>(host + RegressionRegionResource);
+            List<RegressionRegion> returnedObject = this.GETRequest<List<RegressionRegion>>(host + Configuration.RegressionRegionResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void ConversionFactorsRequest()
         {
-            List<UnitConversionFactor> returnedObject = this.GETRequest<List<UnitConversionFactor>>(host+unitConversionFactorResource);
+            List<UnitConversionFactor> returnedObject = this.GETRequest<List<UnitConversionFactor>>(host + Configuration.unitConversionFactorResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void UnitSystemTypeRequest()
         {
-            List<UnitSystemType> returnedObject = this.GETRequest<List<UnitSystemType>>(host+unitSystemTypeResource);
+            List<UnitSystemType> returnedObject = this.GETRequest<List<UnitSystemType>>(host + Configuration.unitSystemTypeResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void UnitTypeRequest()
         {
-            List<UnitType> returnedObject = this.GETRequest<List<UnitType>>(host+unitTypeResource);
+            List<UnitType> returnedObject = this.GETRequest<List<UnitType>>(host + Configuration.unitTypeResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void UserTypeRequest()
         {
-            List<UserType> returnedObject = this.GETRequest<List<UserType>>(host+userTypeResource);
+            List<UserType> returnedObject = this.GETRequest<List<UserType>>(host + Configuration.userTypeResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void VariableRequest()
         {
-            List<Variable> returnedObject = this.GETRequest<List<Variable>>(host+variableResource);
+            List<Variable> returnedObject = this.GETRequest<List<Variable>>(host + Configuration.variableResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
         public void VariableTypeRequest()
         {
-            List<VariableType> returnedObject = this.GETRequest<List<VariableType>>(host+variableTypeResource);
+            List<VariableType> returnedObject = this.GETRequest<List<VariableType>>(host + Configuration.variableTypeResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
 

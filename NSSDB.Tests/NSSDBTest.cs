@@ -23,6 +23,7 @@ namespace NSSDB.Tests
                     if(! context.Database.Exists()) throw new Exception("db does ont exist");
                     conn.Open();
                     Assert.IsTrue(true);
+                    
                 }
                 catch (Exception ex)
                 {

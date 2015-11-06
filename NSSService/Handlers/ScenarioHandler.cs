@@ -34,6 +34,7 @@ using Newtonsoft.Json.Linq;
 using NSSService.Utilities.ServiceAgent;
 using NSSService.Resources;
 using WiM.Exceptions;
+using System.Diagnostics;
 
 using System.Configuration;
 
@@ -46,31 +47,36 @@ namespace NSSService.Handlers
         #region CRUD Methods
         #region GET Methods
         [HttpOperation(HttpMethod.GET, ForUriName = "GetScenarios")]
-        public OperationResult GetScenarios(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs, [Optional] string systemtypeID)
+        public OperationResult GetScenarios(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string regressiontypeIDs, [Optional] string systemtypeID)
         {
             List<string> statisticgroupList = null;
-            List<string> equationtypeList = null;
+            List<string> regressiontypeList = null;
             List<string> subregionList = null;
             List<Scenario> entities = null;
             Int32 unitsystemID = 0;
+            List<string> msg = new List<string>();
             try
             {
                 if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
                 statisticgroupList = parse(statisticgroups);
-                equationtypeList = parse(equationtypeIDs);
+                regressiontypeList = parse(regressiontypeIDs);
                 subregionList = parse(regressionRegionIDs);
                 unitsystemID = Convert.ToInt32(systemtypeID);
                 if (unitsystemID < 1) unitsystemID = 1;
 
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.GetScenarios(region, unitsystemID, subregionList, statisticgroupList, equationtypeList).ToList();
+                    entities = sa.GetScenarios(region, unitsystemID, subregionList, statisticgroupList, regressiontypeList).ToList();
+
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);
+
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {
@@ -83,13 +89,14 @@ namespace NSSService.Handlers
         }//end Get
 
         [HttpOperation(HttpMethod.POST, ForUriName = "EstimateScenarios")]
-        public OperationResult EstimateScenarios(string region, List<Scenario> scenarioList, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string equationtypeIDs, [Optional] string systemtypeID)
+        public OperationResult EstimateScenarios(string region, List<Scenario> scenarioList, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string regressiontypeIDs, [Optional] string systemtypeID)
         {
             List<string> statisticgroupList = null;
-            List<string> equationtypeList = null;
+            List<string> regressiontypeList = null;
             List<string> subregionList = null;
             List<Scenario> entities = null;
             Int32 unitsystemID = 0;
+            List<string> msg = new List<string>();
             try
             {
                 if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
@@ -97,18 +104,21 @@ namespace NSSService.Handlers
                 unitsystemID = Convert.ToInt32(systemtypeID);
                 if (unitsystemID < 1) unitsystemID = 1;
                 statisticgroupList = parse(statisticgroups);
-                equationtypeList = parse(equationtypeIDs);
+                regressiontypeList = parse(regressiontypeIDs);
                 subregionList = parse(regressionRegionIDs);
 
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.EstimateScenarios(region,unitsystemID, scenarioList, subregionList, statisticgroupList, equationtypeList).ToList();
+                    entities = sa.EstimateScenarios(region,unitsystemID, scenarioList, subregionList, statisticgroupList, regressiontypeList).ToList();
+                  
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {

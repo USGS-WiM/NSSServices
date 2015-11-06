@@ -42,27 +42,28 @@ using WiM.Codecs.xml;
 using NSSService.Handlers;
 using NSSDB;
 using NSSService.Resources;
+using NSSService.PipeLineContributors;
 
 namespace NSSService
 {
     public class Configuration:IConfigurationSource
     {
         #region Private Field Properties
-        public string citationResource = "citations";
-        private string equationTypeResource = "equationtypes";
-        private string equationTypeDisplayNamesResource = "equationnames";
-        private string errorTypeResource = "errors";
-        private string predictionIntervalResource = "predictionintervals";
-        private string regionResource = "regions";
-        private string statisticGroupTypeResource = "statisticgroups";
-        private string scenarioResource = "scenarios";
-        private string RegressionRegionResource = "regressionregions";
-        private string unitConversionFactorResource = "conversionfactors";
-        private string unitSystemTypeResource = "unitsystems";
-        private string unitTypeResource = "units";
-        private string userTypeResource = "users";
-        private string variableResource = "variables";
-        private string variableTypeResource = "variabletypes";
+        public static string citationResource = "citations";
+        public static string regressionTypeResource = "regressiontypes";
+        public static string regressionTypeDisplayNamesResource = "regressionnames";
+        public static string errorTypeResource = "errors";
+        public static string predictionIntervalResource = "predictionintervals";
+        public static string regionResource = "regions";
+        public static string statisticGroupTypeResource = "statisticgroups";
+        public static string scenarioResource = "scenarios";
+        public static string RegressionRegionResource = "regressionregions";
+        public static string unitConversionFactorResource = "conversionfactors";
+        public static string unitSystemTypeResource = "unitsystems";
+        public static string unitTypeResource = "units";
+        public static string userTypeResource = "users";
+        public static string variableResource = "variables";
+        public static string variableTypeResource = "variabletypes";
         #endregion
 
         public void Configure()
@@ -73,10 +74,12 @@ namespace NSSService
                 ResourceSpace.Uses.UriDecorator<ContentTypeExtensionUriDecorator>();
                 ResourceSpace.Uses.PipelineContributor<ErrorCheckingContributor>();
                 ResourceSpace.Uses.PipelineContributor<CrossDomainPipelineContributor>();
+                ResourceSpace.Uses.PipelineContributor<MessagePipelineContributor>();
+                ResourceSpace.Uses.PipelineContributor<NSSHyperMediaPipelineContributor>();
 
                 AddCitationEndpoints();
-                AddEquationTypeEndpoints();
-                AddEquationTypeDisplayNamesEndpoints();
+                AddRegressionTypeEndpoints();
+                AddRegressionTypeDisplayNamesEndpoints();
                 AddErrorTypeEndpoints();
                 AddPredictionIntervalEndpoints();
                 AddRegionEndpoints();
@@ -88,8 +91,7 @@ namespace NSSService
                 AddUnitTypeEndpoints();
                 AddUserTypeEndpoints();
                 AddVariableEndpoints();
-                AddVariableTypeEndpoints();
-                
+                AddVariableTypeEndpoints();               
 
             }//end using
         }//end Configure
@@ -99,8 +101,9 @@ namespace NSSService
         {
             ResourceSpace.Has.ResourcesOfType<List<Citation>>()
                 .AtUri(citationResource)
-                .And.AtUri(citationResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}").Named("GetCitations")
-                .And.AtUri(regionResource + "/{region}/" + citationResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("GetCitations")
+                .And.AtUri(citationResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}").Named("GetCitations")
+                .And.AtUri(regionResource + "/{region}/" + citationResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}").Named("GetCitations")
+                .And.AtUri(citationResource + "?" + RegressionRegionResource + "={regressionRegionIDs}").Named("GetRegressionRegionCitations")
                 .HandledBy<CitationHandler>()
                 .TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml")
                 .And.TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json");
@@ -114,36 +117,36 @@ namespace NSSService
                 .And.TranscodedBy<UTF8XmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
-        private void AddEquationTypeEndpoints()
+        private void AddRegressionTypeEndpoints()
         {
-            ResourceSpace.Has.ResourcesOfType<List<EquationType>>()
-                .AtUri(equationTypeResource)
-                .And.AtUri(equationTypeResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("GetEquationTypes")
-                .And.AtUri(regionResource + "/{region}/" + equationTypeResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("GetEquationTypes")
-                .HandledBy<EquationTypeHandler>()
+            ResourceSpace.Has.ResourcesOfType<List<RegressionType>>()
+                .AtUri(regressionTypeResource)
+                .And.AtUri(regressionTypeResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("GetRegressionTypes")
+                .And.AtUri(regionResource + "/{region}/" + regressionTypeResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}").Named("GetRegressionTypes")
+                .HandledBy<RegressionTypeHandler>()
                 .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
                 .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
-            ResourceSpace.Has.ResourcesOfType<EquationType>()
-                .AtUri(equationTypeResource + "/{ID}")
-                .HandledBy<EquationTypeHandler>()
+            ResourceSpace.Has.ResourcesOfType<RegressionType>()
+                .AtUri(regressionTypeResource + "/{ID}")
+                .HandledBy<RegressionTypeHandler>()
                 .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
                 .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
-        private void AddEquationTypeDisplayNamesEndpoints()
+        private void AddRegressionTypeDisplayNamesEndpoints()
         {
-            ResourceSpace.Has.ResourcesOfType<List<EquationTypeDisplayName>>()
-                .AtUri(equationTypeDisplayNamesResource)
-                .HandledBy<EquationTypeDisplayNameHandler>()
+            ResourceSpace.Has.ResourcesOfType<List<RegressionTypeDisplayName>>()
+                .AtUri(regressionTypeDisplayNamesResource)
+                .HandledBy<RegressionTypeDisplayNameHandler>()
                 .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
                 .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
 
-            ResourceSpace.Has.ResourcesOfType<EquationTypeDisplayName>()
-                .AtUri(equationTypeDisplayNamesResource + "/{ID}")
-                .HandledBy<EquationTypeDisplayNameHandler>()
+            ResourceSpace.Has.ResourcesOfType<RegressionTypeDisplayName>()
+                .AtUri(regressionTypeDisplayNamesResource + "/{ID}")
+                .HandledBy<RegressionTypeDisplayNameHandler>()
                 .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
                 .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
@@ -199,11 +202,11 @@ namespace NSSService
         private void AddScenarioEndpoints() 
                 {
                     ResourceSpace.Has.ResourcesOfType<List<Scenario>>()
-                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("GetScenarios")
-                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("GetScenarios")
+                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("GetScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("GetScenarios")
 
-                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("EstimatesScenarios")
-                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + equationTypeResource + "={equationtypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("EstimateScenarios")
+                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("EstimatesScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("EstimateScenarios")
                         .HandledBy< ScenarioHandler>()
                         .TranscodedBy<JsonDotNetCodec>().ForMediaType("application/json;q=0.5").ForExtension("json")
                         .And.TranscodedBy<UTF8XmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
@@ -212,8 +215,8 @@ namespace NSSService
         {
             ResourceSpace.Has.ResourcesOfType<List<StatisticGroupType>>()
                 .AtUri(statisticGroupTypeResource)
-                .And.AtUri(statisticGroupTypeResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + equationTypeResource + "={equationtypeIDs}").Named("GetStatisticGroups")
-                .And.AtUri(regionResource + "/{region}/" + statisticGroupTypeResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + equationTypeResource + "={equationtypeIDs}").Named("GetStatisticGroups")
+                .And.AtUri(statisticGroupTypeResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + regressionTypeResource + "={regressiontypeIDs}").Named("GetStatisticGroups")
+                .And.AtUri(regionResource + "/{region}/" + statisticGroupTypeResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + regressionTypeResource + "={regressiontypeIDs}").Named("GetStatisticGroups")
                 .HandledBy<StatisticGroupTypeHandler>()
                 .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")
                 .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");

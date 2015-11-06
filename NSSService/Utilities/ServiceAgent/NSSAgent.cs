@@ -24,7 +24,6 @@ namespace NSSService.Utilities.ServiceAgent
         #region "Events"
         #endregion
         #region "Properties"
-
         #endregion
         #region "Collections & Dictionaries"
         private List<UnitConversionFactor> unitConversionFactors { get; set; }
@@ -33,7 +32,7 @@ namespace NSSService.Utilities.ServiceAgent
         #region Constructors
         internal NSSAgent(Boolean include = false)
             : this("nssadmin",new EasySecureString("Lj1ulzxcZvmXPNFmI03u"), include)
-        {
+        {        
         }
         internal NSSAgent(string username, EasySecureString password, Boolean include = false)
             : base(ConfigurationManager.ConnectionStrings["nssEntities"].ConnectionString)
@@ -76,12 +75,12 @@ namespace NSSService.Utilities.ServiceAgent
         #endregion
         #endregion
         #region "Methods"
-        internal IQueryable<Equation> GetEquations(string region, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> equationTypeIDList = null)
+        internal IQueryable<Equation> GetEquations(string region, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
         {
             IQueryable<Equation> equery = null;
             equery = Select<RegionRegressionRegion>()
                        .Where(rer => String.Equals(region.Trim().ToLower(), rer.Region.Code.ToLower().Trim())
-                               || String.Equals(region.ToLower().Trim(), rer.RegionID.ToString())).SelectMany(rr => rr.RegressionRegion.Equations).Include(e=>e.EquationType).AsQueryable();
+                               || String.Equals(region.ToLower().Trim(), rer.RegionID.ToString())).SelectMany(rr => rr.RegressionRegion.Equations).Include(e=>e.RegressionType).AsQueryable();
 
             if (regionEquationList != null && regionEquationList.Count() > 0)
                 equery = equery.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString().Trim())
@@ -91,13 +90,13 @@ namespace NSSService.Utilities.ServiceAgent
                 equery = equery.Where(e => statisticgroupList.Contains(e.StatisticGroupTypeID.ToString().Trim())
                                         || statisticgroupList.Contains(e.StatisticGroupType.Code.ToLower().Trim()));
 
-            if (equationTypeIDList != null && equationTypeIDList.Count() > 0)
-                equery = equery.Where(e => equationTypeIDList.Contains(e.EquationTypeID.ToString().Trim())
-                                        || equationTypeIDList.Contains(e.EquationType.Code.ToLower().Trim()));
+            if (regressionTypeIDList != null && regressionTypeIDList.Count() > 0)
+                equery = equery.Where(e => regressionTypeIDList.Contains(e.RegressionTypeID.ToString().Trim())
+                                        || regressionTypeIDList.Contains(e.RegressionType.Code.ToLower().Trim()));
 
             return equery.OrderBy(e=>e.OrderIndex);
         }
-        internal IQueryable<Scenario> GetScenarios(string region, Int32 systemtypeID, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> equationTypeIDList = null)
+        internal IQueryable<Scenario> GetScenarios(string region, Int32 systemtypeID, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
         {
             IQueryable<ScenarioParameterView> equery = null;
             try
@@ -119,9 +118,9 @@ namespace NSSService.Utilities.ServiceAgent
                     equery = equery.Where(e => statisticgroupList.Contains(e.StatisticGroupTypeID.ToString().Trim())
                                             || statisticgroupList.Contains(e.StatisticGroupTypeCode.ToLower().Trim()));
 
-                if (equationTypeIDList != null && equationTypeIDList.Count() > 0)
-                    equery = equery.Where(e => equationTypeIDList.Contains(e.EquationTypeID.ToString().Trim())
-                                            || equationTypeIDList.Contains(e.EquationTypeCode.ToLower().Trim()));
+                if (regressionTypeIDList != null && regressionTypeIDList.Count() > 0)
+                    equery = equery.Where(e => regressionTypeIDList.Contains(e.RegressionTypeID.ToString().Trim())
+                                            || regressionTypeIDList.Contains(e.RegressionTypeCode.ToLower().Trim()));
 
 
                 return equery.ToList().GroupBy(e => e.StatisticGroupTypeID, e => e, (key, g) => new { groupkey = key, groupedparameters = g })
@@ -149,10 +148,11 @@ namespace NSSService.Utilities.ServiceAgent
             }
             catch (Exception ex)
             {
+                sm("Error getting Scenario: " + ex.Message);
                 throw;
             }
         }
-        internal IQueryable<Scenario> EstimateScenarios(string region, Int32 systemtypeID, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> equationtypeList)
+        internal IQueryable<Scenario> EstimateScenarios(string region, Int32 systemtypeID, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList)
         {
             IQueryable<Equation> equery = null;
             List<Equation> EquationList = null;
@@ -161,8 +161,8 @@ namespace NSSService.Utilities.ServiceAgent
             try
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
-                equery = GetEquations(region, regionEquationList, statisticgroupList, equationtypeList);
-                equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType").Include("PredictionInterval");
+                equery = GetEquations(region, regionEquationList, statisticgroupList, regressiontypeList);
+                equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType").Include("PredictionInterval").Include("Variables.VariableType").Include("Variables.UnitType");
 
                 foreach (Scenario scenario in scenarioList)
                 {
@@ -173,18 +173,22 @@ namespace NSSService.Utilities.ServiceAgent
                         
                         foreach (Equation equation in EquationList)
                         {
-                            var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
+                            Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
+                            if (paramsOutOfRange) sm("One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors");
+                            //equation variables
+                            var variables = regressionregion.Parameters.Where(e=>equation.Variables.Any(v=>v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code,true)==0).UnitType.UnitSystemTypeID));
+                            //var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
                             eOps = new ExpressionOps(equation.Equation1,variables);
                             
                             if (!eOps.IsValid) break;// next equation
 
                             var unit = getUnit(equation.UnitType, systemtypeID);
-                            Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
+                            
                             regressionregion.Results.Add(new RegressionResult()
                             {
                                 Equation = eOps.InfixExpression,
-                                Name = equation.EquationType.Name,
-                                Description = equation.EquationType.Description,
+                                Name = equation.RegressionType.Name,
+                                Description = equation.RegressionType.Description,
                                 Unit = unit,
                                 Errors = equation.EquationErrors.Select(e => new Error() {Name = e.ErrorType.Name, Value = e.Value }).ToList(), 
                                 EquivalentYears = paramsOutOfRange? null: equation.EquivalentYears,
@@ -195,10 +199,12 @@ namespace NSSService.Utilities.ServiceAgent
                         }//next equation
                     }//next regressionregion
                 }//next scenario
+
                 return scenarioList.AsQueryable();
             }
             catch (Exception ex)
             {
+                sm("Error Estimating Scenarios: " + ex.Message);
                 throw;
             }
         }
@@ -224,10 +230,10 @@ namespace NSSService.Utilities.ServiceAgent
                 case "ScenarioParameterView":
                     return @"    SELECT 
 	                                `e`.`ID` AS `EquationID`,
-	                                `e`.`EquationTypeID` AS `EquationTypeID`,
+	                                `e`.`RegressionTypeID` AS `RegressionTypeID`,
 	                                `e`.`StatisticGroupTypeID` AS `StatisticGroupTypeID`,
 	                                `e`.`RegressionRegionID` AS `RegressionRegionID`,
-	                                `et`.`Code` AS `EquationTypeCode`,
+	                                `rt`.`Code` AS `RegressionTypeCode`,
 	                                `rr`.`Name` AS `RegressionRegionName`,
 	                                `rr`.`Code` AS `RegressionRegionCode`,
 	                                `st`.`Code` AS `StatisticGroupTypeCode`,
@@ -248,7 +254,7 @@ namespace NSSService.Utilities.ServiceAgent
 	                                JOIN `nss`.`UnitType` `u`)
 	                                JOIN `nss`.`VariableType` `vt`)
 	                                JOIN `nss`.`RegressionRegion` `rr`)
-	                                JOIN `nss`.`EquationType` `et`)
+	                                JOIN `nss`.`RegressionType` `rt`)
 	                                JOIN `nss`.`StatisticGroupType` `st`)
                                     Left Join `nss`.`UnitConversionFactor` `cf` ON (`cf`.`UnitTypeInID` = `u`.`ID`)
 	                                Left Join `nss`.`UnitType` `u2` on (`cf`.`UnitTypeOutID` = `u2`.`ID`)
@@ -258,7 +264,7 @@ namespace NSSService.Utilities.ServiceAgent
 		                                AND (`u`.`ID` = `v`.`UnitTypeID`)
 		                                AND (`st`.`ID` = `e`.`StatisticGroupTypeID`)
 		                                AND (`rr`.`ID` = `e`.`RegressionRegionID`)
-		                                AND (`et`.`ID` = `e`.`EquationTypeID`)
+		                                AND (`rt`.`ID` = `e`.`RegressionTypeID`)
 		                                AND (`vt`.`ID` = `v`.`VariableTypeID`))";
                     
                 default:

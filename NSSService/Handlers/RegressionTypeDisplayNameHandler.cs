@@ -26,7 +26,6 @@ using OpenRasta.Web;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using WiM.Exceptions;
 using NSSService.Utilities.ServiceAgent;
 using NSSDB;
@@ -34,7 +33,7 @@ using NSSDB;
 
 namespace NSSService.Handlers
 {
-    public class EquationTypeHandler:NSSHandlerBase
+    public class RegressionTypeDisplayNameHandler : NSSHandlerBase
     {
         #region Properties
         #endregion
@@ -43,53 +42,23 @@ namespace NSSService.Handlers
         [HttpOperation(HttpMethod.GET)]
         public OperationResult get()
         {
-            List<EquationType> entities = null;
+            List<RegressionTypeDisplayName> entities = null;
+            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.Select<EquationType>().OrderBy(e => e.ID).ToList();
+                    entities = sa.Select<RegressionTypeDisplayName>().OrderBy(e => e.ID).ToList();
+                    
+                    msg.Add("Count: " + entities.Count());
+                    msg.AddRange(sa.Messages);
+                    
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
 
-                return new OperationResult.OK { ResponseResource = entities };
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-            finally
-            {
-
-            }//end try
-        }//end Get
-        [HttpOperation(HttpMethod.GET, ForUriName = "GetEquationTypes")]
-        public OperationResult GetEquationTypes(string region, [Optional] string regressionRegionIDs, [Optional]string statisticgroups)
-        {
-            //?region={region}&subregions={subregionIDs}&statisticgroups={statisticgroups}
-            List<string> regressionRegionIDList=null;
-            List<string> statisticgroupList = null;
-
-            List<EquationType> entities = null;
-            try
-            {
-                if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
-
-                regressionRegionIDList = parse(regressionRegionIDs);
-                statisticgroupList = parse(statisticgroups);
-
-                using (NSSAgent sa = new NSSAgent())
-                {
-                    entities = sa.GetEquations(region, regressionRegionIDList, statisticgroupList)
-                        .Select(e => e.EquationType).Distinct().OrderBy(e => e.ID).ToList();
-                }//end using
-
-                //hypermedia
-                //entities.CreateUri();
-
-                return new OperationResult.OK { ResponseResource = entities };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
             }
             catch (Exception ex)
             {
@@ -103,12 +72,12 @@ namespace NSSService.Handlers
         [HttpOperation(HttpMethod.GET)]
         public OperationResult get(Int32 ID)
         {
-            EquationType entity = null;
+            RegressionTypeDisplayName entity = null;
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entity = sa.Select<EquationType>().FirstOrDefault(e => e.ID == ID);
+                    entity = sa.Select<RegressionTypeDisplayName>().FirstOrDefault(e => e.ID == ID);
                 }//end using
 
                 //hypermedia
@@ -142,5 +111,7 @@ namespace NSSService.Handlers
         #region Enumerations
 
         #endregion
+
+
     }//end class
 }//end namespace

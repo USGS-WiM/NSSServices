@@ -65,12 +65,6 @@
     <Compile Include="EquationError.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="EquationType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EquationTypeDisplayName.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="EquationUnitType.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
@@ -93,6 +87,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>NSSEntityModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="nssEntityModelsHypermedia.cs" />
     <Compile Include="PredictionInterval.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
@@ -104,6 +99,12 @@
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RegressionRegion.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RegressionType.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RegressionTypeDisplayName.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="StatisticGroupType.cs">
@@ -156,6 +157,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\WiMServices\WiMServices\WiMServices.csproj">
+      <Project>{3cdb4ec5-0f03-4528-b644-f8bb922b4b9e}</Project>
+      <Name>WiMServices</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

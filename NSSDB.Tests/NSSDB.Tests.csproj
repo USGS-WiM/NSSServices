@@ -74,6 +74,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\WiMServices\WiMServices\WiMServices.csproj">
+      <Project>{3cdb4ec5-0f03-4528-b644-f8bb922b4b9e}</Project>
+      <Name>WiMServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NSSDB\NSSDB.csproj">
       <Project>{800aa32c-c6f5-4661-b13a-feaa25ffce50}</Project>
       <Name>NSSDB</Name>

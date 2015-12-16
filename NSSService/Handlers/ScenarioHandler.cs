@@ -51,7 +51,7 @@ namespace NSSService.Handlers
         {
             List<string> statisticgroupList = null;
             List<string> regressiontypeList = null;
-            List<string> subregionList = null;
+            List<string> regressionregionList = null;
             List<Scenario> entities = null;
             Int32 unitsystemID = 0;
             List<string> msg = new List<string>();
@@ -60,13 +60,13 @@ namespace NSSService.Handlers
                 if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypeIDs);
-                subregionList = parse(regressionRegionIDs);
+                regressionregionList = parse(regressionRegionIDs);
                 unitsystemID = Convert.ToInt32(systemtypeID);
                 if (unitsystemID < 1) unitsystemID = 1;
 
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.GetScenarios(region, unitsystemID, subregionList, statisticgroupList, regressiontypeList).ToList();
+                    entities = sa.GetScenarios(region, unitsystemID, regressionregionList, statisticgroupList, regressiontypeList).ToList();
 
                     msg.Add("Count: " + entities.Count());
                     msg.AddRange(sa.Messages);

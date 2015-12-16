@@ -6,8 +6,6 @@ using System.Xml.Serialization;
 using WiM.Resources;
 using NSSDB;
 using WiM.Hypermedia;
-
-
 using Newtonsoft.Json;
 
 namespace NSSService.Resources
@@ -21,12 +19,18 @@ namespace NSSService.Resources
         public List<Link> Links { get; set; }
     }//end Scenario
 
+  
     public class SimpleRegionEquation
     {
         public Int32 ID { get; set; }
         public string Name { get; set; }
+        public double? PercentWeight { get; set; }
+        public bool ShouldSerializePercentWeight()
+        { return PercentWeight.HasValue; }
         public List<Parameter> Parameters { get; set; }
         [XmlArrayItem("RegressionResult")]
         public List<RegressionResultBase> Results { get; set; }
+
+       
     }
 }

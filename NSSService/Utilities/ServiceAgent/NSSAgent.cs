@@ -103,12 +103,12 @@ namespace NSSService.Utilities.ServiceAgent
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().ToList();
                 
-                List<RegionRegressionRegion> SelectedRegionRegressions = Select<RegionRegressionRegion>()
+                List<RegionRegressionRegion> SelectedRegionRegressions = Select<RegionRegressionRegion>().Include("RegressionRegion")
                            .Where(rer => String.Equals(region.Trim().ToLower(), rer.Region.Code.ToLower().Trim())
                                    || String.Equals(region.ToLower().Trim(), rer.RegionID.ToString())).ToList();
 
                 if (regionEquationList != null && regionEquationList.Count() > 0)
-                    SelectedRegionRegressions = SelectedRegionRegressions.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString())).ToList();
+                    SelectedRegionRegressions = SelectedRegionRegressions.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString())|| regionEquationList.Contains(e.RegressionRegion.Code)).ToList();
 
                 equery = getTable<ScenarioParameterView>(new Object[1]{systemtypeID}).Where(s => SelectedRegionRegressions.Select(rr => rr.RegressionRegionID).Contains(s.RegressionRegionID));
 
@@ -157,6 +157,7 @@ namespace NSSService.Utilities.ServiceAgent
             IQueryable<Equation> equery = null;
             List<Equation> EquationList = null;
             ExpressionOps eOps = null;
+            Boolean doWeightedAverage = false;
            
             try
             {
@@ -170,7 +171,8 @@ namespace NSSService.Utilities.ServiceAgent
                     {
                         regressionregion.Results = new List<RegressionResultBase>();
                         EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).Select(e=>e).ToList();
-                        
+                        if (doWeightedAverage || (regressionregion.PercentWeight.HasValue && regressionregion.PercentWeight.Value > 0 && regressionregion.PercentWeight.Value < 100)) doWeightedAverage = true;
+
                         foreach (Equation equation in EquationList)
                         {
                             Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
@@ -190,7 +192,7 @@ namespace NSSService.Utilities.ServiceAgent
                                 Name = equation.RegressionType.Name,
                                 Description = equation.RegressionType.Description,
                                 Unit = unit,
-                                Errors = equation.EquationErrors.Select(e => new Error() {Name = e.ErrorType.Name, Value = e.Value }).ToList(), 
+                                Errors = paramsOutOfRange ? null : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value }).ToList(), 
                                 EquivalentYears = paramsOutOfRange? null: equation.EquivalentYears,
                                 IntervalBounds = paramsOutOfRange? null: computeUncertainty(equation.PredictionInterval, variables, eOps.Value*unit.factor),
                                 Value = eOps.Value*unit.factor                               
@@ -198,6 +200,11 @@ namespace NSSService.Utilities.ServiceAgent
 
                         }//next equation
                     }//next regressionregion
+                    if (doWeightedAverage)
+                    {
+                        var weightedRegion = computeWeightedAverage(scenario.RegressionRegions);
+                        if (weightedRegion!= null)scenario.RegressionRegions.Add(weightedRegion);
+                    }//endif
                 }//next scenario
 
                 return scenarioList.AsQueryable();
@@ -208,6 +215,8 @@ namespace NSSService.Utilities.ServiceAgent
                 throw;
             }
         }
+
+
         #endregion
         #region "Helper Methods"
         IQueryable<T> getTable<T>(object[] args) where T : class,new()
@@ -379,6 +388,30 @@ namespace NSSService.Utilities.ServiceAgent
             catch (Exception)
             {
                 return 1;
+            }
+        }
+        internal SimpleRegionEquation computeWeightedAverage(List<SimpleRegionEquation> regressionRegions)
+        {
+            SimpleRegionEquation weightedRR = null;
+            try
+            {
+                //ensure percent sums to 100
+                double? total = regressionRegions.Sum(r => r.PercentWeight);
+                if (!total.HasValue && Math.Round(total.Value) != 100) 
+                    throw new Exception("Regions percent area are out of range ("+total+"% Requires 100%). Whole estimates have been provided using the regional equations that are available for other parts of the region.");
+                
+                weightedRR = new SimpleRegionEquation();
+                weightedRR.Name = "Area-Averaged";
+                weightedRR.Results = regressionRegions.SelectMany(x => x.Results.Select(r=>r.Clone()).Select(r => { r.Value = r.Value * x.PercentWeight / 100; return r; }))
+                    .GroupBy(e => e.Name).Select(i=>i.Aggregate((accumulator, it) => { accumulator.Value += it.Value; accumulator.Equation = "Weighted Average"; return accumulator; })).ToList();
+
+                return weightedRR;
+            }
+            catch (Exception ex)
+            {
+                sm(ex.Message);
+                sm("Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
+                return null;
             }
         }
         #endregion

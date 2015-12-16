@@ -5,27 +5,49 @@ using System.Web;
 using System.Xml.Serialization;
 using WiM.Resources;
 using Newtonsoft.Json;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace NSSService.Resources
 {
     [XmlInclude(typeof(RegressionResult))]
+    [Serializable]
     public abstract class RegressionResultBase
     {
         public string Name { get; set; }
+        public string Description { get; set; }
         public Double? Value { get; set; }
-        public List<Error> Errors { get; set; }
-        [XmlElement("UnitType")]
-        public SimpleUnitType Unit { get; set; }
-        public String Equation { get; set; }
-    }
+        [NonSerialized]
+        private List<Error> _errors;
+        public List<Error> Errors { get { return _errors; } set { _errors = value; } }
 
+        [NonSerialized]
+        private SimpleUnitType _unit;
+        [XmlElement("UnitType")]
+        public SimpleUnitType Unit { get { return _unit; } set { _unit = value; } }
+        public String Equation { get; set; }
+        public abstract RegressionResultBase Clone();
+
+    }
+    [Serializable]
     public class RegressionResult : RegressionResultBase
     {
-        public string Description { get; set; }
         public Double? EquivalentYears { get; set; }
-        public IntervalBounds IntervalBounds { get; set; }
-    }//end class
+        [NonSerialized]
+        private IntervalBounds _intervalBounds;
+        public IntervalBounds IntervalBounds { get { return _intervalBounds; } set { _intervalBounds = value; } }
+        public override RegressionResultBase Clone()
+        {
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, this);
+                ms.Position = 0;
 
+                return (RegressionResult)formatter.Deserialize(ms);
+            }
+        }
+    }//end class
     public class Error
     {
         public string Name { get; set; }

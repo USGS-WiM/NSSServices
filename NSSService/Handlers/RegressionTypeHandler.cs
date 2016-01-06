@@ -28,6 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using WiM.Exceptions;
+using WiM.Resources;
 using NSSService.Utilities.ServiceAgent;
 using NSSDB;
 
@@ -44,20 +45,20 @@ namespace NSSService.Handlers
         public OperationResult get()
         {
             List<RegressionType> entities = null;
-            List<string> msg = new List<string>();
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.Select<RegressionType>().OrderBy(e => e.ID).ToList();
-                    msg.Add("Count: " + entities.Count());
-                    msg.AddRange(sa.Messages);
+                    sm(MessageType.info,"Count: " + entities.Count());
+                    sm(sa.Messages);
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
+                var msg = Messages.GroupBy(g => g.type).Select(gr => gr.Key.ToString() + ": " + string.Join(",", gr.Select(c => c.msg))).ToList();
 
-                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", string.Join(";",msg)) };
             }
             catch (Exception ex)
             {
@@ -74,7 +75,7 @@ namespace NSSService.Handlers
             //?region={region}&subregions={subregionIDs}&statisticgroups={statisticgroups}
             List<string> regressionRegionIDList=null;
             List<string> statisticgroupList = null;
-            List<string> msg = new List<string>();
+            
             List<RegressionType> entities = null;
             try
             {
@@ -87,15 +88,16 @@ namespace NSSService.Handlers
                 {
                     entities = sa.GetEquations(region, regressionRegionIDList, statisticgroupList)
                         .Select(e => e.RegressionType).Distinct().OrderBy(e => e.ID).ToList();
-                    msg.Add("Count: " + entities.Count());
-                    msg.AddRange(sa.Messages);
+                    sm(MessageType.info,"Count: " + entities.Count());
+                    sm(sa.Messages);
                     
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
+                var msg = Messages.GroupBy(g => g.type).Select(gr => gr.Key.ToString() + ": " + string.Join(",", gr.Select(c => c.msg))).ToList();
 
-                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";",msg) };
             }
             catch (Exception ex)
             {
@@ -110,20 +112,21 @@ namespace NSSService.Handlers
         public OperationResult get(Int32 ID)
         {
             RegressionType entity = null;
-            List<string> msg = new List<string>();
+            
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<RegressionType>().FirstOrDefault(e => e.ID == ID);
-                    msg.AddRange(sa.Messages);
+                    sm(sa.Messages);
                     
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
+                var msg = Messages.GroupBy(g => g.type).Select(gr => gr.Key.ToString() + ": " + string.Join(",", gr.Select(c => c.msg))).ToList();
 
-                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";", msg) };
+                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";",msg) };
             }
             catch (Exception ex)
             {

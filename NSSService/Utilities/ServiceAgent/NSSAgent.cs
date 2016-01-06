@@ -148,7 +148,7 @@ namespace NSSService.Utilities.ServiceAgent
             }
             catch (Exception ex)
             {
-                sm("Error getting Scenario: " + ex.Message);
+                sm(WiM.Resources.MessageType.error, "Error getting Scenario: " + ex.Message);
                 throw;
             }
         }
@@ -176,7 +176,7 @@ namespace NSSService.Utilities.ServiceAgent
                         foreach (Equation equation in EquationList)
                         {
                             Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
-                            if (paramsOutOfRange) sm("One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors");
+                            if (paramsOutOfRange) sm(WiM.Resources.MessageType.warning, "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors");
                             //equation variables
                             var variables = regressionregion.Parameters.Where(e=>equation.Variables.Any(v=>v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code,true)==0).UnitType.UnitSystemTypeID));
                             //var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
@@ -211,7 +211,7 @@ namespace NSSService.Utilities.ServiceAgent
             }
             catch (Exception ex)
             {
-                sm("Error Estimating Scenarios: " + ex.Message);
+                sm(WiM.Resources.MessageType.error, "Error Estimating Scenarios: " + ex.Message);
                 throw;
             }
         }
@@ -409,8 +409,8 @@ namespace NSSService.Utilities.ServiceAgent
             }
             catch (Exception ex)
             {
-                sm(ex.Message);
-                sm("Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
+                sm(WiM.Resources.MessageType.error, ex.Message);
+                sm(WiM.Resources.MessageType.warning, "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
                 return null;
             }
         }

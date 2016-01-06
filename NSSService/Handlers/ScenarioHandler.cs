@@ -54,7 +54,7 @@ namespace NSSService.Handlers
             List<string> regressionregionList = null;
             List<Scenario> entities = null;
             Int32 unitsystemID = 0;
-            List<string> msg = new List<string>();
+            
             try
             {
                 if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
@@ -67,16 +67,16 @@ namespace NSSService.Handlers
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.GetScenarios(region, unitsystemID, regressionregionList, statisticgroupList, regressiontypeList).ToList();
-
-                    msg.Add("Count: " + entities.Count());
-                    msg.AddRange(sa.Messages);
-
+                    
+                    sm(WiM.Resources.MessageType.info,"Count: " + entities.Count());
+                    sm(sa.Messages);
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
+                var msg = Messages.GroupBy(g => g.type).Select(gr => gr.Key.ToString() + ": " + string.Join(",", gr.Select(c => c.msg))).ToList();
 
-                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
+                return new OperationResult.OK {  ResponseResource = entities, Description = string.Join(";",msg) };
             }
             catch (Exception ex)
             {
@@ -96,7 +96,7 @@ namespace NSSService.Handlers
             List<string> subregionList = null;
             List<Scenario> entities = null;
             Int32 unitsystemID = 0;
-            List<string> msg = new List<string>();
+            
             try
             {
                 if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
@@ -110,15 +110,17 @@ namespace NSSService.Handlers
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entities = sa.EstimateScenarios(region,unitsystemID, scenarioList, subregionList, statisticgroupList, regressiontypeList).ToList();
+
+                    sm(WiM.Resources.MessageType.info,"Count: " + entities.Count());
                   
-                    msg.Add("Count: " + entities.Count());
-                    msg.AddRange(sa.Messages);
+                    sm(sa.Messages);
                 }//end using
 
                 //hypermedia
                 //entities.CreateUri();
+                var msg = Messages.GroupBy(g => g.type).Select(gr => gr.Key.ToString() + ": " + string.Join(",", gr.Select(c => c.msg))).ToList();
 
-                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";",msg) };
             }
             catch (Exception ex)
             {

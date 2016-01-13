@@ -35,6 +35,7 @@ using NSSService.Utilities.ServiceAgent;
 using NSSService.Resources;
 using NSSDB;
 using WiM.Exceptions;
+using WiM.Resources;
 using WiM.Hypermedia;
 
 using System.Configuration;
@@ -51,19 +52,20 @@ namespace NSSService.Handlers
         public OperationResult get()
         {
             List<Citation> entities = null;
-            List<string> msg = new List<string>();
+            
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {                    
                     entities = sa.Select<Citation>().OrderBy(e => e.ID).ToList();
                     
-                    msg.Add("Count: " + entities.Count());
-                    msg.AddRange(sa.Messages);
+                    sm(MessageType.info,"Count: " + entities.Count());
+                    sm(sa.Messages);
                     
                 }//end using
+                var msg = Messages.GroupBy(g => g.type).Select(gr => gr.Key.ToString() + ": " + string.Join(",", gr.Select(c => c.msg))).ToList();
 
-                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";", msg) };
+                return new OperationResult.OK { ResponseResource = entities, Description = string.Join(";",msg) };
             }
             catch (Exception ex)
             {
@@ -141,16 +143,17 @@ namespace NSSService.Handlers
         public OperationResult get(Int32 ID)
         {
             Citation entity = null;
-            List<string> msg = new List<string>();
+            
             try
             {
                 using (NSSAgent sa = new NSSAgent())
                 {
                     entity = sa.Select<Citation>().FirstOrDefault(e => e.ID == ID);                    
-                    msg.AddRange(sa.Messages);                    
+                    sm(sa.Messages);                    
                 }//end using
-                
-                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";", msg) };
+                var msg = Messages.GroupBy(g => g.type).Select(gr => gr.Key.ToString() + ": " + string.Join(",", gr.Select(c => c.msg))).ToList();
+
+                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";",msg) };
             }
             catch (Exception ex)
             {

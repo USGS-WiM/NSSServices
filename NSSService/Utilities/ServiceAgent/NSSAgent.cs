@@ -108,7 +108,7 @@ namespace NSSService.Utilities.ServiceAgent
                                    || String.Equals(region.ToLower().Trim(), rer.RegionID.ToString())).ToList();
 
                 if (regionEquationList != null && regionEquationList.Count() > 0)
-                    SelectedRegionRegressions = SelectedRegionRegressions.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString())|| regionEquationList.Contains(e.RegressionRegion.Code)).ToList();
+                    SelectedRegionRegressions = SelectedRegionRegressions.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString())|| regionEquationList.Contains(e.RegressionRegion.Code.ToLower().Trim())).ToList();
 
                 equery = getTable<ScenarioParameterView>(new Object[1]{systemtypeID}).Where(s => SelectedRegionRegressions.Select(rr => rr.RegressionRegionID).Contains(s.RegressionRegionID));
 
@@ -215,7 +215,6 @@ namespace NSSService.Utilities.ServiceAgent
                 throw;
             }
         }
-
 
         #endregion
         #region "Helper Methods"

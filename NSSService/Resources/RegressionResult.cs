@@ -15,6 +15,7 @@ namespace NSSService.Resources
     public abstract class RegressionResultBase
     {
         public string Name { get; set; }
+        public string code { get; set; }
         public string Description { get; set; }
         public Double? Value { get; set; }
         [NonSerialized]

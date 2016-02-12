@@ -9,7 +9,7 @@ namespace NSSDB.Tests
     [TestClass]
     public class NSSDBTest
     {
-        private string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nss.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id=nssadmin;PASSWORD={0};database=nss';";
+        private string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nssnew.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id=nssadmin;PASSWORD={0};database=nssnew';";
         private string password = "Lj1ulzxcZvmXPNFmI03u";
 
         [TestMethod]

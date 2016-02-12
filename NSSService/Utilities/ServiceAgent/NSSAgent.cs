@@ -189,7 +189,8 @@ namespace NSSService.Utilities.ServiceAgent
                             regressionregion.Results.Add(new RegressionResult()
                             {
                                 Equation = eOps.InfixExpression,
-                                Name = equation.RegressionType.Name,
+                                Name = equation.RegressionType.Name, 
+                                code = equation.RegressionType.Code,
                                 Description = equation.RegressionType.Description,
                                 Unit = unit,
                                 Errors = paramsOutOfRange ? null : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value }).ToList(), 
@@ -257,15 +258,15 @@ namespace NSSService.Utilities.ServiceAgent
 	                                `vt`.`Description` AS `VariableDescription`
     
                                 FROM
-	                                ((((((`nss`.`Equation` `e`
-	                                JOIN `nss`.`Variable` `v`)
-	                                JOIN `nss`.`UnitType` `u`)
-	                                JOIN `nss`.`VariableType` `vt`)
-	                                JOIN `nss`.`RegressionRegion` `rr`)
-	                                JOIN `nss`.`RegressionType` `rt`)
-	                                JOIN `nss`.`StatisticGroupType` `st`)
-                                    Left Join `nss`.`UnitConversionFactor` `cf` ON (`cf`.`UnitTypeInID` = `u`.`ID`)
-	                                Left Join `nss`.`UnitType` `u2` on (`cf`.`UnitTypeOutID` = `u2`.`ID`)
+	                                ((((((`nssnew`.`Equation` `e`
+	                                JOIN `nssnew`.`Variable` `v`)
+	                                JOIN `nssnew`.`UnitType` `u`)
+	                                JOIN `nssnew`.`VariableType` `vt`)
+	                                JOIN `nssnew`.`RegressionRegion` `rr`)
+	                                JOIN `nssnew`.`RegressionType` `rt`)
+	                                JOIN `nssnew`.`StatisticGroupType` `st`)
+                                    Left Join `nssnew`.`UnitConversionFactor` `cf` ON (`cf`.`UnitTypeInID` = `u`.`ID`)
+	                                Left Join `nssnew`.`UnitType` `u2` on (`cf`.`UnitTypeOutID` = `u2`.`ID`)
     
                                 WHERE
 	                                ((`v`.`EquationID` = `e`.`ID`)

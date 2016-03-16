@@ -87,6 +87,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WiMServices, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\WiMServices\WiMServices\bin\Release\WiMServices.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -140,10 +144,6 @@
     <Folder Include="Assets\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\WiMServices\WiMServices\WiMServices.csproj">
-      <Project>{3cdb4ec5-0f03-4528-b644-f8bb922b4b9e}</Project>
-      <Name>WiMServices</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NSSDB\NSSDB.csproj">
       <Project>{800aa32c-c6f5-4661-b13a-feaa25ffce50}</Project>
       <Name>NSSDB</Name>

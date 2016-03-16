@@ -65,6 +65,12 @@
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WiMServices">
+      <HintPath>..\..\WiMServices\WiMServices\bin\Release\WiMServices.dll</HintPath>
+    </Reference>
+    <Reference Include="WiMServices.Test">
+      <HintPath>..\..\WiMServices\WiMServices.Test\bin\Debug\WiMServices.Test.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EndpointTests.cs" />
@@ -73,14 +79,6 @@
     <Compile Include="NSSAgentTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\WiMServices\WiMServices.Test\WiMServices.Test.csproj">
-      <Project>{e69759ac-2ec8-4666-86cf-1f71e302c036}</Project>
-      <Name>WiMServices.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\WiMServices\WiMServices\WiMServices.csproj">
-      <Project>{3cdb4ec5-0f03-4528-b644-f8bb922b4b9e}</Project>
-      <Name>WiMServices</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NSSDB\NSSDB.csproj">
       <Project>{800aa32c-c6f5-4661-b13a-feaa25ffce50}</Project>
       <Name>NSSDB</Name>

@@ -58,9 +58,10 @@
     <Reference Include="System.Data" />
     <Reference Include="WiMServices, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\WiMServices\WiMServices\bin\Release\WiMServices.dll</HintPath>
+      <HintPath>..\..\WiMServices\WiMServices\bin\Debug\WiMServices.dll</HintPath>
     </Reference>
-    <Reference Include="WiMServices.Test">
+    <Reference Include="WiMServices.Test, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\WiMServices\WiMServices.Test\bin\Debug\WiMServices.Test.dll</HintPath>
     </Reference>
   </ItemGroup>

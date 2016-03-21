@@ -89,7 +89,7 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="WiMServices, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\WiMServices\WiMServices\bin\Release\WiMServices.dll</HintPath>
+      <HintPath>..\..\WiMServices\WiMServices\bin\Debug\WiMServices.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

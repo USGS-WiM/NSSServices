@@ -22,25 +22,18 @@
 #region Comments
 // 08.01.14 - JKN - Created
 #endregion
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-using OpenRasta.Authentication;
-using OpenRasta.Authentication.Basic;
 using OpenRasta.Configuration;
-using OpenRasta.DI;
-using OpenRasta.IO;
-using OpenRasta.Pipeline.Contributors;
 using OpenRasta.Web.UriDecorators;
 
-using WiM.Codecs;
 using WiM.PipeLineContributors;
 using WiM.Codecs.json;
 using WiM.Codecs.xml;
-using NSSService.Handlers;
+
 using NSSDB;
+
+using NSSService.Handlers;
 using NSSService.Resources;
 using NSSService.PipeLineContributors;
 

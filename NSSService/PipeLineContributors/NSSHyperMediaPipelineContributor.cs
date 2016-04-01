@@ -75,8 +75,6 @@ namespace NSSService.PipeLineContributors
 
             return results;
         }
-
-
         
     }//end class
 }//end namespace

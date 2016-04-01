@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
 
-using System.Collections.ObjectModel;
-
-
-using OpenRasta.Web;
-using NSSDB;
-//using WiM.Resources.Hypermedia;
 using WiM.Handlers;
-using WiM.Authentication;
 
 namespace NSSService.Handlers
 {

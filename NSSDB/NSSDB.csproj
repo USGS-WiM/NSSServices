@@ -54,9 +54,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WiMServices, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\WiMServices\WiMServices\bin\Debug\WiMServices.dll</HintPath>
+    <Reference Include="WiMHypermedia, Version=1.0.5935.18406, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMHypermedia.1.0.5935.18406\lib\net45\WiMHypermedia.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

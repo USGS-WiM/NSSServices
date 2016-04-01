@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSSDB;
-using WiMServices.Test;
+using WiM.Test;
 using NSSService.Resources;
 using NSSService;
 

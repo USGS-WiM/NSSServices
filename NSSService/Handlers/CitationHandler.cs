@@ -26,19 +26,12 @@ using OpenRasta.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Runtime.InteropServices;
-using System.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NSSService.Utilities.ServiceAgent;
-using NSSService.Resources;
 using NSSDB;
 using WiM.Exceptions;
 using WiM.Resources;
-using WiM.Hypermedia;
 
-using System.Configuration;
 
 namespace NSSService.Handlers
 {

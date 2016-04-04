@@ -99,12 +99,12 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="WiMHypermedia, Version=1.0.5935.18406, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMHypermedia.1.0.5935.18406\lib\net45\WiMHypermedia.dll</HintPath>
+    <Reference Include="WiMHypermedia, Version=1.0.5938.14288, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMHypermedia.1.0.5938.14288\lib\net45\WiMHypermedia.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WiMServices, Version=1.0.5935.18407, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMServices.1.0.5935.18407\lib\net45\WiMServices.dll</HintPath>
+    <Reference Include="WiMServices, Version=1.0.5938.14288, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMServices.1.0.5938.14288\lib\net45\WiMServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

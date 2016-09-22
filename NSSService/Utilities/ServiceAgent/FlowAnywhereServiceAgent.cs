@@ -37,12 +37,13 @@ using Newtonsoft.Json.Linq;
 using RestSharp.Serializers;
 using RestSharp;
 using WiM.TimeSeries;
+using WiM.Utilities.ServiceAgent;
 
 using NSSService.Resources;
 
 namespace NSSService.Utilities.ServiceAgent
 {
-    public class FlowAnywhereServiceAgent : ServiceAgent
+    public class FlowAnywhereServiceAgent : ServiceAgentBase
     {
         #region "Properties"
         #endregion

@@ -30,7 +30,8 @@ namespace NSSService.Resources
         public List<Parameter> Parameters { get; set; }
         [XmlArrayItem("RegressionResult")]
         public List<RegressionResultBase> Results { get; set; }
-
-       
+        public List<Extension> Extensions { get; set; }
+        public bool ShouldSerializeExtension()
+        { return Extensions != null || Extensions.Count > 1; }
     }
 }

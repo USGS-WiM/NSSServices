@@ -22,25 +22,18 @@
 #region Comments
 // 08.01.14 - JKN - Created
 #endregion
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-using OpenRasta.Authentication;
-using OpenRasta.Authentication.Basic;
 using OpenRasta.Configuration;
-using OpenRasta.DI;
-using OpenRasta.IO;
-using OpenRasta.Pipeline.Contributors;
 using OpenRasta.Web.UriDecorators;
 
-using WiM.Codecs;
 using WiM.PipeLineContributors;
 using WiM.Codecs.json;
 using WiM.Codecs.xml;
-using NSSService.Handlers;
+
 using NSSDB;
+
+using NSSService.Handlers;
 using NSSService.Resources;
 using NSSService.PipeLineContributors;
 
@@ -50,6 +43,7 @@ namespace NSSService
     {
         #region Private Field Properties
         public static string citationResource = "citations";
+        public static string extensionResource = "extensions";
         public static string regressionTypeResource = "regressiontypes";
         public static string regressionTypeDisplayNamesResource = "regressionnames";
         public static string errorTypeResource = "errors";
@@ -202,11 +196,11 @@ namespace NSSService
         private void AddScenarioEndpoints() 
                 {
                     ResourceSpace.Has.ResourcesOfType<List<Scenario>>()
-                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("GetScenarios")
-                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("GetScenarios")
+                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}&" +extensionResource+"={extensionmethods}").Named("GetScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}&" + extensionResource + "={extensionmethods}").Named("GetScenarios")
 
-                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("EstimatesScenarios")
-                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}").Named("EstimateScenarios")
+                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}&" + extensionResource + "={extensionmethods}").Named("EstimatesScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}&" + extensionResource + "={extensionmethods}").Named("EstimateScenarios")
                         .HandledBy< ScenarioHandler>()
                         .TranscodedBy<JsonDotNetCodec>().ForMediaType("application/json;q=0.5").ForExtension("json")
                         .And.TranscodedBy<UTF8XmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");

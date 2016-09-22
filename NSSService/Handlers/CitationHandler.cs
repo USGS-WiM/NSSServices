@@ -26,19 +26,12 @@ using OpenRasta.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Runtime.InteropServices;
-using System.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NSSService.Utilities.ServiceAgent;
-using NSSService.Resources;
 using NSSDB;
 using WiM.Exceptions;
 using WiM.Resources;
-using WiM.Hypermedia;
 
-using System.Configuration;
 
 namespace NSSService.Handlers
 {
@@ -158,26 +151,6 @@ namespace NSSService.Handlers
             catch (Exception ex)
             {
                 return HandleException(ex);
-            }
-            finally
-            {
-
-            }//end try
-        }//end Get
-        
-        [HttpOperation(HttpMethod.GET, ForUriName = "getStateReports")]
-        public OperationResult getStateReports(String stateID)
-        {
-            ServiceAgent sa = null;
-            try
-            {
-                sa = new ServiceAgent();
-
-                return new OperationResult.OK { ResponseResource = sa.GetJsonFromFile<List<Citation>>(stateID, "Reports") };
-            }
-            catch (Exception ex)
-            {
-                return new OperationResult.InternalServerError { ResponseResource = ex.Message.ToString() };
             }
             finally
             {

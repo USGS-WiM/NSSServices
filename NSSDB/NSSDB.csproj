@@ -54,8 +54,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WiMHypermedia, Version=1.0.5938.14288, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMHypermedia.1.0.5938.14288\lib\net45\WiMHypermedia.dll</HintPath>
+    <Reference Include="WiMHypermedia, Version=1.0.6109.9827, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMHypermedia.1.0.6109.9827\lib\net45\WiMHypermedia.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

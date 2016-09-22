@@ -21,7 +21,7 @@ namespace NSSService.Resources
         public Double Latitude_DD { get; set; }
         public Double Longitude_DD { get; set; }
         public FlowTimeSeries Discharge { get; private set; }
-
+        public SortedDictionary<Double, Double> ExceedanceProbabilities { get; set; }
         public String URL { get; set; }
         
         #endregion
@@ -48,7 +48,6 @@ namespace NSSService.Resources
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -94,8 +93,12 @@ namespace NSSService.Resources
             }
         }
         #endregion
-        #region "Helper Methods"
-       
+        #region "Static Methods"
+        public static Station NWISStation(string stationID)
+        {
+            StationServiceAgent sa = new StationServiceAgent(ConfigurationManager.AppSettings["nwis"]);
+            return sa.GetNWISStation(stationID);
+        }
         
         #endregion
 

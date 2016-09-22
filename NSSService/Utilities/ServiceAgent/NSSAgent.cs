@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 using WiM.Utilities;
 using WiM.Utilities.ServiceAgent;
-using WiM.Authentication;
+using WiM.Security;
 
 using NSSDB;
 
@@ -95,7 +95,7 @@ namespace NSSService.Utilities.ServiceAgent
 
             return equery.OrderBy(e=>e.OrderIndex);
         }
-        internal IQueryable<Scenario> GetScenarios(string region, Int32 systemtypeID, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
+        internal IQueryable<Scenario> GetScenarios(string region, Int32 systemtypeID, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null)
         {
             IQueryable<ScenarioParameterView> equery = null;
             try
@@ -124,12 +124,13 @@ namespace NSSService.Utilities.ServiceAgent
 
                 return equery.ToList().GroupBy(e => e.StatisticGroupTypeID, e => e, (key, g) => new { groupkey = key, groupedparameters = g })
                     .Select(s => new Scenario()
-                    { 
+                    {                       
                         StatisticGroupID = s.groupkey,
                         StatisticGroupName = s.groupedparameters.First().StatisticGroupTypeName,
                         RegressionRegions = s.groupedparameters.ToList().GroupBy(e => e.RegressionRegionID, e => e, (key, g) => new { groupkey = key, groupedparameters = g }).ToList()
                         .Select(r => new SimpleRegionEquation()
-                        {
+                        { 
+                            Extensions = extensionMethodList.Where(ex => canIncludeExension(ex, s.groupkey)).Select(ex => getScenarioExtensionDef(ex, s.groupkey)).ToList(),
                             ID = r.groupkey,
                             Name = r.groupedparameters.First().RegressionRegionName,
                             Parameters = r.groupedparameters.Select(p => new Parameter()
@@ -151,13 +152,14 @@ namespace NSSService.Utilities.ServiceAgent
                 throw;
             }
         }
-        internal IQueryable<Scenario> EstimateScenarios(string region, Int32 systemtypeID, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList)
+
+        internal IQueryable<Scenario> EstimateScenarios(string region, Int32 systemtypeID, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList)
         {
             IQueryable<Equation> equery = null;
             List<Equation> EquationList = null;
             ExpressionOps eOps = null;
             Boolean doWeightedAverage = false;
-           
+            //http://wim.usgs.gov/streamest/Views/FDCTM.html
             try
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
@@ -194,15 +196,15 @@ namespace NSSService.Utilities.ServiceAgent
                                 Unit = unit,
                                 Errors = paramsOutOfRange ? null : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value }).ToList(), 
                                 EquivalentYears = paramsOutOfRange? null: equation.EquivalentYears,
-                                IntervalBounds = paramsOutOfRange? null: computeUncertainty(equation.PredictionInterval, variables, eOps.Value*unit.factor),
+                                IntervalBounds = paramsOutOfRange? null: evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value*unit.factor),
                                 Value = eOps.Value*unit.factor                               
                             });
-
                         }//next equation
+                        regressionregion.Extensions.ForEach(ext => evaluateExtension(ext, regressionregion));
                     }//next regressionregion
                     if (doWeightedAverage)
                     {
-                        var weightedRegion = computeWeightedAverage(scenario.RegressionRegions);
+                        var weightedRegion = evaluateWeightedAverage(scenario.RegressionRegions);
                         if (weightedRegion!= null)scenario.RegressionRegions.Add(weightedRegion);
                     }//endif
                 }//next scenario
@@ -215,10 +217,9 @@ namespace NSSService.Utilities.ServiceAgent
                 throw;
             }
         }
-
         #endregion
         #region "Helper Methods"
-        IQueryable<T> getTable<T>(object[] args) where T : class,new()
+        private IQueryable<T> getTable<T>(object[] args) where T : class,new()
         {
             try
             {
@@ -280,7 +281,7 @@ namespace NSSService.Utilities.ServiceAgent
             }//end switch;
         
         }
-        private IntervalBounds computeUncertainty(PredictionInterval predictionInterval, Dictionary<string, double?> variables, Double Q)
+        private IntervalBounds evaluateUncertainty(PredictionInterval predictionInterval, Dictionary<string, double?> variables, Double Q)
         {
             //Prediction Intervals for the true value of a streamflow statistic obtained for an ungaged site can be 
             //computed by use of a weighted regression equations corected for bias by:
@@ -389,7 +390,7 @@ namespace NSSService.Utilities.ServiceAgent
                 return 1;
             }
         }
-        internal SimpleRegionEquation computeWeightedAverage(List<SimpleRegionEquation> regressionRegions)
+        internal SimpleRegionEquation evaluateWeightedAverage(List<SimpleRegionEquation> regressionRegions)
         {
             SimpleRegionEquation weightedRR = null;
             try
@@ -411,6 +412,57 @@ namespace NSSService.Utilities.ServiceAgent
                 sm(WiM.Resources.MessageType.error, ex.Message);
                 sm(WiM.Resources.MessageType.warning, "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
                 return null;
+            }
+        }
+        private Extension getScenarioExtensionDef(string ex, int statisticCode)
+        {
+           switch (ex.ToUpper())  {
+               case "QPPQ":
+               case "FDCTM":
+                   return new Extension()
+                   {
+                       Code = "QPPQ",
+                       Description = "Estimats the flow at an ungaged site given the reference streamgage",
+                       Name = "Flow Duration Curve Transfer Method",
+                       Parameters = new List<ExtensionParameter>{new ExtensionParameter() { Code = "sid", Name="NWIS Station ID", Description="USGS NWIS Station Identifier", Value="01234567" },
+                                                        new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  JsonConvert.SerializeObject(DateTime.MinValue) },
+                                                        new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= JsonConvert.SerializeObject(DateTime.Now) }                                                       
+                       }
+
+                   };
+           
+           }//end switch
+           return null;
+        }
+        private bool canIncludeExension(string ex, int statisticCode)
+        {
+            switch (ex.ToUpper()){
+               case "QPPQ":
+               case "FDCTM":
+                   if (statisticCode == 5) return true;
+                   break;
+           }//end switch
+           return false;
+        }
+        private void evaluateExtension(Extension ext, SimpleRegionEquation regressionregion)
+        {
+            ExtensionServiceAgentBase sa = null;
+            try
+            {
+                switch (ext.Code.ToUpper()) {
+                    case "QPPQ":case "FDCTM":
+                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double,double>(regressionregion.Results.ToDictionary(k => Convert.ToDouble(k.Name.Replace("Percent Duration", "").Trim())/100, v => v.Value.Value)));
+                        break;
+                }//end switch
+
+                if (sa.isInitialized && sa.Execute())
+                    ext.Result = sa.Result;
+                this.sm(sa.Messages);
+            }
+            catch (Exception ex)
+            {
+                this.sm(WiM.Resources.MessageType.error, "Error evaluating extension: "+ex.Message);
+                this.sm(sa.Messages);
             }
         }
         #endregion

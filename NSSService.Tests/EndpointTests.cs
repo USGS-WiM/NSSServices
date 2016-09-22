@@ -1,9 +1,14 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 using NSSDB;
 using WiM.Test;
 using NSSService.Resources;
 using NSSService;
+using Newtonsoft.Json;
+using System.IO;
+using System.Text;
+using OpenRasta.Hosting.InMemory;
 
 
 namespace NSSService.Tests
@@ -66,6 +71,39 @@ namespace NSSService.Tests
             Assert.IsNotNull(returnedObject);
         }//end method
         [TestMethod]
+        public void ScenarioExtensionRequest()
+        {
+            var resourceurl = host + Configuration.regionResource + "/IA/" + Configuration.scenarioResource;
+            List<Scenario> returnedObject = this.GETRequest<List<Scenario>>(resourceurl+"?"+Configuration.statisticGroupTypeResource+"=fds&"+Configuration.extensionResource+"=qppq&"+Configuration.unitSystemTypeResource+"=2");
+            Assert.IsNotNull(returnedObject);
+
+            //load scenario object for post
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr=>{rr.Extensions.ForEach(e => e.Parameters.ForEach(p =>{ switch (p.Code.ToUpper())
+                                                                    {case "SID":  p.Value = "05465000"; break;
+                                                                     case "SDATE": p.Value = "2015-01-01T00:00:00"; break;
+                                                                     case "EDATE": p.Value = "2016-01-01T00:00:00"; break;
+                                                                    }}));
+                                                                    rr.Parameters.ForEach(p => { switch (p.Code.ToUpper())
+                                                                            {
+                                                                                case "DRNAREA": p.Value = 69.3; break;
+                                                                                case "PRECIP": p.Value = 35.46; break;
+                                                                                case "RSD": p.Value = 0.3; break;
+                                                                                case "HYSEP": p.Value = 55.22; break;
+                                                                                case "STREAM_VARG": p.Value = 0.49; break;
+                                                                                case "SSURGOB": p.Value = 79.9; break;
+                                                                                case "SSURGOC": p.Value = 0.53; break;
+                                                                                case "SSURGOD": p.Value = 0.87; break;
+                                                                            }
+                                                                    });
+            }));
+
+            List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + Configuration.statisticGroupTypeResource + "=fds&" + Configuration.extensionResource + "=qppq&" + Configuration.unitSystemTypeResource + "=2", returnedObject);
+            Assert.IsNotNull(resultObject);
+
+
+        }//end method
+        
+        [TestMethod]
         public void ScenarioEvaluateRequest()
         {
             //List<Scenario> content = null;
@@ -124,6 +162,25 @@ namespace NSSService.Tests
         }//end method
 
         #endregion
+        protected override T deserialize<T>(OpenRasta.Web.IResponse response)
+        {
+            if (response.Entity.ContentLength > 0)
+            {
+                // you must rewind the stream, as OpenRasta
+                // won't do this for you
+                response.Entity.Stream.Seek(0, SeekOrigin.Begin);
 
+                JsonSerializer serializer = new JsonSerializer();
+                using (StreamReader streamReader = new StreamReader(response.Entity.Stream, new UTF8Encoding(false, true)))
+                {
+                    using (JsonTextReader jsonTextReader = new JsonTextReader(streamReader))
+                    {
+                        serializer.TypeNameHandling = TypeNameHandling.Objects;
+                        return serializer.Deserialize<T>(jsonTextReader);
+                    }//end using
+                }//end using
+            }//end if
+            return default(T);
+        }
     }//end class
 }//end namespace

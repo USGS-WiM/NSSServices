@@ -157,26 +157,6 @@ namespace NSSService.Handlers
 
             }//end try
         }//end Get
-        
-        [HttpOperation(HttpMethod.GET, ForUriName = "getStateReports")]
-        public OperationResult getStateReports(String stateID)
-        {
-            ServiceAgent sa = null;
-            try
-            {
-                sa = new ServiceAgent();
-
-                return new OperationResult.OK { ResponseResource = sa.GetJsonFromFile<List<Citation>>(stateID, "Reports") };
-            }
-            catch (Exception ex)
-            {
-                return new OperationResult.InternalServerError { ResponseResource = ex.Message.ToString() };
-            }
-            finally
-            {
-
-            }//end try
-        }//end Get
 
         #endregion
         #region PUT Methods

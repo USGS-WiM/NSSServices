@@ -47,11 +47,12 @@ namespace NSSService.Handlers
         #region CRUD Methods
         #region GET Methods
         [HttpOperation(HttpMethod.GET, ForUriName = "GetScenarios")]
-        public OperationResult GetScenarios(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string regressiontypeIDs, [Optional] string systemtypeID)
+        public OperationResult GetScenarios(string region, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string regressiontypeIDs, [Optional] string systemtypeID,[Optional] string extensionmethods)
         {
             List<string> statisticgroupList = null;
             List<string> regressiontypeList = null;
             List<string> regressionregionList = null;
+            List<string> extensionList = null;
             List<Scenario> entities = null;
             Int32 unitsystemID = 0;
             
@@ -61,13 +62,13 @@ namespace NSSService.Handlers
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypeIDs);
                 regressionregionList = parse(regressionRegionIDs);
+                extensionList = parse(extensionmethods);
                 unitsystemID = Convert.ToInt32(systemtypeID);
                 if (unitsystemID < 1) unitsystemID = 1;
 
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.GetScenarios(region, unitsystemID, regressionregionList, statisticgroupList, regressiontypeList).ToList();
-                    
+                    entities = sa.GetScenarios(region, unitsystemID, regressionregionList, statisticgroupList, regressiontypeList, extensionList).ToList();                    
                     sm(WiM.Resources.MessageType.info,"Count: " + entities.Count());
                     sm(sa.Messages);
                 }//end using
@@ -89,11 +90,12 @@ namespace NSSService.Handlers
         }//end Get
 
         [HttpOperation(HttpMethod.POST, ForUriName = "EstimateScenarios")]
-        public OperationResult EstimateScenarios(string region, List<Scenario> scenarioList, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string regressiontypeIDs, [Optional] string systemtypeID)
+        public OperationResult EstimateScenarios(string region, List<Scenario> scenarioList, [Optional] string regressionRegionIDs, [Optional] string statisticgroups, [Optional] string regressiontypeIDs, [Optional] string systemtypeID,[Optional] string extensionmethods)
         {
             List<string> statisticgroupList = null;
             List<string> regressiontypeList = null;
             List<string> subregionList = null;
+            List<string> extensionList = null;
             List<Scenario> entities = null;
             Int32 unitsystemID = 0;
             
@@ -106,10 +108,11 @@ namespace NSSService.Handlers
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypeIDs);
                 subregionList = parse(regressionRegionIDs);
+                extensionList = parse(extensionmethods);
 
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.EstimateScenarios(region,unitsystemID, scenarioList, subregionList, statisticgroupList, regressiontypeList).ToList();
+                    entities = sa.EstimateScenarios(region,unitsystemID, scenarioList, subregionList, statisticgroupList, regressiontypeList, extensionList).ToList();
 
                     sm(WiM.Resources.MessageType.info,"Count: " + entities.Count());
                   

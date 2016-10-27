@@ -18,7 +18,7 @@ namespace NSSDB
         public int EquationID { get; set; }
         public int UnitTypeID { get; set; }
     
-        public virtual Equation Equation { get; set; }
         public virtual UnitType UnitType { get; set; }
+        public virtual Equation Equation { get; set; }
     }
 }

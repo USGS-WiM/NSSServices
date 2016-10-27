@@ -8,7 +8,6 @@ using NSSService;
 using Newtonsoft.Json;
 using System.IO;
 using System.Text;
-using OpenRasta.Hosting.InMemory;
 
 
 namespace NSSService.Tests
@@ -102,7 +101,30 @@ namespace NSSService.Tests
 
 
         }//end method
-        
+        [TestMethod]
+        public void ScenarioLimitationExtensionRequest()
+        {
+            var resourceurl = host + Configuration.regionResource + "/IA/" + Configuration.scenarioResource;
+            var queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + "=gc0,gc1560,gc0,gc1526,gc1561,gc1564,gc15620,gc1201,gc1202,gc667&" + Configuration.unitSystemTypeResource + "=2";
+            List<Scenario> returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            //load scenario object for post
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 69.3; break;
+                        case "I24H10Y": p.Value = 4; break;
+                        case "CCM": p.Value = 0.3; break;
+                        case "STRMTOT": p.Value = 3; break;
+                    }
+                });
+            }));
+
+            List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.IsNotNull(resultObject);
+        }//end method
         [TestMethod]
         public void ScenarioEvaluateRequest()
         {

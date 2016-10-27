@@ -26,6 +26,7 @@ namespace NSSService.Utilities.ServiceAgent
         #endregion
         #region "Collections & Dictionaries"
         private List<UnitConversionFactor> unitConversionFactors { get; set; }
+        private List<Limitation> limitations { get; set; }
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
@@ -98,9 +99,12 @@ namespace NSSService.Utilities.ServiceAgent
         internal IQueryable<Scenario> GetScenarios(string region, Int32 systemtypeID, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null)
         {
             IQueryable<ScenarioParameterView> equery = null;
+            List<Limitation> limitations = null;
             try
             {
-                this.unitConversionFactors = Select<UnitConversionFactor>().ToList();
+                //this.unitConversionFactors = Select<UnitConversionFactor>().ToList();
+                limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+
                 
                 List<RegionRegressionRegion> SelectedRegionRegressions = Select<RegionRegressionRegion>().Include("RegressionRegion")
                            .Where(rer => String.Equals(region.Trim().ToLower(), rer.Region.Code.ToLower().Trim())
@@ -142,7 +146,13 @@ namespace NSSService.Utilities.ServiceAgent
                                Description = p.VariableDescription,
                                Name = p.VariableName,
                                Value = -999.99
-                            }).Distinct().ToList()
+                            }).Union(limitations.Where(l=>l.RegressionRegionID == r.groupkey).SelectMany(l=>l.Variables).Select(v=>new Parameter() {
+                                ID =v.VariableType.ID,
+                                UnitType = new SimpleUnitType() { ID = v.UnitTypeID, Unit = v.UnitType.Unit, Abbr = v.UnitType.Abbr },
+                                Code = v.VariableType.Code,
+                                Description = v.VariableType.Description,
+                                Name =v.VariableType.Name,
+                                Value =-999.99 })).Distinct().ToList()                            
                         }).ToList()
                     }).AsQueryable();
             }
@@ -159,15 +169,19 @@ namespace NSSService.Utilities.ServiceAgent
             List<Equation> EquationList = null;
             ExpressionOps eOps = null;
             Boolean doWeightedAverage = false;
-            //http://wim.usgs.gov/streamest/Views/FDCTM.html
+            
             try
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
+                this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
                 equery = GetEquations(region, regionEquationList, statisticgroupList, regressiontypeList);
                 equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType").Include("PredictionInterval").Include("Variables.VariableType").Include("Variables.UnitType");
+                
 
                 foreach (Scenario scenario in scenarioList)
                 {
+                    //remove if invalid
+                    scenario.RegressionRegions.RemoveAll(rr => !Valid(rr));
                     foreach (SimpleRegionEquation regressionregion in scenario.RegressionRegions)
                     {
                         regressionregion.Results = new List<RegressionResultBase>();
@@ -258,15 +272,15 @@ namespace NSSService.Utilities.ServiceAgent
 	                                `vt`.`Description` AS `VariableDescription`
     
                                 FROM
-	                                ((((((`nssnew`.`Equation` `e`
-	                                JOIN `nssnew`.`Variable` `v`)
-	                                JOIN `nssnew`.`UnitType` `u`)
-	                                JOIN `nssnew`.`VariableType` `vt`)
-	                                JOIN `nssnew`.`RegressionRegion` `rr`)
-	                                JOIN `nssnew`.`RegressionType` `rt`)
-	                                JOIN `nssnew`.`StatisticGroupType` `st`)
-                                    Left Join `nssnew`.`UnitConversionFactor` `cf` ON (`cf`.`UnitTypeInID` = `u`.`ID`)
-	                                Left Join `nssnew`.`UnitType` `u2` on (`cf`.`UnitTypeOutID` = `u2`.`ID`)
+	                                ((((((`Equation` `e`
+	                                JOIN `Variable` `v`)
+	                                JOIN `UnitType` `u`)
+	                                JOIN `VariableType` `vt`)
+	                                JOIN `RegressionRegion` `rr`)
+	                                JOIN `RegressionType` `rt`)
+	                                JOIN `StatisticGroupType` `st`)
+                                    Left Join `UnitConversionFactor` `cf` ON (`cf`.`UnitTypeInID` = `u`.`ID`)
+	                                Left Join `UnitType` `u2` on (`cf`.`UnitTypeOutID` = `u2`.`ID`)
     
                                 WHERE
 	                                ((`v`.`EquationID` = `e`.`ID`)
@@ -463,6 +477,30 @@ namespace NSSService.Utilities.ServiceAgent
             {
                 this.sm(WiM.Resources.MessageType.error, "Error evaluating extension: "+ex.Message);
                 this.sm(sa.Messages);
+            }
+        }
+        private bool Valid(SimpleRegionEquation regressionRegion) {
+            ExpressionOps eOps = null;
+            try
+            {
+                if (regressionRegion.Parameters.Any(p => p.Value <= -999)) throw new Exception("One or more parameters are invalid");
+                //check limitations
+                foreach (var item in limitations.Where(l => l.RegressionRegionID == regressionRegion.ID))
+                {
+                    sm(WiM.Resources.MessageType.info, regressionRegion.Name + " limitations found; criteria; "+item.Criteria);                    
+                    var variables = regressionRegion.Parameters.Where(e => item.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, item.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
+                    eOps = new ExpressionOps(item.Criteria, variables);
+                    if (!eOps.IsValid) throw new Exception("Validation equation invalid.");
+                    if (!Convert.ToBoolean(eOps.Value)) return false;
+                }//next item
+
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                sm(WiM.Resources.MessageType.error, regressionRegion.Name + " is not valid: " + ex.Message);
+                return false;
             }
         }
         #endregion

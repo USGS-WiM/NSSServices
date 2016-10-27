@@ -12,25 +12,21 @@ namespace NSSDB
     using System;
     using System.Collections.Generic;
     
-    public partial class RegressionType
+    public partial class Limitation
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public RegressionType()
+        public Limitation()
         {
-            this.Equations = new HashSet<Equation>();
-            this.RegressionTypeDisplayNames = new HashSet<RegressionTypeDisplayName>();
             this.Variables = new HashSet<Variable>();
         }
     
         public int ID { get; set; }
-        public string Name { get; set; }
-        public string Code { get; set; }
+        public string Criteria { get; set; }
         public string Description { get; set; }
+        public int RegressionRegionID { get; set; }
+        public double FlowCoef { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Equation> Equations { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<RegressionTypeDisplayName> RegressionTypeDisplayNames { get; set; }
+        public virtual RegressionRegion RegressionRegion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Variable> Variables { get; set; }
     }

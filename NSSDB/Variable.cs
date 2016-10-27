@@ -21,19 +21,21 @@ namespace NSSDB
         }
     
         public int ID { get; set; }
-        public int EquationID { get; set; }
+        public Nullable<int> EquationID { get; set; }
         public int VariableTypeID { get; set; }
+        public Nullable<int> RegressionTypeID { get; set; }
         public int UnitTypeID { get; set; }
         public Nullable<double> MinValue { get; set; }
         public Nullable<double> MaxValue { get; set; }
         public string Comments { get; set; }
-        public Nullable<int> RegressionTypeID { get; set; }
+        public Nullable<int> LimitationID { get; set; }
     
         public virtual Equation Equation { get; set; }
         public virtual VariableType VariableType { get; set; }
+        public virtual UnitType UnitType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VariableUnitType> VariableUnitTypes { get; set; }
-        public virtual UnitType UnitType { get; set; }
         public virtual RegressionType RegressionType { get; set; }
+        public virtual Limitation Limitation { get; set; }
     }
 }

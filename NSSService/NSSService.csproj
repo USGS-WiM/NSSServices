@@ -21,6 +21,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -107,8 +108,8 @@
       <HintPath>..\packages\WiMHypermedia.1.0.6109.9827\lib\net45\WiMHypermedia.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WiMServices, Version=1.0.6109.12828, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMServices.1.0.6109.12828\lib\net45\WiMServices.dll</HintPath>
+    <Reference Include="WiMServices, Version=1.0.6141.14570, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMServices.1.0.6141.14570\lib\net45\WiMServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -123,6 +124,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="README.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

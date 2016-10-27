@@ -30,19 +30,20 @@ namespace NSSDB
         public virtual DbSet<EquationError> EquationErrors { get; set; }
         public virtual DbSet<EquationUnitType> EquationUnitTypes { get; set; }
         public virtual DbSet<ErrorType> ErrorTypes { get; set; }
+        public virtual DbSet<Limitation> Limitations { get; set; }
         public virtual DbSet<PredictionInterval> PredictionIntervals { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
-        public virtual DbSet<StatisticGroupType> StatisticGroupTypes { get; set; }
-        public virtual DbSet<UserType> UserTypes { get; set; }
-        public virtual DbSet<Variable> Variables { get; set; }
-        public virtual DbSet<VariableType> VariableTypes { get; set; }
-        public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }
-        public virtual DbSet<UnitConversionFactor> UnitConversionFactors { get; set; }
-        public virtual DbSet<UnitSystemType> UnitSystemTypes { get; set; }
-        public virtual DbSet<UnitType> UnitTypes { get; set; }
         public virtual DbSet<RegionRegressionRegion> RegionRegressionRegions { get; set; }
         public virtual DbSet<RegressionRegion> RegressionRegions { get; set; }
         public virtual DbSet<RegressionType> RegressionTypes { get; set; }
         public virtual DbSet<RegressionTypeDisplayName> RegressionTypeDisplayNames { get; set; }
+        public virtual DbSet<StatisticGroupType> StatisticGroupTypes { get; set; }
+        public virtual DbSet<UnitConversionFactor> UnitConversionFactors { get; set; }
+        public virtual DbSet<UnitSystemType> UnitSystemTypes { get; set; }
+        public virtual DbSet<UnitType> UnitTypes { get; set; }
+        public virtual DbSet<UserType> UserTypes { get; set; }
+        public virtual DbSet<Variable> Variables { get; set; }
+        public virtual DbSet<VariableType> VariableTypes { get; set; }
+        public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }
     }
 }

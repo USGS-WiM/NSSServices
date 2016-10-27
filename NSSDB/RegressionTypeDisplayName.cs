@@ -19,7 +19,7 @@ namespace NSSDB
         public string Name { get; set; }
         public Nullable<int> UserTypeID { get; set; }
     
-        public virtual UserType UserType { get; set; }
         public virtual RegressionType RegressionType { get; set; }
+        public virtual UserType UserType { get; set; }
     }
 }

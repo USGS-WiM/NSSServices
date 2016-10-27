@@ -9,7 +9,7 @@ namespace NSSDB.Tests
     [TestClass]
     public class NSSDBTest
     {
-        private string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nssnew.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id=**username**;PASSWORD={0};database=nssnew';";
+        private string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id=**username**;PASSWORD={0};database=nss';";
         private string password = "***REMOVED***";
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace NSSDB.Tests
             {
                 try
                 {
-                    var testQuery = context.Citations.ToList();
+                    var testQuery = context.Limitations.ToList();
                     Assert.IsNotNull(testQuery,testQuery.Count.ToString());
                 }
                 catch (Exception ex)

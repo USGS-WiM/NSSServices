@@ -18,11 +18,11 @@ namespace NSSDB
         public UnitType()
         {
             this.Equations = new HashSet<Equation>();
-            this.EquationUnitTypes = new HashSet<EquationUnitType>();
             this.Variables = new HashSet<Variable>();
-            this.VariableUnitTypes = new HashSet<VariableUnitType>();
             this.UnitConversionFactorsIn = new HashSet<UnitConversionFactor>();
             this.UnitConversionFactorsOut = new HashSet<UnitConversionFactor>();
+            this.EquationUnitTypes = new HashSet<EquationUnitType>();
+            this.VariableUnitTypes = new HashSet<VariableUnitType>();
         }
     
         public int ID { get; set; }
@@ -33,15 +33,15 @@ namespace NSSDB
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Equation> Equations { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<EquationUnitType> EquationUnitTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Variable> Variables { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<VariableUnitType> VariableUnitTypes { get; set; }
-        public virtual UnitSystemType UnitSystemType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UnitConversionFactor> UnitConversionFactorsIn { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UnitConversionFactor> UnitConversionFactorsOut { get; set; }
+        public virtual UnitSystemType UnitSystemType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EquationUnitType> EquationUnitTypes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<VariableUnitType> VariableUnitTypes { get; set; }
     }
 }

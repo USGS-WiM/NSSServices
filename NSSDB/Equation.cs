@@ -18,31 +18,31 @@ namespace NSSDB
         public Equation()
         {
             this.Variables = new HashSet<Variable>();
-            this.EquationUnitTypes = new HashSet<EquationUnitType>();
             this.EquationErrors = new HashSet<EquationError>();
+            this.EquationUnitTypes = new HashSet<EquationUnitType>();
         }
     
         public int ID { get; set; }
+        public int RegressionRegionID { get; set; }
         public Nullable<int> PredictionIntervalID { get; set; }
         public int UnitTypeID { get; set; }
         public string Equation1 { get; set; }
         public Nullable<double> DA_Exponent { get; set; }
         public Nullable<int> OrderIndex { get; set; }
-        public int StatisticGroupTypeID { get; set; }
-        public int RegressionRegionID { get; set; }
-        public Nullable<double> EquivalentYears { get; set; }
         public int RegressionTypeID { get; set; }
+        public int StatisticGroupTypeID { get; set; }
+        public Nullable<double> EquivalentYears { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Variable> Variables { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<EquationUnitType> EquationUnitTypes { get; set; }
-        public virtual StatisticGroupType StatisticGroupType { get; set; }
+        public virtual PredictionInterval PredictionInterval { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EquationError> EquationErrors { get; set; }
-        public virtual PredictionInterval PredictionInterval { get; set; }
         public virtual UnitType UnitType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EquationUnitType> EquationUnitTypes { get; set; }
         public virtual RegressionRegion RegressionRegion { get; set; }
+        public virtual StatisticGroupType StatisticGroupType { get; set; }
         public virtual RegressionType RegressionType { get; set; }
     }
 }

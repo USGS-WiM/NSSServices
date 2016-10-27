@@ -124,7 +124,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="README.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

@@ -176,8 +176,7 @@ namespace NSSService.Utilities.ServiceAgent
                 this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
                 equery = GetEquations(region, regionEquationList, statisticgroupList, regressiontypeList);
                 equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType").Include("PredictionInterval").Include("Variables.VariableType").Include("Variables.UnitType");
-                
-
+ 
                 foreach (Scenario scenario in scenarioList)
                 {
                     //remove if invalid
@@ -486,15 +485,15 @@ namespace NSSService.Utilities.ServiceAgent
                 if (regressionRegion.Parameters.Any(p => p.Value <= -999)) throw new Exception("One or more parameters are invalid");
                 //check limitations
                 foreach (var item in limitations.Where(l => l.RegressionRegionID == regressionRegion.ID))
-                {
-                    sm(WiM.Resources.MessageType.info, regressionRegion.Name + " limitations found; criteria; "+item.Criteria);                    
+                {                
                     var variables = regressionRegion.Parameters.Where(e => item.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, item.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
                     eOps = new ExpressionOps(item.Criteria, variables);
                     if (!eOps.IsValid) throw new Exception("Validation equation invalid.");
-                    if (!Convert.ToBoolean(eOps.Value)) return false;
-                }//next item
-
-                
+                    if (!Convert.ToBoolean(eOps.Value)) {
+                        sm(WiM.Resources.MessageType.info, regressionRegion.Name + " removed; limitation criteria: " + item.Criteria);
+                        return false;
+                    } 
+                }//next item                
                 return true;
             }
             catch (Exception ex)

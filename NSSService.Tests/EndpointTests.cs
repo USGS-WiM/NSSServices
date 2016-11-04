@@ -114,10 +114,10 @@ namespace NSSService.Tests
                 rr.Parameters.ForEach(p => {
                     switch (p.Code.ToUpper())
                     {
-                        case "DRNAREA": p.Value = 69.3; break;
-                        case "I24H10Y": p.Value = 4; break;
-                        case "CCM": p.Value = 0.3; break;
-                        case "STRMTOT": p.Value = 3; break;
+                        case "DRNAREA": p.Value = 126; break;
+                        case "I24H10Y": p.Value = 4.23; break;
+                        case "CCM": p.Value = 1.22; break;
+                        case "STRMTOT": p.Value = 103.251; break;
                     }
                 });
             }));

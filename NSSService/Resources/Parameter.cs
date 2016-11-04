@@ -29,7 +29,8 @@ namespace NSSService.Resources
             {
                 try
                 {
-                    if (Value.HasValue && Limits != null && Limits.Min.HasValue && Limits.Max.HasValue && 
+                    if (Limits == null) return false;
+                    if (Value.HasValue && Limits.Min.HasValue && Limits.Max.HasValue && 
                         Limits.Min <= Value.Value  && Value.Value <= Limits.Max)
                         return false;
                     return true;

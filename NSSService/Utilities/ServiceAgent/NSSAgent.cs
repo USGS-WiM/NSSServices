@@ -207,7 +207,7 @@ namespace NSSService.Utilities.ServiceAgent
                                 code = equation.RegressionType.Code,
                                 Description = equation.RegressionType.Description,
                                 Unit = unit,
-                                Errors = paramsOutOfRange ? null : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value }).ToList(), 
+                                Errors = paramsOutOfRange ? null : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value, Code = e.ErrorType.Code }).ToList(), 
                                 EquivalentYears = paramsOutOfRange? null: equation.EquivalentYears,
                                 IntervalBounds = paramsOutOfRange? null: evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value*unit.factor),
                                 Value = eOps.Value*unit.factor                               

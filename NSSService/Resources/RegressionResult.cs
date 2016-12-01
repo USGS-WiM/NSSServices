@@ -52,6 +52,7 @@ namespace NSSService.Resources
     public class Error
     {
         public string Name { get; set; }
+        public string Code { get; set; }
         public Double? Value { get; set; }
     }//end class
     public class IntervalBounds

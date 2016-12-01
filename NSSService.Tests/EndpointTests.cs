@@ -97,9 +97,7 @@ namespace NSSService.Tests
             }));
 
             List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + Configuration.statisticGroupTypeResource + "=fds&" + Configuration.extensionResource + "=qppq&" + Configuration.unitSystemTypeResource + "=2", returnedObject);
-            Assert.IsNotNull(resultObject);
-
-
+            Assert.Inconclusive("Deserializing object not yet implemented");
         }//end method
         [TestMethod]
         public void ScenarioLimitationExtensionRequest()
@@ -123,7 +121,7 @@ namespace NSSService.Tests
             }));
 
             List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.IsNotNull(resultObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
         }//end method
         [TestMethod]
         public void ScenarioEvaluateRequest()

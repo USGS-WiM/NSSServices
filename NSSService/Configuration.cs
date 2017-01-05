@@ -79,7 +79,7 @@ namespace NSSService
                 AddRegionEndpoints();
                 AddScenarioEndpoints();
                 AddStatisticGroupTypeEndpoints();
-                AddRegionEquationEndpoints();
+                AddRegressionRegionEndpoints();
                 AddUnitConversionFactorEndpoints();
                 AddUnitSystemTypeEndpoints();
                 AddUnitTypeEndpoints();
@@ -223,12 +223,13 @@ namespace NSSService
                 .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");
 
         }
-        private void AddRegionEquationEndpoints()
+        private void AddRegressionRegionEndpoints()
         {
             ResourceSpace.Has.ResourcesOfType<List<RegressionRegion>>()
                 .AtUri(RegressionRegionResource)
-                .And.AtUri(regionResource + "/{region}/" + RegressionRegionResource).Named("GetRegionSubregions")
-                .And.AtUri(RegressionRegionResource + "?region={region}").Named("GetRegionSubregions")
+                .And.AtUri(regionResource + "/{region}/" + RegressionRegionResource +"?" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}").Named("GetRegressionRegions")
+                .And.AtUri(RegressionRegionResource + "?region={region}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}").Named("GetRegressionRegions")
+
                 .HandledBy<RegressionRegionHandler>()
                 .TranscodedBy<JsonEntityDotNetCodec>().ForMediaType("application/json;q=0.9").ForExtension("json")            
                 .And.TranscodedBy<UTF8EntityXmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");

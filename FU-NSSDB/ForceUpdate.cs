@@ -62,19 +62,12 @@ namespace FU_NSSDB
         #region Methods
         public void Load() {
             if (!System.Diagnostics.Debugger.IsAttached) throw new Exception("Must be ran in debug mode");
-            List<FURegion> regionsList = null;
-            List<FURegressionRegion> regressionregionsList = null;
-            List<FUEquation> equationsList = null;
-            List<FUCovariance> covarianceList = null;
-            List<FUVariable> variablesList = null;
-
-
             try
             {
                 System.Diagnostics.Debugger.Break();
                 //-------1---------2---------3---------4---------5---------6---------7---------8
                 //       This method will erase the database and force an update from/ to the connected databases items above
-                //       If this is not the disired outcome please exit code now.
+                //       If this is not the desired outcome please exit code now.
                 //-------+---------+---------+---------+---------+---------+---------+---------+
                 System.Diagnostics.Debugger.Break();
 
@@ -154,7 +147,15 @@ namespace FU_NSSDB
             try
             {
                 //citation
-                regRegion.CitationID = NSSDBOps.AddItem(dbOps.SQLType.e_citation, new object[] {  regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
+                //check if citation exists already before adding
+                //regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim()
+                var citationlist = NSSDBOps.GetDBItems<Citation>(dbOps.SQLType.e_citation).Where(c => string.Equals(c.CitationURL.Trim(),regRegion.Citation.CitationURL.Trim(),StringComparison.OrdinalIgnoreCase)&&
+                                                                                                        string.Equals(c.Author.Trim(), regRegion.Citation.Author.Trim(), StringComparison.OrdinalIgnoreCase)&&
+                                                                                                        string.Equals(c.Title.Trim(), regRegion.Citation.Title.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+
+                if(citationlist.Count<1)
+                    regRegion.CitationID = NSSDBOps.AddItem(dbOps.SQLType.e_citation, new object[] {  regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
+                
                 //regressionregion
                 regRegion.ID = NSSDBOps.AddItem(dbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID});
                 //RegionRegressionRegion

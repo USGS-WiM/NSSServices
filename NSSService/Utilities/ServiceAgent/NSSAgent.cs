@@ -75,7 +75,7 @@ namespace NSSService.Utilities.ServiceAgent
         #endregion
         #endregion
         #region "Methods"
-        internal IQueryable<Equation> GetEquations(string region, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
+        internal IQueryable<Equation> GetEquations(string region, List<string> regionEquationList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
         {
             IQueryable<Equation> equery = null;
             equery = Select<RegionRegressionRegion>()

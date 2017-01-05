@@ -141,6 +141,8 @@ namespace NSSService.Tests
         [TestMethod]
         public void RegressionRegionRequest()
         {
+            List<RegressionRegion> returnedlimitObject = this.GETRequest<List<RegressionRegion>>(host + Configuration.RegressionRegionResource+"?region=IL&"+Configuration.statisticGroupTypeResource+"=&"+Configuration.regressionTypeResource+"=1118");
+            Assert.IsTrue(returnedlimitObject.Count == 7);
             List<RegressionRegion> returnedObject = this.GETRequest<List<RegressionRegion>>(host + Configuration.RegressionRegionResource);
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method

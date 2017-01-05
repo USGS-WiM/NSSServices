@@ -26,6 +26,7 @@ using OpenRasta.Web;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using WiM.Exceptions;
 using WiM.Resources;
 using NSSDB;
@@ -73,16 +74,25 @@ namespace NSSService.Handlers
             }//end try
         }//end Get
         [HttpOperation(HttpMethod.GET, ForUriName = "GetRegressionRegion")]
-        public OperationResult GetRegressionRegion(string region)
+        public OperationResult GetRegressionRegions(string region, [Optional]string statisticgroups, [Optional] string regressiontypeIDs)
         {
             List<RegressionRegion> entities = null;
+            List<string> statisticGroupList = null;
+            List<string> regressiontypeList = null;
 
             try
             {
+                if (string.IsNullOrEmpty(region)) throw new BadRequestException("region must be specified");
+                statisticGroupList = parse(statisticgroups);
+                regressiontypeList = parse(regressiontypeIDs);
+
                 using (NSSAgent sa = new NSSAgent())
                 {
-                    entities = sa.Select<RegionRegressionRegion>().Where(rrr => String.Equals(region.Trim().ToLower(), rrr.Region.Code.ToLower().Trim())
-                               || String.Equals(region.ToLower().Trim(), rrr.RegionID.ToString())).Select(r => r.RegressionRegion).ToList();
+                    
+                    entities = sa.GetEquations(region, null, statisticGroupList, regressiontypeList)
+                                    .Select(e => e.RegressionRegion).Distinct().ToList();
+
+                    
                     
                     sm(MessageType.info,"Count: " + entities.Count());
                     sm(sa.Messages);
@@ -152,7 +162,5 @@ namespace NSSService.Handlers
         #region Enumerations
 
         #endregion
-
-
     }//end class
 }//end namespace

@@ -22,7 +22,6 @@ namespace NSSService.Resources
         private List<Error> _errors;
         public List<Error> Errors { get { return _errors; } set { _errors = value; } }
 
-        [NonSerialized]
         private SimpleUnitType _unit;
         [XmlElement("UnitType")]
         public SimpleUnitType Unit { get { return _unit; } set { _unit = value; } }
@@ -39,15 +38,14 @@ namespace NSSService.Resources
         public IntervalBounds IntervalBounds { get { return _intervalBounds; } set { _intervalBounds = value; } }
         public override RegressionResultBase Clone()
         {
-            return (RegressionResult)this.MemberwiseClone();
-            //using (var ms = new MemoryStream())
-            //{
-            //    var formatter = new BinaryFormatter();
-            //    formatter.Serialize(ms, this);
-            //    ms.Position = 0;
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, this);
+                ms.Position = 0;
 
-            //    return 
-            //}
+                return (RegressionResult)formatter.Deserialize(ms);
+            }//end using
         }
     }//end class
     public class Error

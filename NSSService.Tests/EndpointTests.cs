@@ -133,6 +133,30 @@ namespace NSSService.Tests
             Assert.Inconclusive("Not yet implemented");
         }//end method
         [TestMethod]
+        public void ScenarioWeightedEvaluateRequest()
+        {
+            var resourceurl = host + Configuration.regionResource + "/CO/" + Configuration.scenarioResource;
+            var queryParams = Configuration.statisticGroupTypeResource + "=4&" + Configuration.RegressionRegionResource + "=gc1214,gc1213,gc1211,gc1212,gc1204,gc1698,gc5999,gc1488& " + Configuration.unitSystemTypeResource + "=2";
+            List<Scenario> returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 0.91; break;
+                        case "PRECIP": p.Value = 19.83; break;
+                        case "ELEV": p.Value = 6850; break;
+                    }
+                });
+                rr.PercentWeight = 3.647444727402222;
+            }));
+
+            List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+        }//end method
+
+        [TestMethod]
         public void StatisticGroupTypeRequest()
         {
             List<StatisticGroupType> returnedObject = this.GETRequest<List<StatisticGroupType>>(host + Configuration.statisticGroupTypeResource);

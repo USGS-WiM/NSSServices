@@ -39,14 +39,15 @@ namespace NSSService.Resources
         public IntervalBounds IntervalBounds { get { return _intervalBounds; } set { _intervalBounds = value; } }
         public override RegressionResultBase Clone()
         {
-            using (var ms = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(ms, this);
-                ms.Position = 0;
+            return (RegressionResult)this.MemberwiseClone();
+            //using (var ms = new MemoryStream())
+            //{
+            //    var formatter = new BinaryFormatter();
+            //    formatter.Serialize(ms, this);
+            //    ms.Position = 0;
 
-                return (RegressionResult)formatter.Deserialize(ms);
-            }
+            //    return 
+            //}
         }
     }//end class
     public class Error
@@ -60,6 +61,7 @@ namespace NSSService.Resources
         public double Lower { get; set; }
         public double Upper { get; set; }
     }
+    [Serializable]
     public class SimpleUnitType
     {
         public Int32 ID { get; set; }

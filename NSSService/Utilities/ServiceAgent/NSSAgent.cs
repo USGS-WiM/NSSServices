@@ -168,7 +168,6 @@ namespace NSSService.Utilities.ServiceAgent
             IQueryable<Equation> equery = null;
             List<Equation> EquationList = null;
             ExpressionOps eOps = null;
-            Boolean doWeightedAverage = false;
             
             try
             {
@@ -180,13 +179,13 @@ namespace NSSService.Utilities.ServiceAgent
                 foreach (Scenario scenario in scenarioList)
                 {
                     //remove if invalid
-                    scenario.RegressionRegions.RemoveAll(rr => !Valid(rr));
+                    scenario.RegressionRegions.RemoveAll(rr => !Valid(rr));              
+
                     foreach (SimpleRegionEquation regressionregion in scenario.RegressionRegions)
                     {
                         regressionregion.Results = new List<RegressionResultBase>();
                         EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).Select(e=>e).ToList();
-                        if (doWeightedAverage || (regressionregion.PercentWeight.HasValue && regressionregion.PercentWeight.Value > 0 && regressionregion.PercentWeight.Value < 100)) doWeightedAverage = true;
-
+                        
                         foreach (Equation equation in EquationList)
                         {
                             Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
@@ -215,7 +214,7 @@ namespace NSSService.Utilities.ServiceAgent
                         }//next equation
                         regressionregion.Extensions.ForEach(ext => evaluateExtension(ext, regressionregion));
                     }//next regressionregion
-                    if (doWeightedAverage)
+                    if (canAreaWeight(scenario.RegressionRegions))
                     {
                         var weightedRegion = evaluateWeightedAverage(scenario.RegressionRegions);
                         if (weightedRegion!= null)scenario.RegressionRegions.Add(weightedRegion);
@@ -230,6 +229,7 @@ namespace NSSService.Utilities.ServiceAgent
                 throw;
             }
         }
+
         #endregion
         #region "Helper Methods"
         private IQueryable<T> getTable<T>(object[] args) where T : class,new()
@@ -403,20 +403,42 @@ namespace NSSService.Utilities.ServiceAgent
                 return 1;
             }
         }
+        private bool canAreaWeight(List<SimpleRegionEquation> regressionRegions)
+        {
+            double? areaSum;
+            double count;
+            try
+            {
+                count = regressionRegions.Count();
+                areaSum = regressionRegions.Sum(r => r.PercentWeight);
+                if (count <= 0 || !areaSum.HasValue || areaSum <= 0) return false;
+
+                if (areaSum.HasValue && Math.Round(areaSum.Value) < 100)
+                {
+                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.
+                                                            Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                sm(WiM.Resources.MessageType.error, "Error with area weight: " + ex.Message);
+                return false;
+            }
+
+        }
         internal SimpleRegionEquation evaluateWeightedAverage(List<SimpleRegionEquation> regressionRegions)
         {
             SimpleRegionEquation weightedRR = null;
             try
             {
-                //ensure percent sums to 100
-                double? total = regressionRegions.Sum(r => r.PercentWeight);
-                if (!total.HasValue && Math.Round(total.Value) != 100) 
-                    throw new Exception("Regions percent area are out of range ("+total+"% Requires 100%). Whole estimates have been provided using the regional equations that are available for other parts of the region.");
                 
                 weightedRR = new SimpleRegionEquation();
                 weightedRR.Name = "Area-Averaged";
-                weightedRR.Results = regressionRegions.SelectMany(x => x.Results.Select(r=>r.Clone()).Select(r => { r.Value = r.Value * x.PercentWeight / 100; return r; }))
-                    .GroupBy(e => e.Name).Select(i=>i.Aggregate((accumulator, it) => { accumulator.Value += it.Value; accumulator.Equation = "Weighted Average"; return accumulator; })).ToList();
+                weightedRR.Results = regressionRegions.SelectMany(x => x.Results.Select(r=>r.Clone()).Select(r => { r.Value = r.Value * x.PercentWeight / 100;  return r; }))
+                    .GroupBy(e => e.Name).Select(i=>i.Aggregate((accumulator, it) => { accumulator.Value += it.Value; accumulator.Unit = it.Unit; accumulator.Equation = "Weighted Average"; return accumulator; })).ToList();
 
                 return weightedRR;
             }
@@ -502,6 +524,8 @@ namespace NSSService.Utilities.ServiceAgent
                 return false;
             }
         }
+        
+
         #endregion
         #region "Structures"
         //A structure is a value type. When a structure is created, the variable to which the struct is assigned holds

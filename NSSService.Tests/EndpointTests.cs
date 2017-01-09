@@ -126,11 +126,31 @@ namespace NSSService.Tests
         [TestMethod]
         public void ScenarioEvaluateRequest()
         {
-            //List<Scenario> content = null;
-            //List<Scenario> returnedObject = this.POSTRequest<List<Scenario>>(host + Configuration.regionResource + "/IN/" + Configuration.scenarioResource, content);
-            
-            //Assert.IsNotNull(returnedObject);
-            Assert.Inconclusive("Not yet implemented");
+            var resourceurl = host + Configuration.regionResource + "/NC/" + Configuration.scenarioResource;
+            var queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + "=gc1251,gc2,gc1254&" + Configuration.unitSystemTypeResource + "=2";
+            List<Scenario> returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 232; break;
+                        case "PCTREG1": p.Value = 0; break;
+                        case "PCTREG2": p.Value = 100; break;
+                        case "PCTREG3": p.Value = 0; break;
+                        case "PCTREG4": p.Value = 0; break;
+                        case "PCTREG5": p.Value = 0; break;
+                        case "I24H50Y": p.Value = 7.74; break;
+                        case "LC11IMP": p.Value = 0; break;
+                        case "LC06IMP": p.Value = 0.01; break;
+
+                    }
+                });
+            }));
+
+            List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
         }//end method
         [TestMethod]
         public void ScenarioWeightedEvaluateRequest()

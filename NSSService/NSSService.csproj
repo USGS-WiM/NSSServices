@@ -104,12 +104,28 @@
       <HintPath>..\packages\TimeSeries.1.0.0.0\lib\net45\TimeSeries.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WiMHypermedia, Version=1.0.6109.9827, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMHypermedia.1.0.6109.9827\lib\net45\WiMHypermedia.dll</HintPath>
+    <Reference Include="Utilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Utilities.1.0.0.0\lib\net45\Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WiMServices, Version=1.0.6218.17848, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMServices.1.0.6218.17848\lib\net45\WiMServices.dll</HintPath>
+    <Reference Include="WiMDBUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMDBUtilities.1.0.0.0\lib\net45\WiMDBUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WiMHypermedia, Version=1.0.6218.25967, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMHypermedia.1.0.6218.25967\lib\net45\WiMHypermedia.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WiMResources, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMResources.1.0.0.0\lib\net45\WiMResources.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WiMSecurity, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMSecurity.1.0.0.0\lib\net45\WiMSecurity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WiMServices, Version=1.0.6218.26000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMServices.1.0.6218.26000\lib\net45\WiMServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

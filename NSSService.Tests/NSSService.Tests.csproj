@@ -95,8 +95,8 @@
       <HintPath>..\packages\WiMHypermedia.1.0.6109.9827\lib\net45\WiMHypermedia.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WiMServices, Version=1.0.6141.14570, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMServices.1.0.6141.14570\lib\net45\WiMServices.dll</HintPath>
+    <Reference Include="WiMServices, Version=1.0.6218.17848, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMServices.1.0.6218.17848\lib\net45\WiMServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WiMServices.Test, Version=1.0.6109.14328, Culture=neutral, processorArchitecture=MSIL">

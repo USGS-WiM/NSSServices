@@ -13,5 +13,11 @@ namespace NSSService.Tests
         {
             
         }
+
+        [TestMethod]
+        public void PredictionIntervalTest()
+        {
+
+        }
     }
 }

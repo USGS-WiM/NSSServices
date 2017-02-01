@@ -99,6 +99,8 @@ namespace FU_NSSDB.Resources
             if (!(r["StdErr"] is DBNull) && Convert.ToDouble(r["StdErr"]) > 1) eqErr.Add(new EquationError() { Value = Convert.ToDouble(r["StdErr"]), ErrorTypeID = 1 });
             if (!(r["EstErr"] is DBNull) && Convert.ToDouble(r["EstErr"]) > 1) eqErr.Add(new EquationError() { Value = Convert.ToDouble(r["EstErr"]), ErrorTypeID = 2 });
             if (!(r["PreErr"] is DBNull) && Convert.ToDouble(r["PreErr"]) > 1) eqErr.Add(new EquationError() { Value = Convert.ToDouble(r["PreErr"]), ErrorTypeID = 3 });
+            if (!(r["PercentCorrect"] is DBNull) && Convert.ToDouble(r["PercentCorrect"]) > 1) eqErr.Add(new EquationError() { Value = Convert.ToDouble(r["PercentCorrect"]), ErrorTypeID = 4 });
+
             return eqErr;
         }
     }    

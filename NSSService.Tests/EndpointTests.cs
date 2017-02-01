@@ -150,9 +150,28 @@ namespace NSSService.Tests
         [TestMethod]
         public void ScenarioWeightedEvaluateRequest()
         {
-            var resourceurl = host + Configuration.regionResource + "/CO/" + Configuration.scenarioResource;
-            var queryParams = Configuration.statisticGroupTypeResource + "=4&" + Configuration.RegressionRegionResource + "=gc1214,gc1213,gc1211,gc1212,gc1204,gc1698,gc5999,gc1488& " + Configuration.unitSystemTypeResource + "=2";
+            var resourceurl = host + Configuration.regionResource + "/NY/" + Configuration.scenarioResource;
+            var queryParams = Configuration.statisticGroupTypeResource + "=24&" + Configuration.RegressionRegionResource + "=gc1425& " + Configuration.unitSystemTypeResource + "=2";
             List<Scenario> returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 101; break;
+                    }
+                });
+                
+            }));
+
+            List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
+
+            resourceurl = host + Configuration.regionResource + "/CO/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=4&" + Configuration.RegressionRegionResource + "=gc1214,gc1213,gc1211,gc1212,gc1204,gc1698,gc5999,gc1488& " + Configuration.unitSystemTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
             Assert.IsNotNull(returnedObject);
 
             returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
@@ -167,7 +186,7 @@ namespace NSSService.Tests
                 rr.PercentWeight = 3.647444727402222;
             }));
 
-            List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.Inconclusive("Deserializing object not yet implemented");
         }//end method
 

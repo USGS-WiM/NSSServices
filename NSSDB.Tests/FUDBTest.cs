@@ -13,9 +13,13 @@ namespace NSSDB.Tests
         [TestMethod]
         public void ForceUpdate()
         {
-            //var x = new ForceUpdate();
-            //x.Load();
-                Assert.IsTrue(true);
+            #if DEBUG
+                var x = new ForceUpdate();
+                //x.Load();
+            Assert.IsTrue(true);
+            #endif
+
+            Assert.Inconclusive("used to purge");
             
         }
     }

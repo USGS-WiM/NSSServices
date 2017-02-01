@@ -297,7 +297,7 @@ namespace NSSService.Utilities.ServiceAgent
         private IntervalBounds evaluateUncertainty(PredictionInterval predictionInterval, Dictionary<string, double?> variables, Double Q)
         {
             //Prediction Intervals for the true value of a streamflow statistic obtained for an ungaged site can be 
-            //computed by use of a weighted regression equations corected for bias by:
+            //computed by use of a weighted regression equations corrected for bias by:
             //                 1/T(Q/BCF) < Q < T(Q/BCF)
             // Where:   BCF is the bias correction factor for the equation
             //          T = 10^[studentT*Si)
@@ -309,7 +309,7 @@ namespace NSSService.Utilities.ServiceAgent
             //
             //Tasker, G.D., and Driver, N.E., 1988, Nationwide regression models for predicting urban runoff water 
             //              quality at unmonitored sites: Water Resources Bulletin, v. 24, no. 5, p. 1091–1101.
-            //Ries, K.G., and Friesz, P.J., Methods for Estimating Low-Flow Statistics for Massachusetts Streams http://pubs.usgs.gov/wri/wri004135/
+            //Ries, K.G., and Friesz, P.J., Methods for Estimating Low-Flow Statistics for Massachusetts Streams (pg34) http://pubs.usgs.gov/wri/wri004135/
             //
             double γ2 = -999;
             double studentT = -999;
@@ -354,10 +354,12 @@ namespace NSSService.Utilities.ServiceAgent
                 xiuxiprime = MathOps.MatrixMultiply(xiu, xiprime)[0,0];
 
                 Si = Math.Pow(γ2 + xiuxiprime,0.5);
+        
                 T = Math.Pow(10, studentT * Si);
 
                 lowerBound = 1 / T * (Q / BCF);
-                upperBound = T * (Q / BCF);
+                upperBound = T * (Q / BCF);           
+                
                 return new IntervalBounds() { Lower = lowerBound, Upper = upperBound };
             }
             catch (Exception ex)

@@ -126,8 +126,8 @@ namespace NSSService.Tests
         [TestMethod]
         public void ScenarioEvaluateRequest()
         {
-            var resourceurl = host + Configuration.regionResource + "/NC/" + Configuration.scenarioResource;
-            var queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + "=gc1251,gc2,gc1254&" + Configuration.unitSystemTypeResource + "=2";
+            var resourceurl = host + Configuration.regionResource + "/MA/" + Configuration.scenarioResource;
+            var queryParams = Configuration.statisticGroupTypeResource + "=&" + Configuration.RegressionRegionResource + "=251&" + Configuration.unitSystemTypeResource + "=2";
             List<Scenario> returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
             Assert.IsNotNull(returnedObject);
 
@@ -135,15 +135,10 @@ namespace NSSService.Tests
                 rr.Parameters.ForEach(p => {
                     switch (p.Code.ToUpper())
                     {
-                        case "DRNAREA": p.Value = 232; break;
-                        case "PCTREG1": p.Value = 0; break;
-                        case "PCTREG2": p.Value = 100; break;
-                        case "PCTREG3": p.Value = 0; break;
-                        case "PCTREG4": p.Value = 0; break;
-                        case "PCTREG5": p.Value = 0; break;
-                        case "I24H50Y": p.Value = 7.74; break;
-                        case "LC11IMP": p.Value = 0; break;
-                        case "LC06IMP": p.Value = 0.01; break;
+                        case "DRNAREA": p.Value = 0.73; break;
+                        case "PCTSNDGRV": p.Value = 0; break;
+                        case "FOREST": p.Value = 76.93; break;
+                        case "MAREGION": p.Value = 0.0; break;
 
                     }
                 });

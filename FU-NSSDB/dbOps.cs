@@ -241,8 +241,8 @@ namespace FU_NSSDB
                     break;
                 case SQLType.e_equation:
                     results = @"SELECT dv.RegionID, dv.DepVarID, dv.Equation, dv.ExpDA,dv.EquivYears,dv.OrderIndex, u.English, u.EnglishAbbrev, u.UnitID, u.MetricAbbrev,
-                                       dv.XiVector, dv.BCF, dv.t,dv.Variance, sl.StatisticTypeCode, sl.StatisticTypeID, sl.StatLabel,
-                                       dv.StdErr, dv.EstErr, dv.PreErr
+                                       dv.XiVector, dv.BCF, dv.t, dv.Variance, sl.StatisticTypeCode, sl.StatisticTypeID, sl.StatLabel,
+                                       dv.StdErr, dv.EstErr, dv.PreErr, dv.PercentCorrect
 
                                 FROM ((DepVars dv
                                 INNER JOIN StatLabel sl on (dv.StatisticLabelID = sl.StatisticLabelID))

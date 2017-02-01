@@ -31,7 +31,7 @@ namespace NSSService.Utilities.ServiceAgent
         #region "Constructor and IDisposable Support"
         #region Constructors
         internal NSSAgent(Boolean include = false)
-            : this("nssadmin",new EasySecureString("Lj1ulzxcZvmXPNFmI03u"), include)
+            : this(ConfigurationManager.AppSettings["dbuser"],new EasySecureString(ConfigurationManager.AppSettings["dbpassword"]), include)
         {        
         }
         internal NSSAgent(string username, EasySecureString password, Boolean include = false)
@@ -413,7 +413,7 @@ namespace NSSService.Utilities.ServiceAgent
             {
                 count = regressionRegions.Count();
                 areaSum = regressionRegions.Sum(r => r.PercentWeight);
-                if (count <= 0 || !areaSum.HasValue || areaSum <= 0) return false;
+                if (count <= 1 || !areaSum.HasValue || areaSum <= 0) return false;
 
                 if (areaSum.HasValue && Math.Round(areaSum.Value) < 100)
                 {

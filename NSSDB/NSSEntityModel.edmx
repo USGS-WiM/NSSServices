@@ -62,7 +62,6 @@
           <Property Name="Criteria" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="longtext" />
           <Property Name="RegressionRegionID" Type="int" Nullable="false" />
-          <Property Name="FlowCoef" Type="double" Nullable="false" />
         </EntityType>
         <EntityType Name="PredictionInterval">
           <Key>
@@ -100,6 +99,16 @@
           <Property Name="Code" Type="varchar" MaxLength="15" />
           <Property Name="Description" Type="longtext" />
           <Property Name="CitationID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RegressionRegionCoefficient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RegressionRegionID" Type="int" Nullable="false" />
+          <Property Name="Criteria" Type="varchar" MaxLength="255" />
+          <Property Name="Description" Type="longtext" />
+          <Property Name="Value" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="RegressionType">
           <Key>
@@ -173,6 +182,7 @@
           <Property Name="MaxValue" Type="double" />
           <Property Name="Comments" Type="tinytext" />
           <Property Name="LimitationID" Type="int" />
+          <Property Name="RegressionRegionCoefficientID" Type="int" />
         </EntityType>
         <EntityType Name="VariableType">
           <Key>
@@ -202,6 +212,7 @@
           <EntitySet Name="Region" EntityType="Self.Region" Schema="nss" store:Type="Tables" />
           <EntitySet Name="RegionRegressionRegion" EntityType="Self.RegionRegressionRegion" Schema="nss" store:Type="Tables" />
           <EntitySet Name="RegressionRegion" EntityType="Self.RegressionRegion" Schema="nss" store:Type="Tables" />
+          <EntitySet Name="RegressionRegionCoefficient" EntityType="Self.RegressionRegionCoefficient" Schema="nss" store:Type="Tables" />
           <EntitySet Name="RegressionType" EntityType="Self.RegressionType" Schema="nss" store:Type="Tables" />
           <EntitySet Name="RegressionTypeDisplayName" EntityType="Self.RegressionTypeDisplayName" Schema="nss" store:Type="Tables" />
           <EntitySet Name="StatisticGroupType" EntityType="Self.StatisticGroupType" Schema="nss" store:Type="Tables" />
@@ -342,6 +353,15 @@
             <End Role="Limitation" EntitySet="Limitations" />
             <End Role="Variable" EntitySet="Variables" />
           </AssociationSet>
+          <EntitySet Name="RegressionRegionCoefficients" EntityType="nssModel.RegressionRegionCoefficient" />
+          <AssociationSet Name="RegressionRegionRegressionRegionCoefficient" Association="nssModel.RegressionRegionRegressionRegionCoefficient">
+            <End Role="RegressionRegion" EntitySet="RegressionRegions" />
+            <End Role="RegressionRegionCoefficient" EntitySet="RegressionRegionCoefficients" />
+          </AssociationSet>
+          <AssociationSet Name="RegressionRegionCoefficientVariable" Association="nssModel.RegressionRegionCoefficientVariable">
+            <End Role="RegressionRegionCoefficient" EntitySet="RegressionRegionCoefficients" />
+            <End Role="Variable" EntitySet="Variables" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Citation">
           <Key>
@@ -414,7 +434,6 @@
           <Property Name="Criteria" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Description" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
           <Property Name="RegressionRegionID" Type="Int32" Nullable="false" />
-          <Property Name="FlowCoef" Type="Double" Nullable="false" />
           <NavigationProperty Name="RegressionRegion" Relationship="nssModel.RegressionRegionLimitation" FromRole="Limitation" ToRole="RegressionRegion" />
           <NavigationProperty Name="Variables" Relationship="nssModel.LimitationVariable" FromRole="Limitation" ToRole="Variable" />
         </EntityType>
@@ -462,6 +481,7 @@
           <NavigationProperty Name="Equations" Relationship="nssModel.RegressionRegionEquation" FromRole="RegressionRegion" ToRole="Equation" />
           <NavigationProperty Name="RegionRegressionRegions" Relationship="nssModel.RegressionRegionRegionRegressionRegion" FromRole="RegressionRegion" ToRole="RegionRegressionRegion" />
           <NavigationProperty Name="Limitations" Relationship="nssModel.RegressionRegionLimitation" FromRole="RegressionRegion" ToRole="Limitation" />
+          <NavigationProperty Name="RegressionRegionCoefficients" Relationship="nssModel.RegressionRegionRegressionRegionCoefficient" FromRole="RegressionRegion" ToRole="RegressionRegionCoefficient" />
         </EntityType>
         <EntityType Name="RegressionType">
           <Key>
@@ -560,6 +580,8 @@
           <NavigationProperty Name="RegressionType" Relationship="nssModel.RegressionTypeVariable" FromRole="Variable" ToRole="RegressionType" />
           <Property Name="LimitationID" Type="Int32" />
           <NavigationProperty Name="Limitation" Relationship="nssModel.LimitationVariable" FromRole="Variable" ToRole="Limitation" />
+          <Property Name="RegressionRegionCoefficientID" Type="Int32" />
+          <NavigationProperty Name="RegressionRegionCoefficient" Relationship="nssModel.RegressionRegionCoefficientVariable" FromRole="Variable" ToRole="RegressionRegionCoefficient" />
         </EntityType>
         <EntityType Name="VariableType">
           <Key>
@@ -893,6 +915,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="RegressionRegionCoefficient">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RegressionRegionID" Type="Int32" Nullable="false" />
+          <Property Name="Criteria" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RegressionRegion" Relationship="nssModel.RegressionRegionRegressionRegionCoefficient" FromRole="RegressionRegionCoefficient" ToRole="RegressionRegion" />
+          <NavigationProperty Name="Variables" Relationship="nssModel.RegressionRegionCoefficientVariable" FromRole="RegressionRegionCoefficient" ToRole="Variable" />
+        </EntityType>
+        <Association Name="RegressionRegionRegressionRegionCoefficient">
+          <End Type="nssModel.RegressionRegion" Role="RegressionRegion" Multiplicity="1" />
+          <End Type="nssModel.RegressionRegionCoefficient" Role="RegressionRegionCoefficient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegressionRegion">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RegressionRegionCoefficient">
+              <PropertyRef Name="RegressionRegionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="RegressionRegionCoefficientVariable">
+          <End Type="nssModel.RegressionRegionCoefficient" Role="RegressionRegionCoefficient" Multiplicity="0..1" />
+          <End Type="nssModel.Variable" Role="Variable" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RegressionRegionCoefficient">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Variable">
+              <PropertyRef Name="RegressionRegionCoefficientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -956,7 +1014,6 @@
           <EntitySetMapping Name="Limitations">
             <EntityTypeMapping TypeName="nssModel.Limitation">
               <MappingFragment StoreEntitySet="Limitation">
-                <ScalarProperty Name="FlowCoef" ColumnName="FlowCoef" />
                 <ScalarProperty Name="RegressionRegionID" ColumnName="RegressionRegionID" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Criteria" ColumnName="Criteria" />
@@ -1074,6 +1131,7 @@
           <EntitySetMapping Name="Variables">
             <EntityTypeMapping TypeName="nssModel.Variable">
               <MappingFragment StoreEntitySet="Variable">
+                <ScalarProperty Name="RegressionRegionCoefficientID" ColumnName="RegressionRegionCoefficientID" />
                 <ScalarProperty Name="LimitationID" ColumnName="LimitationID" />
                 <ScalarProperty Name="Comments" ColumnName="Comments" />
                 <ScalarProperty Name="MaxValue" ColumnName="MaxValue" />
@@ -1101,6 +1159,17 @@
               <MappingFragment StoreEntitySet="VariableUnitType">
                 <ScalarProperty Name="UnitTypeID" ColumnName="UnitTypeID" />
                 <ScalarProperty Name="VariableID" ColumnName="VariableID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RegressionRegionCoefficients">
+            <EntityTypeMapping TypeName="nssModel.RegressionRegionCoefficient">
+              <MappingFragment StoreEntitySet="RegressionRegionCoefficient">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Criteria" ColumnName="Criteria" />
+                <ScalarProperty Name="RegressionRegionID" ColumnName="RegressionRegionID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -45,5 +45,6 @@ namespace NSSDB
         public virtual DbSet<Variable> Variables { get; set; }
         public virtual DbSet<VariableType> VariableTypes { get; set; }
         public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }
+        public virtual DbSet<RegressionRegionCoefficient> RegressionRegionCoefficients { get; set; }
     }
 }

@@ -55,7 +55,7 @@ namespace NSSService
         public static string unitConversionFactorResource = "conversionfactors";
         public static string unitSystemTypeResource = "unitsystems";
         public static string unitTypeResource = "units";
-        public static string userTypeResource = "users";
+        public static string userTypeResource = "configs";
         public static string variableResource = "variables";
         public static string variableTypeResource = "variabletypes";
         #endregion
@@ -69,7 +69,7 @@ namespace NSSService
                 ResourceSpace.Uses.PipelineContributor<ErrorCheckingContributor>();
                 ResourceSpace.Uses.PipelineContributor<CrossDomainPipelineContributor>();
                 ResourceSpace.Uses.PipelineContributor<MessagePipelineContributor>();
-                ResourceSpace.Uses.PipelineContributor<NSSHyperMediaPipelineContributor>();
+                ResourceSpace.Uses.PipelineContributor<NSSHyperMediaPipelineContributor>();               
 
                 AddCitationEndpoints();
                 AddRegressionTypeEndpoints();
@@ -196,11 +196,11 @@ namespace NSSService
         private void AddScenarioEndpoints() 
                 {
                     ResourceSpace.Has.ResourcesOfType<List<Scenario>>()
-                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}&" +extensionResource+"={extensionmethods}").Named("GetScenarios")
-                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}&" + extensionResource + "={extensionmethods}").Named("GetScenarios")
+                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={unitsystemID}&" + userTypeResource + "={configID}&" +extensionResource+" ={extensionmethods}").Named("GetScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={unitsystemID}&" + userTypeResource + "={configID}&" + extensionResource + "={extensionmethods}").Named("GetScenarios")
 
-                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}&" + extensionResource + "={extensionmethods}").Named("EstimatesScenarios")
-                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={systemtypeID}&" + extensionResource + "={extensionmethods}").Named("EstimateScenarios")
+                        .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={unitsystemID}&" + userTypeResource + "={configID}&" + extensionResource + "={extensionmethods}").Named("EstimatesScenarios")
+                        .And.AtUri(regionResource + "/{region}/" + scenarioResource + "/estimate?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={unitsystemID}&" + userTypeResource + "={configID}&" + extensionResource + "={extensionmethods}").Named("EstimateScenarios")
                         .HandledBy< ScenarioHandler>()
                         .TranscodedBy<JsonDotNetCodec>().ForMediaType("application/json;q=0.5").ForExtension("json")
                         .And.TranscodedBy<UTF8XmlSerializerCodec>().ForMediaType("application/xml;q=0.9").ForExtension("xml");

@@ -12,18 +12,19 @@ namespace NSSDB
     using System;
     using System.Collections.Generic;
     
-    public partial class Limitation
+    public partial class RegressionRegionCoefficient
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Limitation()
+        public RegressionRegionCoefficient()
         {
             this.Variables = new HashSet<Variable>();
         }
     
         public int ID { get; set; }
+        public int RegressionRegionID { get; set; }
         public string Criteria { get; set; }
         public string Description { get; set; }
-        public int RegressionRegionID { get; set; }
+        public string Value { get; set; }
     
         public virtual RegressionRegion RegressionRegion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

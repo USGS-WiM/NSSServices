@@ -69,6 +69,32 @@ namespace FU_NSSDB.Resources
                 return authertitle.Substring(splitlocation);
         }
     }
+    public class NSSCitation : Citation
+    {
+        public int oldID { get; set; }
+
+        public static NSSCitation FromDataReader(System.Data.IDataReader r)
+        {
+            return new NSSCitation()
+            {
+                ID = r["ID"] is DBNull ? 0 : Convert.ToInt32(r["ID"]),
+                Title = r["Title"] is DBNull ? "" : r["Title"].ToString(),
+                Author = r["Author"] is DBNull ? "" : r["Author"].ToString(),
+                CitationURL = r["CitationURL"] is DBNull ? "" : r["CitationURL"].ToString()
+            };
+
+        }
+        private static string splitTitle(string authertitle, bool getTitle = false)
+        {
+            Int32 splitlocation = authertitle.IndexOfAny("0123456789".ToCharArray());
+            if (!getTitle)
+                //auther
+                return authertitle.Substring(0, splitlocation - 1);
+            else
+                //title
+                return authertitle.Substring(splitlocation);
+        }
+    }
     public class FUEquation : Equation
     {
         public int oldID { get; set; }

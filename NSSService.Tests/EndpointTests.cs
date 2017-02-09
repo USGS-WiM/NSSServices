@@ -126,9 +126,68 @@ namespace NSSService.Tests
         [TestMethod]
         public void ScenarioEvaluateRequest()
         {
-            var resourceurl = host + Configuration.regionResource + "/MA/" + Configuration.scenarioResource;
-            var queryParams = Configuration.statisticGroupTypeResource + "=&" + Configuration.RegressionRegionResource + "=251&" + Configuration.unitSystemTypeResource + "=2";
-            List<Scenario> returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            string resourceurl;
+            string queryParams;
+            List<Scenario> returnedObject = null;
+            List<Scenario> resultObject = null;
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+
+            resourceurl = host + Configuration.regionResource + "/OR/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + @"=gc729,gc730,gc731&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 4990; break;
+                        case "ELEV": p.Value = 2960; break;
+                        case "I24H2Y": p.Value = 2.63; break;
+                        case "WATCAPORC": p.Value = 0.11; break;
+                        case "SOILPERM": p.Value = 1.75; break;
+                        case "ORREG2": p.Value = 10003; break;
+                        case "BSLDEM30M": p.Value = 16.7; break;
+                        case "JANMINT2K": p.Value = 21.3; break;
+                        case "JANMAXT2K": p.Value = 40; break;
+
+                    }
+                });
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+
+             resourceurl = host + Configuration.regionResource + "/NC/" + Configuration.scenarioResource;
+             queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + "=gc1254,gc1,gc1576,gc1254,gc1580,gc1577&" + Configuration.unitSystemTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 0.4; break;
+                        case "PCTREG1": p.Value = 100; break;
+                        case "PCTREG2": p.Value = 0; break;
+                        case "PCTREG3": p.Value = 0; break;
+                        case "PCTREG4": p.Value = 0; break;
+                        case "PCTREG5": p.Value = 0; break;
+                        case "LC06IMP": p.Value = 3.35; break;
+                    }
+                });
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+
+            resourceurl = host + Configuration.regionResource + "/MA/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=&" + Configuration.RegressionRegionResource + "=251&" + Configuration.unitSystemTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
             Assert.IsNotNull(returnedObject);
 
             returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
@@ -139,12 +198,11 @@ namespace NSSService.Tests
                         case "PCTSNDGRV": p.Value = 0; break;
                         case "FOREST": p.Value = 76.93; break;
                         case "MAREGION": p.Value = 0.0; break;
-
                     }
                 });
             }));
 
-            List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.Inconclusive("Deserializing object not yet implemented");
         }//end method
         [TestMethod]
@@ -189,7 +247,6 @@ namespace NSSService.Tests
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.Inconclusive("Deserializing object not yet implemented");
         }//end method
-
         [TestMethod]
         public void StatisticGroupTypeRequest()
         {

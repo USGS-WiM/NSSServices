@@ -10,12 +10,12 @@ namespace NSSDB.Tests
     [TestClass]
     public class FUDBTest
     {
-        [TestMethod]
+        //[TestMethod]
         public void ForceUpdate()
         {
             #if DEBUG
                 var x = new ForceUpdate();
-                //x.Load();
+                x.Load();
             Assert.IsTrue(true);
             #endif
 

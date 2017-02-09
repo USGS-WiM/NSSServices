@@ -112,6 +112,9 @@
     <Compile Include="RegressionRegion.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RegressionRegionCoefficient.cs">
+      <DependentUpon>NSSEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RegressionType.cs">
       <DependentUpon>NSSEntityModel.tt</DependentUpon>
     </Compile>

@@ -10,7 +10,7 @@
         <EntityTypeShape EntityType="nssModel.EquationError" Width="2" PointX="5.375" PointY="4.5" IsExpanded="false" />
         <EntityTypeShape EntityType="nssModel.EquationUnitType" Width="2" PointX="1.875" PointY="2.625" IsExpanded="false" />
         <EntityTypeShape EntityType="nssModel.ErrorType" Width="2" PointX="5.5" PointY="5.625" IsExpanded="false" />
-        <EntityTypeShape EntityType="nssModel.Limitation" Width="2" PointX="11.75" PointY="5.875" IsExpanded="false" />
+        <EntityTypeShape EntityType="nssModel.Limitation" Width="2" PointX="11.75" PointY="5.625" IsExpanded="false" />
         <EntityTypeShape EntityType="nssModel.PredictionInterval" Width="2" PointX="3.125" PointY="4.5" IsExpanded="false" />
         <EntityTypeShape EntityType="nssModel.Region" Width="2" PointX="11.75" PointY="4.875" IsExpanded="false" />
         <EntityTypeShape EntityType="nssModel.RegionRegressionRegion" Width="2" PointX="9.125" PointY="4.875" IsExpanded="false" />
@@ -51,6 +51,10 @@
         <AssociationConnector Association="nssModel.UserTypeRegressionTypeDisplayName" />
         <AssociationConnector Association="nssModel.RegressionRegionLimitation" />
         <AssociationConnector Association="nssModel.LimitationVariable" ManuallyRouted="false" >
+        </AssociationConnector>
+        <EntityTypeShape EntityType="nssModel.RegressionRegionCoefficient" Width="2" PointX="11.75" PointY="6.375" IsExpanded="false" />
+        <AssociationConnector Association="nssModel.RegressionRegionRegressionRegionCoefficient" />
+        <AssociationConnector Association="nssModel.RegressionRegionCoefficientVariable" ManuallyRouted="false" >
         </AssociationConnector>
       </Diagram>
       <Diagram DiagramId="051149ab34584cf68c5d1c4b5a8817c0" Name="Scenario" >

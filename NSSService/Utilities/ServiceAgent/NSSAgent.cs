@@ -102,7 +102,7 @@ namespace NSSService.Utilities.ServiceAgent
         {
             IQueryable<ScenarioParameterView> equery = null;
             this.limitations = new List<Limitation>();
-            List<RegressionRegionCoefficient> flowCoefficents = null;
+            List<RegressionRegionCoefficient> flowCoefficents = new List<RegressionRegionCoefficient>();
             try
             {
                 //this.unitConversionFactors = Select<UnitConversionFactor>().ToList();

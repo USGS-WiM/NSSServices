@@ -48,7 +48,7 @@ namespace FU_NSSDB
         public List<RegressionType> regressionTypeList { get; private set; }
 
 
-        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2016-10-21\StreamStatsDB_2016-10-21.mdb");
+        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2017-01-13.mdb");
         private string NSSDBConnectionstring = string.Format("Server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
         private dbOps NSSDBOps { get; set; }
 
@@ -149,13 +149,14 @@ namespace FU_NSSDB
                 //citation
                 //check if citation exists already before adding
                 //regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim()
-                var citationlist = NSSDBOps.GetDBItems<Citation>(dbOps.SQLType.e_citation).Where(c => string.Equals(c.CitationURL.Trim(),regRegion.Citation.CitationURL.Trim(),StringComparison.OrdinalIgnoreCase)&&
+                var citationlist = NSSDBOps.GetDBItems<NSSCitation>(dbOps.SQLType.e_getcitation).Where(c => string.Equals(c.CitationURL.Trim(),regRegion.Citation.CitationURL.Trim(),StringComparison.OrdinalIgnoreCase)&&
                                                                                                         string.Equals(c.Author.Trim(), regRegion.Citation.Author.Trim(), StringComparison.OrdinalIgnoreCase)&&
                                                                                                         string.Equals(c.Title.Trim(), regRegion.Citation.Title.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
 
-                if(citationlist.Count<1)
-                    regRegion.CitationID = NSSDBOps.AddItem(dbOps.SQLType.e_citation, new object[] {  regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
-                
+                if (citationlist.Count < 1)
+                    regRegion.CitationID = NSSDBOps.AddItem(dbOps.SQLType.e_postcitation, new object[] { regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
+                else
+                    regRegion.CitationID = citationlist.FirstOrDefault().ID;
                 //regressionregion
                 regRegion.ID = NSSDBOps.AddItem(dbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID});
                 //RegionRegressionRegion

@@ -29,6 +29,7 @@ namespace NSSDB
         public Nullable<double> MaxValue { get; set; }
         public string Comments { get; set; }
         public Nullable<int> LimitationID { get; set; }
+        public Nullable<int> RegressionRegionCoefficientID { get; set; }
     
         public virtual Equation Equation { get; set; }
         public virtual VariableType VariableType { get; set; }
@@ -37,5 +38,6 @@ namespace NSSDB
         public virtual ICollection<VariableUnitType> VariableUnitTypes { get; set; }
         public virtual RegressionType RegressionType { get; set; }
         public virtual Limitation Limitation { get; set; }
+        public virtual RegressionRegionCoefficient RegressionRegionCoefficient { get; set; }
     }
 }

@@ -143,6 +143,7 @@ namespace NSSService.Utilities.ServiceAgent
                             Extensions = extensionMethodList.Where(ex => canIncludeExension(ex, s.groupkey)).Select(ex => getScenarioExtensionDef(ex, s.groupkey)).ToList(),
                             ID = r.groupkey,
                             Name = r.groupedparameters.First().RegressionRegionName,
+                            Code = r.groupedparameters.First().RegressionRegionCode,
                             Parameters = r.groupedparameters.Select(p => new Parameter()
                             {  
                                ID = p.VariableID,

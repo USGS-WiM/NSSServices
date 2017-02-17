@@ -91,10 +91,6 @@
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="Utilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Utilities.1.0.0.0\lib\net45\Utilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="WiMHypermedia, Version=1.0.6218.25967, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WiMHypermedia.1.0.6218.25967\lib\net45\WiMHypermedia.dll</HintPath>
       <Private>True</Private>
@@ -105,6 +101,10 @@
     </Reference>
     <Reference Include="WiMServices.Test, Version=1.0.6218.26017, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WiMServices.Test.1.0.6218.26017\lib\net45\WiMServices.Test.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WiMUtilities, Version=1.0.6257.20336, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMUtilities.1.0.6257.20336\lib\net45\WiMUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

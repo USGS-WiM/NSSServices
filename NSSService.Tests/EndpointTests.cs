@@ -130,6 +130,27 @@ namespace NSSService.Tests
             string queryParams;
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
+
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            resourceurl = host + Configuration.regionResource + "/ME/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + @"=gc1595,gc1435,gc1632,gc632,gc1633,gc1637,gc1641,gc1645,gc1635,gc1634,gc1640,gc1639,gc1636,gc1638,gc1644,gc1643,gc1642&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 15.3; break;
+                        case "STORNWI": p.Value = 3.14; break;
+                    }
+                });
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
 
             resourceurl = host + Configuration.regionResource + "/OR/" + Configuration.scenarioResource;

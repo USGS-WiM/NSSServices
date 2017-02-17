@@ -438,8 +438,11 @@ namespace NSSService.Utilities.ServiceAgent
 
                 if (areaSum.HasValue && Math.Round(areaSum.Value) < 100)
                 {
-                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.
-                                                            Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.");
+                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates. Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.");
+                    return false;
+                }
+                else if (areaSum.HasValue && Math.Round(areaSum.Value) > 100) {
+                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
                     return false;
                 }
 

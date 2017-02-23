@@ -349,7 +349,7 @@ namespace NSSService.Utilities.ServiceAgent
             double upperBound = -999;
             try
             {
-                if (!predictionInterval.Variance.HasValue || !predictionInterval.Student_T_Statistic.HasValue ||
+                if (predictionInterval== null || !predictionInterval.Variance.HasValue || !predictionInterval.Student_T_Statistic.HasValue ||
                     String.IsNullOrEmpty(predictionInterval.CovarianceMatrix) || string.IsNullOrEmpty(predictionInterval.XIRowVector) ||
                     !predictionInterval.BiasCorrectionFactor.HasValue) return null;
 
@@ -429,12 +429,12 @@ namespace NSSService.Utilities.ServiceAgent
         private bool canAreaWeight(List<SimpleRegionEquation> regressionRegions)
         {
             double? areaSum;
-            double count;
             try
             {
-                count = regressionRegions.Count();
+                if(regressionRegions.Count() <=1) return false;
                 areaSum = regressionRegions.Sum(r => r.PercentWeight);
-                if (count <= 1 || !areaSum.HasValue || areaSum <= 0) return false;
+
+                if (!areaSum.HasValue || areaSum <= 0) return false;
 
                 if (areaSum.HasValue && Math.Round(areaSum.Value) < 100)
                 {
@@ -450,7 +450,6 @@ namespace NSSService.Utilities.ServiceAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, "Error with area weight: " + ex.Message);
                 return false;
             }
 

@@ -23,6 +23,7 @@ namespace NSSService.Utilities.ServiceAgent
         #region "Events"
         #endregion
         #region "Properties"
+        public UserType user { get; private set; }
         #endregion
         #region "Collections & Dictionaries"
         private List<UnitConversionFactor> unitConversionFactors { get; set; }
@@ -30,15 +31,16 @@ namespace NSSService.Utilities.ServiceAgent
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        internal NSSAgent(Boolean include = false)
-            : this("nssadmin",new EasySecureString("Lj1ulzxcZvmXPNFmI03u"), include)
+        internal NSSAgent(Boolean include = false, Int32 usertypeid = 1)
+            : this(ConfigurationManager.AppSettings["dbuser"],new EasySecureString(ConfigurationManager.AppSettings["dbpassword"]), include, usertypeid)
         {        
         }
-        internal NSSAgent(string username, EasySecureString password, Boolean include = false)
+        internal NSSAgent(string username, EasySecureString password, Boolean include = false, Int32 usertypeid = 1)
             : base(ConfigurationManager.ConnectionStrings["nssEntities"].ConnectionString)
         {
             this.context = new nssEntities(string.Format(connectionString, username, password.decryptString()));
             this.context.Configuration.ProxyCreationEnabled = include;
+            this.user = Select<UserType>().FirstOrDefault(u => u.ID == usertypeid);
         }
         #endregion
         #region IDisposable Support
@@ -99,13 +101,17 @@ namespace NSSService.Utilities.ServiceAgent
         internal IQueryable<Scenario> GetScenarios(string region, Int32 systemtypeID, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null)
         {
             IQueryable<ScenarioParameterView> equery = null;
-            List<Limitation> limitations = null;
+            this.limitations = new List<Limitation>();
+            List<RegressionRegionCoefficient> flowCoefficents = new List<RegressionRegionCoefficient>();
             try
             {
                 //this.unitConversionFactors = Select<UnitConversionFactor>().ToList();
-                limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+                if (this.user.ID == 2)
+                {
+                    this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+                    flowCoefficents = Select<RegressionRegionCoefficient>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+                }//end if
 
-                
                 List<RegionRegressionRegion> SelectedRegionRegressions = Select<RegionRegressionRegion>().Include("RegressionRegion")
                            .Where(rer => String.Equals(region.Trim().ToLower(), rer.Region.Code.ToLower().Trim())
                                    || String.Equals(region.ToLower().Trim(), rer.RegionID.ToString())).ToList();
@@ -137,6 +143,7 @@ namespace NSSService.Utilities.ServiceAgent
                             Extensions = extensionMethodList.Where(ex => canIncludeExension(ex, s.groupkey)).Select(ex => getScenarioExtensionDef(ex, s.groupkey)).ToList(),
                             ID = r.groupkey,
                             Name = r.groupedparameters.First().RegressionRegionName,
+                            Code = r.groupedparameters.First().RegressionRegionCode,
                             Parameters = r.groupedparameters.Select(p => new Parameter()
                             {  
                                ID = p.VariableID,
@@ -152,7 +159,15 @@ namespace NSSService.Utilities.ServiceAgent
                                 Code = v.VariableType.Code,
                                 Description = v.VariableType.Description,
                                 Name =v.VariableType.Name,
-                                Value =-999.99 })).Distinct().ToList()                            
+                                Value =-999.99 })).Union(flowCoefficents.Where(l => l.RegressionRegionID == r.groupkey).SelectMany(l => l.Variables).Select(v => new Parameter()
+                                {
+                                    ID = v.VariableType.ID,
+                                    UnitType = new SimpleUnitType() { ID = v.UnitTypeID, Unit = v.UnitType.Unit, Abbr = v.UnitType.Abbr },
+                                    Code = v.VariableType.Code,
+                                    Description = v.VariableType.Description,
+                                    Name = v.VariableType.Name,
+                                    Value = -999.99
+                                })).Distinct().ToList()                            
                         }).ToList()
                     }).AsQueryable();
             }
@@ -162,17 +177,22 @@ namespace NSSService.Utilities.ServiceAgent
                 throw;
             }
         }
-
         internal IQueryable<Scenario> EstimateScenarios(string region, Int32 systemtypeID, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList)
         {
             IQueryable<Equation> equery = null;
             List<Equation> EquationList = null;
             ExpressionOps eOps = null;
-            
+            this.limitations = new List<Limitation>();
+            List<RegressionRegionCoefficient> regressionregionCoeff = new List<RegressionRegionCoefficient>();
             try
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
-                this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+                if (this.user.ID == 2)
+                {
+                    this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+                    regressionregionCoeff = Select<RegressionRegionCoefficient>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+                }//end if
+                
                 equery = GetEquations(region, regionEquationList, statisticgroupList, regressiontypeList);
                 equery = equery.Include("UnitType.UnitConversionFactorsIn.UnitTypeOut").Include("EquationErrors.ErrorType").Include("PredictionInterval").Include("Variables.VariableType").Include("Variables.UnitType");
  
@@ -182,9 +202,11 @@ namespace NSSService.Utilities.ServiceAgent
                     scenario.RegressionRegions.RemoveAll(rr => !Valid(rr));              
 
                     foreach (SimpleRegionEquation regressionregion in scenario.RegressionRegions)
-                    {
+                    {   
                         regressionregion.Results = new List<RegressionResultBase>();
                         EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).Select(e=>e).ToList();
+
+                        var flowCoeff = getFlowCoeff(regressionregion, regressionregionCoeff);
                         
                         foreach (Equation equation in EquationList)
                         {
@@ -209,7 +231,7 @@ namespace NSSService.Utilities.ServiceAgent
                                 Errors = paramsOutOfRange ? null : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value, Code = e.ErrorType.Code }).ToList(), 
                                 EquivalentYears = paramsOutOfRange? null: equation.EquivalentYears,
                                 IntervalBounds = paramsOutOfRange? null: evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value*unit.factor),
-                                Value = eOps.Value*unit.factor                               
+                                Value = eOps.Value*unit.factor * flowCoeff                               
                             });
                         }//next equation
                         regressionregion.Extensions.ForEach(ext => evaluateExtension(ext, regressionregion));
@@ -229,7 +251,6 @@ namespace NSSService.Utilities.ServiceAgent
                 throw;
             }
         }
-
         #endregion
         #region "Helper Methods"
         private IQueryable<T> getTable<T>(object[] args) where T : class,new()
@@ -328,7 +349,7 @@ namespace NSSService.Utilities.ServiceAgent
             double upperBound = -999;
             try
             {
-                if (!predictionInterval.Variance.HasValue || !predictionInterval.Student_T_Statistic.HasValue ||
+                if (predictionInterval== null || !predictionInterval.Variance.HasValue || !predictionInterval.Student_T_Statistic.HasValue ||
                     String.IsNullOrEmpty(predictionInterval.CovarianceMatrix) || string.IsNullOrEmpty(predictionInterval.XIRowVector) ||
                     !predictionInterval.BiasCorrectionFactor.HasValue) return null;
 
@@ -408,17 +429,20 @@ namespace NSSService.Utilities.ServiceAgent
         private bool canAreaWeight(List<SimpleRegionEquation> regressionRegions)
         {
             double? areaSum;
-            double count;
             try
             {
-                count = regressionRegions.Count();
+                if(regressionRegions.Count() <=1) return false;
                 areaSum = regressionRegions.Sum(r => r.PercentWeight);
-                if (count <= 0 || !areaSum.HasValue || areaSum <= 0) return false;
+
+                if (!areaSum.HasValue || areaSum <= 0) return false;
 
                 if (areaSum.HasValue && Math.Round(areaSum.Value) < 100)
                 {
-                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.
-                                                            Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.");
+                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates. Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.");
+                    return false;
+                }
+                else if (areaSum.HasValue && Math.Round(areaSum.Value) > 100) {
+                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
                     return false;
                 }
 
@@ -426,7 +450,6 @@ namespace NSSService.Utilities.ServiceAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, "Error with area weight: " + ex.Message);
                 return false;
             }
 
@@ -526,7 +549,28 @@ namespace NSSService.Utilities.ServiceAgent
                 return false;
             }
         }
-        
+        private double getFlowCoeff(SimpleRegionEquation regRegion, List<RegressionRegionCoefficient> regressionregionCoeff)
+        {
+            ExpressionOps eOps = null;
+            try
+            {          
+                var coef = regressionregionCoeff.FirstOrDefault(rc => rc.RegressionRegionID == regRegion.ID);
+                if (coef == null) return 1;
+                var vars = regRegion.Parameters.Where(e => coef.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, coef.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
+                eOps = new ExpressionOps(coef.Criteria, vars);
+                if (!eOps.IsValid) throw new Exception();
+                if (!Convert.ToBoolean(eOps.Value)) return 1;
+                //use coeff value to compute
+                eOps = new ExpressionOps(coef.Value, vars);
+                if (!eOps.IsValid) throw new Exception();
+                return eOps.Value;
+            }
+            catch (Exception)
+            {
+                sm(WiM.Resources.MessageType.error, "Error computing flow coeff, default set to 1");
+                return 1;
+            }
+        }
 
         #endregion
         #region "Structures"

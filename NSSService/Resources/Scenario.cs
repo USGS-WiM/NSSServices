@@ -24,6 +24,7 @@ namespace NSSService.Resources
     {
         public Int32 ID { get; set; }
         public string Name { get; set; }
+        public string Code { get; set; }
         public double? PercentWeight { get; set; }
         public bool ShouldSerializePercentWeight()
         { return PercentWeight.HasValue; }

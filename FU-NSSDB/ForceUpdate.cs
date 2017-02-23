@@ -23,6 +23,7 @@
 #region "Imports"
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,8 +48,8 @@ namespace FU_NSSDB
         public List<RegressionType> regressionTypeList { get; private set; }
 
 
-        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2016-10-21\StreamStatsDB_2016-10-21.mdb");
-        private string NSSDBConnectionstring = string.Format("Server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com; database={0}; UID=**username**; password=***REMOVED***", "nss");
+        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2017-01-13.mdb");
+        private string NSSDBConnectionstring = string.Format("Server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
         private dbOps NSSDBOps { get; set; }
 
 
@@ -116,10 +117,9 @@ namespace FU_NSSDB
         #endregion
         #region HelperMethods
         private void init() {
-            string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id=**username**;PASSWORD={0};database=nss';";
-            string password = "***REMOVED***";
-
-            using (nssEntities context = new nssEntities(String.Format(connectionString,password)))
+            //uses EF to make the connection
+            string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id={0};PASSWORD={1};database=nss';";
+            using (nssEntities context = new nssEntities(String.Format(connectionString, ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"])))
             {
                 statisticGroupTypeList = context.StatisticGroupTypes.ToList();
                 variableTypeList = context.VariableTypes.ToList();
@@ -149,13 +149,14 @@ namespace FU_NSSDB
                 //citation
                 //check if citation exists already before adding
                 //regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim()
-                var citationlist = NSSDBOps.GetDBItems<Citation>(dbOps.SQLType.e_citation).Where(c => string.Equals(c.CitationURL.Trim(),regRegion.Citation.CitationURL.Trim(),StringComparison.OrdinalIgnoreCase)&&
+                var citationlist = NSSDBOps.GetDBItems<NSSCitation>(dbOps.SQLType.e_getcitation).Where(c => string.Equals(c.CitationURL.Trim(),regRegion.Citation.CitationURL.Trim(),StringComparison.OrdinalIgnoreCase)&&
                                                                                                         string.Equals(c.Author.Trim(), regRegion.Citation.Author.Trim(), StringComparison.OrdinalIgnoreCase)&&
                                                                                                         string.Equals(c.Title.Trim(), regRegion.Citation.Title.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
 
-                if(citationlist.Count<1)
-                    regRegion.CitationID = NSSDBOps.AddItem(dbOps.SQLType.e_citation, new object[] {  regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
-                
+                if (citationlist.Count < 1)
+                    regRegion.CitationID = NSSDBOps.AddItem(dbOps.SQLType.e_postcitation, new object[] { regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
+                else
+                    regRegion.CitationID = citationlist.FirstOrDefault().ID;
                 //regressionregion
                 regRegion.ID = NSSDBOps.AddItem(dbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID});
                 //RegionRegressionRegion

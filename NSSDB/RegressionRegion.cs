@@ -20,6 +20,7 @@ namespace NSSDB
             this.Equations = new HashSet<Equation>();
             this.RegionRegressionRegions = new HashSet<RegionRegressionRegion>();
             this.Limitations = new HashSet<Limitation>();
+            this.RegressionRegionCoefficients = new HashSet<RegressionRegionCoefficient>();
         }
     
         public int ID { get; set; }
@@ -35,5 +36,7 @@ namespace NSSDB
         public virtual ICollection<RegionRegressionRegion> RegionRegressionRegions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Limitation> Limitations { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RegressionRegionCoefficient> RegressionRegionCoefficients { get; set; }
     }
 }

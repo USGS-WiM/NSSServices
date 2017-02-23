@@ -292,8 +292,11 @@ namespace FU_NSSDB
                 case SQLType.e_variableunitypes:
                     results = @"INSERT INTO VariableUnitType(VariableID,UnitTypeID) VALUES({0},{1})";
                     break;
-                case SQLType.e_citation:
+                case SQLType.e_postcitation:
                     results = @"INSERT INTO Citation(Title,Author,CitationURL) VALUES('{0}','{1}','{2}')";
+                    break;
+                case SQLType.e_getcitation:
+                    results = @"SELECT * FROM Citation";
                     break;
                 case SQLType.e_regionregressionregion:
                     results = @"INSERT INTO RegionRegressionRegion(RegionID,RegressionRegionID) VALUES({0},{1})";
@@ -401,7 +404,8 @@ namespace FU_NSSDB
             e_equation,            
             e_variables,
 
-            e_citation,
+            e_getcitation,
+            e_postcitation,
             e_regionregressionregion,
             e_predictioninterval,
             e_equationunitypes,

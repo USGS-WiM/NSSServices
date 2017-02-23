@@ -3,19 +3,19 @@ using System.Data.Common;
 using NSSDB;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Configuration;
 
 namespace NSSDB.Tests
 {
     [TestClass]
     public class NSSDBTest
     {
-        private string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id=nssadmin;PASSWORD={0};database=nss';";
-        private string password = "Lj1ulzxcZvmXPNFmI03u";
-
+        private string connectionString = String.Format(@"metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id={0};PASSWORD={1};database=nss';",ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
+        
         [TestMethod]
         public void NSSDBConnectionTest()
         {
-            using (nssEntities context = new nssEntities(string.Format(connectionString,password)))
+            using (nssEntities context = new nssEntities(connectionString))
             {
                 DbConnection conn = context.Database.Connection;
                 try
@@ -40,7 +40,7 @@ namespace NSSDB.Tests
         [TestMethod]
         public void NSSDBQueryTest()
         {
-            using (nssEntities context = new nssEntities(string.Format(connectionString, password)))
+            using (nssEntities context = new nssEntities(connectionString))
             {
                 try
                 {

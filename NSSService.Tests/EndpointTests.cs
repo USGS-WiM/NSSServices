@@ -133,6 +133,34 @@ namespace NSSService.Tests
 
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            resourceurl = host + Configuration.regionResource + "/NY/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + @"=gc1430,gc1431,gc1075,gc1076,gc738,gc741,gc909&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                switch(rr.Code){
+                    case "GC1075": rr.PercentWeight = 57.35349086187217; break;
+                    case "GC1076": rr.PercentWeight = 42.6457965599144; break;
+                }
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 2490; break;
+                        case "CSL10_85": p.Value = 7.68; break;
+                        case "EL1200": p.Value = 58.7; break;
+                        case "MAR": p.Value = 14.6; break;
+                        case "PRECIP": p.Value = 33.9; break;
+                        case "SLOPERATIO": p.Value = 0.0192; break;
+                        case "STORAGE": p.Value = 1.3; break;
+                    }
+                });
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/ME/" + Configuration.scenarioResource;
             queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + @"=gc1595,gc1435,gc1632,gc632,gc1633,gc1637,gc1641,gc1645,gc1635,gc1634,gc1640,gc1639,gc1636,gc1638,gc1644,gc1643,gc1642&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);

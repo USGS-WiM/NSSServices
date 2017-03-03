@@ -36,7 +36,7 @@ namespace NSSService.Utilities.ServiceAgent
         {        
         }
         internal NSSAgent(string username, EasySecureString password, Boolean include = false, Int32 usertypeid = 1)
-            : base(ConfigurationManager.ConnectionStrings["nssEntities"].ConnectionString)
+            : base(ConfigurationManager.AppSettings["dbconnectionstring"])
         {
             this.context = new nssEntities(string.Format(connectionString, username, password.decryptString()));
             this.context.Configuration.ProxyCreationEnabled = include;
@@ -98,14 +98,14 @@ namespace NSSService.Utilities.ServiceAgent
 
             return equery.OrderBy(e=>e.OrderIndex);
         }
-        internal IQueryable<Scenario> GetScenarios(string region, Int32 systemtypeID, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null)
+        internal IQueryable<Scenario> GetScenarios(string region, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0)
         {
             IQueryable<ScenarioParameterView> equery = null;
             this.limitations = new List<Limitation>();
             List<RegressionRegionCoefficient> flowCoefficents = new List<RegressionRegionCoefficient>();
             try
             {
-                //this.unitConversionFactors = Select<UnitConversionFactor>().ToList();
+                this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
                 if (this.user.ID == 2)
                 {
                     this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
@@ -119,7 +119,7 @@ namespace NSSService.Utilities.ServiceAgent
                 if (regionEquationList != null && regionEquationList.Count() > 0)
                     SelectedRegionRegressions = SelectedRegionRegressions.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString())|| regionEquationList.Contains(e.RegressionRegion.Code.ToLower().Trim())).ToList();
 
-                equery = getTable<ScenarioParameterView>(new Object[1]{systemtypeID}).Where(s => SelectedRegionRegressions.Select(rr => rr.RegressionRegionID).Contains(s.RegressionRegionID));
+                equery = getTable<ScenarioParameterView>(new Object[0]).Where(s => SelectedRegionRegressions.Select(rr => rr.RegressionRegionID).Contains(s.RegressionRegionID));
 
                 
 
@@ -147,22 +147,22 @@ namespace NSSService.Utilities.ServiceAgent
                             Parameters = r.groupedparameters.Select(p => new Parameter()
                             {  
                                ID = p.VariableID,
-                               UnitType = new SimpleUnitType() { ID = p.UnitTypeID, Unit = p.UnitName, Abbr = p.UnitAbbr},
-                               Limits = new Limit() { Min = p.VariableMinValue, Max = p.VariableMaxValue },
+                               UnitType = getUnit( new UnitType() { ID = p.UnitTypeID, Unit = p.UnitName, Abbr = p.UnitAbbr, UnitSystemTypeID = p.UnitSystemTypeID}, systemtypeID >0? systemtypeID: p.UnitSystemTypeID),
+                               Limits = new Limit() { Min = p.VariableMinValue*this.getUnitConversionFactor(p.UnitTypeID,systemtypeID > 0 ?systemtypeID:p.UnitSystemTypeID), Max = p.VariableMaxValue*this.getUnitConversionFactor(p.UnitTypeID, systemtypeID > 0 ? systemtypeID : p.UnitSystemTypeID) },
                                Code = p.VariableCode,
                                Description = p.VariableDescription,
                                Name = p.VariableName,
                                Value = -999.99
                             }).Union(limitations.Where(l=>l.RegressionRegionID == r.groupkey).SelectMany(l=>l.Variables).Select(v=>new Parameter() {
                                 ID =v.VariableType.ID,
-                                UnitType = new SimpleUnitType() { ID = v.UnitTypeID, Unit = v.UnitType.Unit, Abbr = v.UnitType.Abbr },
+                                UnitType = getUnit(v.UnitType, systemtypeID > 0 ? systemtypeID : v.UnitType.UnitSystemTypeID),
                                 Code = v.VariableType.Code,
                                 Description = v.VariableType.Description,
                                 Name =v.VariableType.Name,
                                 Value =-999.99 })).Union(flowCoefficents.Where(l => l.RegressionRegionID == r.groupkey).SelectMany(l => l.Variables).Select(v => new Parameter()
                                 {
                                     ID = v.VariableType.ID,
-                                    UnitType = new SimpleUnitType() { ID = v.UnitTypeID, Unit = v.UnitType.Unit, Abbr = v.UnitType.Abbr },
+                                    UnitType = this.getUnit(v.UnitType, systemtypeID > 0 ? systemtypeID : v.UnitType.UnitSystemTypeID),
                                     Code = v.VariableType.Code,
                                     Description = v.VariableType.Description,
                                     Name = v.VariableType.Name,
@@ -177,7 +177,7 @@ namespace NSSService.Utilities.ServiceAgent
                 throw;
             }
         }
-        internal IQueryable<Scenario> EstimateScenarios(string region, Int32 systemtypeID, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList)
+        internal IQueryable<Scenario> EstimateScenarios(string region, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0)
         {
             IQueryable<Equation> equery = null;
             List<Equation> EquationList = null;
@@ -212,14 +212,14 @@ namespace NSSService.Utilities.ServiceAgent
                         {
                             Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                             if (paramsOutOfRange) sm(WiM.Resources.MessageType.warning, "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors");
-                            //equation variables
+                            //equation variables, computed in native units
                             var variables = regressionregion.Parameters.Where(e=>equation.Variables.Any(v=>v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code,true)==0).UnitType.UnitSystemTypeID));
                             //var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
                             eOps = new ExpressionOps(equation.Equation1,variables);
                             
                             if (!eOps.IsValid) break;// next equation
 
-                            var unit = getUnit(equation.UnitType, systemtypeID);
+                            var unit = getUnit(equation.UnitType, systemtypeID>0?systemtypeID:equation.UnitType.UnitSystemTypeID);
                             
                             regressionregion.Results.Add(new RegressionResult()
                             {
@@ -282,11 +282,12 @@ namespace NSSService.Utilities.ServiceAgent
 	                                `st`.`Code` AS `StatisticGroupTypeCode`,
 	                                `st`.`Name` AS `StatisticGroupTypeName`,
 	                                `v`.`ID` AS `VariableID`,
-                                    IF(`u`.`UnitSystemTypeID` != {0} AND `u2`.`UnitSystemTypeID` = {0},`u2`.`ID`,`v`.`UnitTypeID`) AS `UnitTypeID`,
-                                    IF(`u`.`UnitSystemTypeID` != {0} AND `u2`.`UnitSystemTypeID` = {0},`u2`.`Abbr`,`u`.`Abbr`) AS `UnitAbbr`,
-                                    IF(`u`.`UnitSystemTypeID` != {0} AND `u2`.`UnitSystemTypeID` = {0},`u2`.`Unit`,`u`.`Unit`) AS `UnitName`,
-                                    IF(`u`.`UnitSystemTypeID` != {0} AND `u2`.`UnitSystemTypeID` = {0},`v`.`MaxValue`*`cf`.`Factor`,`v`.`MaxValue`) AS `VariableMaxValue`,
-                                    IF(`u`.`UnitSystemTypeID` != {0} AND `u2`.`UnitSystemTypeID` = {0},`v`.`MinValue`*`cf`.`Factor`,`v`.`MinValue`) AS `VariableMinValue`,    
+                                    `v`.`UnitTypeID` AS `UnitTypeID`,
+                                    `u`.`Abbr` AS `UnitAbbr`,
+                                    `u`.`Unit` AS `UnitName`,
+									`u`.`UnitSystemTypeID` AS `UnitSystemTypeID`,
+                                    `v`.`MaxValue` AS `VariableMaxValue`,
+                                    `v`.`MinValue` AS `VariableMinValue`, 
 	                                `vt`.`Name` AS `VariableName`,
 	                                `vt`.`Code` AS `VariableCode`,
 	                                `vt`.`Description` AS `VariableDescription`
@@ -299,8 +300,6 @@ namespace NSSService.Utilities.ServiceAgent
 	                                JOIN `RegressionRegion` `rr`)
 	                                JOIN `RegressionType` `rt`)
 	                                JOIN `StatisticGroupType` `st`)
-                                    Left Join `UnitConversionFactor` `cf` ON (`cf`.`UnitTypeInID` = `u`.`ID`)
-	                                Left Join `UnitType` `u2` on (`cf`.`UnitTypeOutID` = `u2`.`ID`)
     
                                 WHERE
 	                                ((`v`.`EquationID` = `e`.`ID`)
@@ -388,7 +387,7 @@ namespace NSSService.Utilities.ServiceAgent
                 return null;
             }//end try
         }
-        [DebuggerHidden]
+        //[DebuggerHidden]
         private SimpleUnitType getUnit(UnitType inUnitType, int OutSystemtypeID)
         {
             try 
@@ -414,12 +413,15 @@ namespace NSSService.Utilities.ServiceAgent
                 return new SimpleUnitType() { Abbr = inUnitType.Abbr, Unit = inUnitType.Unit, factor = 1 };
 	        }         
         }
-        [DebuggerHidden]
+        //[DebuggerHidden]
         private double getUnitConversionFactor(int inUnitID, int OutUnitSystemTypeID)
         {
             try
             {
-                return this.unitConversionFactors.Where(uf => uf.UnitTypeInID == inUnitID && uf.UnitTypeOut.UnitSystemTypeID == OutUnitSystemTypeID).First().Factor;
+                var tr = this.unitConversionFactors.Where(uf => uf.UnitTypeInID == inUnitID).FirstOrDefault(r => r.UnitTypeOut.UnitSystemTypeID == OutUnitSystemTypeID);
+                if (tr != null) return tr.Factor;
+                else return 1;
+             
             }
             catch (Exception)
             {
@@ -442,8 +444,7 @@ namespace NSSService.Utilities.ServiceAgent
                     return false;
                 }
                 else if (areaSum.HasValue && Math.Round(areaSum.Value) > 100) {
-                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
-                    return false;
+                   return false;
                 }
 
                 return true;

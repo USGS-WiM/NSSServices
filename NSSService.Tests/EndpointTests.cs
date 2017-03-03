@@ -130,6 +130,25 @@ namespace NSSService.Tests
             string queryParams;
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            resourceurl = host + Configuration.regionResource + "/MN/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=5&" + Configuration.RegressionRegionResource + @"=gc1653,gc1648,gc1201,gc667&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 3.82; break;
+                        case "PMPE": p.Value = -19.9; break;
+                        case "PFLATLOW": p.Value = 4.92; break;
+                    }
+                });
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
 
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_

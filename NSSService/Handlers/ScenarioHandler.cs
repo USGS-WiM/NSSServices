@@ -70,8 +70,7 @@ namespace NSSService.Handlers
 
                 using (NSSAgent sa = new NSSAgent(usertypeid: configurationID))
                 {
-                    if (unitsysID < 1) unitsysID = sa.user.UnitSystemID;
-                    entities = sa.GetScenarios(region, unitsysID, regressionregionList, statisticgroupList, regressiontypeList, extensionList).ToList();                    
+                    entities = sa.GetScenarios(region, regressionregionList, statisticgroupList, regressiontypeList, extensionList,unitsysID).ToList();                    
                     sm(WiM.Resources.MessageType.info,"Count: " + entities.Count());
                     sm(sa.Messages);
                 }//end using
@@ -116,8 +115,8 @@ namespace NSSService.Handlers
 
                 using (NSSAgent sa = new NSSAgent(usertypeid: configurationID))
                 {
-                    if (unitsysID < 1) unitsysID = sa.user.UnitSystemID;
-                    entities = sa.EstimateScenarios(region, unitsysID, scenarioList, subregionList, statisticgroupList, regressiontypeList, extensionList).ToList();
+                    
+                    entities = sa.EstimateScenarios(region, scenarioList, subregionList, statisticgroupList, regressiontypeList, extensionList, unitsysID).ToList();
 
                     sm(WiM.Resources.MessageType.info, "Count: " + entities.Count());
 

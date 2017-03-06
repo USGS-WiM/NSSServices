@@ -21,6 +21,7 @@ namespace NSSService.Resources
             public int UnitTypeID { get; set; }
             public String UnitName { get; set; }
             public string UnitAbbr { get; set; }
+            public int UnitSystemTypeID { get; set; }
             public Double VariableMaxValue { get; set; }
             public Double VariableMinValue { get; set; }
             public string VariableName { get; set; }

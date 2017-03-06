@@ -10,7 +10,7 @@ namespace NSSDB.Tests
     [TestClass]
     public class NSSDBTest
     {
-        private string connectionString = String.Format(@"metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id={0};PASSWORD={1};database=nss';",ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
+        private string connectionString = String.Format(ConfigurationManager.AppSettings["dbconnectionstring"],ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
         
         [TestMethod]
         public void NSSDBConnectionTest()

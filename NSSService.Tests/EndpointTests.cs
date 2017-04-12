@@ -130,6 +130,53 @@ namespace NSSService.Tests
             string queryParams;
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            resourceurl = host + Configuration.regionResource + "/OR/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=PFS&" + Configuration.RegressionRegionResource + @"=gc730,gc731&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 1.04; break;
+                        case "BSLOPD": p.Value = 18.2; break;
+                        case "I24H2Y": p.Value = 2.46; break;
+                        case "JANMAXT2K": p.Value = 46.7; break;
+                        case "JANMINT2K": p.Value = 33.3; break;
+                        case "ELEV": p.Value = 3070; break;
+                        case "ORREG2": p.Value = 10001; break;
+                    }
+                });
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            resourceurl = host + Configuration.regionResource + "/OH/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=&"+Configuration.regressionTypeResource+"=Q10&" + Configuration.RegressionRegionResource + @"=gc1523,gc10004,gc1450,gc1449,gc1234,gc1524&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 36.4; break;
+                        case "STREAM_VARG": p.Value = 0.63; break;
+                        case "LAT_CENT": p.Value = 41.6373; break;
+                    }
+                });
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
+
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/MN/" + Configuration.scenarioResource;
             queryParams = Configuration.statisticGroupTypeResource + "=5&" + Configuration.RegressionRegionResource + @"=gc1653,gc1648,gc1201,gc667&" + Configuration.userTypeResource + "=2";

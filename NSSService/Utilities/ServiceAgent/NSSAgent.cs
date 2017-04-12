@@ -199,15 +199,13 @@ namespace NSSService.Utilities.ServiceAgent
                 foreach (Scenario scenario in scenarioList)
                 {
                     //remove if invalid
-                    scenario.RegressionRegions.RemoveAll(rr => !Valid(rr));              
+                    scenario.RegressionRegions.RemoveAll(rr => !valid(rr));              
 
                     foreach (SimpleRegionEquation regressionregion in scenario.RegressionRegions)
                     {   
                         regressionregion.Results = new List<RegressionResultBase>();
                         EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).Select(e=>e).ToList();
-
-                        var flowCoeff = getFlowCoeff(regressionregion, regressionregionCoeff);
-                        
+ 
                         foreach (Equation equation in EquationList)
                         {
                             Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
@@ -231,7 +229,7 @@ namespace NSSService.Utilities.ServiceAgent
                                 Errors = paramsOutOfRange ? null : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value, Code = e.ErrorType.Code }).ToList(), 
                                 EquivalentYears = paramsOutOfRange? null: equation.EquivalentYears,
                                 IntervalBounds = paramsOutOfRange? null: evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value*unit.factor),
-                                Value = eOps.Value*unit.factor * flowCoeff                               
+                                Value = eOps.Value*unit.factor                              
                             });
                         }//next equation
                         regressionregion.Extensions.ForEach(ext => evaluateExtension(ext, regressionregion));
@@ -241,6 +239,10 @@ namespace NSSService.Utilities.ServiceAgent
                         var weightedRegion = evaluateWeightedAverage(scenario.RegressionRegions);
                         if (weightedRegion!= null)scenario.RegressionRegions.Add(weightedRegion);
                     }//endif
+                    
+                    var tz = evaluateTransitionBetweenFlowZones(scenario.RegressionRegions, regressionregionCoeff);
+                    if (tz != null) scenario.RegressionRegions.Add(tz);
+
                 }//next scenario
 
                 return scenarioList.AsQueryable();
@@ -409,7 +411,6 @@ namespace NSSService.Utilities.ServiceAgent
 	        }
 	        catch (Exception)
 	        {
-
                 return new SimpleUnitType() { Abbr = inUnitType.Abbr, Unit = inUnitType.Unit, factor = 1 };
 	        }         
         }
@@ -434,8 +435,8 @@ namespace NSSService.Utilities.ServiceAgent
             try
             {
                 if(regressionRegions.Count() <=1) return false;
-                areaSum = regressionRegions.Sum(r => r.PercentWeight);
 
+                areaSum = regressionRegions.Sum(r => r.PercentWeight);
                 if (!areaSum.HasValue || areaSum <= 0) return false;
 
                 if (areaSum.HasValue && Math.Round(areaSum.Value) < 100)
@@ -443,8 +444,9 @@ namespace NSSService.Utilities.ServiceAgent
                     sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates. Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.");
                     return false;
                 }
-                else if (areaSum.HasValue && Math.Round(areaSum.Value) > 100) {
-                   return false;
+                else if (areaSum.HasValue && Math.Round(areaSum.Value) > 100)
+                {
+                    return false;
                 }
 
                 return true;
@@ -467,6 +469,43 @@ namespace NSSService.Utilities.ServiceAgent
                     .GroupBy(e => e.Name).Select(i=>i.Aggregate((accumulator, it) => { accumulator.Value += it.Value; accumulator.Unit = it.Unit; accumulator.Equation = "Weighted Average"; return accumulator; })).ToList();
 
                 return weightedRR;
+            }
+            catch (Exception ex)
+            {
+                sm(WiM.Resources.MessageType.error, ex.Message);
+                sm(WiM.Resources.MessageType.warning, "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
+                return null;
+            }
+        }
+        internal SimpleRegionEquation evaluateTransitionBetweenFlowZones(List<SimpleRegionEquation> regressionRegions, List<RegressionRegionCoefficient> regressionregionCoeff) {
+            SimpleRegionEquation RRTransZone = null;
+            ExpressionOps eOps = null;
+            Dictionary<int, double> TransitionZoneCoeff = new Dictionary<int, double>();
+            try
+            {
+                var coef = regressionregionCoeff.Where(rr => regressionRegions.Select(r => r.ID).Contains(rr.RegressionRegionID));
+                if (coef.Count() <= 0 || coef.Count() != regressionRegions.Count() ) return null;
+
+                foreach (var rRegion in coef)
+                {
+                    var vars = regressionRegions.FirstOrDefault(e=>e.ID == rRegion.RegressionRegionID).Parameters.Where(e => rRegion.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, rRegion.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
+                    eOps = new ExpressionOps(rRegion.Criteria, vars);
+                    if (!eOps.IsValid) throw new Exception();
+                    if (!Convert.ToBoolean(eOps.Value)) return null;
+                    //use coeff value to compute
+                    eOps = new ExpressionOps(rRegion.Value, vars);
+                    if (!eOps.IsValid) throw new Exception();
+                    TransitionZoneCoeff[rRegion.RegressionRegionID] = eOps.Value;
+                }//next regRegion            
+                
+                
+
+                RRTransZone = new SimpleRegionEquation();
+                RRTransZone.Name = "Weighted-Average";
+                RRTransZone.Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone()).Select(r => { r.Value = r.Value * TransitionZoneCoeff[x.ID]; return r; }))
+                    .GroupBy(e => e.Name).Select(i => i.Aggregate((accumulator, it) => { accumulator.Value += it.Value; accumulator.Unit = it.Unit; accumulator.Equation = "Weighted Average"; return accumulator; })).ToList();
+
+                return RRTransZone;
             }
             catch (Exception ex)
             {
@@ -526,7 +565,7 @@ namespace NSSService.Utilities.ServiceAgent
                 this.sm(sa.Messages);
             }
         }
-        private bool Valid(SimpleRegionEquation regressionRegion) {
+        private bool valid(SimpleRegionEquation regressionRegion) {
             ExpressionOps eOps = null;
             try
             {
@@ -548,28 +587,6 @@ namespace NSSService.Utilities.ServiceAgent
             {
                 sm(WiM.Resources.MessageType.error, regressionRegion.Name + " is not valid: " + ex.Message);
                 return false;
-            }
-        }
-        private double getFlowCoeff(SimpleRegionEquation regRegion, List<RegressionRegionCoefficient> regressionregionCoeff)
-        {
-            ExpressionOps eOps = null;
-            try
-            {          
-                var coef = regressionregionCoeff.FirstOrDefault(rc => rc.RegressionRegionID == regRegion.ID);
-                if (coef == null) return 1;
-                var vars = regRegion.Parameters.Where(e => coef.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, coef.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
-                eOps = new ExpressionOps(coef.Criteria, vars);
-                if (!eOps.IsValid) throw new Exception();
-                if (!Convert.ToBoolean(eOps.Value)) return 1;
-                //use coeff value to compute
-                eOps = new ExpressionOps(coef.Value, vars);
-                if (!eOps.IsValid) throw new Exception();
-                return eOps.Value;
-            }
-            catch (Exception)
-            {
-                sm(WiM.Resources.MessageType.error, "Error computing flow coeff, default set to 1");
-                return 1;
             }
         }
 

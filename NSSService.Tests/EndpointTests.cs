@@ -130,6 +130,89 @@ namespace NSSService.Tests
             string queryParams;
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=IA&statisticgroups=4&regressionregions=GC1560,GC1699,GC1701,GC1700,GC1724,GC1525,GC1526,GC1564,GC1561&configs=2
+            //Tests prediction interval and average standard error weight
+            resourceurl = host + Configuration.regionResource + "/IA/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=4&" + Configuration.RegressionRegionResource + @"=GC1560,GC1699,GC1701,GC1700,GC1724,GC1525,GC1526,GC1564,GC1561&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 225; break;
+                        case "TAU_ANN_G": p.Value = 21.49; break;
+                        case "SSURGOKSAT": p.Value = 10.12; break;
+                        case "BFI": p.Value = 0.550591; break;
+                        case "SSURGOA": p.Value = 1.05; break;
+                    }
+                });
+                switch (rr.Code)
+                {
+                    case "GC1526": rr.PercentWeight = 91.81417149453831; break;
+                    case "GC1525": rr.PercentWeight = 8.17634983236648; break;
+                }
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=TN&statisticgroups=4&regressionregions=GC344,GC1418,GC1419&configs=2
+            resourceurl = host + Configuration.regionResource + "/TN/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=4&" + Configuration.RegressionRegionResource + @"=GC344,GC1418,GC1419&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 18.77; break;
+                        case "RECESS": p.Value = 64; break;
+                        case "PERMGTE2IN": p.Value = 40.317; break;
+                        case "CLIMFAC2YR": p.Value = 2.4; break;
+                        case "SOILPERM": p.Value = 1.106; break;
+                    }
+                });
+                switch (rr.Code)
+                {
+                    case "GC1418": rr.PercentWeight = 92.17488438336163;break;
+                    case "GC1419": rr.PercentWeight = 7.825115617612058; break;
+                }
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=GA&statisticgroups=2&regressionregions=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&configs=2
+            resourceurl = host + Configuration.regionResource + "/GA/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + @"=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 156; break;
+                        case "LC06IMP": p.Value = 0.89; break;
+                        case "I24H50Y": p.Value = 6.94; break;
+                        case "LC06DEV": p.Value = 5.585; break;
+                        case "PCTREG1": p.Value = 24.353; break;
+                        case "PCTREG2": p.Value = 0; break;
+                        case "PCTREG3": p.Value = 74.792; break;
+                        case "PCTREG4": p.Value = 0.856; break;
+                        case "PCTREG5": p.Value = 0; break;
+                    }
+                });
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/OR/" + Configuration.scenarioResource;

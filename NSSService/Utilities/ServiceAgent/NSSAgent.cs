@@ -465,8 +465,18 @@ namespace NSSService.Utilities.ServiceAgent
                 
                 weightedRR = new SimpleRegionEquation();
                 weightedRR.Name = "Area-Averaged";
-                weightedRR.Results = regressionRegions.SelectMany(x => x.Results.Select(r=>r.Clone()).Select(r => { r.Value = r.Value * x.PercentWeight / 100;  return r; }))
-                    .GroupBy(e => e.Name).Select(i=>i.Aggregate((accumulator, it) => { accumulator.Value += it.Value; accumulator.Unit = it.Unit; accumulator.Equation = "Weighted Average"; return accumulator; })).ToList();
+                var Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone())
+                                .Select(r => {
+                                    r.Value = r.Value * x.PercentWeight / 100;
+                                    r.Errors.ForEach(e => { e.Value = e.Value * x.PercentWeight / 100; });
+                                    if (r.IntervalBounds != null) {
+                                        r.IntervalBounds.Lower = r.IntervalBounds.Lower *x.PercentWeight.Value / 100;
+                                        r.IntervalBounds.Upper = r.IntervalBounds.Upper * x.PercentWeight.Value / 100;
+                                    }
+                                    return r; }))
+                                .OfType<RegressionResult>().ToList();
+
+                weightedRR.Results = this.AccumulateRegressionResults(Results).ToList();                    
 
                 return weightedRR;
             }
@@ -477,6 +487,36 @@ namespace NSSService.Utilities.ServiceAgent
                 return null;
             }
         }
+        private IEnumerable<RegressionResultBase> AccumulateRegressionResults(IEnumerable<RegressionResult> regressionresults)
+        {
+            try
+            {
+
+                var Results = regressionresults.GroupBy(e =>
+                    e.Name)
+                    .Select(i => i.Aggregate((accumulator, it) =>
+                    {
+                        accumulator.Value += it.Value;
+                        accumulator.Unit = it.Unit;
+                        accumulator.Equation = "Weighted Average";
+                        accumulator.EquivalentYears += it.EquivalentYears;
+                        if (accumulator.IntervalBounds != null) {
+                            accumulator.IntervalBounds.Lower += it.IntervalBounds.Lower;
+                            accumulator.IntervalBounds.Upper += it.IntervalBounds.Upper;
+                        }
+                        accumulator.Errors.ForEach(a => a.Value += it.Errors.FirstOrDefault(ia => ia.Code == a.Code).Value);
+                        return accumulator;
+                    }));
+
+                return Results;
+            }
+            catch (Exception ex)
+            {
+                sm(WiM.Resources.MessageType.error, ex.Message);
+                sm(WiM.Resources.MessageType.warning, "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
+                return null;
+            }
+        } 
         internal SimpleRegionEquation evaluateTransitionBetweenFlowZones(List<SimpleRegionEquation> regressionRegions, List<RegressionRegionCoefficient> regressionregionCoeff) {
             SimpleRegionEquation RRTransZone = null;
             ExpressionOps eOps = null;
@@ -502,8 +542,11 @@ namespace NSSService.Utilities.ServiceAgent
 
                 RRTransZone = new SimpleRegionEquation();
                 RRTransZone.Name = "Weighted-Average";
-                RRTransZone.Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone()).Select(r => { r.Value = r.Value * TransitionZoneCoeff[x.ID]; return r; }))
-                    .GroupBy(e => e.Name).Select(i => i.Aggregate((accumulator, it) => { accumulator.Value += it.Value; accumulator.Unit = it.Unit; accumulator.Equation = "Weighted Average"; return accumulator; })).ToList();
+                var Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone())
+                    .Select(r => { r.Value = r.Value * TransitionZoneCoeff[x.ID]; return r; }))
+                    .OfType<RegressionResult>();
+
+                RRTransZone.Results = this.AccumulateRegressionResults(Results).ToList();
 
                 return RRTransZone;
             }

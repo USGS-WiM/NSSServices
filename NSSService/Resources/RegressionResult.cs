@@ -31,8 +31,7 @@ namespace NSSService.Resources
     [Serializable]
     public class RegressionResult : RegressionResultBase
     {
-        public Double? EquivalentYears { get; set; }
-        
+        public Double? EquivalentYears { get; set; }        
         public override RegressionResultBase Clone()
         {
             using (var ms = new MemoryStream())

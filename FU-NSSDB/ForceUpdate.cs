@@ -138,7 +138,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post region " + region.Code);
+                sm("Failed to post region " + region.Code +" " + ex.Message);
                 return false;
             }
         }
@@ -166,7 +166,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post region " + regRegion.Code);
+                sm("Failed to post region " + regRegion.Code +" " +ex.Message);
                 return false;
             }
         }
@@ -209,7 +209,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post equation " + equation.oldID);
+                sm("Failed to post equation " + equation.oldID +" "+ex.Message);
                 return false;
             }
         }
@@ -232,7 +232,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post equation " + variable.oldID);
+                sm("Failed to post equation " + variable.oldID + " " + ex.Message);
                 return false;
             }
         }

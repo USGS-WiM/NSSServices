@@ -262,7 +262,7 @@ namespace NSSService.Utilities.ServiceAgent
                 string sql = String.Format(getSQLStatement(typeof(T).Name),args);
                 return context.Database.SqlQuery<T>(sql).AsQueryable();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -384,7 +384,7 @@ namespace NSSService.Utilities.ServiceAgent
                 
                 return new IntervalBounds() { Lower = lowerBound, Upper = upperBound };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }//end try
@@ -446,12 +446,14 @@ namespace NSSService.Utilities.ServiceAgent
                 }
                 else if (areaSum.HasValue && Math.Round(areaSum.Value) > 100)
                 {
-                    return false;
+                    //area weight internal components to see if match
+                    return regressionRegions.SelectMany(rr => rr.Results.Select(r=> new {weight = rr.PercentWeight, code = r.code }))
+                                .GroupBy(k => k.code).All(su => Math.Round(su.Sum(y => y.weight.Value)) == 100);
                 }
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -491,6 +493,8 @@ namespace NSSService.Utilities.ServiceAgent
         {
             try
             {
+                bool intervalBoundsOK = regressionresults.All(i => i.IntervalBounds != null);
+                var ok = regressionresults.All(i => i.Errors.Select(e => e.Code).Except(regressionresults.SelectMany(rr => rr.Errors.Select(er => er.Code)).Distinct()).Count() > 0);
 
                 var Results = regressionresults.GroupBy(e =>
                     e.Name)
@@ -500,11 +504,17 @@ namespace NSSService.Utilities.ServiceAgent
                         accumulator.Unit = it.Unit;
                         accumulator.Equation = "Weighted Average";
                         accumulator.EquivalentYears += it.EquivalentYears;
-                        if (accumulator.IntervalBounds != null) {
+                        if (intervalBoundsOK)
+                        {
                             accumulator.IntervalBounds.Lower += it.IntervalBounds.Lower;
                             accumulator.IntervalBounds.Upper += it.IntervalBounds.Upper;
                         }
-                        accumulator.Errors.ForEach(a => a.Value += it.Errors.FirstOrDefault(ia => ia.Code == a.Code).Value);
+                        else accumulator.IntervalBounds = null;
+                        if (ok)
+                        {
+                            accumulator.Errors.ForEach(a => a.Value += it.Errors.FirstOrDefault(ia => ia.Code == a.Code).Value);
+                        }
+                        else accumulator.Errors = null;
                         return accumulator;
                     }));
 

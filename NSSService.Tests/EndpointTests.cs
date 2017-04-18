@@ -131,6 +131,34 @@ namespace NSSService.Tests
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=VA&statisticgroups=4&regressionregions=GC1545,GC1546,GC1549,GC1551,GC1552,GC1553&configs=2
+            //Tests prediction interval and average standard error weight
+            resourceurl = host + Configuration.regionResource + "/VA/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=2,4&" + Configuration.RegressionRegionResource + @"=GC1545,GC1546,GC1549,GC1551,GC1552,GC1553&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 104; break;
+                    }
+                });
+                switch (rr.Code)
+                {
+                    case "GC1545": rr.PercentWeight = 3.6757487063050256; break;
+                    case "GC1546": rr.PercentWeight = 94.546113853685171; break;
+                    case "GC1549": rr.PercentWeight = 1.7781374348535617; break;
+                    case "GC1551": rr.PercentWeight = 3.6757487063050256; break;
+                    case "GC1552": rr.PercentWeight = 1.7781374348535617; break;
+                    case "GC1553": rr.PercentWeight = 94.546113853685171; break;
+                }
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.Inconclusive("Deserializing object not yet implemented");
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=IA&statisticgroups=4&regressionregions=GC1560,GC1699,GC1701,GC1700,GC1724,GC1525,GC1526,GC1564,GC1561&configs=2
             //Tests prediction interval and average standard error weight
             resourceurl = host + Configuration.regionResource + "/IA/" + Configuration.scenarioResource;

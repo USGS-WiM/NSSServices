@@ -124,7 +124,7 @@ namespace NSSService.Utilities.ServiceAgent
         }
         #endregion
         #region "Helper Methods"
-        protected Boolean IsValid()
+        protected override Boolean IsValid()
         {
 
             Boolean Isok = false;
@@ -136,7 +136,7 @@ namespace NSSService.Utilities.ServiceAgent
 
                return (Isok);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //Message = "error validating parameters";
                 return false;
@@ -219,7 +219,7 @@ namespace NSSService.Utilities.ServiceAgent
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;

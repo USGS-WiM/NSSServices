@@ -53,7 +53,7 @@ namespace NSSService.Utilities.ServiceAgent
                 site s = Execute<usgs_nwis>(r).Data.site;
                 return new Station(s);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new Station(stationID);
             }

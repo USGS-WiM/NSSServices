@@ -134,7 +134,7 @@ namespace NSSService.Tests
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=IA&statisticgroups=4&regressionregions=GC1560,GC1699,GC1701,GC1700,GC1724,GC1525,GC1526,GC1564,GC1561&configs=2
             //Tests prediction interval and average standard error weight
             resourceurl = host + Configuration.regionResource + "/IA/" + Configuration.scenarioResource;
-            queryParams = Configuration.statisticGroupTypeResource + "=4&" + Configuration.RegressionRegionResource + @"=GC1560,GC1699,GC1701,GC1700,GC1724,GC1525,GC1526,GC1564,GC1561&" + Configuration.userTypeResource + "=2";
+            queryParams = Configuration.statisticGroupTypeResource + "=8&" + Configuration.RegressionRegionResource + @"=GC1560,GC1699,GC1701,GC1700,GC1724,GC1525,GC1526,GC1564,GC1561&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
             Assert.IsNotNull(returnedObject);
 
@@ -147,12 +147,18 @@ namespace NSSService.Tests
                         case "SSURGOKSAT": p.Value = 10.12; break;
                         case "BFI": p.Value = 0.550591; break;
                         case "SSURGOA": p.Value = 1.05; break;
+                        case "DRNFREQ": p.Value = 0.6; break;
+                        case "LC11CRPHAY": p.Value = 88.4; break;
+                        case "PRJULDEC10": p.Value = 2.89; break;
+                        case "SSURGOD": p.Value = 0; break;
                     }
                 });
                 switch (rr.Code)
                 {
-                    case "GC1526": rr.PercentWeight = 91.81417149453831; break;
-                    case "GC1525": rr.PercentWeight = 8.17634983236648; break;
+                    case "GC1700": rr.PercentWeight = 8.17634983236648; break;
+                    case "GC1699": rr.PercentWeight = 8.17634983236648; break;
+                    case "GC1701": rr.PercentWeight = 91.81417149453831; break;
+                    case "GC1724": rr.PercentWeight = 91.81417149453831; break;
                 }
             }));
 

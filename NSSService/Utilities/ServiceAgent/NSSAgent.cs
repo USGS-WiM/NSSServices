@@ -199,7 +199,7 @@ namespace NSSService.Utilities.ServiceAgent
                 foreach (Scenario scenario in scenarioList)
                 {
                     //remove if invalid
-                    scenario.RegressionRegions.RemoveAll(rr => !valid(rr));              
+                    scenario.RegressionRegions.RemoveAll(rr => !valid(rr,scenario.RegressionRegions.Max(r => r.PercentWeight)));              
 
                     foreach (SimpleRegionEquation regressionregion in scenario.RegressionRegions)
                     {   
@@ -618,14 +618,25 @@ namespace NSSService.Utilities.ServiceAgent
                 this.sm(sa.Messages);
             }
         }
-        private bool valid(SimpleRegionEquation regressionRegion) {
+        private bool valid(SimpleRegionEquation regressionRegion, double? maxRegressionregion = null) {
             ExpressionOps eOps = null;
             try
             {
                 if (regressionRegion.Parameters.Any(p => p.Value <= -999)) throw new Exception("One or more parameters are invalid");
                 //check limitations
                 foreach (var item in limitations.Where(l => l.RegressionRegionID == regressionRegion.ID))
-                {                
+                {
+                    if (string.Equals(item.Criteria, "largestRegion", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (!maxRegressionregion.HasValue ||!regressionRegion.PercentWeight.HasValue) break;
+                        if (regressionRegion.PercentWeight != maxRegressionregion)
+                        {
+                            sm(WiM.Resources.MessageType.info, "Majority area Used for computation "+regressionRegion.Name + " removed PercentArea" + Math.Round(regressionRegion.PercentWeight.Value,2));
+                            return false;
+                        }
+                        else
+                            break;
+                        }
                     var variables = regressionRegion.Parameters.Where(e => item.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, item.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
                     eOps = new ExpressionOps(item.Criteria, variables);
                     if (!eOps.IsValid) throw new Exception("Validation equation invalid.");

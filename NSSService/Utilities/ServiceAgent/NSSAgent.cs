@@ -226,7 +226,7 @@ namespace NSSService.Utilities.ServiceAgent
                                 code = equation.RegressionType.Code,
                                 Description = equation.RegressionType.Description,
                                 Unit = unit,
-                                Errors = paramsOutOfRange ? null : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value, Code = e.ErrorType.Code }).ToList(), 
+                                Errors = paramsOutOfRange ? new List<Error>() : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value, Code = e.ErrorType.Code }).ToList(), 
                                 EquivalentYears = paramsOutOfRange? null: equation.EquivalentYears,
                                 IntervalBounds = paramsOutOfRange? null: evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value*unit.factor),
                                 Value = eOps.Value*unit.factor                              
@@ -470,7 +470,9 @@ namespace NSSService.Utilities.ServiceAgent
                 var Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone())
                                 .Select(r => {
                                     r.Value = r.Value * x.PercentWeight / 100;
-                                    r.Errors.ForEach(e => { e.Value = e.Value * x.PercentWeight / 100; });
+                                    if (r.Errors != null) {
+                                        r.Errors.ForEach(e => { e.Value = e.Value * x.PercentWeight / 100; });
+                                    }
                                     if (r.IntervalBounds != null) {
                                         r.IntervalBounds.Lower = r.IntervalBounds.Lower *x.PercentWeight.Value / 100;
                                         r.IntervalBounds.Upper = r.IntervalBounds.Upper * x.PercentWeight.Value / 100;

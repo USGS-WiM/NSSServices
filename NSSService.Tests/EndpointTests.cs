@@ -134,7 +134,7 @@ namespace NSSService.Tests
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=VA&statisticgroups=4&regressionregions=GC1545,GC1546,GC1549,GC1551,GC1552,GC1553&configs=2
             //Tests prediction interval and average standard error weight
             resourceurl = host + Configuration.regionResource + "/VA/" + Configuration.scenarioResource;
-            queryParams = Configuration.statisticGroupTypeResource + "=2,4&" + Configuration.RegressionRegionResource + @"=GC1545,GC1546,GC1549,GC1551,GC1552,GC1553&" + Configuration.userTypeResource + "=2";
+            queryParams = Configuration.statisticGroupTypeResource + "=31&" + Configuration.RegressionRegionResource + @"=GC1614&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
             Assert.IsNotNull(returnedObject);
 
@@ -143,6 +143,7 @@ namespace NSSService.Tests
                     switch (p.Code.ToUpper())
                     {
                         case "DRNAREA": p.Value = 104; break;
+                        case "LC01DEV": p.Value = 6.23; break;
                     }
                 });
                 switch (rr.Code)
@@ -153,6 +154,7 @@ namespace NSSService.Tests
                     case "GC1551": rr.PercentWeight = 3.6757487063050256; break;
                     case "GC1552": rr.PercentWeight = 1.7781374348535617; break;
                     case "GC1553": rr.PercentWeight = 94.546113853685171; break;
+                    default: rr.PercentWeight = 100;break;
                 }
             }));
 
@@ -222,9 +224,9 @@ namespace NSSService.Tests
             Assert.Inconclusive("Deserializing object not yet implemented");
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
-            //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=GA&statisticgroups=2&regressionregions=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&configs=2
-            resourceurl = host + Configuration.regionResource + "/GA/" + Configuration.scenarioResource;
-            queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + @"=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&" + Configuration.userTypeResource + "=2";
+            https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=GA&statisticgroups=31&regressionregions=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&configs=2
+           resourceurl = host + Configuration.regionResource + "/GA/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=31&" + Configuration.RegressionRegionResource + @"=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
             Assert.IsNotNull(returnedObject);
 
@@ -232,17 +234,24 @@ namespace NSSService.Tests
                 rr.Parameters.ForEach(p => {
                     switch (p.Code.ToUpper())
                     {
-                        case "DRNAREA": p.Value = 156; break;
-                        case "LC06IMP": p.Value = 0.89; break;
+                        case "DRNAREA": p.Value = 157; break;
+                        case "LC06IMP": p.Value = 0.9; break;
                         case "I24H50Y": p.Value = 6.94; break;
-                        case "LC06DEV": p.Value = 5.585; break;
-                        case "PCTREG1": p.Value = 24.353; break;
+                        case "LC06DEV": p.Value = 5.615; break;
+                        case "PCTREG1": p.Value = 24.343; break;
                         case "PCTREG2": p.Value = 0; break;
-                        case "PCTREG3": p.Value = 74.792; break;
+                        case "PCTREG3": p.Value = 74.801; break;
                         case "PCTREG4": p.Value = 0.856; break;
                         case "PCTREG5": p.Value = 0; break;
                     }
                 });
+                switch (rr.Code)
+                {
+                    case "GC1540": rr.PercentWeight = 24.351169108102276; break;
+                    case "GC1541": rr.PercentWeight = 74.79479013931387; break;
+                    case "GC1542": rr.PercentWeight = 0.8540407491242334; break;
+                    default: rr.PercentWeight = 100; break;
+                }
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);

@@ -205,12 +205,18 @@ namespace NSSService.Utilities.ServiceAgent
                     {   
                         regressionregion.Results = new List<RegressionResultBase>();
                         EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).Select(e=>e).ToList();
- 
+
+                        Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
+                        if (paramsOutOfRange)
+                        {
+                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors";
+                            regressionregion.Disclaimer = outofRangemsg;
+                            sm(WiM.Resources.MessageType.warning, outofRangemsg);
+                        }//end if
+
                         foreach (Equation equation in EquationList)
                         {
-                            Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
-                            if (paramsOutOfRange) sm(WiM.Resources.MessageType.warning, "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors");
-                            //equation variables, computed in native units
+                           //equation variables, computed in native units
                             var variables = regressionregion.Parameters.Where(e=>equation.Variables.Any(v=>v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code,true)==0).UnitType.UnitSystemTypeID));
                             //var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
                             eOps = new ExpressionOps(equation.Equation1,variables);

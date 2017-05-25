@@ -34,5 +34,10 @@ namespace NSSService.Resources
         public List<Extension> Extensions { get; set; }
         public bool ShouldSerializeExtension()
         { return Extensions != null || Extensions.Count > 1; }
+
+        public string Disclaimer { get; set; }
+        public bool ShouldSerializeDisclaimer()
+        { return !string.IsNullOrEmpty(Disclaimer) ; }
+
     }
 }

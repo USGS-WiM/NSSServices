@@ -112,7 +112,34 @@ namespace NSSService.Handlers
         }//end Get
         #endregion
         #region PUT Methods
+        public OperationResult put(Int32 ID, UnitType unit)
+        {
+            UnitType entity = null;
 
+            try
+            {
+                using (NSSAgent sa = new NSSAgent())
+                {
+                    entity = sa.Update<UnitType>(ID, unit);
+                    sm(sa.Messages);
+
+                }//end using
+
+                //hypermedia
+                //entities.CreateUri();
+                var msg = Messages.GroupBy(g => g.type).Select(gr => gr.Key.ToString() + ": " + string.Join(",", gr.Select(c => c.msg))).ToList();
+
+                return new OperationResult.OK { ResponseResource = entity, Description = string.Join(";", msg) };
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+            finally
+            {
+
+            }//end try
+        }//end Get
         #endregion
         #region POST Methods
 

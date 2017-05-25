@@ -521,6 +521,14 @@ namespace NSSService.Tests
             Assert.IsTrue(returnedObject.Count > 0);
         }//end method
         [TestMethod]
+        public void UnitTypeUpdateRequest()
+        {
+            UnitType returnedObject = this.GETRequest<List<UnitType>>(host + Configuration.unitTypeResource).First();
+            returnedObject.Unit += "test";
+            var updatedObject = this.PUTRequest<UnitType>(host + Configuration.unitTypeResource+"/"+returnedObject.ID, returnedObject);
+            Assert.IsTrue(returnedObject !=null);
+        }//end method
+        [TestMethod]
         public void UserTypeRequest()
         {
             List<UserType> returnedObject = this.GETRequest<List<UserType>>(host + Configuration.userTypeResource);

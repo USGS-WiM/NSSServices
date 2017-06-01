@@ -14,6 +14,7 @@ namespace NSSService.Resources
     {
         public int StatisticGroupID { get; set; }
         public string StatisticGroupName { get; set; }
+        public string Disclaimer { get; set; }
         [XmlArrayItem("RegressionRegion")]
         public List<SimpleRegionEquation> RegressionRegions { get; set; }
         public List<Link> Links { get; set; }
@@ -22,6 +23,13 @@ namespace NSSService.Resources
   
     public class SimpleRegionEquation
     {
+        public SimpleRegionEquation() { }
+
+        [JsonConstructor]
+        public SimpleRegionEquation(List<RegressionResult> results) {
+            if (results != null)
+                this.Results = results.Cast<RegressionResultBase>().ToList();
+        }
         public Int32 ID { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
@@ -38,6 +46,5 @@ namespace NSSService.Resources
         public string Disclaimer { get; set; }
         public bool ShouldSerializeDisclaimer()
         { return !string.IsNullOrEmpty(Disclaimer) ; }
-
     }
 }

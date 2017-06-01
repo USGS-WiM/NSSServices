@@ -97,7 +97,7 @@ namespace NSSService.Tests
             }));
 
             List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + Configuration.statisticGroupTypeResource + "=fds&" + Configuration.extensionResource + "=qppq&" + Configuration.unitSystemTypeResource + "=2", returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(returnedObject);
         }//end method
         [TestMethod]
         public void ScenarioLimitationExtensionRequest()
@@ -121,7 +121,7 @@ namespace NSSService.Tests
             }));
 
             List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
         }//end method
         [TestMethod]
         public void ScenarioEvaluateRequest()
@@ -159,7 +159,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=IA&statisticgroups=4&regressionregions=GC1560,GC1699,GC1701,GC1700,GC1724,GC1525,GC1526,GC1564,GC1561&configs=2
             //Tests prediction interval and average standard error weight
@@ -193,7 +193,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=TN&statisticgroups=4&regressionregions=GC344,GC1418,GC1419&configs=2
@@ -221,10 +221,10 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
-            https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=GA&statisticgroups=31&regressionregions=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&configs=2
+            //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=GA&statisticgroups=31&regressionregions=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&configs=2
            resourceurl = host + Configuration.regionResource + "/GA/" + Configuration.scenarioResource;
             queryParams = Configuration.statisticGroupTypeResource + "=31&" + Configuration.RegressionRegionResource + @"=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
@@ -255,7 +255,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/OR/" + Configuration.scenarioResource;
@@ -268,7 +268,7 @@ namespace NSSService.Tests
                     switch (p.Code.ToUpper())
                     {
                         case "DRNAREA": p.Value = 1.04; break;
-                        case "BSLOPD": p.Value = 18.2; break;
+                        case "BSLDEM30M": p.Value = 18.2; break;
                         case "I24H2Y": p.Value = 2.46; break;
                         case "JANMAXT2K": p.Value = 46.7; break;
                         case "JANMINT2K": p.Value = 33.3; break;
@@ -279,7 +279,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
@@ -300,7 +300,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
@@ -321,7 +321,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
@@ -350,7 +350,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/ME/" + Configuration.scenarioResource;
@@ -369,7 +369,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
 
@@ -397,11 +397,11 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
 
-             resourceurl = host + Configuration.regionResource + "/NC/" + Configuration.scenarioResource;
+            resourceurl = host + Configuration.regionResource + "/NC/" + Configuration.scenarioResource;
              queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + "=gc1254,gc1,gc1576,gc1254,gc1580,gc1577&" + Configuration.unitSystemTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
             Assert.IsNotNull(returnedObject);
@@ -422,7 +422,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
 
@@ -444,7 +444,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(resultObject);
         }//end method
         [TestMethod]
         public void ScenarioWeightedEvaluateRequest()
@@ -465,7 +465,7 @@ namespace NSSService.Tests
             }));
 
             List<Scenario> resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(returnedObject);
 
 
             resourceurl = host + Configuration.regionResource + "/CO/" + Configuration.scenarioResource;
@@ -486,7 +486,7 @@ namespace NSSService.Tests
             }));
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.Inconclusive("Deserializing object not yet implemented");
+            Assert.IsNotNull(returnedObject);
         }//end method
         [TestMethod]
         public void StatisticGroupTypeRequest()

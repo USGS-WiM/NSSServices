@@ -240,7 +240,7 @@ namespace NSSService.Utilities.ServiceAgent
                         }//next equation
                         regressionregion.Extensions.ForEach(ext => evaluateExtension(ext, regressionregion));
                     }//next regressionregion
-                    if (canAreaWeight(scenario.RegressionRegions))
+                    if (canAreaWeight(scenario))
                     {
                         var weightedRegion = evaluateWeightedAverage(scenario.RegressionRegions);
                         if (weightedRegion!= null)scenario.RegressionRegions.Add(weightedRegion);
@@ -435,29 +435,34 @@ namespace NSSService.Utilities.ServiceAgent
                 return 1;
             }
         }
-        private bool canAreaWeight(List<SimpleRegionEquation> regressionRegions)
+        private bool canAreaWeight(Scenario scenario)
         {
+            List<SimpleRegionEquation> regressionRegions = null;
             double? areaSum;
             try
             {
-                if(regressionRegions.Count() <=1) return false;
+                regressionRegions = scenario.RegressionRegions;
 
                 areaSum = regressionRegions.Sum(r => r.PercentWeight);
                 if (!areaSum.HasValue || areaSum <= 0) return false;
 
-                if (areaSum.HasValue && Math.Round(areaSum.Value) < 100)
+                if (Math.Round(areaSum.Value) == 100 && regressionRegions.Count() > 1) {
+                    //area weight internal components to see if match
+                    return true;
+                }
+                else
                 {
-                    sm(WiM.Resources.MessageType.warning, @"Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates. Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.");
+                    if (Math.Round(areaSum.Value) < 100)
+                    {
+                        scenario.Disclaimer = "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates. Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.";
+                        sm(WiM.Resources.MessageType.warning, scenario.Disclaimer);
+                    }
+                        if (Math.Round(areaSum.Value)>100)
+                        return regressionRegions.SelectMany(rr => rr.Results.Select(r => new { weight = rr.PercentWeight, code = r.code }))
+                             .GroupBy(k => k.code).All(su => Math.Round(su.Sum(y => y.weight.Value)) == 100);
+
                     return false;
                 }
-                else if (areaSum.HasValue && Math.Round(areaSum.Value) > 100)
-                {
-                    //area weight internal components to see if match
-                    return regressionRegions.SelectMany(rr => rr.Results.Select(r=> new {weight = rr.PercentWeight, code = r.code }))
-                                .GroupBy(k => k.code).All(su => Math.Round(su.Sum(y => y.weight.Value)) == 100);
-                }
-
-                return true;
             }
             catch (Exception)
             {

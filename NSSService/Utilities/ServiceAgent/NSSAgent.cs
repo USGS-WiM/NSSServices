@@ -240,14 +240,17 @@ namespace NSSService.Utilities.ServiceAgent
                         }//next equation
                         regressionregion.Extensions.ForEach(ext => evaluateExtension(ext, regressionregion));
                     }//next regressionregion
-                    if (canAreaWeight(scenario))
+                    if (canAreaWeight(scenario.RegressionRegions))
                     {
                         var weightedRegion = evaluateWeightedAverage(scenario.RegressionRegions);
                         if (weightedRegion!= null)scenario.RegressionRegions.Add(weightedRegion);
                     }//endif
                     
                     var tz = evaluateTransitionBetweenFlowZones(scenario.RegressionRegions, regressionregionCoeff);
-                    if (tz != null) scenario.RegressionRegions.Add(tz);
+                    if (tz != null) {
+                        scenario.RegressionRegions.Add(tz);
+                    }
+                    
 
                 }//next scenario
 
@@ -435,14 +438,11 @@ namespace NSSService.Utilities.ServiceAgent
                 return 1;
             }
         }
-        private bool canAreaWeight(Scenario scenario)
+        private bool canAreaWeight(List<SimpleRegionEquation> regressionRegions)
         {
-            List<SimpleRegionEquation> regressionRegions = null;
             double? areaSum;
             try
             {
-                regressionRegions = scenario.RegressionRegions;
-
                 areaSum = regressionRegions.Sum(r => r.PercentWeight);
                 if (!areaSum.HasValue || areaSum <= 0) return false;
 
@@ -454,8 +454,9 @@ namespace NSSService.Utilities.ServiceAgent
                 {
                     if (Math.Round(areaSum.Value) < 100)
                     {
-                        scenario.Disclaimer = "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates. Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.";
-                        sm(WiM.Resources.MessageType.warning, scenario.Disclaimer);
+                        string msg = "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates. Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.";
+                        regressionRegions.ForEach(r => r.Disclaimer += msg);
+                        sm(WiM.Resources.MessageType.warning, msg);
                     }
                         if (Math.Round(areaSum.Value)>100)
                         return regressionRegions.SelectMany(rr => rr.Results.Select(r => new { weight = rr.PercentWeight, code = r.code }))
@@ -558,12 +559,14 @@ namespace NSSService.Utilities.ServiceAgent
                     //use coeff value to compute
                     eOps = new ExpressionOps(rRegion.Value, vars);
                     if (!eOps.IsValid) throw new Exception();
-                    TransitionZoneCoeff[rRegion.RegressionRegionID] = eOps.Value;
+                    TransitionZoneCoeff[rRegion.RegressionRegionID] = eOps.Value;                
                 }//next regRegion            
-                
-                
+
+
 
                 RRTransZone = new SimpleRegionEquation();
+                RRTransZone.Disclaimer = "Weighted-Averaged flows were computed using transition between flow zones. See referenced report for more details";
+
                 RRTransZone.Name = "Weighted-Average";
                 var Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone())
                     .Select(r => { r.Value = r.Value * TransitionZoneCoeff[x.ID]; return r; }))

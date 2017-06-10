@@ -131,6 +131,31 @@ namespace NSSService.Tests
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            // https://test.streamstats.usgs.gov/nssservices/scenarios/estimate.json?region=MT&statisticgroups=2&regressionregions=GC1679&configs=2
+            //Tests prediction interval and average standard error weight
+            resourceurl = host + Configuration.regionResource + "/MT/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + @"=GC1679&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "CONTDA": p.Value = 34.9; break;
+                        case "ET0306MOD": p.Value = 0.97; break;
+                        case "SLOP30_30M": p.Value = 0; break;
+                    }
+                });
+                switch (rr.Code)
+                {
+                    default: rr.PercentWeight = 100; break;
+                }
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.IsNotNull(resultObject);
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=VA&statisticgroups=4&regressionregions=GC1545,GC1546,GC1549,GC1551,GC1552,GC1553&configs=2
             //Tests prediction interval and average standard error weight
             resourceurl = host + Configuration.regionResource + "/VA/" + Configuration.scenarioResource;
@@ -267,11 +292,12 @@ namespace NSSService.Tests
                 rr.Parameters.ForEach(p => {
                     switch (p.Code.ToUpper())
                     {
-                        case "DRNAREA": p.Value = 1.04; break;
+                        case "DRNAREA": p.Value = 1.64; break;
+                        case "BSLOPD": p.Value = 24.4; break;
                         case "BSLDEM30M": p.Value = 18.2; break;
-                        case "I24H2Y": p.Value = 2.46; break;
-                        case "JANMAXT2K": p.Value = 46.7; break;
-                        case "JANMINT2K": p.Value = 33.3; break;
+                        case "I24H2Y": p.Value = 3.19; break;
+                        case "JANMAXT2K": p.Value = 45.9; break;
+                        case "JANMINT2K": p.Value = 31; break;
                         case "ELEV": p.Value = 3070; break;
                         case "ORREG2": p.Value = 10001; break;
                     }

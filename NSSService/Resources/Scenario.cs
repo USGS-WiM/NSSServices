@@ -14,7 +14,6 @@ namespace NSSService.Resources
     {
         public int StatisticGroupID { get; set; }
         public string StatisticGroupName { get; set; }
-        public string Disclaimer { get; set; }
         [XmlArrayItem("RegressionRegion")]
         public List<SimpleRegionEquation> RegressionRegions { get; set; }
         public List<Link> Links { get; set; }

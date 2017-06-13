@@ -130,7 +130,37 @@ namespace NSSService.Tests
             string queryParams;
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
-            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
+            //https://test.streamstats.usgs.gov/nssservices/scenarios/estimate.json?region=AZ&statisticgroups=2&regressionregions=GC1621,GC1618,GC1623&configs=2
+            //Tests prediction interval and average standard error weight
+            resourceurl = host + Configuration.regionResource + "/AZ/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=2&" + Configuration.RegressionRegionResource + @"=GC1621,GC1618,GC1623&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 326.37; break;
+                        case "PRECIP": p.Value = 26.5; break;
+                        case "ELEV": p.Value = 5245.768; break;
+                        case "CONTDA": p.Value = 326.37; break;
+                        case "FD_Region": p.Value = 326.37; break;
+                    }
+                });
+                switch (rr.Code)
+                {
+                    default: rr.PercentWeight = 100; break;
+                }
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
+            Assert.IsNotNull(resultObject.First().RegressionRegions.First().Results);
+
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
             // https://test.streamstats.usgs.gov/nssservices/scenarios/estimate.json?region=MT&statisticgroups=2&regressionregions=GC1679&configs=2
             //Tests prediction interval and average standard error weight
             resourceurl = host + Configuration.regionResource + "/MT/" + Configuration.scenarioResource;
@@ -155,7 +185,9 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
-            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
+            Assert.IsNotNull(resultObject.First().RegressionRegions.First().Results);
+            //Returns count =0 +_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=VA&statisticgroups=4&regressionregions=GC1545,GC1546,GC1549,GC1551,GC1552,GC1553&configs=2
             //Tests prediction interval and average standard error weight
             resourceurl = host + Configuration.regionResource + "/VA/" + Configuration.scenarioResource;
@@ -248,7 +280,7 @@ namespace NSSService.Tests
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
 
-            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            //returned count = 0 +_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=GA&statisticgroups=31&regressionregions=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&configs=2
            resourceurl = host + Configuration.regionResource + "/GA/" + Configuration.scenarioResource;
             queryParams = Configuration.statisticGroupTypeResource + "=31&" + Configuration.RegressionRegionResource + @"=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&" + Configuration.userTypeResource + "=2";
@@ -282,7 +314,7 @@ namespace NSSService.Tests
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
 
-            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            //No result returned +_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/OR/" + Configuration.scenarioResource;
             queryParams = Configuration.statisticGroupTypeResource + "=PFS&" + Configuration.RegressionRegionResource + @"=gc730,gc731&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
@@ -308,7 +340,7 @@ namespace NSSService.Tests
             Assert.IsNotNull(resultObject);
 
 
-            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
+            //No results returned +_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/OH/" + Configuration.scenarioResource;
             queryParams = Configuration.statisticGroupTypeResource + "=&"+Configuration.regressionTypeResource+"=Q10&" + Configuration.RegressionRegionResource + @"=gc1523,gc10004,gc1450,gc1449,gc1234,gc1524&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);

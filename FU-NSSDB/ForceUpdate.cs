@@ -48,7 +48,7 @@ namespace FU_NSSDB
         public List<RegressionType> regressionTypeList { get; private set; }
 
 
-        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2017-05-16\StreamStatsDB_2017-05-16.mdb");
+        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2017-06-14.mdb");
         private string NSSDBConnectionstring = string.Format("Server=nss**host**; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
         private dbOps NSSDBOps { get; set; }
 
@@ -104,8 +104,12 @@ namespace FU_NSSDB
                 this.NSSDBOps = new dbOps(NSSDBConnectionstring, dbOps.ConnectionType.e_mysql, true);
                 using (var ssdb = new dbOps(SSDBConnectionstring, dbOps.ConnectionType.e_access))
                 {
+                    var list = ssdb.GetDBItems<FURegion>(dbOps.SQLType.e_region).Where(r => r.Code != "XX" || r.oldID != 10047).ToList();
                     foreach (var region in ssdb.GetDBItems<FURegion>(dbOps.SQLType.e_region).Where(r => r.Code != "XX").ToList())
                     {
+                        //remove extra TN
+                        if (region.oldID == 10047) continue;
+
                         if(!PostRegion(region)) continue;
                         //get regressionregion
                         var regRegList = ssdb.GetDBItems<FURegressionRegion>(dbOps.SQLType.e_regressionregion, region.oldID.ToString("00")).Where(r => !string.Equals(r.Name, "Undefined", StringComparison.OrdinalIgnoreCase)).ToList();

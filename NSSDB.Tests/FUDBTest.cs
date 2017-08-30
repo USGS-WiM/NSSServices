@@ -28,15 +28,16 @@ namespace NSSDB.Tests
             Assert.IsTrue(true);
             #endif
             Assert.Inconclusive("used to purge");
-            
+
             //cleanup
             //A) ACCESS DB has 2 Regions named TN
 
             //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //B) Change Statistic group type to: Urban flows(31) = GC1540,GC1539,GC1541,GC1542,GC1543,GC1481,GC1577,GC1576,GC1578,GC1579,GC1614,GC1615,GC1616
+            //Select e.* FROM Equation e LEFT JOIN RegressionRegion rr ON (e.RegressionRegionID = rr.ID) Where rr.`Code` IN ('GC1540','GC1539','GC1541','GC1542','GC1543','GC1481','GC1577','GC1576','GC1578','GC1579','GC1614','GC1615','GC1616');
 
             //C) hookup RegressionRegionCoefficient
-            //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            //- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC730") up set rc.RegressionRegionID = up.ID Where rc.ID = 1;
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC731") up set rc.RegressionRegionID = up.ID Where rc.ID = 2;
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC660") up set rc.RegressionRegionID = up.ID Where rc.ID = 3;
@@ -118,7 +119,7 @@ namespace NSSDB.Tests
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1614") up set l.RegressionRegionID = up.ID Where l.ID = 113;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1615") up set l.RegressionRegionID = up.ID Where l.ID = 114;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1616") up set l.RegressionRegionID = up.ID Where l.ID = 115;
-            
+
             //E) ReInsert limitations/Coeff to variable reference
             //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES(256, 1, 76);
@@ -225,7 +226,7 @@ namespace NSSDB.Tests
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (256,1,74);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (256,1,75);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (6,41,1);
-            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, RegressionRegionCoefficientID VALUES (259,1,1);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, 'RegressionRegionCoefficientID`) VALUES (259,1,1);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (6,41,2);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (259,1,2);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (249,1,3);

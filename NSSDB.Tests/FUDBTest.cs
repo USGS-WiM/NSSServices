@@ -7,7 +7,7 @@ using NSSDB;
 
 namespace NSSDB.Tests
 {
-    [TestClass]
+    //[TestClass]
     public class FUDBTest
     {
         [TestMethod]
@@ -31,11 +31,10 @@ namespace NSSDB.Tests
 
             //cleanup
             //A) ACCESS DB has 2 Regions named TN
-
+            //  Change STate code of ID 10047 to 'XX'
             //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //B) Change Statistic group type to: Urban flows(31) = GC1540,GC1539,GC1541,GC1542,GC1543,GC1481,GC1577,GC1576,GC1578,GC1579,GC1614,GC1615,GC1616
-            //Select e.* FROM Equation e LEFT JOIN RegressionRegion rr ON (e.RegressionRegionID = rr.ID) Where rr.`Code` IN ('GC1540','GC1539','GC1541','GC1542','GC1543','GC1481','GC1577','GC1576','GC1578','GC1579','GC1614','GC1615','GC1616');
-
+            //UPDATE Equation e LEFT JOIN RegressionRegion rr ON (e.RegressionRegionID = rr.ID) SET e.StatisticGroupTypeID = 31 Where rr.`Code` IN ('GC1540','GC1539','GC1541','GC1542','GC1543','GC1481','GC1577','GC1576','GC1578','GC1579','GC1614','GC1615','GC1616');
             //C) hookup RegressionRegionCoefficient
             //- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC730") up set rc.RegressionRegionID = up.ID Where rc.ID = 1;
@@ -226,7 +225,7 @@ namespace NSSDB.Tests
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (256,1,74);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (256,1,75);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (6,41,1);
-            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, 'RegressionRegionCoefficientID`) VALUES (259,1,1);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (259,1,1);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (6,41,2);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (259,1,2);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (249,1,3);

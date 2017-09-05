@@ -130,10 +130,14 @@ namespace NSSService.Tests
             string queryParams;
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
+            string expectedResultString = "";
+            //expectedResultString = JsonConvert.SerializeObject(resultObject.Select(i => i.RegressionRegions.ToDictionary(key => key.Code, val => val.Results.ToDictionary(key => key.code, v => v.Value))).ToList());
+
             //https://test.streamstats.usgs.gov/nssservices/scenarios/estimate.json?region=CO&statisticgroups=5&regressionregions=GC1222,GC1221,GC1219,GC1220,GC1207&configs=2
             resourceurl = host + Configuration.regionResource + "/CO/" + Configuration.scenarioResource;
             queryParams = Configuration.statisticGroupTypeResource + "=5&" + Configuration.RegressionRegionResource + @"=GC1222,GC1221,GC1219,GC1220,GC1207&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+
             Assert.IsNotNull(returnedObject);
 
             returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
@@ -153,7 +157,13 @@ namespace NSSService.Tests
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
             Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
-            Assert.IsNotNull(resultObject.First().RegressionRegions.First().Results);
+            expectedResultString = @"[{'GC1222':{'D10':4.18132728094425E-06," +
+                                              "'D25':2.14304064262411E-08," +
+                                              "'D50':4.20482645603736E-08," +
+                                              "'D75':5.2504078006353E-09," +
+                                              "'D90':6.22914892060179E-11}" +
+                                           "}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
 
@@ -187,7 +197,8 @@ namespace NSSService.Tests
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
             Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
-            Assert.IsNotNull(resultObject.First().RegressionRegions.First().Results);
+            expectedResultString = "[{\"GC1621\":{\"PK2\":2553.23576946212,\"PK5\":8715.72737999659,\"PK10\":15084.1991605652,\"PK25\":26933.4059638614,\"PK50\":38762.8713617922,\"PK100\":52760.1594295127,\"PK200\":68953.4398111781,\"PK500\":95732.1796665734}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
             // https://test.streamstats.usgs.gov/nssservices/scenarios/estimate.json?region=MT&statisticgroups=2&regressionregions=GC1679&configs=2
@@ -215,7 +226,10 @@ namespace NSSService.Tests
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
             Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
-            Assert.IsNotNull(resultObject.First().RegressionRegions.First().Results);
+            expectedResultString = "[{\"GC1679\":{\"PK1_5\":119.284949669654,\"PK2\":199.377355463888,\"PK2_33\":258.205014560047,\"PK5\":646.3651392416,\"PK10\":1138.81157432261,\"PK25\":1985.8908308646,\"PK50\":2772.25705474955,\"PK100\":3680.88945974997,\"PK200\":4710.13217207196,\"PK500\":6236.06984416227}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
+
+
             //Returns count =0 +_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=VA&statisticgroups=4&regressionregions=GC1545,GC1546,GC1549,GC1551,GC1552,GC1553&configs=2
             //Tests prediction interval and average standard error weight
@@ -246,6 +260,10 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
+            expectedResultString = "[{\"GC1614\":{\"PK1_005U\":665.10715543239,\"PK1_01U\":754.925603168872,\"PK1_05U\":1068.52926939028,\"PK1_11U\":1362.75305247259,\"PK1_25U\":1778.90741186528,\"PK1_5U\":2212.10320814829,\"PK2U\":2804.83918845105,\"PK2_33U\":3155.67130789551,\"PK5U\":4957.87230229318,\"PK10U\":6895.03671754016,\"PK25U\":10007.61286043,\"PK50U\":12997.6150490891,\"PK100U\":16025.4606870367,\"PK200U\":20686.6514986757,\"PK500U\":24904.9346711008}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
+
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=IA&statisticgroups=4&regressionregions=GC1560,GC1699,GC1701,GC1700,GC1724,GC1525,GC1526,GC1564,GC1561&configs=2
             //Tests prediction interval and average standard error weight
@@ -280,6 +298,10 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 5);
+            expectedResultString = "[{\"GC1699\":{\"M1D10Y0406\":19.3750553579722,\"M7D10Y0406\":22.1179702007597,\"M30D10Y46\":34.3652730521304},\"GC1700\":{\"M1D10Y1012\":3.7825930045043,\"M7D10Y1012\":4.54523643988549,\"M30D10YOD\":7.03581227690121},\"GC1701\":{\"M1D10Y0406\":4.06890536857436,\"M7D10Y0406\":5.10786777368609,\"M30D10Y46\":9.73605614089722},\"GC1724\":{\"M1D10Y1012\":0.426784734532477,\"M7D10Y1012\":0.584852684360611,\"M30D10YOD\":1.17561902113688},\"areaave\":{\"M1D10Y0406\":5.3200040593358118,\"M7D10Y0406\":6.4981890968790861,\"M30D10Y46\":11.74890422759805,\"M1D10Y1012\":0.701126904859052,\"M7D10Y1012\":0.9086120786424996,\"M30D10YOD\":1.65465748949706}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
+
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=TN&statisticgroups=4&regressionregions=GC344,GC1418,GC1419&configs=2
@@ -308,10 +330,13 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 3);
+            expectedResultString = "[{\"GC1418\":{\"M7D10Y\":0.231954068113531,\"M30D5Y\":0.478860518714785},\"GC1419\":{\"M7D10Y\":0.776429295570855,\"M30D5Y\":1.29980107998381},\"areaave\":{\"M7D10Y\":0.27455988417358135,\"M30D5Y\":0.54310006679062217}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
             //returned count = 0 +_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             //https://streamstatstest.wim.usgs.gov/nssservices/scenarios/estimate.json?region=GA&statisticgroups=31&regressionregions=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&configs=2
-           resourceurl = host + Configuration.regionResource + "/GA/" + Configuration.scenarioResource;
+            resourceurl = host + Configuration.regionResource + "/GA/" + Configuration.scenarioResource;
             queryParams = Configuration.statisticGroupTypeResource + "=31&" + Configuration.RegressionRegionResource + @"=GC1250,GC1250,GC1539,GC1540,GC1572,GC1250,GC1541,GC1573,GC1250,GC1542,GC1574&" + Configuration.userTypeResource + "=2";
             returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
             Assert.IsNotNull(returnedObject);
@@ -342,6 +367,9 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 4);
+            expectedResultString = "[{\"GC1540\":{\"PK2U\":3673.69959952281,\"PK5U\":6202.34905493982,\"PK10U\":8064.06795956639,\"PK25U\":10540.5307466281,\"PK50U\":12447.5773519122,\"PK100U\":14415.2167269424,\"PK200U\":16471.2461772891,\"PK500U\":19326.782586218},\"GC1541\":{\"PK2U\":990.868392434281,\"PK5U\":1611.33945705614,\"PK10U\":2095.08190320299,\"PK25U\":2782.34127750491,\"PK50U\":3342.06365215035,\"PK100U\":3982.27789327804,\"PK200U\":4639.39181007062,\"PK500U\":5607.03252640772},\"GC1542\":{\"PK2U\":1231.04311380204,\"PK5U\":2293.26924347009,\"PK10U\":3191.84586537523,\"PK25U\":4540.21939189143,\"PK50U\":5670.51286742078,\"PK100U\":6929.52116048095,\"PK200U\":8354.38719159281,\"PK500U\":10368.1610317158},\"areaave\":{\"PK2U\":1646.2203465126463,\"PK5U\":2735.127926206646,\"PK10U\":3557.966602913265,\"PK25U\":4686.56411017862,\"PK50U\":5579.2485963462286,\"PK100U\":6547.9911299484838,\"PK200U\":7552.3142498821535,\"PK500U\":8988.6140420406027}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
             //No result returned +_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/OR/" + Configuration.scenarioResource;
@@ -367,7 +395,9 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
-
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 3);
+            expectedResultString = "[{\"GC730\":{\"PK2\":112.606850734354,\"PK5\":169.221053390627,\"PK10\":206.980553897539,\"PK25\":255.305513008102,\"PK50\":292.336555204171,\"PK100\":329.966801778842,\"PK500\":422.499449529942},\"GC731\":{\"PK2\":170.940863501283,\"PK5\":242.266488253646,\"PK10\":289.440515133048,\"PK25\":348.333883127765,\"PK50\":391.945463244617,\"PK100\":434.862757738605,\"PK500\":534.042100388147},\"transave\":{\"PK2\":125.44033354307838,\"PK5\":185.29104906049116,\"PK10\":225.121745369351,\"PK25\":275.77175443442786,\"PK50\":314.25051497306913,\"PK100\":353.04391208998993,\"PK500\":447.03883271874713}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
             //No results returned +_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/OH/" + Configuration.scenarioResource;
@@ -388,6 +418,9 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
+            expectedResultString = "[{\"GC1449\":{\"Q10\":19.7352558617966}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
@@ -409,6 +442,9 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
+            expectedResultString = "[{\"GC1648\":{\"D0_01\":386.934690254537,\"D0_1\":172.935409649244,\"D2\":21.0398646578699,\"D5\":8.35501165573636,\"D10\":3.89044412068671,\"D25\":1.45725898883949,\"D50\":0.469526786500179,\"D75\":0.0860121620131727,\"D90\":0.0462719924119639,\"D95\":0.0471119046483946,\"D99\":0.00917185535514543,\"D99_9\":0.00102299659187749,\"D99_99\":0.00126783605940649}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
@@ -438,6 +474,9 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 3);
+            expectedResultString = "[{\"GC1075\":{\"PK1_25\":26247.9416075157,\"PK1_5\":31033.3976781684,\"PK2\":37576.1044439658,\"PK5\":56059.1913667439,\"PK10\":69451.8436218103,\"PK25\":88014.5584966329,\"PK50\":103579.489516239,\"PK100\":118909.42670987,\"PK200\":135240.420792791,\"PK500\":158347.059375138},\"GC1076\":{\"PK1_25\":13978.8652669598,\"PK1_5\":16493.1320184586,\"PK2\":19776.3248068867,\"PK5\":28414.681119952,\"PK10\":34612.1798134541,\"PK25\":43109.2424903938,\"PK50\":49496.420651631,\"PK100\":56175.4270706974,\"PK200\":63548.7465517186,\"PK500\":73360.3197027621},\"areaave\":{\"PK1_25\":21015.509234428268,\"PK1_5\":24832.364428426721,\"PK2\":29984.978872690255,\"PK5\":44269.570301328029,\"PK10\":54593.69657323412,\"PK25\":68863.701615457,\"PK50\":80514.595910003991,\"PK100\":92155.165527182558,\"PK200\":104665.97155177238,\"PK500\":122102.6589249058}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
             resourceurl = host + Configuration.regionResource + "/ME/" + Configuration.scenarioResource;
@@ -457,6 +496,9 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
+            expectedResultString = "[{\"GC1435\":{\"PK2\":709.379632679408,\"PK5\":1143.66363135795,\"PK10\":1475.1630431185,\"PK25\":1928.47655647647,\"PK50\":2291.33160491155,\"PK100\":2679.26812582662,\"PK500\":3666.15430345523}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
 
@@ -485,6 +527,9 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
+            expectedResultString = "[{\"GC729\":{\"PK2\":166038.490822227,\"PK5\":216764.702837038,\"PK10\":249302.976960551,\"PK25\":290084.331381748,\"PK50\":319127.771350028,\"PK100\":347447.649338759,\"PK500\":409374.346522032}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
             //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
 
@@ -510,28 +555,11 @@ namespace NSSService.Tests
 
             resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
             Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 2);
+            expectedResultString = "[{\"GC1254\":{\"PK2\":87.4453930923411,\"PK5\":166.14665975557,\"PK10\":226.188757355877,\"PK25\":308.211156262781,\"PK50\":381.272950109629,\"PK100\":450.426190257644,\"PK200\":519.533234890715,\"PK500\":628.059768738079},\"GC1580\":{\"PK2\":94.328500838218,\"PK5\":155.938244105175,\"PK10\":202.533741235969,\"PK25\":265.217187353446,\"PK50\":315.224590653835,\"PK100\":367.257604582405,\"PK200\":421.291351631458,\"PK500\":494.763033225917}}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
 
-            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_++_+_+_
-
-            resourceurl = host + Configuration.regionResource + "/MA/" + Configuration.scenarioResource;
-            queryParams = Configuration.statisticGroupTypeResource + "=&" + Configuration.RegressionRegionResource + "=251&" + Configuration.unitSystemTypeResource + "=2";
-            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
-            Assert.IsNotNull(returnedObject);
-
-            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
-                rr.Parameters.ForEach(p => {
-                    switch (p.Code.ToUpper())
-                    {
-                        case "DRNAREA": p.Value = 0.73; break;
-                        case "PCTSNDGRV": p.Value = 0; break;
-                        case "FOREST": p.Value = 76.93; break;
-                        case "MAREGION": p.Value = 0.0; break;
-                    }
-                });
-            }));
-
-            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
-            Assert.IsNotNull(resultObject);
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
         }//end method
         [TestMethod]
         public void ScenarioWeightedEvaluateRequest()
@@ -654,6 +682,24 @@ namespace NSSService.Tests
                 }//end using
             }//end if
             return default(T);
+        }
+        private bool isValidResult(List<Scenario> resultObject, string expectedResultString)
+        {
+            List<Dictionary<string, Dictionary<string, double?>>> results, expectedResults = null;
+            bool match = true;
+            results = resultObject.Select(i => i.RegressionRegions.ToDictionary(key => key.Code, val => val.Results.ToDictionary(key => key.code, v => v.Value))).ToList();
+            expectedResults = JsonConvert.DeserializeObject<List<Dictionary<string, Dictionary<string, double?>>>>(expectedResultString);
+
+            match = true;
+            for (int i = 0; i < results.Count; i++)
+            {
+                if (results[i].Keys.Count != expectedResults[i].Keys.Count ||
+                !results[i].Keys.All(k => expectedResults[i].ContainsKey(k) || !object.Equals(expectedResults[i][k], results[i][k])))
+                {
+                    match = false;
+                }
+            }//next i
+            return match;
         }
     }//end class
 }//end namespace

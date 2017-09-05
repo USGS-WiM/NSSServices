@@ -479,6 +479,7 @@ namespace NSSService.Utilities.ServiceAgent
                 
                 weightedRR = new SimpleRegionEquation();
                 weightedRR.Name = "Area-Averaged";
+                weightedRR.Code = "areaave";
                 var Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone())
                                 .Select(r => {
                                     r.Value = r.Value * x.PercentWeight / 100;
@@ -568,6 +569,7 @@ namespace NSSService.Utilities.ServiceAgent
                 RRTransZone.Disclaimer = "Weighted-Averaged flows were computed using transition between flow zones. See referenced report for more details";
 
                 RRTransZone.Name = "Weighted-Average";
+                RRTransZone.Code = "transave";
                 var Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone())
                     .Select(r => { r.Value = r.Value * TransitionZoneCoeff[x.ID]; return r; }))
                     .OfType<RegressionResult>();

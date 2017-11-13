@@ -22,6 +22,13 @@ namespace NSSService.Resources
   
     public class SimpleRegionEquation
     {
+        public SimpleRegionEquation() { }
+
+        [JsonConstructor]
+        public SimpleRegionEquation(List<RegressionResult> results) {
+            if (results != null)
+                this.Results = results.Cast<RegressionResultBase>().ToList();
+        }
         public Int32 ID { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
@@ -34,5 +41,9 @@ namespace NSSService.Resources
         public List<Extension> Extensions { get; set; }
         public bool ShouldSerializeExtension()
         { return Extensions != null || Extensions.Count > 1; }
+
+        public string Disclaimer { get; set; }
+        public bool ShouldSerializeDisclaimer()
+        { return !string.IsNullOrEmpty(Disclaimer) ; }
     }
 }

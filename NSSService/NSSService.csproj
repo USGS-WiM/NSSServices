@@ -14,7 +14,7 @@
     <RootNamespace>NSSService</RootNamespace>
     <AssemblyName>NSSService</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -22,6 +22,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -124,9 +125,8 @@
       <HintPath>..\packages\WiMServices.1.0.6218.26000\lib\net45\WiMServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WiMUtilities, Version=1.0.6257.20336, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMUtilities.1.0.6257.20336\lib\net45\WiMUtilities.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WiMUtilities, Version=1.0.6451.18941, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiMUtilities.1.0.6451.18941\lib\net45\WiMUtilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -200,11 +200,11 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>6336</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/NSSService</IISUrl>
+          <IISUrl>http://localhost:6336/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

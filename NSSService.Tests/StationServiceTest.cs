@@ -25,7 +25,7 @@ namespace NSSService.Tests
                 stationgage.LoadRecord(sd,ed);
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

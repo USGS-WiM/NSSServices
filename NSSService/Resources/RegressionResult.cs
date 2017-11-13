@@ -18,24 +18,20 @@ namespace NSSService.Resources
         public string code { get; set; }
         public string Description { get; set; }
         public Double? Value { get; set; }
-        [NonSerialized]
         private List<Error> _errors;
         public List<Error> Errors { get { return _errors; } set { _errors = value; } }
-
         private SimpleUnitType _unit;
         [XmlElement("UnitType")]
         public SimpleUnitType Unit { get { return _unit; } set { _unit = value; } }
-        public String Equation { get; set; }
+        public String Equation { get; set; }     
         public abstract RegressionResultBase Clone();
+        public IntervalBounds IntervalBounds { get; set; }
 
     }
     [Serializable]
     public class RegressionResult : RegressionResultBase
     {
-        public Double? EquivalentYears { get; set; }
-        [NonSerialized]
-        private IntervalBounds _intervalBounds;
-        public IntervalBounds IntervalBounds { get { return _intervalBounds; } set { _intervalBounds = value; } }
+        public Double? EquivalentYears { get; set; }        
         public override RegressionResultBase Clone()
         {
             using (var ms = new MemoryStream())
@@ -48,12 +44,14 @@ namespace NSSService.Resources
             }//end using
         }
     }//end class
+    [Serializable]
     public class Error
     {
         public string Name { get; set; }
         public string Code { get; set; }
         public Double? Value { get; set; }
     }//end class
+    [Serializable]
     public class IntervalBounds
     {
         public double Lower { get; set; }

@@ -131,7 +131,45 @@ namespace NSSService.Tests
             List<Scenario> returnedObject = null;
             List<Scenario> resultObject = null;
             string expectedResultString = "";
-            //expectedResultString = JsonConvert.SerializeObject(resultObject.Select(i => i.RegressionRegions.ToDictionary(key => key.Code, val => val.Results.ToDictionary(key => key.code, v => v.Value))).ToList());
+
+            resourceurl = host + Configuration.regionResource + "/CO/" + Configuration.scenarioResource;
+            queryParams = Configuration.statisticGroupTypeResource + "=7&" + Configuration.RegressionRegionResource + @"=GC1222,GC1221,GC1219,GC1220,GC1207&" + Configuration.userTypeResource + "=2";
+            returnedObject = this.GETRequest<List<Scenario>>(resourceurl + "?" + queryParams);
+
+            Assert.IsNotNull(returnedObject);
+
+            returnedObject.ForEach(s => s.RegressionRegions.ForEach(rr => {
+                rr.Parameters.ForEach(p => {
+                    switch (p.Code.ToUpper())
+                    {
+                        case "DRNAREA": p.Value = 6.2; break;
+                        case "ELEV": p.Value = 11129; break;
+                    }
+                });
+                switch (rr.Code)
+                {
+                    case "GC1219": rr.PercentWeight = 100; break;
+                }
+            }));
+
+            resultObject = this.POSTRequest<List<Scenario>>(resourceurl + "/estimate?" + queryParams, returnedObject);
+            Assert.IsNotNull(resultObject);
+            Assert.IsTrue(resultObject.First().RegressionRegions.Count == 1);
+            expectedResultString = @"[{'GC1219':{'Q1':1.53255283209625," +
+                                              "'Q2':1.37131101906397," +
+                                              "'Q3':1.28243688279756," +
+                                              "'Q4':2.98896095707572," +
+                                              "'Q5':12.5084492857449," +
+                                              "'Q6':18.2685493685393," +
+                                              "'Q7':6.91331428775481," +
+                                              "'Q8':4.65729758089565," +
+                                              "'Q9':3.3717574380219," +
+                                              "'Q10':2.54847609662851," +
+                                              "'Q11':1.91786693517863," +
+                                              "'Q12':1.61941812279903}" +
+                                           "}]";
+            Assert.IsTrue(isValidResult(resultObject, expectedResultString));
+            //+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
 
             //https://test.streamstats.usgs.gov/nssservices/scenarios/estimate.json?region=CO&statisticgroups=5&regressionregions=GC1222,GC1221,GC1219,GC1220,GC1207&configs=2
             resourceurl = host + Configuration.regionResource + "/CO/" + Configuration.scenarioResource;

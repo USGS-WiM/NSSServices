@@ -48,8 +48,8 @@ namespace FU_NSSDB
         public List<RegressionType> regressionTypeList { get; private set; }
 
 
-        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2017-01-13.mdb");
-        private string NSSDBConnectionstring = string.Format("Server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
+        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2017-08-30.mdb");
+        private string NSSDBConnectionstring = string.Format("Server=nsstest.c69uuui2tzs0.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
         private dbOps NSSDBOps { get; set; }
 
 
@@ -61,6 +61,33 @@ namespace FU_NSSDB
         }
         #endregion
         #region Methods
+        public void VerifyLists()
+        {
+            List<string> DBUnitAbbr = this.unittypeList.Select(k => k.Abbr.Trim()).ToList();
+            List<string> DBVariableList = this.variableTypeList.Select(vt => vt.Code.Trim()).ToList();
+            List<string> DBStatisticGroupList = this.statisticGroupTypeList.Select(vt => vt.Code.Trim()).ToList();
+            List<string> DBregressionList = this.regressionTypeList.Select(vt => vt.Code.Trim()).ToList();
+
+            List<string> ssdbUnitAbbr = null;
+            List<string> ssdbDBVariableList = null;
+            List<string> ssdbStatisticGroupList = null;
+            List<string> ssdbRegressionList = null;
+
+            using (var ssdb = new dbOps(SSDBConnectionstring, dbOps.ConnectionType.e_access))
+            {                
+                ssdbUnitAbbr = ssdb.GetDBItems<FUString>(dbOps.SQLType.e_unittype).Select(f=>f.Value.Trim()).ToList();
+                ssdbDBVariableList = ssdb.GetDBItems<FUString>(dbOps.SQLType.e_variabletype).Select(f => f.Value.Trim()).ToList();
+                ssdbStatisticGroupList = ssdb.GetDBItems<FUString>(dbOps.SQLType.e_statisticgrouptype).Select(f => f.Value.Trim()).ToList();
+                ssdbRegressionList = ssdb.GetDBItems<FUString>(dbOps.SQLType.e_regressiontype).Select(f => f.Value.Trim()).ToList();
+            }//end using
+            
+            var diffUnits = ssdbUnitAbbr.Except(DBUnitAbbr).ToList();
+            var diffVariable = ssdbDBVariableList.Except(DBVariableList).ToList();
+            var diffSG = ssdbStatisticGroupList.Except(DBStatisticGroupList).ToList();
+            var diffRegList = ssdbRegressionList.Except(DBregressionList).ToList();
+
+
+        }
         public void Load() {
             if (!System.Diagnostics.Debugger.IsAttached) throw new Exception("Must be ran in debug mode");
             try
@@ -77,8 +104,12 @@ namespace FU_NSSDB
                 this.NSSDBOps = new dbOps(NSSDBConnectionstring, dbOps.ConnectionType.e_mysql, true);
                 using (var ssdb = new dbOps(SSDBConnectionstring, dbOps.ConnectionType.e_access))
                 {
+                    var list = ssdb.GetDBItems<FURegion>(dbOps.SQLType.e_region).Where(r => r.Code != "XX" || r.oldID != 10047).ToList();
                     foreach (var region in ssdb.GetDBItems<FURegion>(dbOps.SQLType.e_region).Where(r => r.Code != "XX").ToList())
                     {
+                        //remove extra TN
+                        if (region.oldID == 10047) continue;
+
                         if(!PostRegion(region)) continue;
                         //get regressionregion
                         var regRegList = ssdb.GetDBItems<FURegressionRegion>(dbOps.SQLType.e_regressionregion, region.oldID.ToString("00")).Where(r => !string.Equals(r.Name, "Undefined", StringComparison.OrdinalIgnoreCase)).ToList();
@@ -118,7 +149,7 @@ namespace FU_NSSDB
         #region HelperMethods
         private void init() {
             //uses EF to make the connection
-            string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.ck2zppz9pgsw.us-east-1.rds.amazonaws.com;user id={0};PASSWORD={1};database=nss';";
+            string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.c69uuui2tzs0.us-east-1.rds.amazonaws.com;user id={0};PASSWORD={1};database=nss';";
             using (nssEntities context = new nssEntities(String.Format(connectionString, ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"])))
             {
                 statisticGroupTypeList = context.StatisticGroupTypes.ToList();
@@ -138,7 +169,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post region " + region.Code);
+                sm("Failed to post region " + region.Code +" " + ex.Message);
                 return false;
             }
         }
@@ -166,7 +197,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post region " + regRegion.Code);
+                sm("Failed to post region " + regRegion.Code +" " +ex.Message);
                 return false;
             }
         }
@@ -209,7 +240,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post equation " + equation.oldID);
+                sm("Failed to post equation " + equation.oldID +" "+ex.Message);
                 return false;
             }
         }
@@ -232,7 +263,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post equation " + variable.oldID);
+                sm("Failed to post equation " + variable.oldID + " " + ex.Message);
                 return false;
             }
         }
@@ -242,5 +273,5 @@ namespace FU_NSSDB
         }
         #endregion
 
-    }
+    }   
 }

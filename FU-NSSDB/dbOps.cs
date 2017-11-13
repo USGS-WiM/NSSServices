@@ -264,6 +264,24 @@ namespace FU_NSSDB
                                 LEFT JOIN Units u ON (u.UnitID = p.UnitID))
                                 WHERE RegionID = {0};";
                     break;
+
+                case SQLType.e_regressiontype:
+                    results = @"SELECT DISTINCT sl.StatLabel
+                                FROM (DepVars dv
+                                LEFT JOIN StatLabel sl on (dv.StatisticLabelID = sl.StatisticLabelID))";
+                    break;
+                case SQLType.e_unittype:
+                    results = @"SELECT DISTINCT MetricAbbrev FROM Units UNION SELECT EnglishAbbrev FROM Units";
+                    break;
+                case SQLType.e_variabletype:
+                    //select all variables used in equations and report.
+                    results = @"SELECT DISTINCT sl.StatLabel 
+                                FROM ([Parameters] p 
+                                LEFT JOIN StatLabel sl ON ( p.StatisticLabelID = sl.StatisticLabelID))";
+                    break;
+                case SQLType.e_statisticgrouptype:
+                    results = @"SELECT DISTINCT st.StatisticTypeCode FROM StatType st WHERE st.DefType ='FS'";
+                    break;
                 default:
                     sm("invalid sqltype");
                     break;
@@ -310,7 +328,7 @@ namespace FU_NSSDB
                     break;
                 case SQLType.e_equationerror:
                     results = @"INSERT INTO EquationErrors(EquationID,ErrorTypeID,Value) VALUES({0},{1},{2})";
-                    break;
+                    break;                 
                 default:
                     break;
             }

@@ -71,7 +71,7 @@ namespace NSSService.Resources
                 }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

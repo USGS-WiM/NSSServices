@@ -52,21 +52,21 @@ namespace FU_NSSDB.Resources
             return new FUCitation()
             {
                 oldID = r["DataSourceID"] is DBNull ? 0 : Convert.ToInt32(r["DataSourceID"]),
-                Title = r["Citation"] is DBNull ? "" : splitTitle((r["Citation"]).ToString(),true),
+                Title = r["Citation"] is DBNull ? "" : splitTitle((r["Citation"]).ToString(), true),
                 Author = r["Citation"] is DBNull ? "" : splitTitle((r["Citation"]).ToString()),
-                CitationURL = r["CitationURL"] is DBNull ? "" : (r["CitationURL"]).ToString()
+                CitationURL = r["CitationURL"] is DBNull ? "" : (r["CitationURL"]).ToString().Replace("#", "")
             };
 
         }
-        private static string splitTitle(string authertitle, bool getTitle = false)
+        private static string splitTitle(string authortitle, bool getTitle = false)
         {
-            Int32 splitlocation = authertitle.IndexOfAny("0123456789".ToCharArray());
+            Int32 splitlocation = authortitle.IndexOfAny("0123456789".ToCharArray());
             if (!getTitle)
-                //auther
-                return authertitle.Substring(0, splitlocation - 1);
+                //author
+                return authortitle.Substring(0, splitlocation - 1);
             else
                 //title
-                return authertitle.Substring(splitlocation);
+                return authortitle.Substring(splitlocation);
         }
     }
     public class NSSCitation : Citation

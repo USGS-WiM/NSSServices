@@ -1,8 +1,8 @@
 [
   {
-    "name": "NSSServices",
+    "name": "WaterUseServices",
     "organization": "U.S. Geological Survey",
-    "description": "StreamStats National Streamflow Statistics (NSS) services that provides regional flood-peak streamflow estimates and low flow frequency/duration streamflow estimates. See https://water.usgs.gov/osw/programs/nss/index.html",
+    "description": "StreamStats custom REST Wateruse services",
     "version": "v0.0.0",
     "statusOptionsURL":"https://github.com/GSA/code-gov-web/blob/master/src/assets/schemas/2.0.0.json#L144-L152",
 	"status": "preliminary",	
@@ -18,19 +18,18 @@
     },
 
     "homepageURL": "https://wim.usgs.gov",
-    "downloadURL": "https://github.com/USGS-WiM/NSSServices/archive/master.zip",
-    "disclaimerURL": "https://github.com/USGS-WiM/NSSServices/blob/master/LICENSE.md",
-    "repositoryUrl": "https://github.com/USGS-WiM/NSSServices",
+    "downloadURL": "https://github.com/USGS-WiM/WaerUseServices/archive/master.zip",
+    "disclaimerURL": "https://github.com/USGS-WiM/WaerUseServices/blob/master/LICENSE.md",
+    "repositoryUrl": "https://github.com/USGS-WiM/WaerUseServices",
     "vcs": "git",
 
     "laborHours": null,
 
     "tags": [
       "Streamstats",
-	  "NSS",
-	  "Flow statistics",
       "Services",
-	  "REST"
+	  "REST",
+	  "Wateruse"
     ],
 
     "languages": [
@@ -43,7 +42,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2017-10-30"
+      "metadataLastUpdated": "2017-10-25"
     }
   }
 ]

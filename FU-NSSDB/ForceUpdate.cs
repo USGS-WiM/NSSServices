@@ -48,7 +48,7 @@ namespace FU_NSSDB
         public List<RegressionType> regressionTypeList { get; private set; }
 
 
-        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\WIM\Documents\Projects\WiM\NSS\DB\StreamStatsDB_2017-08-30.mdb");
+        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\WiM\Projects\NSS\DB\StreamStatsDB_2018-01-12.mdb");
         private string NSSDBConnectionstring = string.Format("Server=nsstest.c69uuui2tzs0.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
         private dbOps NSSDBOps { get; set; }
 

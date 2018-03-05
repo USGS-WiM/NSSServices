@@ -199,7 +199,7 @@ namespace NSSService.Utilities.ServiceAgent
                 foreach (Scenario scenario in scenarioList)
                 {
                     //remove if invalid
-                    scenario.RegressionRegions.RemoveAll(rr => !valid(rr,scenario.RegressionRegions.Max(r => r.PercentWeight)));              
+                    scenario.RegressionRegions.RemoveAll(rr => !isValidOrLimited(rr,scenario.RegressionRegions.Max(r => r.PercentWeight)));              
 
                     foreach (SimpleRegionEquation regressionregion in scenario.RegressionRegions)
                     {   
@@ -210,7 +210,7 @@ namespace NSSService.Utilities.ServiceAgent
                         if (paramsOutOfRange)
                         {
                             var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors";
-                            regressionregion.Disclaimer = outofRangemsg;
+                            regressionregion.Disclaimer += outofRangemsg;
                             sm(WiM.Resources.MessageType.warning, outofRangemsg);
                         }//end if
 
@@ -493,7 +493,7 @@ namespace NSSService.Utilities.ServiceAgent
                                     return r; }))
                                 .OfType<RegressionResult>().ToList();
 
-                weightedRR.Results = this.AccumulateRegressionResults(Results).ToList();                    
+                weightedRR.Results = this.AccumulateRegressionResults(Results, regressionRegions.Count).ToList();                    
 
                 return weightedRR;
             }
@@ -504,7 +504,7 @@ namespace NSSService.Utilities.ServiceAgent
                 return null;
             }
         }
-        private IEnumerable<RegressionResultBase> AccumulateRegressionResults(IEnumerable<RegressionResult> regressionresults)
+        private IEnumerable<RegressionResultBase> AccumulateRegressionResults(IEnumerable<RegressionResult> regressionresults, Int32 regressionRegionsCount)
         {
             try
             {
@@ -512,7 +512,8 @@ namespace NSSService.Utilities.ServiceAgent
                 var ok = regressionresults.All(i => i.Errors.Select(e => e.Code).Except(regressionresults.SelectMany(rr => rr.Errors.Select(er => er.Code)).Distinct()).Count() > 0);
 
                 var Results = regressionresults.GroupBy(e =>
-                    e.Name)
+                    e.code).Where(i=>
+                    i.Count()== regressionRegionsCount)
                     .Select(i => i.Aggregate((accumulator, it) =>
                     {
                         accumulator.Value += it.Value;
@@ -574,7 +575,7 @@ namespace NSSService.Utilities.ServiceAgent
                     .Select(r => { r.Value = r.Value * TransitionZoneCoeff[x.ID]; return r; }))
                     .OfType<RegressionResult>();
 
-                RRTransZone.Results = this.AccumulateRegressionResults(Results).ToList();
+                RRTransZone.Results = this.AccumulateRegressionResults(Results, regressionRegions.Count).ToList();
 
                 return RRTransZone;
             }
@@ -636,7 +637,7 @@ namespace NSSService.Utilities.ServiceAgent
                 this.sm(sa.Messages);
             }
         }
-        private bool valid(SimpleRegionEquation regressionRegion, double? maxRegressionregion = null) {
+        private bool isValidOrLimited(SimpleRegionEquation regressionRegion, double? maxRegressionregion = null) {
             ExpressionOps eOps = null;
             try
             {
@@ -644,17 +645,6 @@ namespace NSSService.Utilities.ServiceAgent
                 //check limitations
                 foreach (var item in limitations.Where(l => l.RegressionRegionID == regressionRegion.ID))
                 {
-                    if (string.Equals(item.Criteria, "largestRegion", StringComparison.OrdinalIgnoreCase))
-                        {
-                            if (!maxRegressionregion.HasValue ||!regressionRegion.PercentWeight.HasValue) break;
-                        if (regressionRegion.PercentWeight != maxRegressionregion)
-                        {
-                            sm(WiM.Resources.MessageType.info, "Majority area Used for computation "+regressionRegion.Name + " removed PercentArea" + Math.Round(regressionRegion.PercentWeight.Value,2));
-                            return false;
-                        }
-                        else
-                            break;
-                        }
                     var variables = regressionRegion.Parameters.Where(e => item.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, item.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
                     eOps = new ExpressionOps(item.Criteria, variables);
                     if (!eOps.IsValid) throw new Exception("Validation equation invalid.");

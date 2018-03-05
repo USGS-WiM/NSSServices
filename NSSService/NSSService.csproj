@@ -103,7 +103,6 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="TimeSeries, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TimeSeries.1.0.0.0\lib\net45\TimeSeries.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="WiMDBUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\WiMDBUtilities.1.0.0.0\lib\net45\WiMDBUtilities.dll</HintPath>

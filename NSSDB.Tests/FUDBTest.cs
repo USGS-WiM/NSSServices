@@ -10,7 +10,7 @@ namespace NSSDB.Tests
     //[TestClass]
     public class FUDBTest
     {
-        [TestMethod]
+        //[TestMethod]
         public void VerifyLookups()
         {
             var x = new ForceUpdate();
@@ -33,8 +33,10 @@ namespace NSSDB.Tests
             //A) ACCESS DB has 2 Regions named TN
             //  Change STate code of ID 10047 to 'XX'
             //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-            //B) Change Statistic group type to: Urban flows(31) = GC1540,GC1539,GC1541,GC1542,GC1543,GC1481,GC1577,GC1576,GC1578,GC1579,GC1614,GC1615,GC1616
-            //UPDATE Equation e LEFT JOIN RegressionRegion rr ON (e.RegressionRegionID = rr.ID) SET e.StatisticGroupTypeID = 31 Where rr.`Code` IN ('GC1540','GC1539','GC1541','GC1542','GC1543','GC1481','GC1577','GC1576','GC1578','GC1579','GC1614','GC1615','GC1616');
+            //B) Change Statistic group type to: Urban flows(31) and Rural flows (32)
+            //UPDATE Equation e LEFT JOIN RegressionRegion rr ON (e.RegressionRegionID = rr.ID) SET e.StatisticGroupTypeID = 31 Where rr.`Code` IN ('GC1540','GC1539','GC1541','GC1542','GC1543','GC1481','GC1577','GC1576','GC1578','GC1579','GC1614','GC1615','GC1616','GC1584','GC1583','GC1585','GC1586','GC1251');
+            //UPDATE Equation e LEFT JOIN RegressionRegion rr ON (e.RegressionRegionID = rr.ID) SET e.StatisticGroupTypeID = 32 Where rr.`Code` IN ('GC1540');
+
             //C) hookup RegressionRegionCoefficient
             //- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC730") up set rc.RegressionRegionID = up.ID Where rc.ID = 1;
@@ -101,23 +103,9 @@ namespace NSSDB.Tests
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC729") up set l.RegressionRegionID = up.ID Where l.ID = 89;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC346") up set l.RegressionRegionID = up.ID Where l.ID = 97;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC348") up set l.RegressionRegionID = up.ID Where l.ID = 98;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1553") up set l.RegressionRegionID = up.ID Where l.ID = 99;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1554") up set l.RegressionRegionID = up.ID Where l.ID = 100;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1555") up set l.RegressionRegionID = up.ID Where l.ID = 101;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1544") up set l.RegressionRegionID = up.ID Where l.ID = 102;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1545") up set l.RegressionRegionID = up.ID Where l.ID = 103;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1546") up set l.RegressionRegionID = up.ID Where l.ID = 104;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1547") up set l.RegressionRegionID = up.ID Where l.ID = 105;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1548") up set l.RegressionRegionID = up.ID Where l.ID = 106;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1549") up set l.RegressionRegionID = up.ID Where l.ID = 107;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1550") up set l.RegressionRegionID = up.ID Where l.ID = 108;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1551") up set l.RegressionRegionID = up.ID Where l.ID = 109;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1552") up set l.RegressionRegionID = up.ID Where l.ID = 110;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1632") up set l.RegressionRegionID = up.ID Where l.ID = 111;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1435") up set l.RegressionRegionID = up.ID Where l.ID = 112;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1614") up set l.RegressionRegionID = up.ID Where l.ID = 113;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1615") up set l.RegressionRegionID = up.ID Where l.ID = 114;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1616") up set l.RegressionRegionID = up.ID Where l.ID = 115;
+            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1632") up set l.RegressionRegionID = up.ID Where l.ID = 111;
+
 
             //E) ReInsert limitations/Coeff to variable reference
             //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -232,6 +220,12 @@ namespace NSSDB.Tests
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `RegressionRegionCoefficientID`) VALUES (249,1,4);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,111);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,112);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,121);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,122);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,123);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,124);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,125);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,126);
 
             //F) Flash Citations to remove #
             //UPDATE Citation Set CitationURL = REPLACE(CitationURL,'#','');

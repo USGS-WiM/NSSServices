@@ -458,9 +458,9 @@ namespace NSSService.Utilities.ServiceAgent
                         regressionRegions.ForEach(r => r.Disclaimer += msg);
                         sm(WiM.Resources.MessageType.warning, msg);
                     }
-                        if (Math.Round(areaSum.Value)>100)
-                        return regressionRegions.SelectMany(rr => rr.Results.Select(r => new { weight = rr.PercentWeight, code = r.code }))
-                             .GroupBy(k => k.code).All(su => Math.Round(su.Sum(y => y.weight.Value)) == 100);
+                    if (Math.Round(areaSum.Value)>100)
+                    return regressionRegions.SelectMany(rr => rr.Results.Select(r => new { weight = rr.PercentWeight, code = r.code }))
+                            .GroupBy(k => k.code).All(su => Math.Round(su.Sum(y => y.weight.Value)) == 100 && su.Count()==regressionRegions.Count);
 
                     return false;
                 }

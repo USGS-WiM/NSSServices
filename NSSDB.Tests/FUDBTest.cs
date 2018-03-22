@@ -226,6 +226,9 @@ namespace NSSDB.Tests
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,124);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,125);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (1,35,126);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (255,1,116);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (255,1,117);
+            //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (255,1,118);
 
             //F) Flash Citations to remove #
             //UPDATE Citation Set CitationURL = REPLACE(CitationURL,'#','');

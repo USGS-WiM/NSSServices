@@ -1,0 +1,386 @@
+[
+  {
+    "name": "Citations",
+    "description": {
+      "string": "Represents the regression region citation"
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "citations",
+            "description": {
+              "string": "This service returns a list of citations."
+            },
+            "name": "All Citations",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "String",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requesed region."
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit citation list."
+              }
+            ]
+          },
+          {
+            "uri": "regions/{region}/citations",
+            "description": {
+              "string": "This service returns a Regions list of citations."
+            },
+            "name": "Region Citations",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requesed region."
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "required": false,
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "required": false,
+                "description": "Comma separated list of statistic group ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "required": true,
+                "description": "Comma separated list of regression type ID's or code parameters to limit citation list."
+              }
+            ]
+          },
+          {
+            "uri": "citations/{citationID}",
+            "description": {
+              "string": "This service returns a citation."
+            },
+            "name": "A Citation",
+            "parameters": [
+              {
+                "name": "citationID",
+                "type": "string",
+                "required": true,
+                "description": "Citation unique ID"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Regression Type",
+    "description": {
+      "string": ""
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "regressiontypes",
+            "description": {
+              "string": "This service returns a list of regression types."
+            },
+            "name": "All Regression Types",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "description": "Region 2 letter abbrev or ID of requesed region."
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit citation list."
+              }
+            ]
+          },
+          {
+            "uri": "regions/{region}/regressiontypes",
+            "description": {
+              "string": "This service returns a list of region's regression types."
+            },
+            "name": "Region Regression Types",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requesed region."
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit citation list."
+              }
+            ]
+          },
+          {
+            "uri": "regressiontypes/{regressiontypeID}",
+            "description": {
+              "string": "This service returns a regression type."
+            },
+            "name": "A Regression Type",
+            "parameters": [
+              {
+                "name": "regressiontypeID",
+                "type": "string",
+                "description": "Regression type unique ID"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Error Type",
+    "description": {
+      "string": ""
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "errors",
+            "description": {
+              "string": "This service returns a list of errors."
+            },
+            "name": "All Errors",
+            "parameters": [],
+            "availableMedia": [
+              ".xml",
+              ".json"
+            ],
+            "selectedMedia": ".json"
+          },
+          {
+            "uri": "errors/{errortypeID}",
+            "description": {
+              "string": "This service returns an error by it's ID."
+            },
+            "name": "An Error",
+            "parameters": [
+              {
+                "name": "errortypeID",
+                "type": "string",
+                "required": true,
+                "description": "error type unique ID"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Prediction Intervals",
+    "description": {
+      "string": ""
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "predictionintervals",
+            "description": {
+              "string": "This service returns a list of prediction intervals."
+            },
+            "name": "All Prediction Intervals",
+            "parameters": [],
+            "availableMedia": [
+              ".xml",
+              ".json"
+            ],
+            "selectedMedia": ".json"
+          },
+          {
+            "uri": "predictionintervals/{predictionintervalID}",
+            "description": {
+              "string": "This service returns a prediction interval by it's ID."
+            },
+            "name": "A Prediction Interval",
+            "parameters": [
+              {
+                "name": "predictionintervalID",
+                "type": "string",
+                "required": true,
+                "description": "Prediction interval unique ID"
+              }
+            ],
+            "availableMedia": [
+              ".xml",
+              ".json"
+            ],
+            "selectedMedia": ".json"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Region",
+    "description": {
+      "string": ""
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "regions",
+            "description": {
+              "string": "This service returns a list of regions."
+            },
+            "name": "All Regions",
+            "parameters": [],
+            "availableMedia": [
+              ".xml",
+              ".json"
+            ],
+            "selectedMedia": ".json"
+          },
+          {
+            "uri": "regions/{regionsID}",
+            "description": {
+              "string": "This service returns a region by it's ID."
+            },
+            "name": "A Region",
+            "parameters": [
+              {
+                "name": "regionsID",
+                "type": "string",
+                "required": true,
+                "description": "Region unique ID"
+              }
+            ],
+            "availableMedia": [
+              ".xml",
+              ".json"
+            ],
+            "selectedMedia": ".json"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Scenario",
+    "description": {
+      "string": ""
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "scenarios",
+            "description": {
+              "string": "This service returns a list of scenarios."
+            },
+            "name": "All Scenarios",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requesed region."
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "unitsystems",
+                "type": "number",
+                "required": true,
+                "description": "ID representing the measuring unit system, 1=Metric, 2=US Customary, 3=Universal."
+              }
+            ],
+            "availableMedia": [
+              ".xml",
+              ".json"
+            ],
+            "selectedMedia": ".json"
+          },
+          {
+            "uri": "regions/{region}/scenarios",
+            "description": {
+              "string": "This service returns a list of a region's scenarios."
+            },
+            "name": "Region Scenarios",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requesed region."
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list."
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit citation list."
+              }
+            ],
+            "availableMedia": [
+              ".xml",
+              ".json"
+            ],
+            "selectedMedia": ".json"
+          }
+        ]
+      }
+    ]
+  }
+]

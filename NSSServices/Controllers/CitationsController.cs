@@ -135,7 +135,7 @@ namespace NSSServices.Controllers
 #warning check if logged in user allowed to modify based on regionManager
 
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.Update<UnitType>(id,entity));
+                return Ok(await agent.Update<Citation>(id,entity));
             }
             catch (Exception ex)
             {
@@ -151,9 +151,9 @@ namespace NSSServices.Controllers
             {
 #warning check if logged in user allowed to modify based on regionManager
                 if (id < 1) return new BadRequestResult();
-                var entity = await agent.Find<UnitType>(id);
+                var entity = await agent.Find<Citation>(id);
                 if (entity == null) return new NotFoundResult();
-                await agent.Delete<UnitType>(entity);
+                await agent.Delete<Citation>(entity);
 
                 return Ok();
             }

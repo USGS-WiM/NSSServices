@@ -109,7 +109,7 @@ namespace NSSDB.Tests
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1729") up set l.RegressionRegionID = up.ID Where l.ID = 117;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1730") up set l.RegressionRegionID = up.ID Where l.ID = 118;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1270") up set l.RegressionRegionID = up.ID Where l.ID = 121;
-            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC11587") up set l.RegressionRegionID = up.ID Where l.ID = 122;
+            //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1587") up set l.RegressionRegionID = up.ID Where l.ID = 122;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1588") up set l.RegressionRegionID = up.ID Where l.ID = 123;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1586") up set l.RegressionRegionID = up.ID Where l.ID = 124;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1584") up set l.RegressionRegionID = up.ID Where l.ID = 125;

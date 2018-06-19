@@ -43,7 +43,7 @@
                 "required": false,
                 "description": "Comma separated list of statistic group ID's or code parameters to limit citation list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -96,7 +96,7 @@
                 "required": false,
                 "description": "Comma separated list of statistic group ID's or code parameters to limit citation list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 				}
@@ -238,7 +238,7 @@
             "description": {
               "string": "Returns a list of all regression regions available in NSS."
             },
-            "name": "All regression regions",
+            "name": "All Regression Regions",
             "parameters": [
               {
                 "name": "region",
@@ -255,7 +255,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit statistic group list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -291,7 +291,7 @@
             "description": {
               "string": "Returns a list of a region's regression regions by region identifier or code."
             },
-            "name": "Regions regression regions",
+            "name": "Regions Regression Regions",
             "parameters": [
               {
                 "name": "region",
@@ -309,7 +309,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit statistic group list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -331,7 +331,7 @@
     ]
   },  
   {
-    "name": "Regression Type",
+    "name": "Regression Types",
     "description": {
       "string": "Represents the statistic variable to be computed, such as 2 year peak flood."
     },
@@ -371,7 +371,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit regression type list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -411,7 +411,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit regression type list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -437,7 +437,7 @@
     ]
   },
   {
-    "name": "Statistic group",
+    "name": "Statistic Groups",
     "description": {
       "string": "The Statistic group resource represents a grouping of similar statistics. Such as Low-flow, annual, and peak flow statistics etc."
     },
@@ -450,7 +450,7 @@
             "description": {
               "string": "Returns a list of statistic groups."
             },
-            "name": "All Statistic groups",
+            "name": "All Statistic Groups",
             "parameters": [
               {
                 "name": "region",
@@ -478,7 +478,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit statistic group list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -500,7 +500,7 @@
             "description": {
               "string": "Returns a list of statistic group for a specific region."
             },
-            "name": "Region Statistic groups",
+            "name": "Region Statistic Groups",
             "parameters": [
               {
                 "name": "region",
@@ -528,7 +528,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit statistic group list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -581,7 +581,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit scenario list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -636,7 +636,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit scenario list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -696,7 +696,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit scenario list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
@@ -764,7 +764,7 @@
                 "type": "number",
                 "description": "Comma separated list of statistic group ID's or code parameters to limit scenario list.",
 				"link":{
-					"href": "Statistic Group",
+					"href": "Statistic Groups",
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}

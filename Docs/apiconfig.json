@@ -340,7 +340,7 @@
         "type": "GET",
         "uriList": [
           {
-            "uri": "regression types",
+            "uri": "regressiontypes",
             "description": {
               "string": "Returns a list of all available regression types in NSS."
             },
@@ -532,6 +532,21 @@
 					"rel": "All Statistic Groups",
 					"method": "GET"
 					}
+              }
+            ]
+          },
+          {
+            "uri": "statisticgroups/{statisticgroupID}",
+            "description": {
+              "string": "Returns a statistic group for a specific identifier."
+            },
+            "name": "A Statistic Groups",
+            "parameters": [
+              {
+                "name": "statisticgroupID",
+                "type": "number",
+                "required": true,
+                "description": "Statistic Group unique ID."
               }
             ]
           }

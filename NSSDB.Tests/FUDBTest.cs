@@ -245,6 +245,8 @@ namespace NSSDB.Tests
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (255,1,116);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (255,1,117);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES (255,1,118);
+            //INSERT INTO `Variable`(`VariableTypeID`, `UnitTypeID`, `LimitationID`, `Comments`) VALUES(87, 11, 128, "PA Statewide_Bankfull_Carbonate_2018_5066 (GC1770) Limitation");
+            //INSERT INTO `Variable`(`VariableTypeID`, `UnitTypeID`, `LimitationID`, `Comments`) VALUES(87, 11, 129, "PA Statewide_Bankfull_Carbonate_2018_5066 (GC1769) Limitation");
 
             //F) Flash Citations to remove #
             //UPDATE Citation Set CitationURL = REPLACE(CitationURL,'#','');

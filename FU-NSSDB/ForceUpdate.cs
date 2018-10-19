@@ -49,7 +49,7 @@ namespace FU_NSSDB
 
 
         private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\WiM\Projects\NSS\DB\StreamStatsDB_2018-08-24.mdb");
-        private string NSSDBConnectionstring = string.Format("Server=nss**host**; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
+        private string NSSDBConnectionstring = string.Format("Server=nsstest.c69uuui2tzs0.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
         private dbOps NSSDBOps { get; set; }
 
 
@@ -149,7 +149,7 @@ namespace FU_NSSDB
         #region HelperMethods
         private void init() {
             //uses EF to make the connection
-            string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nss**host**;user id={0};PASSWORD={1};database=nss';";
+            string connectionString = "metadata=res://*/NSSEntityModel.csdl|res://*/NSSEntityModel.ssdl|res://*/NSSEntityModel.msl;provider=MySql.Data.MySqlClient;provider connection string=';server=nsstest.c69uuui2tzs0.us-east-1.rds.amazonaws.com;user id={0};PASSWORD={1};database=nss';";
             using (nssEntities context = new nssEntities(String.Format(connectionString, ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"])))
             {
                 statisticGroupTypeList = context.StatisticGroupTypes.ToList();

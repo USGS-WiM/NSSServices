@@ -267,7 +267,7 @@ namespace NSSDB.Tests
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(175, 11, "Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(195, 30, "Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(196, 30, "Default unit");
-            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(239, 58, "Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(161, 58, "Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(260, 1, "Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(261, 1, "Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(274, 1, "Default unit");

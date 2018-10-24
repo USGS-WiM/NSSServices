@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using WiM.Security.Authentication.Basic;
 using Newtonsoft.Json;
 using NSSAgent.ServiceAgents;
+using SharedDB.Resources;
 
 namespace NSSAgent
 {

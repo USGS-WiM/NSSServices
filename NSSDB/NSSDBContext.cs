@@ -128,8 +128,8 @@ namespace NSSDB
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 #warning Add connectionstring for migrations
-            //var connectionstring = "User ID=;Password=;Host=;Port=5432;Database=StatsDB;Pooling=true;";
-            //optionsBuilder.UseNpgsql(connectionstring,x=> { x.MigrationsHistoryTable("_EFMigrationsHistory", "nss"); x.UseNetTopologySuite(); });
+            var connectionstring = "User ID=;Password=;Host=;Port=5432;Database=StatsDB;Pooling=true;";
+            optionsBuilder.UseNpgsql(connectionstring,x=> { x.MigrationsHistoryTable("_EFMigrationsHistory", "nss"); x.UseNetTopologySuite(); });
         }
     }
 }

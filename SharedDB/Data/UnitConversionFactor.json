@@ -1,0 +1,291 @@
+
+    [
+        {
+            "ID": "1",
+            "UnitTypeInID": "35",
+            "UnitTypeOutID": "2",
+            "Factor": "2.59"
+        },
+        {
+            "ID": "2",
+            "UnitTypeInID": "36",
+            "UnitTypeOutID": "3",
+            "Factor": "25.4"
+        },
+        {
+            "ID": "3",
+            "UnitTypeInID": "37",
+            "UnitTypeOutID": "4",
+            "Factor": "0.5555"
+        },
+        {
+            "ID": "4",
+            "UnitTypeInID": "38",
+            "UnitTypeOutID": "5",
+            "Factor": "0.3048"
+        },
+        {
+            "ID": "5",
+            "UnitTypeInID": "39",
+            "UnitTypeOutID": "6",
+            "Factor": "0.1894"
+        },
+        {
+            "ID": "6",
+            "UnitTypeInID": "40",
+            "UnitTypeOutID": "5",
+            "Factor": "1.609"
+        },
+        {
+            "ID": "7",
+            "UnitTypeInID": "41",
+            "UnitTypeOutID": "8",
+            "Factor": "0.3048"
+        },
+        {
+            "ID": "8",
+            "UnitTypeInID": "42",
+            "UnitTypeOutID": "9",
+            "Factor": "25.4"
+        },
+        {
+            "ID": "9",
+            "UnitTypeInID": "43",
+            "UnitTypeOutID": "10",
+            "Factor": "1"
+        },
+        {
+            "ID": "10",
+            "UnitTypeInID": "44",
+            "UnitTypeOutID": "13",
+            "Factor": "0.02832"
+        },
+        {
+            "ID": "11",
+            "UnitTypeInID": "45",
+            "UnitTypeOutID": "14",
+            "Factor": "1"
+        },
+        {
+            "ID": "12",
+            "UnitTypeInID": "46",
+            "UnitTypeOutID": "15",
+            "Factor": "0.386102"
+        },
+        {
+            "ID": "13",
+            "UnitTypeInID": "47",
+            "UnitTypeOutID": "16",
+            "Factor": "0.6212"
+        },
+        {
+            "ID": "14",
+            "UnitTypeInID": "48",
+            "UnitTypeOutID": "17",
+            "Factor": "0.3861"
+        },
+        {
+            "ID": "15",
+            "UnitTypeInID": "49",
+            "UnitTypeOutID": "19",
+            "Factor": "1"
+        },
+        {
+            "ID": "16",
+            "UnitTypeInID": "50",
+            "UnitTypeOutID": "20",
+            "Factor": "1"
+        },
+        {
+            "ID": "17",
+            "UnitTypeInID": "51",
+            "UnitTypeOutID": "21",
+            "Factor": "25.4"
+        },
+        {
+            "ID": "18",
+            "UnitTypeInID": "52",
+            "UnitTypeOutID": "22",
+            "Factor": "0.3048"
+        },
+        {
+            "ID": "19",
+            "UnitTypeInID": "53",
+            "UnitTypeOutID": "23",
+            "Factor": "1.609"
+        },
+        {
+            "ID": "20",
+            "UnitTypeInID": "54",
+            "UnitTypeOutID": "24",
+            "Factor": "0.3861"
+        },
+        {
+            "ID": "21",
+            "UnitTypeInID": "55",
+            "UnitTypeOutID": "28",
+            "Factor": "0.004047"
+        },
+        {
+            "ID": "22",
+            "UnitTypeInID": "56",
+            "UnitTypeOutID": "31",
+            "Factor": "0.010934"
+        },
+        {
+            "ID": "23",
+            "UnitTypeInID": "57",
+            "UnitTypeOutID": "32",
+            "Factor": "0.092903"
+        },
+        {
+            "ID": "24",
+            "UnitTypeInID": "2",
+            "UnitTypeOutID": "35",
+            "Factor": "0.386100386"
+        },
+        {
+            "ID": "25",
+            "UnitTypeInID": "3",
+            "UnitTypeOutID": "36",
+            "Factor": "0.039370079"
+        },
+        {
+            "ID": "26",
+            "UnitTypeInID": "4",
+            "UnitTypeOutID": "37",
+            "Factor": "1.800180018"
+        },
+        {
+            "ID": "27",
+            "UnitTypeInID": "5",
+            "UnitTypeOutID": "38",
+            "Factor": "3.280839895"
+        },
+        {
+            "ID": "28",
+            "UnitTypeInID": "6",
+            "UnitTypeOutID": "39",
+            "Factor": "5.279831045"
+        },
+        {
+            "ID": "29",
+            "UnitTypeInID": "5",
+            "UnitTypeOutID": "40",
+            "Factor": "0.62150404"
+        },
+        {
+            "ID": "30",
+            "UnitTypeInID": "8",
+            "UnitTypeOutID": "41",
+            "Factor": "3.280839895"
+        },
+        {
+            "ID": "31",
+            "UnitTypeInID": "9",
+            "UnitTypeOutID": "42",
+            "Factor": "0.039370079"
+        },
+        {
+            "ID": "32",
+            "UnitTypeInID": "10",
+            "UnitTypeOutID": "43",
+            "Factor": "1"
+        },
+        {
+            "ID": "33",
+            "UnitTypeInID": "13",
+            "UnitTypeOutID": "44",
+            "Factor": "35.31073446"
+        },
+        {
+            "ID": "34",
+            "UnitTypeInID": "14",
+            "UnitTypeOutID": "45",
+            "Factor": "1"
+        },
+        {
+            "ID": "35",
+            "UnitTypeInID": "15",
+            "UnitTypeOutID": "46",
+            "Factor": "2.589989174"
+        },
+        {
+            "ID": "36",
+            "UnitTypeInID": "16",
+            "UnitTypeOutID": "47",
+            "Factor": "1.609787508"
+        },
+        {
+            "ID": "37",
+            "UnitTypeInID": "17",
+            "UnitTypeOutID": "48",
+            "Factor": "2.59000259"
+        },
+        {
+            "ID": "38",
+            "UnitTypeInID": "19",
+            "UnitTypeOutID": "49",
+            "Factor": "1"
+        },
+        {
+            "ID": "39",
+            "UnitTypeInID": "20",
+            "UnitTypeOutID": "50",
+            "Factor": "1"
+        },
+        {
+            "ID": "40",
+            "UnitTypeInID": "21",
+            "UnitTypeOutID": "51",
+            "Factor": "0.039370079"
+        },
+        {
+            "ID": "41",
+            "UnitTypeInID": "22",
+            "UnitTypeOutID": "52",
+            "Factor": "3.280839895"
+        },
+        {
+            "ID": "42",
+            "UnitTypeInID": "23",
+            "UnitTypeOutID": "53",
+            "Factor": "0.62150404"
+        },
+        {
+            "ID": "43",
+            "UnitTypeInID": "24",
+            "UnitTypeOutID": "54",
+            "Factor": "2.59000259"
+        },
+        {
+            "ID": "44",
+            "UnitTypeInID": "28",
+            "UnitTypeOutID": "55",
+            "Factor": "247.0966148"
+        },
+        {
+            "ID": "45",
+            "UnitTypeInID": "31",
+            "UnitTypeOutID": "56",
+            "Factor": "91.45783794"
+        },
+        {
+            "ID": "46",
+            "UnitTypeInID": "32",
+            "UnitTypeOutID": "57",
+            "Factor": "10.76391505"
+        },
+        {
+            "ID": "47",
+            "UnitTypeInID": "60",
+            "UnitTypeOutID": "59",
+            "Factor": "0.092903"
+        },
+        {
+            "ID": "48",
+            "UnitTypeInID": "59",
+            "UnitTypeOutID": "60",
+            "Factor": "10.76391505118"
+        }
+    ]

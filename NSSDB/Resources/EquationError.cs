@@ -20,11 +20,13 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using WiM.Utilities;
+using SharedDB.Resources;
+
 namespace NSSDB.Resources
 {
-    public partial class EquationError
+    public partial class EquationError 
     {
-        [Required]
         public int ID { get; set; }
         [Required]
         public int EquationID { get; set; }
@@ -36,5 +38,6 @@ namespace NSSDB.Resources
         public virtual Equation Equation { get; set; }
         public virtual ErrorType ErrorType { get; set; }
 
+        
     }
 }

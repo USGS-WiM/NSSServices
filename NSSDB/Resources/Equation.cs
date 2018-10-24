@@ -20,6 +20,8 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using SharedDB.Resources;
 namespace NSSDB.Resources
 {
     public partial class Equation
@@ -45,10 +47,14 @@ namespace NSSDB.Resources
         public virtual PredictionInterval PredictionInterval { get; set; }
         public virtual ICollection<EquationError> EquationErrors { get; set; }
         public virtual UnitType UnitType { get; set; }
-        public virtual ICollection<EquationUnitType> EquationUnitTypes { get; set; }
+
+        [NotMapped]
+        public virtual ICollection<UnitType> AvailableUnitTypes { get; set; }
+
         public virtual RegressionRegion RegressionRegion { get; set; }
         public virtual StatisticGroupType StatisticGroupType { get; set; }
         public virtual RegressionType RegressionType { get; set; }
+
 
     }
 }

@@ -20,7 +20,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-//using NpgsqlTypes;
+using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations.Schema;
 using WiM.Utilities;
 
@@ -40,8 +40,8 @@ namespace NSSDB.Resources
         public string Code { get; set; }
         public string Description { get; set; }
         public int CitationID { get; set; }
-        //[Required]
-        //public PostgisPolygon Location { get; set; }
+        [Required]
+        public Polygon Location { get; set; }
 
         public virtual Citation Citation { get; set; }
         public virtual ICollection<Equation> Equations { get; set; }

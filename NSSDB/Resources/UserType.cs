@@ -21,6 +21,7 @@
 using NpgsqlTypes;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SharedDB.Resources;
 
 namespace NSSDB.Resources
 {
@@ -32,6 +33,6 @@ namespace NSSDB.Resources
         public string User { get; set; }
         public int UnitSystemID { get; set; }
 
-        //public virtual UnitSystemType UnitSystemType { get; set; }
+        public virtual UnitSystemType UnitSystemType { get; set; }
     }
 }

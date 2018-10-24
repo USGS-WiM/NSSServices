@@ -1,0 +1,163 @@
+
+     [
+        {
+            "ID": "1",
+            "Name": "Physical Characteristics",
+            "Code": "PC"
+        },
+        {
+            "ID": "2",
+            "Name": "Peak-Flow Statistics",
+            "Code": "PFS"
+        },
+        {
+            "ID": "3",
+            "Name": "Flood-Volume Statistics",
+            "Code": "FVS"
+        },
+        {
+            "ID": "4",
+            "Name": "Low-Flow Statistics",
+            "Code": "LFS"
+        },
+        {
+            "ID": "5",
+            "Name": "Flow-Duration Statistics",
+            "Code": "FDS"
+        },
+        {
+            "ID": "6",
+            "Name": "Annual Flow Statistics",
+            "Code": "AFS"
+        },
+        {
+            "ID": "7",
+            "Name": "Monthly Flow Statistics",
+            "Code": "MFS"
+        },
+        {
+            "ID": "8",
+            "Name": "Seasonal Flow Statistics",
+            "Code": "SFS"
+        },
+        {
+            "ID": "9",
+            "Name": "January Flow-Duration Statistics",
+            "Code": "JANFDS"
+        },
+        {
+            "ID": "10",
+            "Name": "February Flow-Duration Statistics",
+            "Code": "FEBFDS"
+        },
+        {
+            "ID": "11",
+            "Name": "March Flow-Duration Statistics",
+            "Code": "MARFDS"
+        },
+        {
+            "ID": "12",
+            "Name": "April Flow-Duration Statistics",
+            "Code": "APRFDS"
+        },
+        {
+            "ID": "13",
+            "Name": "May Flow-Duration Statistics",
+            "Code": "MAYFDS"
+        },
+        {
+            "ID": "14",
+            "Name": "June Flow-Duration Statistics",
+            "Code": "JUNFDS"
+        },
+        {
+            "ID": "15",
+            "Name": "July Flow-Duration Statistics",
+            "Code": "JULFDS"
+        },
+        {
+            "ID": "16",
+            "Name": "August Flow-Duration Statistics",
+            "Code": "AUGFDS"
+        },
+        {
+            "ID": "17",
+            "Name": "September Flow-Duration Statistics",
+            "Code": "SEPFDS"
+        },
+        {
+            "ID": "18",
+            "Name": "October Flow-Duration Statistics",
+            "Code": "OCTFDS"
+        },
+        {
+            "ID": "19",
+            "Name": "November Flow-Duration Statistics",
+            "Code": "NOVFDS"
+        },
+        {
+            "ID": "20",
+            "Name": "December Flow-Duration Statistics",
+            "Code": "DECFDS"
+        },
+        {
+            "ID": "21",
+            "Name": "General Flow Statistics",
+            "Code": "GFS"
+        },
+        {
+            "ID": "22",
+            "Name": "Base Flow Statistics",
+            "Code": "BF"
+        },
+        {
+            "ID": "23",
+            "Name": "Flow Percentile Statistics",
+            "Code": "FPS"
+        },
+        {
+            "ID": "24",
+            "Name": "Bankfull Statistics",
+            "Code": "BNKF"
+        },
+        {
+            "ID": "25",
+            "Name": "Yield Statistics (flow per area)",
+            "Code": "YIELD"
+        },
+        {
+            "ID": "26",
+            "Name": "Recharge Statistics",
+            "Code": "RCHG"
+        },
+        {
+            "ID": "27",
+            "Name": "Depth Statistics",
+            "Code": "DPS"
+        },
+        {
+            "ID": "28",
+            "Name": "Low-Flow Current Statistics",
+            "Code": "LFCS"
+        },
+        {
+            "ID": "29",
+            "Name": "Low-Flow Base Statistics",
+            "Code": "LFBS"
+        },
+        {
+            "ID": "30",
+            "Name": "Probability Statistics",
+            "Code": "PROB"
+        },
+        {
+            "ID": "31",
+            "Name": "Urban Peak-Flow Statistics",
+            "Code": "UPFS"
+        },
+        {
+            "ID": "32",
+            "Name": "Rural Peak-Flow Statistics",
+            "Code": "RPFS"
+        }
+    ]

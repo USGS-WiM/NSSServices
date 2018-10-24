@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSSServices", "NSSServices\NSSServices.csproj", "{EA7C0EBD-A975-4999-A7C3-7FDBC03985F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSSServices", "NSSServices\NSSServices.csproj", "{EA7C0EBD-A975-4999-A7C3-7FDBC03985F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSSDB", "NSSDB\NSSDB.csproj", "{DD285334-CC5E-48DD-B637-10EB8348E69C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSSDB", "NSSDB\NSSDB.csproj", "{DD285334-CC5E-48DD-B637-10EB8348E69C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSSDB.Test", "NSSDB.Test\NSSDB.Test.csproj", "{33C8340C-4670-41EC-88F8-DB6DA298CB12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSSDB.Test", "NSSDB.Test\NSSDB.Test.csproj", "{33C8340C-4670-41EC-88F8-DB6DA298CB12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSSServices.Test", "NSSServices.Test\NSSServices.Test.csproj", "{668FD628-DB14-40A8-8ABC-C281A0F7C964}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSSServices.Test", "NSSServices.Test\NSSServices.Test.csproj", "{668FD628-DB14-40A8-8ABC-C281A0F7C964}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSSAgent", "NSSAgent\NSSAgent.csproj", "{9C566B19-1349-42EE-9974-9DC2526ECF92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSSAgent", "NSSAgent\NSSAgent.csproj", "{9C566B19-1349-42EE-9974-9DC2526ECF92}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedDB", "SharedDB\SharedDB.csproj", "{A589BFE1-E95C-4ADF-A44D-189D5E952FAE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedDB.Test", "SharedDB.Test\SharedDB.Test.csproj", "{C9ECC583-1813-4B72-A299-E2B5B0518698}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,8 +43,19 @@ Global
 		{9C566B19-1349-42EE-9974-9DC2526ECF92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C566B19-1349-42EE-9974-9DC2526ECF92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C566B19-1349-42EE-9974-9DC2526ECF92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A589BFE1-E95C-4ADF-A44D-189D5E952FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A589BFE1-E95C-4ADF-A44D-189D5E952FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A589BFE1-E95C-4ADF-A44D-189D5E952FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A589BFE1-E95C-4ADF-A44D-189D5E952FAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9ECC583-1813-4B72-A299-E2B5B0518698}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9ECC583-1813-4B72-A299-E2B5B0518698}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9ECC583-1813-4B72-A299-E2B5B0518698}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9ECC583-1813-4B72-A299-E2B5B0518698}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5AAB546-59A6-4BDB-918D-85671F04451D}
 	EndGlobalSection
 EndGlobal

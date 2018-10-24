@@ -6,19 +6,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 
-namespace NSSDB.Test
+namespace SharedDB.Test
 {
     [TestClass]
-    public class NSSDBTest
+    public class SharedDBTest
     {
         private string connectionstring = new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json")
-                    .Build().GetConnectionString("nssConnection");
+                    .Build().GetConnectionString("SharedConnection");
 
         [TestMethod]
         public void ConnectionTest()
         {
-            using (NSSDBContext context = new NSSDBContext(new DbContextOptionsBuilder<NSSDBContext>().UseNpgsql(this.connectionstring).Options))
+            using (SharedDBContext context = new SharedDBContext(new DbContextOptionsBuilder<SharedDBContext>().UseNpgsql(this.connectionstring).Options))
             {
                 try
                 {
@@ -33,11 +33,11 @@ namespace NSSDB.Test
         [TestMethod]
         public void QueryTest()
         {
-            using (NSSDBContext context = new NSSDBContext(new DbContextOptionsBuilder<NSSDBContext>().UseNpgsql(this.connectionstring).Options))
+            using (SharedDBContext context = new SharedDBContext(new DbContextOptionsBuilder<SharedDBContext>().UseNpgsql(this.connectionstring).Options))
             {
                 try
                 {
-                    var testQuery = context.Equations.Include("EquationErrors.ErrorType").ToList();
+                    var testQuery = context.UnitTypes.ToList();
                     Assert.IsNotNull(testQuery, testQuery.Count.ToString());
                 }
                 catch (Exception ex)

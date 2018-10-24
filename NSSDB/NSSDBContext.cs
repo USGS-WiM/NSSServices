@@ -65,6 +65,7 @@ namespace NSSDB
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasPostgresExtension("postgis");
             //schema
             modelBuilder.HasDefaultSchema("nss");
             modelBuilder.Entity<ErrorType>().ToTable("ErrorType_view");
@@ -127,8 +128,8 @@ namespace NSSDB
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 #warning Add connectionstring for migrations
-            var connectionstring = "User ID=**dbuser**;Password=**dbpass**;Host=test.c69uuui2tzs0.us-east-1.rds.amazonaws.com;Port=5432;Database=StatsDB;Pooling=true;";
-            optionsBuilder.UseNpgsql(connectionstring,x=>x.MigrationsHistoryTable("_EFMigrationsHistory","nss"));
+            //var connectionstring = "User ID=;Password=;Host=;Port=5432;Database=StatsDB;Pooling=true;";
+            //optionsBuilder.UseNpgsql(connectionstring,x=> { x.MigrationsHistoryTable("_EFMigrationsHistory", "nss"); x.UseNetTopologySuite(); });
         }
     }
 }

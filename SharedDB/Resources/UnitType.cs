@@ -14,29 +14,38 @@
 //   purpose:   Simple Plain Old Class Object (POCO) 
 //
 //discussion:   POCO's arn't derived from special base classed nor do they return any special types for their properties.
-//              see https://blog.oneunicorn.com/2017/09/25/many-to-many-relationships-in-ef-core-2-0-part-4-a-more-general-abstraction/ 
 //              
 //
 //   
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SharedDB.Resources;
+using System.ComponentModel.DataAnnotations.Schema;
 using WiM.Utilities;
-namespace NSSDB.Resources
+
+namespace SharedDB.Resources
 {
-    public partial class EquationUnitType : IJoinEntity<Equation>, IJoinEntity<UnitType>
+    public partial class UnitType
     {
         [Required]
-        public int EquationID { get; set; }
+        public int ID { get; set; }
         [Required]
-        public int UnitTypeID { get; set; }
+        public string Name { get; set; }
+        [Required]
+        public string Abbreviation { get; set; }
+        [Required]
+        public int UnitSystemTypeID { get; set; }
 
-        public Equation Equation { get; set; }
-        public UnitType UnitType { get; set; }
+        [InverseProperty("UnitTypeIn")]
+        public virtual ICollection<UnitConversionFactor> UnitConversionFactorsIn { get; set; }
+        [InverseProperty("UnitTypeOut")]
+        public virtual ICollection<UnitConversionFactor> UnitConversionFactorsOut { get; set; }
 
-        Equation IJoinEntity<Equation>.Navigation { get => Equation; set => Equation = value; }
-        UnitType IJoinEntity<UnitType>.Navigation { get => UnitType; set => UnitType = value; }
+        public virtual UnitSystemType UnitSystemType { get; set; }
+
+
+
+
 
     }
 }

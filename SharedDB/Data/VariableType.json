@@ -1,0 +1,2805 @@
+
+    [
+        {
+            "ID": "1",
+            "Name": "Drainage Area",
+            "Description": "Area that drains to a point on a stream",
+            "Code": "DRNAREA"
+        },
+        {
+            "ID": "2",
+            "Name": "Percent Lakes and Ponds",
+            "Description": "Percentage of Lakes and Ponds",
+            "Code": "LAKEAREA"
+        },
+        {
+            "ID": "3",
+            "Name": "Mean Annual Precipitation",
+            "Description": "Mean Annual Precipitation",
+            "Code": "PRECIP"
+        },
+        {
+            "ID": "4",
+            "Name": "Mean Min January Temperature",
+            "Description": "Mean Minimum January Temperature",
+            "Code": "JANMINTMP"
+        },
+        {
+            "ID": "5",
+            "Name": "Percent Forest",
+            "Description": "Percentage of area covered by forest",
+            "Code": "FOREST"
+        },
+        {
+            "ID": "6",
+            "Name": "Mean Basin Elevation",
+            "Description": "Mean Basin Elevation",
+            "Code": "ELEV"
+        },
+        {
+            "ID": "7",
+            "Name": "Contributing Drainage Area",
+            "Description": "Area that contributes flow to a point on a stream",
+            "Code": "CONTDA"
+        },
+        {
+            "ID": "8",
+            "Name": "Stream Slope 10 and 85 Method",
+            "Description": "Change in elevation divided by length between points 10 and 85 percent of distance along main channel to basin divide - main channel method not known",
+            "Code": "CSL10_85"
+        },
+        {
+            "ID": "9",
+            "Name": "Basin Shape Factor",
+            "Description": "Basin Shape Factor for Area",
+            "Code": "BSHAPE"
+        },
+        {
+            "ID": "10",
+            "Name": "Mean Basin Slope from 30m DEM",
+            "Description": "Mean basin slope computed from 30 m DEM",
+            "Code": "BSLDEM30M"
+        },
+        {
+            "ID": "11",
+            "Name": "Latitude",
+            "Description": "Latitude",
+            "Code": "LAT_GAGE"
+        },
+        {
+            "ID": "12",
+            "Name": "Mean Basin Slope from 10m DEM",
+            "Description": "Mean basin slope computed from 10 m DEM",
+            "Code": "BSLDEM10M"
+        },
+        {
+            "ID": "13",
+            "Name": "Percent above 7500 ft",
+            "Description": "Percent of area above 7500 ft",
+            "Code": "EL7500"
+        },
+        {
+            "ID": "14",
+            "Name": "6 Hour 100 Year Precipitation",
+            "Description": "6-hour precipitation that is expected to occur on average once in 100 years",
+            "Code": "I6H100Y"
+        },
+        {
+            "ID": "15",
+            "Name": "24 Hour 2 Year Precipitation",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 2 years - Equivalent to precipitation intensity index",
+            "Code": "I24H2Y"
+        },
+        {
+            "ID": "16",
+            "Name": "24 Hour 10 Year Precipitation",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 10 years",
+            "Code": "I24H10Y"
+        },
+        {
+            "ID": "17",
+            "Name": "24 Hour 25 Year Precipitation",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 25 years",
+            "Code": "I24H25Y"
+        },
+        {
+            "ID": "18",
+            "Name": "24 Hour 50 Year Precipitation",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 50 years",
+            "Code": "I24H50Y"
+        },
+        {
+            "ID": "19",
+            "Name": "24 Hour 100 Year Precipitation",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 100 years",
+            "Code": "I24H100Y"
+        },
+        {
+            "ID": "20",
+            "Name": "Percent Hydrologic Soil Type A",
+            "Description": "Percentage of area of Hydrologic Soil Type A",
+            "Code": "SOILA"
+        },
+        {
+            "ID": "21",
+            "Name": "Percent Storage from NHD",
+            "Description": "Percent storage (wetlands and waterbodies) determined from 1:24K NHD",
+            "Code": "STORNHD"
+        },
+        {
+            "ID": "22",
+            "Name": "Percent Impervious NLCD2001",
+            "Description": "Percentage of impervious area determined from NLCD 2001 impervious dataset",
+            "Code": "IMPNLCD01"
+        },
+        {
+            "ID": "23",
+            "Name": "Area of Impervious Surfaces",
+            "Description": "Impervious area",
+            "Code": "AIMPERV"
+        },
+        {
+            "ID": "24",
+            "Name": "Basin Development Factor",
+            "Description": "Urbanization index described by Sauer and others (1981) - Also called Urbanization Index in Texas",
+            "Code": "BDF"
+        },
+        {
+            "ID": "25",
+            "Name": "Area of Lake and Detention Basin",
+            "Description": "Lake and Detention Basin Area",
+            "Code": "ADETEN"
+        },
+        {
+            "ID": "26",
+            "Name": "Percent Storage from NLCD1992",
+            "Description": "Percentage of water bodies and wetlands determined from the NLCD",
+            "Code": "LC92STOR"
+        },
+        {
+            "ID": "27",
+            "Name": "Percent Area in Region 1",
+            "Description": "Percentage of drainage area located in Region 1",
+            "Code": "PCTREG1"
+        },
+        {
+            "ID": "28",
+            "Name": "Percent Area in Region 2",
+            "Description": "Percentage of drainage area located in Region 2",
+            "Code": "PCTREG2"
+        },
+        {
+            "ID": "29",
+            "Name": "Percent Area in Region 3",
+            "Description": "Percentage of drainage area located in Region 3",
+            "Code": "PCTREG3"
+        },
+        {
+            "ID": "30",
+            "Name": "Percent Area in Region 4",
+            "Description": "Percentage of drainage area located in Region 4",
+            "Code": "PCTREG4"
+        },
+        {
+            "ID": "31",
+            "Name": "Percent Area in Region 5",
+            "Description": "Percentage of drainage area located in Region 5",
+            "Code": "PCTREG5"
+        },
+        {
+            "ID": "32",
+            "Name": "Percent Impervious NLCD2006",
+            "Description": "Percentage of impervious area determined from NLCD 2006 impervious dataset",
+            "Code": "LC06IMP"
+        },
+        {
+            "ID": "33",
+            "Name": "Percent Developed from NLCD2006",
+            "Description": "Percentage of land-use from NLCD 2006 classes 21-24",
+            "Code": "LC06DEV"
+        },
+        {
+            "ID": "34",
+            "Name": "Constant of Channel Maintenance",
+            "Description": "Constant of channel maintenance computed as drainage area divided by total stream length",
+            "Code": "CCM"
+        },
+        {
+            "ID": "35",
+            "Name": "Des Moines Lobe",
+            "Description": "Area underlain by Des Moines Lobe",
+            "Code": "DESMOIN"
+        },
+        {
+            "ID": "36",
+            "Name": "SSURGO Saturated Hydraulic Conductivity",
+            "Description": "Saturated hydraulic conductivity in micrometers per second from NRCS SSURGO database",
+            "Code": "SSURGOKSAT"
+        },
+        {
+            "ID": "37",
+            "Name": "Percentage of Storage from NWI",
+            "Description": "Percentage of strorage (combined water bodies and wetlands) from the Nationa Wetlands Inventory",
+            "Code": "STORNWI"
+        },
+        {
+            "ID": "38",
+            "Name": "Percent Storage from NLCD2006",
+            "Description": "Percentage of water bodies and wetlands determined from the NLCD 2006",
+            "Code": "LC06STOR"
+        },
+        {
+            "ID": "39",
+            "Name": "Mean Annual Precip PRISM 1981 2010",
+            "Description": "Basin average mean annual precipitation for 1981 to 2010 from PRISM",
+            "Code": "PRECPRIS10"
+        },
+        {
+            "ID": "40",
+            "Name": "Ohio Region C Indicator 1 if in C else 0",
+            "Description": "Ohio Region C Indicator",
+            "Code": "OHREGC"
+        },
+        {
+            "ID": "41",
+            "Name": "Ohio Region A Indicator 1 if in A else 0",
+            "Description": "Ohio Region A Indicator",
+            "Code": "OHREGA"
+        },
+        {
+            "ID": "42",
+            "Name": "Stream Slope 10 and 85 Longest Flow Path",
+            "Description": "Change in elevation divided by length between points 10 and 85 percent of distance along the longest flow path to the basin divide, LFP from 2D grid",
+            "Code": "CSL1085LFP"
+        },
+        {
+            "ID": "43",
+            "Name": "N Facing Slopes gt 30pct from 30m DEM",
+            "Description": "Percent area with north-facing slopes greater than 30 percent from 30-meter DEM.",
+            "Code": "NFSL30_30M"
+        },
+        {
+            "ID": "44",
+            "Name": "Average Soil Permeability",
+            "Description": "Average Soil Permeability",
+            "Code": "SOILPERM"
+        },
+        {
+            "ID": "45",
+            "Name": "Region 1 Indicator  enter 1",
+            "Description": "Indicator variable for IL region 1, enter 1 if site is in region 1 else 0",
+            "Code": "ILREG1"
+        },
+        {
+            "ID": "46",
+            "Name": "Width Of Active Channel",
+            "Description": "Width of active channel",
+            "Code": "WACTCH"
+        },
+        {
+            "ID": "47",
+            "Name": "Percent Urban",
+            "Description": "Percentage of basin with urban development",
+            "Code": "URBAN"
+        },
+        {
+            "ID": "48",
+            "Name": "Percent Wetlands",
+            "Description": "Percentage of Wetlands",
+            "Code": "WETLAND"
+        },
+        {
+            "ID": "49",
+            "Name": "SSURGO Percent Hydrologic Soil Type A",
+            "Description": "Percentage of area of Hydrologic Soil Type A from SSURGO",
+            "Code": "SSURGOA"
+        },
+        {
+            "ID": "50",
+            "Name": "Mean Basin Slope from 10m DEM ft per ft",
+            "Description": "Mean basin slope computed from 10 m DEM in feet per foot",
+            "Code": "BSLDEM10ff"
+        },
+        {
+            "ID": "51",
+            "Name": "Percent SSURGO Soil Type C or D",
+            "Description": "Percentage of area of Hydrologic Soil Type C or D from SSURGO",
+            "Code": "SOILCorD"
+        },
+        {
+            "ID": "52",
+            "Name": "Percent Impervious",
+            "Description": "Percentage of impervious area",
+            "Code": "IMPERV"
+        },
+        {
+            "ID": "53",
+            "Name": "Percent Limestone",
+            "Description": "Percentage of area of limestone geology",
+            "Code": "LIME"
+        },
+        {
+            "ID": "54",
+            "Name": "Percent forest from MD 2010 land use",
+            "Description": "Percent forest from Maryland 2010 land-use data",
+            "Code": "FOREST_MD"
+        },
+        {
+            "ID": "55",
+            "Name": "Width Of Bankfull Channel",
+            "Description": "Width of channel at bankfull",
+            "Code": "WBANKFULL"
+        },
+        {
+            "ID": "56",
+            "Name": "Percent Length of Main Channel Swamps",
+            "Description": "Percentage of the main channel length that flows through swamps",
+            "Code": "PLCHSWAMP"
+        },
+        {
+            "ID": "57",
+            "Name": "Slenderness Ratio",
+            "Description": "Main channel length - squared - divided by the contributing drainage area",
+            "Code": "SLENRAT"
+        },
+        {
+            "ID": "58",
+            "Name": "Percent Outwash",
+            "Description": "Percentage of area of outwash",
+            "Code": "OUTWASH"
+        },
+        {
+            "ID": "59",
+            "Name": "Percent Peat and Muck",
+            "Description": "Percentage of area of peat and muck",
+            "Code": "MUCK"
+        },
+        {
+            "ID": "60",
+            "Name": "End Moraines of Fine Textured Till",
+            "Description": "Percentage of End Moraines of Fine-Textured Till",
+            "Code": "MORTILL"
+        },
+        {
+            "ID": "61",
+            "Name": "Percent Medium Till",
+            "Description": "Percentage of area of medium-textured glacial till",
+            "Code": "MEDTILL"
+        },
+        {
+            "ID": "62",
+            "Name": "Percent Lacustrine Clay and Silt",
+            "Description": "Percentage of lacustrine clay and silt",
+            "Code": "PCLAY"
+        },
+        {
+            "ID": "63",
+            "Name": "Percent Thin Till over Bedrock",
+            "Description": "Percentage of area of thin glacial till over bedrock",
+            "Code": "TILROCK"
+        },
+        {
+            "ID": "64",
+            "Name": "Percent Coarse Till",
+            "Description": "Percentage of area of coarse till",
+            "Code": "CRSTILL"
+        },
+        {
+            "ID": "65",
+            "Name": "Generalized Runoff",
+            "Description": "Generalized mean annual runoff in Minnesota 1951-85",
+            "Code": "GENRO"
+        },
+        {
+            "ID": "66",
+            "Name": "Log of Drainage Area",
+            "Description": "Logarithm base 10 of drainage area",
+            "Code": "LOGDA"
+        },
+        {
+            "ID": "67",
+            "Name": "Stream Slope 10 and 85 Method ft per mi",
+            "Description": "Change in elevation between points 10 and 85 percent of length along main channel to basin divide divided by length between points ft per mi",
+            "Code": "CSL10_85fm"
+        },
+        {
+            "ID": "68",
+            "Name": "Main Channel Length",
+            "Description": "Length along the main channel from the measuring location extended to the basin divide",
+            "Code": "LENGTH"
+        },
+        {
+            "ID": "69",
+            "Name": "Elevation in Thousands",
+            "Description": "Elevation in Thousands",
+            "Code": "ELEV1000"
+        },
+        {
+            "ID": "70",
+            "Name": "Unregulated Drainage Area",
+            "Description": "Unregulated drainage area used in OK regulated equations",
+            "Code": "DAUNREG"
+        },
+        {
+            "ID": "71",
+            "Name": "Tennessee Climate Factor 2 Year",
+            "Description": "Two-year climate factor from Lichy and Karlinger (1990)",
+            "Code": "CLIMFAC2YR"
+        },
+        {
+            "ID": "72",
+            "Name": "Available Water Capacity",
+            "Description": "Available water capacity of the top 60 inches of soil - determined from STATSGO data",
+            "Code": "WATCAP"
+        },
+        {
+            "ID": "73",
+            "Name": "Mean Basin Slope ft per mi",
+            "Description": "Mean basin slope determined by summing lengths of all contours in basin mulitplying by contour interval and dividing product by drainage area",
+            "Code": "BSLOPCM"
+        },
+        {
+            "ID": "74",
+            "Name": "Drainage Frequency",
+            "Description": "Number of first order streams per square mile of drainage area",
+            "Code": "DRNFREQ"
+        },
+        {
+            "ID": "75",
+            "Name": "Relative Relief",
+            "Description": "Basin relief divided by basin perimeter",
+            "Code": "RELRELF"
+        },
+        {
+            "ID": "76",
+            "Name": "Least Permeable Layer Permeability",
+            "Description": "Permeability of least permeable layer",
+            "Code": "LSTPERM"
+        },
+        {
+            "ID": "77",
+            "Name": "Compactness Ratio",
+            "Description": "A measure of basin shape related to basin perimeter and drainage area",
+            "Code": "COMPRAT"
+        },
+        {
+            "ID": "78",
+            "Name": "Average Maximum Soil Slope",
+            "Description": "Average Maximum Soil Slope",
+            "Code": "AVMXSS"
+        },
+        {
+            "ID": "79",
+            "Name": "Stream Density",
+            "Description": "Stream Density -- total length of streams divided by drainage area",
+            "Code": "STRDEN"
+        },
+        {
+            "ID": "80",
+            "Name": "Percent Storage",
+            "Description": "Percentage of area of storage (lakes ponds reservoirs wetlands)",
+            "Code": "STORAGE"
+        },
+        {
+            "ID": "81",
+            "Name": "Basin Population Density",
+            "Description": "Basin Population Density",
+            "Code": "POPDENS"
+        },
+        {
+            "ID": "82",
+            "Name": "Average Channel Elevation",
+            "Description": "Average of outlet elevation and the elevation at the upstream extent of the mapped stream",
+            "Code": "CELVBLUE"
+        },
+        {
+            "ID": "83",
+            "Name": "Mean April Precipitation",
+            "Description": "Mean April Precipitation",
+            "Code": "APRAVPRE"
+        },
+        {
+            "ID": "84",
+            "Name": "S Dakota Precipitation Intensity Index",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 2 years minus 1.5 inches",
+            "Code": "PII_SD"
+        },
+        {
+            "ID": "85",
+            "Name": "Gutter Length",
+            "Description": "Length of gutters per square mile of drainage area",
+            "Code": "GUTTER"
+        },
+        {
+            "ID": "86",
+            "Name": "Mean Maximum January Temperature",
+            "Description": "Mean Maximum January Temperature",
+            "Code": "JANMAXTMP"
+        },
+        {
+            "ID": "87",
+            "Name": "Percent Carbonate",
+            "Description": "Percentage of area of carbonate rock",
+            "Code": "CARBON"
+        },
+        {
+            "ID": "88",
+            "Name": "Depth to Rock",
+            "Description": "Depth to rock",
+            "Code": "ROCKDEP"
+        },
+        {
+            "ID": "89",
+            "Name": "Longitude of Basin Outlet",
+            "Description": "Longitude of Basin Outlet",
+            "Code": "LONG_OUT"
+        },
+        {
+            "ID": "90",
+            "Name": "Percent Open Water & Herb Wetland",
+            "Description": "Percent open water and herbaceous wetland from NLCD",
+            "Code": "WATWET"
+        },
+        {
+            "ID": "91",
+            "Name": "Region 3 Indicator  enter 1",
+            "Description": "Indicator variable for IL region 3, enter 1 if site is in region 3 else 0",
+            "Code": "ILREG3"
+        },
+        {
+            "ID": "92",
+            "Name": "Basin Length ArcHydro Method",
+            "Description": "Basin length from outlet to basin divide determined using the method in the ArcHydro Toolset",
+            "Code": "BASLENAH"
+        },
+        {
+            "ID": "93",
+            "Name": "Mean Annual Pan Evaporation",
+            "Description": "Mean Annual Pan Evaporation",
+            "Code": "EVAPAN"
+        },
+        {
+            "ID": "94",
+            "Name": "Longitude",
+            "Description": "Longitude",
+            "Code": "LNG_GAGE"
+        },
+        {
+            "ID": "95",
+            "Name": "Stream Slope Blue Line Method",
+            "Description": "Change in elevation of the longest blue-line stream (not extended to the boundary) divided by stream length",
+            "Code": "CSLBlue"
+        },
+        {
+            "ID": "96",
+            "Name": "Texas Urbanization Index",
+            "Description": "Urbanization index defined in WRIR 82-18",
+            "Code": "TXURBINDEX"
+        },
+        {
+            "ID": "97",
+            "Name": "Bank Full Channel Conveyance",
+            "Description": "Conveyance of main stream channel at bank-full conditions",
+            "Code": "CONVEY"
+        },
+        {
+            "ID": "98",
+            "Name": "Main Channel Slope ft per ft",
+            "Description": "Change in elevation of the longest blue-line stream divided by stream length",
+            "Code": "CSLBlue_ff"
+        },
+        {
+            "ID": "99",
+            "Name": "OmegaEM residual from 2009 5087",
+            "Description": "Generalized regression residual as defined in TX SIR 2009-5087",
+            "Code": "OmegaEM"
+        },
+        {
+            "ID": "100",
+            "Name": "Region 5 Indicator  enter 1",
+            "Description": "Indicator variable for IL region 5, enter 1 if site is in region 5 else 0",
+            "Code": "ILREG5"
+        },
+        {
+            "ID": "101",
+            "Name": "Region 6 Indicator  enter 1",
+            "Description": "Indicator variable for IL region 6, enter 1 if site is in region 6 else 0",
+            "Code": "ILREG6"
+        },
+        {
+            "ID": "102",
+            "Name": "Region 7 Indicator  enter 1",
+            "Description": "Indicator variable for IL region 7, enter 1 if site is in region 7 else 0",
+            "Code": "ILREG7"
+        },
+        {
+            "ID": "103",
+            "Name": "Percent Nat Herb Upland from NLCD1992",
+            "Description": "Percent Natural  Herbaceous Upland from NLCD1992",
+            "Code": "LU92HRBN"
+        },
+        {
+            "ID": "104",
+            "Name": "Mean Annual Snowfall",
+            "Description": "Mean Annual Snowfall",
+            "Code": "SNOFALL"
+        },
+        {
+            "ID": "105",
+            "Name": "Mean Basin Hydrologic Soils Index",
+            "Description": "Mean STATSGO Hydrologic Soils Index (from PL. 2 WRIR 03-4107 for WY)",
+            "Code": "SOILINDEX"
+        },
+        {
+            "ID": "106",
+            "Name": "Mean March Precipitation",
+            "Description": "Mean March Precipitation",
+            "Code": "MARAVPRE"
+        },
+        {
+            "ID": "107",
+            "Name": "Latitude of Basin Outlet",
+            "Description": "Latitude of Basin Outlet",
+            "Code": "LAT_OUT"
+        },
+        {
+            "ID": "108",
+            "Name": "Mean January Precipitation",
+            "Description": "Mean January Precipitation",
+            "Code": "JANAVPRE"
+        },
+        {
+            "ID": "109",
+            "Name": "2 Hour 2 Year Precipitation",
+            "Description": "Maximum 2-hour precipitation that occurs on average once in 2 years",
+            "Code": "I2H2Y"
+        },
+        {
+            "ID": "110",
+            "Name": "Mean Annual Precip less 35 LA ROI Parm",
+            "Description": "Mean Annual Precip - 35 (LA ROI Parm)",
+            "Code": "PRECless35"
+        },
+        {
+            "ID": "111",
+            "Name": "Percent Storage add 1 MN ROI Parm",
+            "Description": "Percent Storage plus 1 (MN ROI Parm)",
+            "Code": "STORAGEp1"
+        },
+        {
+            "ID": "112",
+            "Name": "Percent Lakes add 1 MN ROI Parm",
+            "Description": "Percent Lakes plus 1 (MN ROI Parm)",
+            "Code": "LAKESp1"
+        },
+        {
+            "ID": "113",
+            "Name": "Percent Forest add 1 ID ROI Parm",
+            "Description": "Percent Forest plus 1 (ID ROI Parm)",
+            "Code": "FORESTp1"
+        },
+        {
+            "ID": "114",
+            "Name": "Pct South Facing Slopes add 1 ID ROI",
+            "Description": "Pct. South Facing Slopes plus 1 (ID ROI Parm)",
+            "Code": "PSFSLp1"
+        },
+        {
+            "ID": "115",
+            "Name": "Average Channel Condition",
+            "Description": "Condition between points 100- 75- 50- and 25-percent along main channel - 2 if entirely paved - 1 if unpaved",
+            "Code": "CHANCOND"
+        },
+        {
+            "ID": "116",
+            "Name": "Slopes gt 30pct from 30m DEM",
+            "Description": "Percent area with slopes greater than 30 percent from 30-meter DEM.",
+            "Code": "SLOP30_30M"
+        },
+        {
+            "ID": "117",
+            "Name": "Percent above 6000 ft",
+            "Description": "Percent of area above 6000 ft",
+            "Code": "EL6000"
+        },
+        {
+            "ID": "118",
+            "Name": "Housing Density",
+            "Description": "Average homes per acre in watershed",
+            "Code": "HOMEDENS"
+        },
+        {
+            "ID": "119",
+            "Name": "Percent developed from NLCD2001",
+            "Description": "Percentage of land-use categories 21-24 from NLCD 2001",
+            "Code": "DEVNLCD01"
+        },
+        {
+            "ID": "120",
+            "Name": "Percent Developed from NLCD2011",
+            "Description": "Percentage of developed (urban) land from NLCD 2011 classes 21-24",
+            "Code": "LC11DEV"
+        },
+        {
+            "ID": "121",
+            "Name": "Lag Factor",
+            "Description": "Lag Factor as defined in SIR 2006-5112",
+            "Code": "LAGFACTOR"
+        },
+        {
+            "ID": "122",
+            "Name": "Mean Annual Runoff in inches",
+            "Description": "Mean annual runoff for the period of record in inches",
+            "Code": "MAR"
+        },
+        {
+            "ID": "123",
+            "Name": "Median Seasonal Maximum Snow Depth",
+            "Description": "50th percentile of seasonal maximum snow depth from Northeast Regional Climate Center atlas by Cember and Wilks, 1993",
+            "Code": "MXSNO"
+        },
+        {
+            "ID": "124",
+            "Name": "Slope Ratio NY",
+            "Description": "Ratio of main channel slope to basin slope as defined in SIR 2006-5112",
+            "Code": "SLOPERATIO"
+        },
+        {
+            "ID": "125",
+            "Name": "Percentage of Basin Above 1200 ft",
+            "Description": "Percentage of basin at or above 1200 ft elevation",
+            "Code": "EL1200"
+        },
+        {
+            "ID": "126",
+            "Name": "48 Hour 2 Year Precipitation",
+            "Description": "Maximum 48-hour precipitation that occurs on average once in 2 years",
+            "Code": "I48H2Y"
+        },
+        {
+            "ID": "127",
+            "Name": "48 Hour 5 Year Precipitation",
+            "Description": "Maximum 48-hour precipitation that occurs on average once in 5 years",
+            "Code": "I48H5Y"
+        },
+        {
+            "ID": "128",
+            "Name": "Relief",
+            "Description": "Maximum - minimum elevation",
+            "Code": "RELIEF"
+        },
+        {
+            "ID": "129",
+            "Name": "Percent Volcanic",
+            "Description": "Percent of drainage area as surficial volcanic rocks as defined in SIR 2006-5035",
+            "Code": "VOLCANIC"
+        },
+        {
+            "ID": "130",
+            "Name": "Slopes Greater Than 50 Percent",
+            "Description": "Slopes Greater Than 50 Percent as percent of drainage area",
+            "Code": "SLOP50"
+        },
+        {
+            "ID": "131",
+            "Name": "Mean Basin Slope from 250K DEM",
+            "Description": "Mean basin slope computed from 1:250K DEM",
+            "Code": "BSLDEM250"
+        },
+        {
+            "ID": "132",
+            "Name": "Stratified Drift per Stream Length",
+            "Description": "Area of stratified drift per unit of stream length",
+            "Code": "DRFTPERSTR"
+        },
+        {
+            "ID": "133",
+            "Name": "Massachusetts Region",
+            "Description": "Region of Massachusetts 0 for Eastern 1 for Western",
+            "Code": "MAREGION"
+        },
+        {
+            "ID": "134",
+            "Name": "KY Streamflow Variability Index 2010",
+            "Description": "Mapped streamflow-variability index as defined in SIR 2010-5217",
+            "Code": "KYVARIND10"
+        },
+        {
+            "ID": "135",
+            "Name": "Flow Duration Ratio",
+            "Description": "20-percent flow duration divided by 90-percent flow duration",
+            "Code": "FDRATIO"
+        },
+        {
+            "ID": "136",
+            "Name": "STATSGO Percent Hydrologic Soil Type A",
+            "Description": "Percentage of area of Hydrologic Soil Type A from STATSGO",
+            "Code": "STATSGOA"
+        },
+        {
+            "ID": "137",
+            "Name": "STATSGO Percent Hydrologic Soil Type D",
+            "Description": "Percentage of area of Hydrologic Soil Type D from STATSGO",
+            "Code": "STATSGOD"
+        },
+        {
+            "ID": "138",
+            "Name": "North Carolina Mean Annual Runoff",
+            "Description": "North Carolina mean annual runoff",
+            "Code": "NCMR"
+        },
+        {
+            "ID": "139",
+            "Name": "Recession Index",
+            "Description": "Number of days required for streamflow to recede one order of magnitude when hydrograph is plotted on logarithmic scale",
+            "Code": "RECESS"
+        },
+        {
+            "ID": "140",
+            "Name": "Percent permeability gte 2 in per hr",
+            "Description": "Percent of area underlain by soils with permeability greater than or equal to 2 inches per hour",
+            "Code": "PERMGTE2IN"
+        },
+        {
+            "ID": "141",
+            "Name": "Percent Glaciers",
+            "Description": "Percentage of area of Glaciers",
+            "Code": "GLACIER"
+        },
+        {
+            "ID": "142",
+            "Name": "Maximum Basin Elevation",
+            "Description": "Maximum basin elevation",
+            "Code": "ELEVMAX"
+        },
+        {
+            "ID": "143",
+            "Name": "Hawaii Elongation Ratio",
+            "Description": "Ratio of (1)diameter of circle with equal area as basin to (2)basin length, as defined in SIR 2004-5262",
+            "Code": "HIELONGRAT"
+        },
+        {
+            "ID": "144",
+            "Name": "Hawaii Mean Rainfall Rate",
+            "Description": "Mean annual rainfall rate determined based on the method described in SIR 2004-5262",
+            "Code": "HIMARRATE"
+        },
+        {
+            "ID": "145",
+            "Name": "Percent Underlain By Sand And Gravel",
+            "Description": "Percentage of land surface underlain by sand and gravel deposits",
+            "Code": "PCTSNDGRV"
+        },
+        {
+            "ID": "146",
+            "Name": "Fraction of Sand and Gravel Aquifers",
+            "Description": "Fraction of land surface underlain by sand and gravel aquifers",
+            "Code": "SANDGRAVAF"
+        },
+        {
+            "ID": "147",
+            "Name": "Percentage of Sand and Gravel Aquifers",
+            "Description": "Percentage of land surface underlain by sand and gravel aquifers",
+            "Code": "SANDGRAVAP"
+        },
+        {
+            "ID": "148",
+            "Name": "Distance From Coast To Basin Centroid",
+            "Description": "Shortest distance from the coastline to the basin centroid",
+            "Code": "COASTDIST"
+        },
+        {
+            "ID": "149",
+            "Name": "Basin Ave Precip Dec Feb PRISM 1990",
+            "Description": "Basin average mean precipitation for December to  February from PRISM 1961-1990",
+            "Code": "PRDECFEB90"
+        },
+        {
+            "ID": "150",
+            "Name": "Percent Coniferous Forest",
+            "Description": "Percentaqe of land surface covered by coniferous forest",
+            "Code": "CONIF"
+        },
+        {
+            "ID": "151",
+            "Name": "Jan to Mar Basin Centroid Precip",
+            "Description": "Mean annual precipitation of basin centroid for January 1 to March 15 winter period",
+            "Code": "PREBC0103"
+        },
+        {
+            "ID": "152",
+            "Name": "Mean Annual Temperature",
+            "Description": "Mean Annual Temperature",
+            "Code": "TEMP"
+        },
+        {
+            "ID": "153",
+            "Name": "Jun to Oct Mean Basinwide Temp",
+            "Description": "Basinwide average temperature for June to October summer period",
+            "Code": "TEMP_06_10"
+        },
+        {
+            "ID": "154",
+            "Name": "Jun to Oct Gage Precipitation",
+            "Description": "Mean precipitation at gaging station location for June to October summer period",
+            "Code": "PREG_06_10"
+        },
+        {
+            "ID": "155",
+            "Name": "Percent Mixed Forest",
+            "Description": "Percentage of land area covered by mixed deciduous and coniferous forest",
+            "Code": "MIXFOR"
+        },
+        {
+            "ID": "156",
+            "Name": "Mar to May Gage Precipitation",
+            "Description": "Mean precipitation at gaging station location for March 16 to May 31 spring period",
+            "Code": "PREG_03_05"
+        },
+        {
+            "ID": "157",
+            "Name": "Mean Oct to Apr Precipitation",
+            "Description": "Mean precipitation for winter period defined as October to April",
+            "Code": "PREC10to4"
+        },
+        {
+            "ID": "158",
+            "Name": "Streamflow Variability Index from Grid",
+            "Description": "Streamflow variability index as defined in WRIR 02-4068, computed from regional grid",
+            "Code": "STREAM_VARG"
+        },
+        {
+            "ID": "159",
+            "Name": "Latitude of Basin Centroid",
+            "Description": "Latitude of Basin Centroid",
+            "Code": "LAT_CENT"
+        },
+        {
+            "ID": "160",
+            "Name": "Longitude of Basin Centroid",
+            "Description": "Longitude Basin Centroid",
+            "Code": "LONG_CENT"
+        },
+        {
+            "ID": "161",
+            "Name": "Mean Basin Slope degrees",
+            "Description": "Mean basin slope measured in degrees",
+            "Code": "BSLOPD"
+        },
+        {
+            "ID": "162",
+            "Name": "Percent of Glaciation",
+            "Description": "Percentage of basin area that was historically covered by glaciers",
+            "Code": "GLACIATED"
+        },
+        {
+            "ID": "163",
+            "Name": "Basin Perimeter",
+            "Description": "Perimeter of the drainage basin as defined in SIR 2004-5262",
+            "Code": "BASINPERIM"
+        },
+        {
+            "ID": "164",
+            "Name": "Mean Basin Slope ft per ft",
+            "Description": "Mean basin slope determined using the grid-sampling method",
+            "Code": "BSLOPGM"
+        },
+        {
+            "ID": "165",
+            "Name": "Dev Land percentage",
+            "Description": "Developed Land in Percentage of Drainage Area (Idaho Logistic Regression Equations SIR 2006-5035",
+            "Code": "DV_OF_DA"
+        },
+        {
+            "ID": "166",
+            "Name": "Ag Land Percentage",
+            "Description": "Agricultural Land in Percentage of Drainage Area (Idaho Logistic Regression Equations SIR 2006-5035",
+            "Code": "AG_OF_DA"
+        },
+        {
+            "ID": "167",
+            "Name": "Mean February Precipitation",
+            "Description": "Mean February Precipitation",
+            "Code": "FEBAVPRE"
+        },
+        {
+            "ID": "168",
+            "Name": "Mean June Precipitation",
+            "Description": "Mean June Precipitation",
+            "Code": "JUNAVPRE"
+        },
+        {
+            "ID": "169",
+            "Name": "Mean December Precipitation",
+            "Description": "Mean December Precipitation",
+            "Code": "DECAVPRE"
+        },
+        {
+            "ID": "170",
+            "Name": "Slopes gt 30pct from 10m NED",
+            "Description": "Percent area with slopes greater than 30 percent from 10-meter NED",
+            "Code": "SLOP30_10M"
+        },
+        {
+            "ID": "171",
+            "Name": "Mean August Precipitation",
+            "Description": "Mean August Precipitation",
+            "Code": "AUGAVPRE"
+        },
+        {
+            "ID": "172",
+            "Name": "Mean November Precipitation",
+            "Description": "Mean November Precipitation",
+            "Code": "NOVAVPRE"
+        },
+        {
+            "ID": "173",
+            "Name": "Mean September Precipitation",
+            "Description": "Mean September Precipitation",
+            "Code": "SEPAVPRE"
+        },
+        {
+            "ID": "174",
+            "Name": "Mean October Precipitation",
+            "Description": "Mean October Precipitation",
+            "Code": "OCTAVPRE"
+        },
+        {
+            "ID": "175",
+            "Name": "Tennessee Soil Factor",
+            "Description": "Tennessee soil factor, percentage of area underlain by a soil permeability greater than or equal to 2 inches per hour",
+            "Code": "TNSOILFAC"
+        },
+        {
+            "ID": "176",
+            "Name": "Elevation of Gage",
+            "Description": "Elevation of the stream outlet in thousands of feet above NAVD88.",
+            "Code": "OUTLETELEV"
+        },
+        {
+            "ID": "177",
+            "Name": "Nov to May Gage Precipitation",
+            "Description": "Mean monthly precipitation for November through May at the stream outlet",
+            "Code": "PREG_11_05"
+        },
+        {
+            "ID": "178",
+            "Name": "Percent Area Under Canopy",
+            "Description": "Percentage of drainage area covered by canopy as described in OK SIR 2009_5267",
+            "Code": "CANOPY_PCT"
+        },
+        {
+            "ID": "179",
+            "Name": "Mean Annual Precip at Gage",
+            "Description": "Mean annual precip at the stream outlet (based on annual PRISM precip data in inches from 1971-2000)",
+            "Code": "PRECIPOUT"
+        },
+        {
+            "ID": "180",
+            "Name": "Percent Coarse Stratified Drift",
+            "Description": "Percentage of area of coarse-grained stratified drift",
+            "Code": "CRSDFT"
+        },
+        {
+            "ID": "181",
+            "Name": "Mean Annual Winter Precipitation",
+            "Description": "Mean annual precipitation for December through February",
+            "Code": "PRCWINTER"
+        },
+        {
+            "ID": "182",
+            "Name": "Mean Annual Min Temperature",
+            "Description": "Mean annual minimum air temperature over basin surface area as defined in SIR 2008-5126",
+            "Code": "MINTEMP"
+        },
+        {
+            "ID": "183",
+            "Name": "Minimum Basin Slope in deg",
+            "Description": "Minimum basin slope, in degrees, using ArcInfo Grid with NHDPlus 30-m resolution elevation data.",
+            "Code": "MINBSLOPD"
+        },
+        {
+            "ID": "184",
+            "Name": "OR Percent HighPerm Aquifer",
+            "Description": "Percent basin surface area containing high permeability aquifer units as defined in SIR 2008-5126",
+            "Code": "OR_HIPERMA"
+        },
+        {
+            "ID": "185",
+            "Name": "Maximum Basin Slope in deg",
+            "Description": "Maximum basin slope, in degrees, using ArcInfo Grid with NHDPlus 30-m resolution elevation data.",
+            "Code": "MAXBSLOPD"
+        },
+        {
+            "ID": "186",
+            "Name": "Basin Drainage Density",
+            "Description": "Basin drainage density defined as total stream length divided by drainage area.",
+            "Code": "DRNDENSITY"
+        },
+        {
+            "ID": "187",
+            "Name": "Mean Annual Max Temperature",
+            "Description": "Mean annual maximum air temperature over basin area from PRISM 1971-2000 800-m grid",
+            "Code": "MAXTEMP"
+        },
+        {
+            "ID": "188",
+            "Name": "OR Percent HighPerm Geologic",
+            "Description": "Percent basin surface area containing high permeability geologic units as defined in SIR 2008-5126",
+            "Code": "OR_HIPERMG"
+        },
+        {
+            "ID": "189",
+            "Name": "Minimum Basin Elevation",
+            "Description": "Minimum basin elevation",
+            "Code": "MINBELEV"
+        },
+        {
+            "ID": "190",
+            "Name": "Elevation of 10 and 85 points",
+            "Description": "Average of channel elevations at points 10- and 85- percent above gage - Equivalent to Altitude Index",
+            "Code": "ELV10_85"
+        },
+        {
+            "ID": "191",
+            "Name": "Percent SurficialGeology Ordo and Miss",
+            "Description": "Percent Surficial Geology as Ordovician and Mississippian Rocks",
+            "Code": "ORDOMISS"
+        },
+        {
+            "ID": "192",
+            "Name": "Basin Ave Rainfall Nov Apr PRISM 2000",
+            "Description": "Precipitation November-April basin average, mean seasonal from PRISM 1971-2000",
+            "Code": "PRNOVAPR00"
+        },
+        {
+            "ID": "193",
+            "Name": "Basin Ave Rainfall Nov Apr PRISM 1990",
+            "Description": "Precipitation November-April basin average, mean seasonal from PRISM 1961-1990",
+            "Code": "PRNOVAPR90"
+        },
+        {
+            "ID": "194",
+            "Name": "Tau Annual from Grid",
+            "Description": "Tau, Average annual base-flow recession time constant as defined in SIR 2008-5065",
+            "Code": "TAU_ANN_G"
+        },
+        {
+            "ID": "195",
+            "Name": "Tau Mar Apr",
+            "Description": "Tau, Average base-flow recession time constant determined from daily values for March through April as defined in SIR 2008-5065",
+            "Code": "TAU_SPR"
+        },
+        {
+            "ID": "196",
+            "Name": "Tau Nov Dec",
+            "Description": "Tau, Average base-flow recession time constant determined from daily values for November through December as defined in SIR 2008-5065",
+            "Code": "TAU_WIN"
+        },
+        {
+            "ID": "197",
+            "Name": "Basin Ave Rainfall Nov Dec",
+            "Description": "Precipitation November-December basin average, mean monthly as defined in SIR 2008-5065",
+            "Code": "PRENOVDEC"
+        },
+        {
+            "ID": "198",
+            "Name": "Basin Ave Rainfall Mar Apr",
+            "Description": "Precipitation March-April basin average, mean monthly as defined in SIR 2008-5065",
+            "Code": "PREMARAPR"
+        },
+        {
+            "ID": "199",
+            "Name": "Ohio Infiltration Index",
+            "Description": "Index of relative infiltration from Koltun(1986)",
+            "Code": "OH_INF_IND"
+        },
+        {
+            "ID": "200",
+            "Name": "Base Flow Index",
+            "Description": "Proportion of mean annual flow that is from ground water (base flow)",
+            "Code": "BFI"
+        },
+        {
+            "ID": "201",
+            "Name": "Relative Stream Density",
+            "Description": "Relative stream density first defined in SIR 2012_5171",
+            "Code": "RSD"
+        },
+        {
+            "ID": "202",
+            "Name": "SSURGO Percent Hydrologic Soil Type B",
+            "Description": "Percentage of area of Hydrologic Soil Type B from SSURGO",
+            "Code": "SSURGOB"
+        },
+        {
+            "ID": "203",
+            "Name": "SSURGO Percent Hydrologic Soil Type C",
+            "Description": "Percentage of area of Hydrologic Soil Type C from SSURGO",
+            "Code": "SSURGOC"
+        },
+        {
+            "ID": "204",
+            "Name": "Percent Hydrologic Soil Type D",
+            "Description": "Percentage of area of  Hydrologic Soil Type D",
+            "Code": "SOILD"
+        },
+        {
+            "ID": "205",
+            "Name": "SSURGO Percent Hydrologic Soil Type D",
+            "Description": "Percentage of area of Hydrologic Soil Type D from SSURGO",
+            "Code": "SSURGOD"
+        },
+        {
+            "ID": "206",
+            "Name": "Hydrograph separation percent",
+            "Description": "Median percentage of baseflow to annual streamflow",
+            "Code": "HYSEP"
+        },
+        {
+            "ID": "207",
+            "Name": "Drainage Runoff Number STATSGO",
+            "Description": "Drainage runoff number from STATSGO database where 1 is well and 7 is poor",
+            "Code": "STATSGORO"
+        },
+        {
+            "ID": "208",
+            "Name": "Average Soil Permeability from SSURGO",
+            "Description": "Area-weighted average soil permeability from NRCS SSURGO database",
+            "Code": "PERMSSUR"
+        },
+        {
+            "ID": "209",
+            "Name": "Stream Density Edited",
+            "Description": "Stream Density -- total length of streams divided by drainage area, edited from NHD",
+            "Code": "STRDENED"
+        },
+        {
+            "ID": "210",
+            "Name": "LFP length",
+            "Description": "Length of longest flow path",
+            "Code": "LFPLENGTH"
+        },
+        {
+            "ID": "211",
+            "Name": "Mean Annual Precip at Basin Centroid",
+            "Description": "Mean Annual Precip at Basin Centroid",
+            "Code": "PRECIPCENT"
+        },
+        {
+            "ID": "212",
+            "Name": "Mean Winter Min Temperature",
+            "Description": "Mean winter minimum air temperature over basin surface area",
+            "Code": "MINTEMP_W"
+        },
+        {
+            "ID": "213",
+            "Name": "Nov to Dec Basin Centroid Precip",
+            "Description": "Mean annual precipitation of basin centroid for November 1 to December 31 period",
+            "Code": "PREBC_1112"
+        },
+        {
+            "ID": "214",
+            "Name": "Area Underlain By Sand And Gravel",
+            "Description": "Area of land surface underlain by sand and gravel deposits",
+            "Code": "ASANDGRAV"
+        },
+        {
+            "ID": "215",
+            "Name": "Area of Till",
+            "Description": "Surface area covered by till deposits",
+            "Code": "ATILL"
+        },
+        {
+            "ID": "216",
+            "Name": "Mean Annual Runoff in cfsm",
+            "Description": "Mean annual runoff for the period of record in cubic feet persecond",
+            "Code": "MARCFSM"
+        },
+        {
+            "ID": "217",
+            "Name": "Wetland Area Underlain By Sand Gravel",
+            "Description": "Area of lakes and wetlands underlain by sand and gravel deposits",
+            "Code": "AWETSG"
+        },
+        {
+            "ID": "218",
+            "Name": "NY Underflow Factor",
+            "Description": "Rate of underflow downvalley through sand and gravel according to NY 2010-5063",
+            "Code": "NY_UNDFLOW"
+        },
+        {
+            "ID": "219",
+            "Name": "KY Streamflow Variability Index 1993",
+            "Description": "Mapped streamflow variability index as defined in WRIR 92-4173",
+            "Code": "KYVARIND93"
+        },
+        {
+            "ID": "220",
+            "Name": "Dry Season Total Runoff",
+            "Description": "Mean annual dry season total runoff, July through November",
+            "Code": "TRUN0711"
+        },
+        {
+            "ID": "221",
+            "Name": "Stream Length Total",
+            "Description": "total length of all mapped streams (1:24,000-scale) in the basin",
+            "Code": "STRMTOT"
+        },
+        {
+            "ID": "222",
+            "Name": "Mean Annual Precip PRISM 1971 2000",
+            "Description": "Basin average mean annual precipitation for 1971 to 2000 from PRISM",
+            "Code": "PRECPRIS00"
+        },
+        {
+            "ID": "223",
+            "Name": "Mean Basin Slope from 30m DEM ft/ft",
+            "Description": "Mean basin slope computed from 30 m DEM in feet per foot",
+            "Code": "BSLDEM30ff"
+        },
+        {
+            "ID": "224",
+            "Name": "Tau Mar Apr from Grid",
+            "Description": "Tau, Average base-flow recession time constant for March through April as defined in SIR 2008-5065, estimated from a grid",
+            "Code": "TAU_SPR_G"
+        },
+        {
+            "ID": "225",
+            "Name": "Tau Nov Dec from Grid",
+            "Description": "Tau, Average base-flow recession time constant for November through December as defined in SIR 2008-5065, estimated from a grid",
+            "Code": "TAU_WIN_G"
+        },
+        {
+            "ID": "226",
+            "Name": "STATSGO Percentage of Clay Soils",
+            "Description": "Percentage of clay soils from STATSGO",
+            "Code": "STATSCLAY"
+        },
+        {
+            "ID": "227",
+            "Name": "Percent_Lake_and_Detention_Basin",
+            "Description": "Percentage of area of lakes and detention basins",
+            "Code": "DETEN"
+        },
+        {
+            "ID": "228",
+            "Name": "Drainage_Index",
+            "Description": "Drainage index from STATSGO soil properties computed as in SIR 2014-5177",
+            "Code": "DRAININD"
+        },
+        {
+            "ID": "229",
+            "Name": "Available_Water_Capacity_for_IN_and_IL",
+            "Description": "Available water capacity  from Miller and White 1998 in cm per 100 cm",
+            "Code": "WATCAPINIL"
+        },
+        {
+            "ID": "230",
+            "Name": "Permeability_Index",
+            "Description": "Index of the permeability of surficial Quaternary sediments computed as in SIR 2014-5177",
+            "Code": "QSSPERMTHK"
+        },
+        {
+            "ID": "231",
+            "Name": "Average_Soil_Permeability_from_STATSGO",
+            "Description": "Area-weighted average soil permeability from NRCS STATSGO database",
+            "Code": "STATSPERM"
+        },
+        {
+            "ID": "232",
+            "Name": "Fraction_of_Urban_Land_Theobald_2010",
+            "Description": "Fraction of drainage area that is in urban classes 7 to 10 from Theobald 2010",
+            "Code": "URBTHE2010"
+        },
+        {
+            "ID": "233",
+            "Name": "Frac_Lo_Med_Hi_Developed_from_NLCD2011",
+            "Description": "Fraction of drainage area that is in low to high developed land-use classes 22-24 from NLCD 2011",
+            "Code": "FLC11DVLMH"
+        },
+        {
+            "ID": "234",
+            "Name": "Fraction_SSURGO_Drainage_Classes_7_and_8",
+            "Description": "Fraction of land area that is in very poorly drained and unknown likely water drainage classes 7 and 8  from SSURGO",
+            "Code": "FSSURGDC78"
+        },
+        {
+            "ID": "235",
+            "Name": "Basin_Ave_Precip_Dec_Feb_PRISM_2000",
+            "Description": "Basin average mean precipitation for December to  February from PRISM 1971-2000",
+            "Code": "PRDECFEB00"
+        },
+        {
+            "ID": "236",
+            "Name": "Basin_Ave_Precip_Sept_Nov_PRISM_2000",
+            "Description": "Basin average mean precipitation for September to November from PRISM 1971-2000",
+            "Code": "PRSEPNOV00"
+        },
+        {
+            "ID": "237",
+            "Name": "Percent_Crops_and_Hay_from_NLCD2011",
+            "Description": "Percentage of cultivated crops and hay, classes 81 and 82, from NLCD 2011",
+            "Code": "LC11CRPHAY"
+        },
+        {
+            "ID": "238",
+            "Name": "Basin_Ave_Precip_Jul_Dec_PRISM_2010",
+            "Description": "Basin average mean precipitation for July to December from PRISM 1981-2010",
+            "Code": "PRJULDEC10"
+        },
+        {
+            "ID": "240",
+            "Name": "Percent_Water_from_NLCD2006",
+            "Description": "Percent of open water, class 11, from NLCD 2006",
+            "Code": "LC06WATER"
+        },
+        {
+            "ID": "241",
+            "Name": "Percent_SSURGO_Soil_Organic_Matter",
+            "Description": "Percentage of organic matter in soils from SSURGO",
+            "Code": "SSURGOM"
+        },
+        {
+            "ID": "242",
+            "Name": "Precip_Minus_Potential_Evap",
+            "Description": "Precipitation minus potential evaporation from Wolock 2003 unpublished data",
+            "Code": "PMPE"
+        },
+        {
+            "ID": "243",
+            "Name": "Flat_Lands_Below_Median_Elevation",
+            "Description": "Flat lands lower than median elevation from Wolock 2003 unpublished data",
+            "Code": "PFLATLOW"
+        },
+        {
+            "ID": "244",
+            "Name": "Percent_Cultivated_Crops_from_NLCD2006",
+            "Description": "Percentage of area of cultivated crops from NLCD 2006 class 82",
+            "Code": "LC06CROP"
+        },
+        {
+            "ID": "245",
+            "Name": "Percent_Forest_from_NLCD2006",
+            "Description": "Percentage of forest from NLCD 2006 classes 41-43",
+            "Code": "LC06FOREST"
+        },
+        {
+            "ID": "246",
+            "Name": "Slopes_gt_50pct_from_30m_DEM",
+            "Description": "Percent area with slopes greater than 50 percent from 30-meter DEM.",
+            "Code": "SLOP50_30M"
+        },
+        {
+            "ID": "247",
+            "Name": "Mean_Monthly_EvapTrans_Mar_to_Jun_MODIS",
+            "Description": "Spring (March-June) mean monthly evapotranspiration (2001-2011), MODIS",
+            "Code": "ET0306MOD"
+        },
+        {
+            "ID": "248",
+            "Name": "Percent_above_5000_ft",
+            "Description": "Percent of area above 5000 ft",
+            "Code": "EL5000"
+        },
+        {
+            "ID": "249",
+            "Name": "Perennial_Stream_Flag_1_if_peren_else_0",
+            "Description": "Stream characterized as having flow at all times",
+            "Code": "PERENNIAL"
+        },
+        {
+            "ID": "250",
+            "Name": "Percent_Impervious_NLCD2011",
+            "Description": "Average percentage of impervious area determined from NLCD 2011 impervious dataset",
+            "Code": "LC11IMP"
+        },
+        {
+            "ID": "251",
+            "Name": "Ruggedness_Number",
+            "Description": "Ruggedness number computed as stream density times basin relief",
+            "Code": "RUGGED"
+        },
+        {
+            "ID": "252",
+            "Name": "Available_Water_Capacity_OR_Cooper",
+            "Description": "Available water capacity  from STATSGO data using methods from SIR 2005-5116",
+            "Code": "WATCAPORC"
+        },
+        {
+            "ID": "253",
+            "Name": "Available_Water_Capacity_OR_Risley",
+            "Description": "Available water capacity from STATSGO data using methods from SIR 2008-5126",
+            "Code": "WATCAPORR"
+        },
+        {
+            "ID": "254",
+            "Name": "Percent_Developed_from_NLCD2001",
+            "Description": "Percentage of land-use from NLCD 2001 classes 21-24",
+            "Code": "LC01DEV"
+        },
+        {
+            "ID": "255",
+            "Name": "Low Flow Region Number",
+            "Description": "Low Flow Region Number",
+            "Code": "LOWREG"
+        },
+        {
+            "ID": "256",
+            "Name": "HIGHREG",
+            "Description": "HIGHREG",
+            "Code": "HIGHREG"
+        },
+        {
+            "ID": "257",
+            "Name": "PZNSSREGNO",
+            "Description": "Zeroflow Region Number",
+            "Code": "PZNSSREGNO"
+        },
+        {
+            "ID": "258",
+            "Name": "BFREGNO",
+            "Description": "BFREGNO",
+            "Code": "BFREGNO"
+        },
+        {
+            "ID": "259",
+            "Name": "Oregon Region Number",
+            "Description": "Oregon Region Number",
+            "Code": "ORREG2"
+        },
+        {
+            "ID": "260",
+            "Name": "Low Flow Region Number",
+            "Description": "Low Flow Region Number",
+            "Code": "LFREGNO"
+        },
+        {
+            "ID": "261",
+            "Name": "Peak Flow Region Number",
+            "Description": "Peak Flow Region Number",
+            "Code": "PKREGNO"
+        },
+        {
+            "ID": "262",
+            "Name": "FD_Region",
+            "Description": "FD_Region",
+            "Code": "FD_Region"
+        },
+        {
+            "ID": "263",
+            "Name": "Percent_Open_Developed_from_NLCD2011",
+            "Description": "Percentage of developed open area from NLCD 2011 class 21",
+            "Code": "LC11DVOPN"
+        },
+        {
+            "ID": "264",
+            "Name": "Percent_Quaternary_Alluvium",
+            "Description": "Percentage of the basin covered by Quaternary alluvial deposits from Reed & Bush (2005)",
+            "Code": "ALVM"
+        },
+        {
+            "ID": "265",
+            "Name": "Percent_Pasture_from_NLCD2011",
+            "Description": "Percentage of area of pasture area from NLCD 2011 class 81",
+            "Code": "LC11PAST"
+        },
+        {
+            "ID": "266",
+            "Name": "Percent_Upper_Paleozoic",
+            "Description": "Percentage of the basin covered by upper Paleozoic strata from Reed & Bush (2005)",
+            "Code": "UPZ"
+        },
+        {
+            "ID": "267",
+            "Name": "Avg_Hydraulic_Conductivity_Upper_70ft",
+            "Description": "Average hydraulic conductivity (ft/d) for the top 70 ft of unconsolidated deposits from InDNR well database.",
+            "Code": "K1INDNR"
+        },
+        {
+            "ID": "268",
+            "Name": "Avg_Transmissivity",
+            "Description": "Average transmissivity (ft2/d) for the full depth of unconsolidated deposits from InDNR well database.",
+            "Code": "T2INDNR"
+        },
+        {
+            "ID": "269",
+            "Name": "Avg_Hydraulic_Conductivity_Full_Depth",
+            "Description": "Average hydraulic conductivity (ft/d) for the full depth of unconsolidated deposits from InDNR well database.",
+            "Code": "K2INDNR"
+        },
+        {
+            "ID": "270",
+            "Name": "Percent_Forest_from_NLCD2001",
+            "Description": "Percentage of forest from NLCD 2001 classes 41-43",
+            "Code": "LC01FOREST"
+        },
+        {
+            "ID": "271",
+            "Name": "Avg_Transmissivity_Near_Channel",
+            "Description": "Average transmissivity (ft2/d) for the full depth of unconsolidated deposits within 1000 ft of stream channel from InDNR well database.",
+            "Code": "ST2INDNR"
+        },
+        {
+            "ID": "272",
+            "Name": "Mean Maximum January Temperature from 2K resolution PRISM 1961-1990 data",
+            "Description": "Mean Maximum January Temperature from 2K resolution PRISM 1961-1990 data",
+            "Code": "JANMAXT2K"
+        },
+        {
+            "ID": "273",
+            "Name": "Mean Minimum January Temperature from 2K resolution PRISM PRISM 1961-1990 data",
+            "Description": "Mean Minimum January Temperature from 2K resolution PRISM PRISM 1961-1990 data",
+            "Code": "JANMINT2K"
+        },
+        {
+            "ID": "274",
+            "Name": "Number of First Order Streams",
+            "Description": "Number of First Order Streams",
+            "Code": "FOSTREAM"
+        },
+        {
+            "ID": "275",
+            "Name": "Mean Annual Precip Basin Average",
+            "Description": "Mean Annual Precip Basin Average",
+            "Code": "MAPM"
+        },
+        {
+            "ID": "276",
+            "Name": "CENTROIDY",
+            "Description": "Basin centroid vertical (y) location in state plane units",
+            "Code": "CENTROIDY"
+        },
+        {
+            "ID": "277",
+            "Name": "CENTROIDX",
+            "Description": "Basin centroid horizontal (x) location in state plane coordinates",
+            "Code": "CENTROIDX"
+        },
+        {
+            "ID": "278",
+            "Name": "OUTLETY",
+            "Description": "Basin outlet vertical (y) location in state plane coordinates",
+            "Code": "OUTLETY"
+        },
+        {
+            "ID": "279",
+            "Name": "OUTLETX",
+            "Description": "Basin outlet horizontal (x) location in state plane coordinates",
+            "Code": "OUTLETX"
+        },
+        {
+            "ID": "280",
+            "Name": "Percent agriculture",
+            "Description": "Percent agriculture computed as total of grass, pasture, and crops, NLCD classes 71, 81 and 82",
+            "Code": "LC06AGRI"
+        },
+        {
+            "ID": "281",
+            "Name": "SLPFM3D",
+            "Description": "Change in elevation divided by length between points 10 and 85 percent of distance along the longest flow path to the basin divide, LFP from 3D grid",
+            "Code": "SLPFM3D"
+        },
+        {
+            "ID": "282",
+            "Name": "ELEV10FT",
+            "Description": "Elevation at 10 percent from outlet along longest flow path slope using DEM",
+            "Code": "ELEV10FT"
+        },
+        {
+            "ID": "283",
+            "Name": "ELEV85FT",
+            "Description": "Elevation at 85 percent from outlet along longest flow path slope using DEM",
+            "Code": "ELEV85FT"
+        },
+        {
+            "ID": "284",
+            "Name": "ELEV10FT3D",
+            "Description": "Elevation at 10 percent from outlet along longest flow path slope using 3D line",
+            "Code": "ELEV10FT3D"
+        },
+        {
+            "ID": "285",
+            "Name": "ELEV85FT3D",
+            "Description": "Elevation at 85 percent from outlet along longest flow path slope using 3D line",
+            "Code": "ELEV85FT3D"
+        },
+        {
+            "ID": "286",
+            "Name": "I60M2Y",
+            "Description": "Maximum 60-min precipitation that occurs on average once in 2 years",
+            "Code": "I60M2Y"
+        },
+        {
+            "ID": "287",
+            "Name": "6 Hour 2 Year Precipitation",
+            "Description": "Maximum 6-hour precipitation that occurs on average once in 2 years",
+            "Code": "I6H2Y"
+        },
+        {
+            "ID": "288",
+            "Name": "I60M5Y",
+            "Description": "Maximum 60-min precipitation that occurs on average once in 5 years",
+            "Code": "I60M5Y"
+        },
+        {
+            "ID": "289",
+            "Name": "I6H5Y",
+            "Description": "Maximum 6-hour precipitation that occurs on average once in 5 years",
+            "Code": "I6H5Y"
+        },
+        {
+            "ID": "290",
+            "Name": "I24H5Y",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 5 years",
+            "Code": "I24H5Y"
+        },
+        {
+            "ID": "291",
+            "Name": "I60M10Y",
+            "Description": "Maximum 60-min precipitation that occurs on average once in 10 years",
+            "Code": "I60M10Y"
+        },
+        {
+            "ID": "292",
+            "Name": "I6H10Y",
+            "Description": "Maximum 6-hour precipitation that occurs on average once in 10 years",
+            "Code": "I6H10Y"
+        },
+        {
+            "ID": "293",
+            "Name": "I48H10Y",
+            "Description": "Maximum 48-hour precipitation that occurs on average once in 10 years",
+            "Code": "I48H10Y"
+        },
+        {
+            "ID": "294",
+            "Name": "I60M25Y",
+            "Description": "Maximum 60-min precipitation that occurs on average once in 25 years",
+            "Code": "I60M25Y"
+        },
+        {
+            "ID": "295",
+            "Name": "I6H25Y",
+            "Description": "Maximum 6-hour precipitation that occurs on average once in 25 years",
+            "Code": "I6H25Y"
+        },
+        {
+            "ID": "296",
+            "Name": "I48H25Y",
+            "Description": "Maximum 48-hour precipitation that occurs on average once in 25 years",
+            "Code": "I48H25Y"
+        },
+        {
+            "ID": "297",
+            "Name": "I60M50Y",
+            "Description": "Maximum 60-min precipitation that occurs on average once in 50 years",
+            "Code": "I60M50Y"
+        },
+        {
+            "ID": "298",
+            "Name": "I6H50Y",
+            "Description": "Maximum 6-hour precipitation that occurs on average once in 50 years",
+            "Code": "I6H50Y"
+        },
+        {
+            "ID": "299",
+            "Name": "I48H50Y",
+            "Description": "Maximum 48-hour precipitation that occurs on average once in 50 years",
+            "Code": "I48H50Y"
+        },
+        {
+            "ID": "300",
+            "Name": "I60M100Y",
+            "Description": "Maximum 60-min precipitation that occurs on average once in 100 years",
+            "Code": "I60M100Y"
+        },
+        {
+            "ID": "301",
+            "Name": "I48H100Y",
+            "Description": "Maximum 48-hour precipitation that occurs on average once in 100 years",
+            "Code": "I48H100Y"
+        },
+        {
+            "ID": "302",
+            "Name": "I60M500Y",
+            "Description": "Maximum 60-min precipitation that occurs on average once in 500 years",
+            "Code": "I60M500Y"
+        },
+        {
+            "ID": "303",
+            "Name": "I6H500Y",
+            "Description": "Maximum 6-hour precipitation that occurs on average once in 500 years",
+            "Code": "I6H500Y"
+        },
+        {
+            "ID": "304",
+            "Name": "I24H500Y",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 500 years",
+            "Code": "I24H500Y"
+        },
+        {
+            "ID": "305",
+            "Name": "I48H500Y",
+            "Description": "Maximum 48-hour precipitation that occurs on average once in 500 years",
+            "Code": "I48H500Y"
+        },
+        {
+            "ID": "306",
+            "Name": "LC01OPNLO",
+            "Description": "Percentage of area developed, open space and low intensity combined, NLCD2001 cat. 21 and 22",
+            "Code": "LC01OPNLO"
+        },
+        {
+            "ID": "307",
+            "Name": "LC01DEVMD",
+            "Description": "Percentage of area developed, medium intensity, NLCD 2001 category 23",
+            "Code": "LC01DEVMD"
+        },
+        {
+            "ID": "308",
+            "Name": "LC01DEVHI",
+            "Description": "Percentage of area developed, high intensity, NLCD 2001 category 24",
+            "Code": "LC01DEVHI"
+        },
+        {
+            "ID": "309",
+            "Name": "LC01BARE",
+            "Description": "Percentage of area barren land, NLCD 2001 category 31",
+            "Code": "LC01BARE"
+        },
+        {
+            "ID": "310",
+            "Name": "LC01EVERG",
+            "Description": "Percentage of area evergreen forest, NLCD 2001 category 42",
+            "Code": "LC01EVERG"
+        },
+        {
+            "ID": "311",
+            "Name": "LC01CROP",
+            "Description": "Percentage of area crop, NLCD 2001 category ",
+            "Code": "LC01CROP"
+        },
+        {
+            "ID": "312",
+            "Name": "PERM12IN",
+            "Description": "Area-weighted average soil permeability for top 12 inches of soil",
+            "Code": "PERM12IN"
+        },
+        {
+            "ID": "313",
+            "Name": "PERM24IN",
+            "Description": "Area-weighted average soil permeability for top 24 inches of soil",
+            "Code": "PERM24IN"
+        },
+        {
+            "ID": "314",
+            "Name": "ACRSDFT",
+            "Description": "Area underlain by stratified drift",
+            "Code": "ACRSDFT"
+        },
+        {
+            "ID": "315",
+            "Name": "MAXTEMPC",
+            "Description": "Mean annual maximum air temperature over basin area, in degrees Centigrade",
+            "Code": "MAXTEMPC"
+        },
+        {
+            "ID": "316",
+            "Name": "LC11ADEV",
+            "Description": "Area of developed land-use from NLCD 2011 classes 21-24",
+            "Code": "LC11ADEV"
+        },
+        {
+            "ID": "317",
+            "Name": "LC11ADVOPN",
+            "Description": "Area of developed open land from NLCD 2011 class 21",
+            "Code": "LC11ADVOPN"
+        },
+        {
+            "ID": "318",
+            "Name": "LC11ADEVLO",
+            "Description": "Area of developed land, low intensity, from NLCD 2011 class 22",
+            "Code": "LC11ADEVLO"
+        },
+        {
+            "ID": "319",
+            "Name": "LC11ADEVMD",
+            "Description": "Area of developed land, medium intensity, NLCD 2011 class 23",
+            "Code": "LC11ADEVMD"
+        },
+        {
+            "ID": "320",
+            "Name": "LC11ADEVHI",
+            "Description": "Area of developed land, high intensity, NLCD 2011 class 24",
+            "Code": "LC11ADEVHI"
+        },
+        {
+            "ID": "321",
+            "Name": "LC11DEVLMH",
+            "Description": "Percentage drainage area that is in low to high developed land-use classes 22-24 from NLCD 2011",
+            "Code": "LC11DEVLMH"
+        },
+        {
+            "ID": "322",
+            "Name": "LC11DINT",
+            "Description": "Impervious percentage computed as ((.10*A21+.25*A22+.65*A23+.90*A24)/DA)*100 from NLCD 2011",
+            "Code": "LC11DINT"
+        },
+        {
+            "ID": "323",
+            "Name": "LC11FOREST",
+            "Description": "Percentage of forest from NLCD 2011 classes 41-43",
+            "Code": "LC11FOREST"
+        },
+        {
+            "ID": "324",
+            "Name": "LC11AWATER",
+            "Description": "Area of water from NLCD 2011 class 11",
+            "Code": "LC11AWATER"
+        },
+        {
+            "ID": "325",
+            "Name": "LC11WATER",
+            "Description": "Percent of open water, class 11, from NLCD 2011",
+            "Code": "LC11WATER"
+        },
+        {
+            "ID": "326",
+            "Name": "LC11AWETL",
+            "Description": "Area of wetlands from NLCD 2011 classes 90 and 95",
+            "Code": "LC11AWETL"
+        },
+        {
+            "ID": "327",
+            "Name": "LC11WETLND",
+            "Description": "Percentage of wetlands, classes 90 and 95,  from NLCD 2011",
+            "Code": "LC11WETLND"
+        },
+        {
+            "ID": "328",
+            "Name": "LC11STOR",
+            "Description": "Percentage of water bodies and wetlands determined from the NLCD 2011",
+            "Code": "LC11STOR"
+        },
+        {
+            "ID": "329",
+            "Name": "IRRIGAT_MT",
+            "Description": "Percent of basin that is irrigated based on Montana Final Land Unit (FLU) classification",
+            "Code": "IRRIGAT_MT"
+        },
+        {
+            "ID": "330",
+            "Name": "LAKESNHDH",
+            "Description": "Percent of basin in lakes, ponds, and reservoirs fom high resolution National Hydrography Dataset",
+            "Code": "LAKESNHDH"
+        },
+        {
+            "ID": "331",
+            "Name": "LC01CRPHAY",
+            "Description": "Percentage of cultivated crops and hay, classes 81 and 82, from NLCD 2001",
+            "Code": "LC01CRPHAY"
+        },
+        {
+            "ID": "332",
+            "Name": "LC01WETLND",
+            "Description": "Percentage of wetlands, classes 90 and 95,  from NLCD 2001",
+            "Code": "LC01WETLND"
+        },
+        {
+            "ID": "333",
+            "Name": "ET0710MOD",
+            "Description": "Summer (July-October) mean monthly evapotranspiration (2001-2011), MODIS",
+            "Code": "ET0710MOD"
+        },
+        {
+            "ID": "334",
+            "Name": "STATE_HWY",
+            "Description": "Length of state highways in basin",
+            "Code": "STATE_HWY"
+        },
+        {
+            "ID": "335",
+            "Name": "MAJ_ROADS",
+            "Description": "Length of non-state major roads in basin",
+            "Code": "MAJ_ROADS"
+        },
+        {
+            "ID": "336",
+            "Name": "MIN_ROADS",
+            "Description": "Length of non-state minor roads in basin",
+            "Code": "MIN_ROADS"
+        },
+        {
+            "ID": "337",
+            "Name": "LC11BARE",
+            "Description": "Percentage of barren from NLCD 2011 class 31",
+            "Code": "LC11BARE"
+        },
+        {
+            "ID": "338",
+            "Name": "LC11FORSHB",
+            "Description": "Percentage of forests and shrub lands, classes 41 to 52, from NLCD 2011",
+            "Code": "LC11FORSHB"
+        },
+        {
+            "ID": "339",
+            "Name": "LC11HERB",
+            "Description": "Percentage of herbaceous from NLCD 2011 classes 71-74",
+            "Code": "LC11HERB"
+        },
+        {
+            "ID": "340",
+            "Name": "LC11DVLO",
+            "Description": "Percentage of developed area, low intensity, from NLCD 2011 class 22",
+            "Code": "LC11DVLO"
+        },
+        {
+            "ID": "341",
+            "Name": "LC11DVMD",
+            "Description": "Percentage of area developed, medium intensity, NLCD 2011 class 23",
+            "Code": "LC11DVMD"
+        },
+        {
+            "ID": "342",
+            "Name": "LC11DEVHI",
+            "Description": "Percentage of area developed, high intensity, NLCD 2011 class 24",
+            "Code": "LC11DEVHI"
+        },
+        {
+            "ID": "343",
+            "Name": "NFSL30",
+            "Description": "North-Facing Slopes Greater Than 30 Percent",
+            "Code": "NFSL30"
+        },
+        {
+            "ID": "344",
+            "Name": "LC01HERB",
+            "Description": "Percentage of herbaceous upland from NLCD 2001 class 71",
+            "Code": "LC01HERB"
+        },
+        {
+            "ID": "345",
+            "Name": "LC01WATER",
+            "Description": "Percentage of open water, class 11, from NLCD 2001",
+            "Code": "LC01WATER"
+        },
+        {
+            "ID": "346",
+            "Name": "CLIFAC25Y",
+            "Description": "25-year climate factor from Litchy and Karlinger (1990)",
+            "Code": "CLIFAC25Y"
+        },
+        {
+            "ID": "347",
+            "Name": "CLIFAC100Y",
+            "Description": "100-year climate factor from Litchy and Karlinger (1990)",
+            "Code": "CLIFAC100Y"
+        },
+        {
+            "ID": "348",
+            "Name": "LC11WDWET",
+            "Description": "Percentage of area of wooded wetlands from NLCD 2011 class 90",
+            "Code": "LC11WDWET"
+        },
+        {
+            "ID": "349",
+            "Name": "LC11EMWET",
+            "Description": "Percentage of area of emergent herbaceous wetlands from NLCD 2011 class 95",
+            "Code": "LC11EMWET"
+        },
+        {
+            "ID": "350",
+            "Name": "Mean May Precipitation",
+            "Description": "Mean May Precipitation",
+            "Code": "MAYAVPRE"
+        },
+        {
+            "ID": "351",
+            "Name": "Mean July Precipitation",
+            "Description": "Mean July Precipitation",
+            "Code": "JULAVPRE"
+        },
+        {
+            "ID": "352",
+            "Name": "Mean January Temperature",
+            "Description": "Mean January Temperature",
+            "Code": "JANAVTMP"
+        },
+        {
+            "ID": "353",
+            "Name": "Mean February Temperature",
+            "Description": "Mean February Temperature",
+            "Code": "FEBAVTMP"
+        },
+        {
+            "ID": "354",
+            "Name": "Mean March Temperature",
+            "Description": "Mean March Temperature",
+            "Code": "MARAVTMP"
+        },
+        {
+            "ID": "355",
+            "Name": "Mean April Temperature",
+            "Description": "Mean AprilTemperature",
+            "Code": "APRAVTMP"
+        },
+        {
+            "ID": "356",
+            "Name": "Mean May Temperature",
+            "Description": "Mean May Temperature",
+            "Code": "MAYAVTMP"
+        },
+        {
+            "ID": "357",
+            "Name": "Mean June Temperature",
+            "Description": "Mean June Temperature",
+            "Code": "JUNEAVTMP"
+        },
+        {
+            "ID": "358",
+            "Name": "Mean July Temperature",
+            "Description": "Mean July Temperature",
+            "Code": "JULYAVTMP"
+        },
+        {
+            "ID": "359",
+            "Name": "Mean AugustTemperature",
+            "Description": "Mean August Temperature",
+            "Code": "AUGAVTMP"
+        },
+        {
+            "ID": "360",
+            "Name": "Mean September Temperature",
+            "Description": "Mean September Temperature",
+            "Code": "SEPAVTMP"
+        },
+        {
+            "ID": "361",
+            "Name": "Mean October Temperature",
+            "Description": "Mean October Temperature",
+            "Code": "OCTAVTMP"
+        },
+        {
+            "ID": "362",
+            "Name": "Mean November Temperature",
+            "Description": "Mean November Temperature",
+            "Code": "NOVAVTMP"
+        },
+        {
+            "ID": "363",
+            "Name": "Mean December Temperature",
+            "Description": "Mean December Temperature",
+            "Code": "DECAVTMP"
+        },
+        {
+            "ID": "364",
+            "Name": "Maximum 24-hour precipitation that occurs on average once in 200 years",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 200 years",
+            "Code": "I24H200Y"
+        },
+        {
+            "ID": "365",
+            "Name": "Percentage of forest",
+            "Description": "Percentage of forest from NLCD 1992 classes 41-43",
+            "Code": "LC92FOREST"
+        },
+        {
+            "ID": "366",
+            "Name": "Percentage of developed land from NLCD 1992",
+            "Description": "Percentage of developed land from NLCD 1992",
+            "Code": "LC92DEV"
+        },
+        {
+            "ID": "367",
+            "Name": "Percent Difference between 1992 and 2001 area covered by forest using NLCD",
+            "Description": "Percent Difference between 1992 and 2001 area covered by forest using NLCD",
+            "Code": "CH92_01FOR"
+        },
+        {
+            "ID": "368",
+            "Name": "Percent Difference between 1992 and 2001 area covered by developed land using NLCD",
+            "Description": "Percent Difference between 1992 and 2001 area covered by developed land using NLCD",
+            "Code": "CH92_01DEV"
+        },
+        {
+            "ID": "369",
+            "Name": "Percent basin surface area containing high permeability aquifer units as defined for Arizona",
+            "Description": "Percent basin surface area containing high permeability aquifer units as defined for Arizona in SIR 2014-5211",
+            "Code": "AZ_HIPERMA"
+        },
+        {
+            "ID": "370",
+            "Name": "Percent basin surface area containing high permeability geologic units as defined for Arizona",
+            "Description": "Percent basin surface area containing high permeability geologic units as defined for Arizona in SIR 2014-5211",
+            "Code": "AZ_HIPERMG"
+        },
+        {
+            "ID": "371",
+            "Name": "Percent area with north-facing slopes greater than 30 percent from 10-meter NED.",
+            "Description": "Percent area with north-facing slopes greater than 30 percent from 10-meter NED.",
+            "Code": "NFSL30_10M"
+        },
+        {
+            "ID": "372",
+            "Name": "Percent of contributing drainage area regulated by NRCS floodwater-retarding structures",
+            "Description": "Percent of contributing drainage area regulated by NRCS floodwater-retarding structures",
+            "Code": "NRCSPCT"
+        },
+        {
+            "ID": "373",
+            "Name": "Maximum Basin Slope in Percent",
+            "Description": "Maximum basin slope, in percent",
+            "Code": "MAXBSLOP"
+        },
+        {
+            "ID": "374",
+            "Name": "Minimum Basin Slope in Percent",
+            "Description": "Minimum basin slope, in percent",
+            "Code": "MINBSLOP"
+        },
+        {
+            "ID": "375",
+            "Name": "Slope Ratio",
+            "Description": "Slope ratio computed as longest flow path (10-85) slope divided by basin slope",
+            "Code": "SLOPERAT"
+        },
+        {
+            "ID": "376",
+            "Name": "Area Covered by Noncontributing Drainage Area",
+            "Description": "Area covered by noncontributing drainage area",
+            "Code": "NONCONTDA"
+        },
+        {
+            "ID": "377",
+            "Name": "Percent Lakes and Ponds",
+            "Description": "Percent lakes and ponds as determined from the National Wetlands Inventory (2001)",
+            "Code": "LAKESNWI"
+        },
+        {
+            "ID": "378",
+            "Name": "Percent Wetlands",
+            "Description": "Percent wetlands as determined from the National Wetlands Inventory (2001)",
+            "Code": "WETLNDNWI"
+        },
+        {
+            "ID": "379",
+            "Name": "Percent Limestone Loss Zone",
+            "Description": "Percent Limestone Loss Zone from Sando and others (2008)",
+            "Code": "SD_LSTLZ"
+        },
+        {
+            "ID": "380",
+            "Name": "Percent Limestone Headwaters",
+            "Description": "Percent Limestone Headwaters from Sando and others (2008)",
+            "Code": "SD_LSTHW"
+        },
+        {
+            "ID": "381",
+            "Name": "Percent Crystalline Core",
+            "Description": "Percent Crystalline Core from Sando and others (2008)",
+            "Code": "SD_CC"
+        },
+        {
+            "ID": "382",
+            "Name": "Percent Artesian Spring",
+            "Description": "Percent Artesian Spring from Sando and others (2008)",
+            "Code": "SD_AS"
+        },
+        {
+            "ID": "383",
+            "Name": "Percent Loss Zone/Artesian Spring",
+            "Description": "Percent Loss Zone/Artesian Spring from Sando and others (2008)",
+            "Code": "SD_ASLZ"
+        },
+        {
+            "ID": "384",
+            "Name": "Percent Black Hills Exterior",
+            "Description": "Percent Black Hills Exterior from Sando and others (2008)",
+            "Code": "SD_BHEXT"
+        },
+        {
+            "ID": "385",
+            "Name": "Percent Sand Hills setting",
+            "Description": "Percent Sand Hills setting from Sando and others (2008)",
+            "Code": "SD_SNDHLS"
+        },
+        {
+            "ID": "386",
+            "Name": "SSURGO Percent Sand",
+            "Description": "SSURGO percent sand",
+            "Code": "SSURGSAND"
+        },
+        {
+            "ID": "387",
+            "Name": "SSURGO Percent Poor Drainage ",
+            "Description": "SSURGO Percent Poor Drainage",
+            "Code": "SSURGPDRN"
+        },
+        {
+            "ID": "388",
+            "Name": "PRISM Precip Mean Winter (dec,jan,feb) (inches)",
+            "Description": "PRISM Precip Mean Winter (dec,jan,feb) (inches)",
+            "Code": "PRDECFEB10"
+        },
+        {
+            "ID": "389",
+            "Name": "Longest flow path slope in feet per miles",
+            "Description": "Longest flow path slope in feet per miles, using DEM",
+            "Code": "CSL100"
+        },
+        {
+            "ID": "390",
+            "Name": "Adjustment Coefficient",
+            "Description": "Coefficient to adjust estimates for percentage of carbonate rock in Western Maryland",
+            "Code": "ADJCOEFF"
+        },
+        {
+            "ID": "391",
+            "Name": "Mean basin slope",
+            "Description": "Mean basin slope, based on slope percent grid",
+            "Code": "BSLDEM30FT"
+        },
+        {
+            "ID": "392",
+            "Name": "Percent of area of protected Federal and State owned land",
+            "Description": "Percent of area of protected Federal and State owned land",
+            "Code": "PROTECTED"
+        },
+        {
+            "ID": "393",
+            "Name": "LU92BARE",
+            "Description": "Percent of area covered by barren rock using 1992 NLCD",
+            "Code": "LU92BARE"
+        },
+        {
+            "ID": "394",
+            "Name": "LU92DEV",
+            "Description": "Percent of area covered by all densities of developed land using 1992 NLCD",
+            "Code": "LU92DEV"
+        },
+        {
+            "ID": "395",
+            "Name": "LU92PLANT",
+            "Description": "Percent of area in cultivation using 1992 NLCD",
+            "Code": "LU92PLANT"
+        },
+        {
+            "ID": "396",
+            "Name": "LU92WATER",
+            "Description": "Percent of area covered by water using 1992 NLCD",
+            "Code": "LU92WATER"
+        },
+        {
+            "ID": "397",
+            "Name": "LU92WETLN",
+            "Description": "Percent of area covered by wetland using 1992 NLCD",
+            "Code": "LU92WETLN"
+        },
+        {
+            "ID": "398",
+            "Name": "LC01IMP",
+            "Description": "Percent imperviousness of basin area 2001 NLCD",
+            "Code": "LC01IMP"
+        },
+        {
+            "ID": "399",
+            "Name": "LC01SHRUB",
+            "Description": "Percent of area covered by shrubland using 2001 NLCD",
+            "Code": "LC01SHRUB"
+        },
+        {
+            "ID": "400",
+            "Name": "LC06BARE",
+            "Description": "Percent of area covered by barren rock using 2006 NLCD",
+            "Code": "LC06BARE"
+        },
+        {
+            "ID": "401",
+            "Name": "LC06PLANT",
+            "Description": "Percent of area in cultivation using 2006 NLCD",
+            "Code": "LC06PLANT"
+        },
+        {
+            "ID": "402",
+            "Name": "LC06GRASS",
+            "Description": "Percent of area covered by grassland/herbaceous using 2006 NLCD",
+            "Code": "LC06GRASS"
+        },
+        {
+            "ID": "403",
+            "Name": "LC06SHRUB",
+            "Description": "Percent of area covered by shrubland using 2006 NLCD",
+            "Code": "LC06SHRUB"
+        },
+        {
+            "ID": "404",
+            "Name": "LC06WETLND",
+            "Description": "Percent of area covered by wetland using 2006 NLCD",
+            "Code": "LC06WETLND"
+        },
+        {
+            "ID": "405",
+            "Name": "LC11GRASS",
+            "Description": "Percent of area covered by grassland/herbaceous using 2011 NLCD",
+            "Code": "LC11GRASS"
+        },
+        {
+            "ID": "406",
+            "Name": "LC11SHRUB",
+            "Description": "Percent of area covered by shrubland using 2011 NLCD",
+            "Code": "LC11SHRUB"
+        },
+        {
+            "ID": "407",
+            "Name": "Tennessee Climate Factor",
+            "Description": "Tennessee climate factor, 2-year interval",
+            "Code": "TNCLFACT2"
+        },
+        {
+            "ID": "408",
+            "Name": "10-85 slope of lower half of main channel",
+            "Description": "10-85 slope of lower half of main channel in feet per mile.",
+            "Code": "CSL1085LO"
+        },
+        {
+            "ID": "409",
+            "Name": "10-85 slope of upper half of main channel",
+            "Description": "10-85 slope of upper half of main channel in feet per mile.",
+            "Code": "CSL1085UP"
+        },
+        {
+            "ID": "410",
+            "Name": "Total length of all elevation contours in drainage area",
+            "Description": "Total length of all elevation contours in drainage area in miles",
+            "Code": "CONTOUR"
+        },
+        {
+            "ID": "411",
+            "Name": "Basin average mean precip for June to August",
+            "Description": "Basin average mean precip for June to August from PRISM 1971-2000",
+            "Code": "PRJUNAUG00"
+        },
+        {
+            "ID": "412",
+            "Name": "Maximum June Temperature",
+            "Description": "Maximum June Temperature, in degrees F",
+            "Code": "JUNMAXTMP"
+        },
+        {
+            "ID": "413",
+            "Name": "Drainage quality index",
+            "Description": "Drainage quality index from STATSGO",
+            "Code": "DRN"
+        },
+        {
+            "ID": "414",
+            "Name": "Unadjusted basin slope",
+            "Description": "Unadjusted basin slope, in degrees",
+            "Code": "BSLOPDRAW"
+        },
+        {
+            "ID": "415",
+            "Name": "X coordinate of the centroid, in NAD_1983_Albers",
+            "Description": "X coordinate of the centroid, in NAD_1983_Albers, meters",
+            "Code": "CENTROXA83"
+        },
+        {
+            "ID": "416",
+            "Name": "Basin centroid Y, in NAD 1983 Albers",
+            "Description": "Basin centroid horizontal (y) location in NAD 1983 Albers",
+            "Code": "CENTROYA83"
+        },
+        {
+            "ID": "417",
+            "Name": "X coordinate of the outlet, in NAD_1983_Albers",
+            "Description": "X coordinate of the outlet, in NAD_1983_Albers,meters",
+            "Code": "OUTLETXA83"
+        },
+        {
+            "ID": "418",
+            "Name": "Y coordinate of the outlet, in NAD_1983_Albers",
+            "Description": "Y coordinate of the outlet, in NAD_1983_Albers, meters",
+            "Code": "OUTLETYA83"
+        },
+        {
+            "ID": "419",
+            "Name": "WATER",
+            "Description": "Percent of area covered by open water (lakes, ponds, reservoirs)",
+            "Code": "WATER"
+        },
+        {
+            "ID": "420",
+            "Name": "CROPS",
+            "Description": "Percent of area covered by agriculture",
+            "Code": "CROPS"
+        },
+        {
+            "ID": "421",
+            "Name": "STRMTOTED",
+            "Description": "Total stream length in miles - edited NHD",
+            "Code": "STRMTOTED"
+        },
+        {
+            "ID": "422",
+            "Name": "Basin Shape Factor, Longest flow path method",
+            "Description": "Basin Shape Factor computed as the square of the longest flow path divided by drainage area",
+            "Code": "BSHAPELFP"
+        },
+        {
+            "ID": "423",
+            "Name": "LC01FORSHB",
+            "Description": "Percentage of forests and shrub lands, classes 41 to 52, from NLCD 2001",
+            "Code": "LC01FORSHB"
+        },
+        {
+            "ID": "424",
+            "Name": "LC06FORSHB",
+            "Description": "Percentage of forests and shrub lands, classes 41 to 52, from NLCD 2006",
+            "Code": "LC06FORSHB"
+        },
+        {
+            "ID": "425",
+            "Name": "LC06CRPHAY",
+            "Description": "Percentage of cultivated crops and hay, classes 81 and 82, from NLCD 2006",
+            "Code": "LC06CRPHAY"
+        },
+        {
+            "ID": "426",
+            "Name": "BRMETA",
+            "Description": "Percent area of metamorphic rocks within the Blue Ridge Physiographic Region",
+            "Code": "BRMETA"
+        },
+        {
+            "ID": "427",
+            "Name": "CPSED",
+            "Description": "Percent area of sedimentary rockswithin the Coastal Plain Physiographic Region",
+            "Code": "CPSED"
+        },
+        {
+            "ID": "428",
+            "Name": "PDIGMET",
+            "Description": "Percent area of igneous and metamorphic  within the Piedmont Physiographic Region",
+            "Code": "PDIGMET"
+        },
+        {
+            "ID": "429",
+            "Name": "MESZOIC",
+            "Description": "Percent of area within the Mesozoic Basins",
+            "Code": "MESZOIC"
+        },
+        {
+            "ID": "430",
+            "Name": "VRPLSLC",
+            "Description": "Percent of area of siliciclastic rocks witin the Valley and Ridge or Appalachian Plateau Physiographic Regions",
+            "Code": "VRPLSLC"
+        },
+        {
+            "ID": "431",
+            "Name": "VRCARB",
+            "Description": "Percent of area of carbonate rocks within the Valley and Ridge Physiographic Region",
+            "Code": "VRCARB"
+        },
+        {
+            "ID": "432",
+            "Name": "STATSWATCP",
+            "Description": "Available water capacity of the top 60 inches of soil - determined from STATSGO data",
+            "Code": "STATSWATCP"
+        },
+        {
+            "ID": "433",
+            "Name": "STATSGODEP",
+            "Description": "Area-weighted average soil depth from NRCS STATSGO database",
+            "Code": "STATSGODEP"
+        },
+        {
+            "ID": "434",
+            "Name": "STATSCLAY10",
+            "Description": "Percentage of  soils with less than 10 percent clay from STATSGO",
+            "Code": "STATSCLAY10"
+        },
+        {
+            "ID": "435",
+            "Name": "STATSCLY20",
+            "Description": "Percentage of  soils with greater than 10 percent and less than or equal to 20 percent clay from STATSGO",
+            "Code": "STATSCLY20"
+        },
+        {
+            "ID": "436",
+            "Name": "STATSCLY30",
+            "Description": "Percentage of  soils with greater than 20 percent and less than or equal to 30 percent  clay from STATSGO",
+            "Code": "STATSCLY30"
+        },
+        {
+            "ID": "437",
+            "Name": "STATSCLY40",
+            "Description": "Percentage of  soils with greater than 30 percent and less than or equal to 40 percent  clay from STATSGO",
+            "Code": "STATSCLY40"
+        },
+        {
+            "ID": "438",
+            "Name": "STATSCLY50",
+            "Description": "Percentage of  soils with greater than 40 percent and less than or equal to 50 percent  clay from STATSGO",
+            "Code": "STATSCLY50"
+        },
+        {
+            "ID": "439",
+            "Name": "STATSCLY60",
+            "Description": "Percentage of  soils with greater than 50 percent and less than or equal to 60 percent  clay from STATSGO",
+            "Code": "STATSCLY60"
+        },
+        {
+            "ID": "440",
+            "Name": "STATSOM0_5",
+            "Description": "Percentage of  soils with less than 0.5 percent organic matter from STATSGO",
+            "Code": "STATSOM0_5"
+        },
+        {
+            "ID": "441",
+            "Name": "STATSOM2_6",
+            "Description": "Percentage of  soils with greater than 0.50 percent and less than or equal to 2.60 percent organic matter from STATSGO",
+            "Code": "STATSOM2_6"
+        },
+        {
+            "ID": "442",
+            "Name": "STATSOM7_3",
+            "Description": "Percentage of  soils with greater than 2.6 percent and less than or equal to 7.3 percent organic matter from STATSGO",
+            "Code": "STATSOM7_3"
+        },
+        {
+            "ID": "443",
+            "Name": "STATOM19_8",
+            "Description": "Percentage of  soils with greater than 7.3 percent and less than or equal to 19.8 percent organic matter from STATSGO",
+            "Code": "STATOM19_8"
+        },
+        {
+            "ID": "444",
+            "Name": "STATOM55_7",
+            "Description": "Percentage of  soils with greater than 19.8 percent and less than or equal to 55.7 percent organic matter from STATSGO",
+            "Code": "STATOM55_7"
+        },
+        {
+            "ID": "445",
+            "Name": "Basin Centroid X UTM",
+            "Description": "Basin centroid horizontal (x) location in UTM meters",
+            "Code": "CENTRXUTM"
+        },
+        {
+            "ID": "446",
+            "Name": "Basin Centroid Y UTM",
+            "Description": "Basin centroid horizontal (y) location in UTM meters",
+            "Code": "CENTRYUTM"
+        },
+        {
+            "ID": "447",
+            "Name": "24 Hour 100 Year Precipitation Atlas2",
+            "Description": "Maximum 24-hour precipitation that occurs on average once in 100 years from NOAA Atlas 2",
+            "Code": "I24H100YA2"
+        },
+        {
+            "ID": "448",
+            "Name": "Percent Sinkhole Drainage Area",
+            "Description": "Percent Sinkhole drainage area per basin from Indiana Geological Survey.",
+            "Code": "INSINKHOLE"
+        },
+        {
+            "ID": "449",
+            "Name": "Percent Sinking Stream Drainage Area",
+            "Description": "Percent Sinking stream drainage area from Indiana Geological Survey.",
+            "Code": "INSINKING"
+        },
+        {
+            "ID": "450",
+            "Name": "Relative Relief ft/ft",
+            "Description": "Basin relief divided by basin parameter in ft per ft",
+            "Code": "RELRELFff"
+        },
+        {
+            "ID": "451",
+            "Name": "Relief Ratio Mean",
+            "Description": "Relief ratio defined as (ELEV-MINBELEV)/(ELEVMAX-MINBELEV)",
+            "Code": "RRMEAN"
+        },
+        {
+            "ID": "452",
+            "Name": "Percent Well Drained Soil from SSURGO",
+            "Description": "Percentage of well drained soil, from SSURGO",
+            "Code": "SSURGWDRN"
+        },
+        {
+            "ID": "453",
+            "Name": "Total stream length intersecting sand and gravel deposits ( in miles )",
+            "Description": "Total stream length intersecting sand and gravel deposits ( in miles )",
+            "Code": "SGSL"
+        },
+        {
+            "ID": "454",
+            "Name": "Percent snow and ice from NLCD 2011 class 12",
+            "Description": "Percent snow and ice from NLCD 2011 class 12",
+            "Code": "LC11SNOIC"
+        },
+        {
+            "ID": "455",
+            "Name": "Runoff-Curve Number",
+            "Description": "Runoff-curve number as defined by NRCS (http://policy.nrcs.usda.gov/OpenNonWebContent.aspx?content=17758.wba)",
+            "Code": "RCN"
+        },
+        {
+            "ID": "456",
+            "Name": "Soil Runoff Coefficient",
+            "Description": "Soil runoff coefficient as defined by Verdin and Gross (2017)",
+            "Code": "RUNCO_CO"
+        },
+        {
+            "ID": "457",
+            "Name": "Time of concentration in hours",
+            "Description": "Time of concentration in hours",
+            "Code": "TOC"
+        },
+        {
+            "ID": "458",
+            "Name": "CSL1085RAW",
+            "Description": "Unadjusted 10-85 stream slope method in feet per mile.",
+            "Code": "CSL1085RAW"
+        },
+        {
+            "ID": "459",
+            "Name": "CSL1085ADJ",
+            "Description": "Adjusted 10-85 slope in feet per mile",
+            "Code": "CSL1085ADJ"
+        },
+        {
+            "ID": "460",
+            "Name": "Curve Number",
+            "Description": "Composite NRCS curve number",
+            "Code": "CN"
+        },
+        {
+            "ID": "461",
+            "Name": "Ground water head",
+            "Description": "Mean basin elevation minus minimum basin elevation",
+            "Code": "GWHEAD"
+        },
+        {
+            "ID": "462",
+            "Name": "HA1PCT",
+            "Description": "Percent of area within Hydrologic Area 1",
+            "Code": "HA1PCT"
+        },
+        {
+            "ID": "463",
+            "Name": "HA2PCT",
+            "Description": "Percent of area within Hydrologic Area 2",
+            "Code": "HA2PCT"
+        },
+        {
+            "ID": "464",
+            "Name": "HA3PCT",
+            "Description": "Percent of area within Hydrologic Area 3",
+            "Code": "HA3PCT"
+        },
+        {
+            "ID": "465",
+            "Name": "HA4PCT",
+            "Description": "Percent of area within Hydrologic Area 4",
+            "Code": "HA4PCT"
+        },
+        {
+            "ID": "466",
+            "Name": "Basin average aspect",
+            "Description": "basin average of topographic slope compass directions from elevation grid",
+            "Code": "ASPECT"
+        },
+        {
+            "ID": "467",
+            "Name": "Mean January Precipitation",
+            "Description": "Mean January Precipitation",
+            "Code": "JANAVPRE2K"
+        },
+        {
+            "ID": "468",
+            "Name": "Mean July Precipitation",
+            "Description": "Mean July Average Precipitation",
+            "Code": "JULAVPRE2K"
+        }
+    ]

@@ -8,17 +8,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Logger\LoggerProvider.cs" />
-    <Compile Remove="Resources\RegressionType.cs" />
-    <Compile Remove="Resources\StatisticGroupType.cs" />
-    <Compile Remove="Resources\UnitConversionFactor.cs" />
-    <Compile Remove="Resources\UnitSystemType.cs" />
-    <Compile Remove="Resources\UnitType.cs" />
-    <Compile Remove="Resources\VariableType.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.2" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="2.1.1" />
     <PackageReference Include="WiM.DBUtilities" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
@@ -26,9 +20,20 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logger\" />
+    <Folder Include="Data\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharedDB\SharedDB.csproj" />
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

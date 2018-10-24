@@ -32,6 +32,6 @@ namespace NSSDB.Resources
         public string User { get; set; }
         public int UnitSystemID { get; set; }
 
-        public virtual UnitSystemType UnitSystemType { get; set; }
+        //public virtual UnitSystemType UnitSystemType { get; set; }
     }
 }

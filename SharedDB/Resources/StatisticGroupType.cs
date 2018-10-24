@@ -16,13 +16,14 @@
 //discussion:   POCO's arn't derived from special base classed nor do they return any special types for their properties.
 //              
 //
-//   
+//     
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-namespace NSSDB.Resources
+using System.Collections.Generic;
+
+namespace SharedDB.Resources
 {
-    public partial class ErrorType
+    public partial class StatisticGroupType
     {
         [Required]
         public int ID { get; set; }
@@ -30,8 +31,6 @@ namespace NSSDB.Resources
         public string Name { get; set; }
         [Required]
         public string Code { get; set; }
-
-        public virtual ICollection<EquationError> EquationErrors { get; set; }
 
     }
 }

@@ -19,10 +19,9 @@
 //   
 
 using System.ComponentModel.DataAnnotations;
-using WiM.Utilities;
 namespace NSSDB.Resources
 {
-    public partial class RegionManager:IJoinEntity<Region>, IJoinEntity<Manager>
+    public partial class RegionManager
     {
         [Required]
         public int RegionID { get; set; }
@@ -31,8 +30,5 @@ namespace NSSDB.Resources
 
         public Region Region { get; set; }
         public Manager Manager { get; set; }
-
-        Region IJoinEntity<Region>.Navigation { get => Region; set => Region = value; }
-        Manager IJoinEntity<Manager>.Navigation { get => Manager; set => Manager = value; }
     }
 }

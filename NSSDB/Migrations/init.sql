@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS nss."_EFMigrationsHistory" (
 
 CREATE SCHEMA IF NOT EXISTS nss;
 
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 CREATE TABLE nss."Citations" (
     "ID" serial NOT NULL,
     "Title" text NOT NULL,
@@ -44,20 +46,13 @@ CREATE TABLE nss."Roles" (
     CONSTRAINT "PK_Roles" PRIMARY KEY ("ID")
 );
 
-CREATE TABLE nss."UserTypes" (
-    "ID" serial NOT NULL,
-    "User" text NOT NULL,
-    "UnitSystemID" integer NOT NULL,
-    "LastModified" timestamp without time zone NOT NULL,
-    CONSTRAINT "PK_UserTypes" PRIMARY KEY ("ID")
-);
-
 CREATE TABLE nss."RegressionRegions" (
     "ID" serial NOT NULL,
     "Name" text NOT NULL,
     "Code" text NOT NULL,
     "Description" text NULL,
     "CitationID" integer NOT NULL,
+    "Location" geometry NULL,
     "LastModified" timestamp without time zone NOT NULL,
     CONSTRAINT "PK_RegressionRegions" PRIMARY KEY ("ID"),
     CONSTRAINT "FK_RegressionRegions_Citations_CitationID" FOREIGN KEY ("CitationID") REFERENCES nss."Citations" ("ID") ON DELETE CASCADE
@@ -80,6 +75,34 @@ CREATE TABLE nss."Managers" (
     CONSTRAINT "FK_Managers_Roles_RoleID" FOREIGN KEY ("RoleID") REFERENCES nss."Roles" ("ID") ON DELETE RESTRICT
 );
 
+CREATE TABLE nss."Coefficients" (
+    "ID" serial NOT NULL,
+    "RegressionRegionID" integer NOT NULL,
+    "Criteria" text NOT NULL,
+    "Description" text NULL,
+    "Value" text NOT NULL,
+    "LastModified" timestamp without time zone NOT NULL,
+    CONSTRAINT "PK_Coefficients" PRIMARY KEY ("ID"),
+    CONSTRAINT "FK_Coefficients_RegressionRegions_RegressionRegionID" FOREIGN KEY ("RegressionRegionID") REFERENCES nss."RegressionRegions" ("ID") ON DELETE CASCADE
+);
+
+CREATE TABLE nss."Equations" (
+    "ID" serial NOT NULL,
+    "RegressionRegionID" integer NOT NULL,
+    "PredictionIntervalID" integer NULL,
+    "UnitTypeID" integer NOT NULL,
+    "Expression" text NOT NULL,
+    "DA_Exponent" double precision NULL,
+    "OrderIndex" integer NULL,
+    "RegressionTypeID" integer NOT NULL,
+    "StatisticGroupTypeID" integer NOT NULL,
+    "EquivalentYears" double precision NULL,
+    "LastModified" timestamp without time zone NOT NULL,
+    CONSTRAINT "PK_Equations" PRIMARY KEY ("ID"),
+    CONSTRAINT "FK_Equations_PredictionIntervals_PredictionIntervalID" FOREIGN KEY ("PredictionIntervalID") REFERENCES nss."PredictionIntervals" ("ID") ON DELETE RESTRICT,
+    CONSTRAINT "FK_Equations_RegressionRegions_RegressionRegionID" FOREIGN KEY ("RegressionRegionID") REFERENCES nss."RegressionRegions" ("ID") ON DELETE CASCADE
+);
+
 CREATE TABLE nss."Limitations" (
     "ID" serial NOT NULL,
     "Criteria" text NOT NULL,
@@ -98,40 +121,12 @@ CREATE TABLE nss."RegionRegressionRegions" (
     CONSTRAINT "FK_RegionRegressionRegions_RegressionRegions_RegressionRegionID" FOREIGN KEY ("RegressionRegionID") REFERENCES nss."RegressionRegions" ("ID") ON DELETE CASCADE
 );
 
-CREATE TABLE nss."RegressionRegionCoefficients" (
-    "ID" serial NOT NULL,
-    "RegressionRegionID" integer NOT NULL,
-    "Criteria" text NOT NULL,
-    "Description" text NULL,
-    "Value" text NOT NULL,
-    "LastModified" timestamp without time zone NOT NULL,
-    CONSTRAINT "PK_RegressionRegionCoefficients" PRIMARY KEY ("ID"),
-    CONSTRAINT "FK_RegressionRegionCoefficients_RegressionRegions_RegressionRe~" FOREIGN KEY ("RegressionRegionID") REFERENCES nss."RegressionRegions" ("ID") ON DELETE CASCADE
-);
-
 CREATE TABLE nss."RegionManager" (
     "RegionID" integer NOT NULL,
     "ManagerID" integer NOT NULL,
     CONSTRAINT "PK_RegionManager" PRIMARY KEY ("ManagerID", "RegionID"),
     CONSTRAINT "FK_RegionManager_Managers_ManagerID" FOREIGN KEY ("ManagerID") REFERENCES nss."Managers" ("ID") ON DELETE CASCADE,
     CONSTRAINT "FK_RegionManager_Regions_RegionID" FOREIGN KEY ("RegionID") REFERENCES nss."Regions" ("ID") ON DELETE CASCADE
-);
-
-CREATE TABLE nss."Equations" (
-    "ID" serial NOT NULL,
-    "RegressionRegionID" integer NOT NULL,
-    "PredictionIntervalID" integer NULL,
-    "UnitTypeID" integer NOT NULL,
-    "Expression" text NOT NULL,
-    "DA_Exponent" double precision NULL,
-    "OrderIndex" integer NULL,
-    "RegressionTypeID" integer NOT NULL,
-    "StatisticGroupTypeID" integer NOT NULL,
-    "EquivalentYears" double precision NULL,
-    "LastModified" timestamp without time zone NOT NULL,
-    CONSTRAINT "PK_Equations" PRIMARY KEY ("ID"),
-    CONSTRAINT "FK_Equations_PredictionIntervals_PredictionIntervalID" FOREIGN KEY ("PredictionIntervalID") REFERENCES nss."PredictionIntervals" ("ID") ON DELETE RESTRICT,
-    CONSTRAINT "FK_Equations_RegressionRegions_RegressionRegionID" FOREIGN KEY ("RegressionRegionID") REFERENCES nss."RegressionRegions" ("ID") ON DELETE CASCADE
 );
 
 CREATE TABLE nss."EquationErrors" (
@@ -160,35 +155,28 @@ CREATE TABLE nss."Variables" (
     "MaxValue" double precision NULL,
     "Comments" text NULL,
     "LimitationID" integer NULL,
-    "RegressionRegionCoefficientID" integer NULL,
+    "CoefficientID" integer NULL,
     "LastModified" timestamp without time zone NOT NULL,
     CONSTRAINT "PK_Variables" PRIMARY KEY ("ID"),
+    CONSTRAINT "FK_Variables_Coefficients_CoefficientID" FOREIGN KEY ("CoefficientID") REFERENCES nss."Coefficients" ("ID") ON DELETE RESTRICT,
     CONSTRAINT "FK_Variables_Equations_EquationID" FOREIGN KEY ("EquationID") REFERENCES nss."Equations" ("ID") ON DELETE RESTRICT,
-    CONSTRAINT "FK_Variables_Limitations_LimitationID" FOREIGN KEY ("LimitationID") REFERENCES nss."Limitations" ("ID") ON DELETE RESTRICT,
-    CONSTRAINT "FK_Variables_RegressionRegionCoefficients_RegressionRegionCoef~" FOREIGN KEY ("RegressionRegionCoefficientID") REFERENCES nss."RegressionRegionCoefficients" ("ID") ON DELETE RESTRICT
+    CONSTRAINT "FK_Variables_Limitations_LimitationID" FOREIGN KEY ("LimitationID") REFERENCES nss."Limitations" ("ID") ON DELETE RESTRICT
 );
 
 CREATE TABLE nss."VariableUnitTypes" (
     "VariableID" integer NOT NULL,
     "UnitTypeID" integer NOT NULL,
+    CONSTRAINT "PK_VariableUnitTypes" PRIMARY KEY ("VariableID", "UnitTypeID"),
     CONSTRAINT "FK_VariableUnitTypes_Variables_VariableID" FOREIGN KEY ("VariableID") REFERENCES nss."Variables" ("ID") ON DELETE CASCADE
 );
 
-CREATE INDEX "IX_EquationErrors_EquationID" ON nss."EquationErrors" ("EquationID");
+CREATE INDEX "IX_Coefficients_RegressionRegionID" ON nss."Coefficients" ("RegressionRegionID");
 
-CREATE INDEX "IX_EquationErrors_ErrorTypeID" ON nss."EquationErrors" ("ErrorTypeID");
+CREATE INDEX "IX_EquationErrors_EquationID" ON nss."EquationErrors" ("EquationID");
 
 CREATE INDEX "IX_Equations_PredictionIntervalID" ON nss."Equations" ("PredictionIntervalID");
 
 CREATE INDEX "IX_Equations_RegressionRegionID" ON nss."Equations" ("RegressionRegionID");
-
-CREATE INDEX "IX_Equations_RegressionTypeID" ON nss."Equations" ("RegressionTypeID");
-
-CREATE INDEX "IX_Equations_StatisticGroupTypeID" ON nss."Equations" ("StatisticGroupTypeID");
-
-CREATE INDEX "IX_Equations_UnitTypeID" ON nss."Equations" ("UnitTypeID");
-
-CREATE INDEX "IX_EquationUnitTypes_UnitTypeID" ON nss."EquationUnitTypes" ("UnitTypeID");
 
 CREATE INDEX "IX_Limitations_RegressionRegionID" ON nss."Limitations" ("RegressionRegionID");
 
@@ -202,22 +190,18 @@ CREATE INDEX "IX_RegionRegressionRegions_RegressionRegionID" ON nss."RegionRegre
 
 CREATE INDEX "IX_Regions_Code" ON nss."Regions" ("Code");
 
-CREATE INDEX "IX_RegressionRegionCoefficients_RegressionRegionID" ON nss."RegressionRegionCoefficients" ("RegressionRegionID");
-
 CREATE INDEX "IX_RegressionRegions_CitationID" ON nss."RegressionRegions" ("CitationID");
 
 CREATE INDEX "IX_RegressionRegions_Code" ON nss."RegressionRegions" ("Code");
+
+CREATE INDEX "IX_Variables_CoefficientID" ON nss."Variables" ("CoefficientID");
 
 CREATE INDEX "IX_Variables_EquationID" ON nss."Variables" ("EquationID");
 
 CREATE INDEX "IX_Variables_LimitationID" ON nss."Variables" ("LimitationID");
 
-CREATE INDEX "IX_Variables_RegressionRegionCoefficientID" ON nss."Variables" ("RegressionRegionCoefficientID");
 
-CREATE INDEX "IX_VariableUnitTypes_UnitTypeID" ON nss."VariableUnitTypes" ("UnitTypeID");
-
-
-                CREATE OR REPLACE FUNCTION "trigger_set_lastmodified"()
+                CREATE OR REPLACE FUNCTION "nss"."trigger_set_lastmodified"()
                     RETURNS TRIGGER AS $$
                     BEGIN
                       NEW."LastModified" = NOW();
@@ -227,19 +211,18 @@ CREATE INDEX "IX_VariableUnitTypes_UnitTypeID" ON nss."VariableUnitTypes" ("Unit
                 
 
 
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Citations" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Equations" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Limitations" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Managers" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "PredictionIntervals" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Regions" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "RegressionRegions" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "RegressionRegionCoefficients" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Roles" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();                
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "UserTypes" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Variables" FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Citations"  FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Equations"  FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON  "Limitations" FOR EACH ROW EXECUTE PROCEDURE  "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Managers"  FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON  "PredictionIntervals" FOR EACH ROW EXECUTE PROCEDURE  "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Regions"  FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON  "RegressionRegions" FOR EACH ROW EXECUTE PROCEDURE  "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON  "Coefficients" FOR EACH ROW EXECUTE PROCEDURE  "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Roles" FOR  EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
+                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Variables"  FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
                 
 
 INSERT INTO nss."_EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20181023204735_init', '2.1.4-rtm-31024');
+VALUES ('20181025152541_init', '2.1.4-rtm-31024');
 

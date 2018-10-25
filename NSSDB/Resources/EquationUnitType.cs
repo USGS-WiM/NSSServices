@@ -22,10 +22,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SharedDB.Resources;
-using WiM.Utilities;
 namespace NSSDB.Resources
 {
-    public partial class EquationUnitType : IJoinEntity<Equation>, IJoinEntity<UnitType>
+    public partial class EquationUnitType
     {
         [Required]
         public int EquationID { get; set; }
@@ -34,9 +33,6 @@ namespace NSSDB.Resources
 
         public Equation Equation { get; set; }
         public UnitType UnitType { get; set; }
-
-        Equation IJoinEntity<Equation>.Navigation { get => Equation; set => Equation = value; }
-        UnitType IJoinEntity<UnitType>.Navigation { get => UnitType; set => UnitType = value; }
 
     }
 }

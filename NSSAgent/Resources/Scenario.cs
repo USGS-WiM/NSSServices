@@ -14,17 +14,17 @@ namespace NSSAgent.Resources
         public int StatisticGroupID { get; set; }
         public string StatisticGroupName { get; set; }
         [XmlArrayItem("RegressionRegion")]
-        public List<SimpleRegionEquation> RegressionRegions { get; set; }
+        public List<SimpleRegionRegion> RegressionRegions { get; set; }
         public List<Link> Links { get; set; }
     }//end Scenario
 
   
-    public class SimpleRegionEquation
+    public class SimpleRegionRegion
     {
-        public SimpleRegionEquation() { }
+        public SimpleRegionRegion() { }
 
         [JsonConstructor]
-        public SimpleRegionEquation(List<RegressionResult> results) {
+        public SimpleRegionRegion(List<RegressionResult> results) {
             if (results != null)
                 this.Results = results.Cast<RegressionResultBase>().ToList();
         }

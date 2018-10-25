@@ -18,21 +18,24 @@
 //
 //   
 
-using NpgsqlTypes;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SharedDB.Resources;
-
 namespace NSSDB.Resources
 {
-    public partial class UserType
+    public partial class Coefficient
     {
         [Required]
         public int ID { get; set; }
         [Required]
-        public string User { get; set; }
-        public int UnitSystemID { get; set; }
+        public int RegressionRegionID { get; set; }
+        [Required]
+        public string Criteria { get; set; }
+        public string Description { get; set; }
+        [Required]
+        public string Value { get; set; }
 
-        public virtual UnitSystemType UnitSystemType { get; set; }
+        public virtual RegressionRegion RegressionRegion { get; set; }
+        public virtual ICollection<Variable> Variables { get; set; }
+
     }
 }

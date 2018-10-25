@@ -19,12 +19,10 @@
 //
 //   
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using WiM.Utilities;
 namespace NSSDB.Resources
 {
-    public partial class RegionRegressionRegion : IJoinEntity<Region>, IJoinEntity<RegressionRegion>
+    public partial class RegionRegressionRegion
     {
         [Required]
         public int RegionID { get; set; }
@@ -33,8 +31,5 @@ namespace NSSDB.Resources
 
         public virtual RegressionRegion RegressionRegion { get; set; }
         public virtual Region Region { get; set; }
-
-        Region IJoinEntity<Region>.Navigation { get => Region; set => Region = value; }
-        RegressionRegion IJoinEntity<RegressionRegion>.Navigation { get => RegressionRegion; set => RegressionRegion = value; }
     }
 }

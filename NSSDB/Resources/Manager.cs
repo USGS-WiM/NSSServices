@@ -20,16 +20,10 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using WiM.Utilities;
 namespace NSSDB.Resources
 {
     public partial class Manager
-    {
-        public Manager() {
-            RegionManagers = new List<RegionManager>();
-            Regions = new JoinCollectionFacade<Region, Manager, RegionManager>(this, RegionManagers);            
-        }
+    {        
         [Required]
         public int ID { get; set; }
         [Required]
@@ -54,10 +48,8 @@ namespace NSSDB.Resources
 
         public Role Role { get; set; }
 
-        private ICollection<RegionManager> RegionManagers { get;}
+        public ICollection<RegionManager> RegionManagers { get; set; }
 
-        [NotMapped]
-        public ICollection<Region> Regions { get;}
 
     }
 }

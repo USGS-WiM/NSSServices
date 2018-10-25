@@ -19,15 +19,13 @@
 //
 //   
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using SharedDB.Resources;
-using WiM.Utilities;
-
 namespace NSSDB.Resources
 {
-    public partial class VariableUnitType : IJoinEntity<Variable>, IJoinEntity<UnitType>
+    public partial class VariableUnitType
     {
+
         [Required]
         public int VariableID { get; set; }
         [Required]
@@ -35,8 +33,5 @@ namespace NSSDB.Resources
 
         public virtual Variable Variable { get; set; }
         public virtual UnitType UnitType { get; set; }
-
-        Variable IJoinEntity<Variable>.Navigation { get => Variable; set => Variable = value; }
-        UnitType IJoinEntity<UnitType>.Navigation { get => UnitType; set => UnitType = value; }
     }
 }

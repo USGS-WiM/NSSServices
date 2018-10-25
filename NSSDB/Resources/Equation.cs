@@ -48,8 +48,7 @@ namespace NSSDB.Resources
         public virtual ICollection<EquationError> EquationErrors { get; set; }
         public virtual UnitType UnitType { get; set; }
 
-        [NotMapped]
-        public virtual ICollection<UnitType> AvailableUnitTypes { get; set; }
+        public ICollection<EquationUnitType> EquationUnitTypes { get; set; }
 
         public virtual RegressionRegion RegressionRegion { get; set; }
         public virtual StatisticGroupType StatisticGroupType { get; set; }

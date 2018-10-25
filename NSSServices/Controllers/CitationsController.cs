@@ -40,7 +40,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.Select<Citation>());  
+                return Ok(agent.GetCitations());  
             }
             catch (Exception ex)
             {
@@ -54,8 +54,7 @@ namespace NSSServices.Controllers
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
-
-                return Ok(await agent.Find<Citation>(id));
+                return Ok(await agent.GetCitation(id));
             }
             catch (Exception ex)
             {

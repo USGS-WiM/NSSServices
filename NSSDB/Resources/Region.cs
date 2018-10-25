@@ -21,18 +21,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WiM.Utilities;
 
 namespace NSSDB.Resources
 {
     public partial class Region
     {
-        public Region() {
-            RegionRegressionRegions = new List<RegionRegressionRegion>();
-            RegionManagers = new List<RegionManager>();
-            RegressionRegions = new JoinCollectionFacade<RegressionRegion, Region, RegionRegressionRegion>(this, RegionRegressionRegions);
-            Managers = new JoinCollectionFacade<Manager, Region, RegionManager>(this, RegionManagers);
-        }
 
         [Required]
         public int ID { get; set; }
@@ -42,13 +35,8 @@ namespace NSSDB.Resources
         public string Code { get; set; }
         public string Description { get; set; }
 
-        private ICollection<RegionRegressionRegion> RegionRegressionRegions { get;}        
-        private ICollection<RegionManager> RegionManagers { get;}
+        public ICollection<RegionRegressionRegion> RegionRegressionRegions { get; set; }        
+        public ICollection<RegionManager> RegionManagers { get; set; }
 
-
-        [NotMapped]
-        public ICollection<RegressionRegion> RegressionRegions { get;}
-        [NotMapped]
-        public ICollection<Manager> Managers { get;}
     }
 }

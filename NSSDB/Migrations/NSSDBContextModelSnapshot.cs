@@ -43,6 +43,30 @@ namespace NSSDB.Migrations
                     b.ToTable("Citations");
                 });
 
+            modelBuilder.Entity("NSSDB.Resources.Coefficient", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Criteria")
+                        .IsRequired();
+
+                    b.Property<string>("Description");
+
+                    b.Property<DateTime>("LastModified");
+
+                    b.Property<int>("RegressionRegionID");
+
+                    b.Property<string>("Value")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("RegressionRegionID");
+
+                    b.ToTable("Coefficients");
+                });
+
             modelBuilder.Entity("NSSDB.Resources.Equation", b =>
                 {
                     b.Property<int>("ID")
@@ -75,12 +99,6 @@ namespace NSSDB.Migrations
 
                     b.HasIndex("RegressionRegionID");
 
-                    b.HasIndex("RegressionTypeID");
-
-                    b.HasIndex("StatisticGroupTypeID");
-
-                    b.HasIndex("UnitTypeID");
-
                     b.ToTable("Equations");
                 });
 
@@ -93,15 +111,11 @@ namespace NSSDB.Migrations
 
                     b.Property<int>("ErrorTypeID");
 
-                    b.Property<DateTime>("LastModified");
-
                     b.Property<double>("Value");
 
                     b.HasKey("ID");
 
                     b.HasIndex("EquationID");
-
-                    b.HasIndex("ErrorTypeID");
 
                     b.ToTable("EquationErrors");
                 });
@@ -112,11 +126,7 @@ namespace NSSDB.Migrations
 
                     b.Property<int>("UnitTypeID");
 
-                    b.Property<DateTime>("LastModified");
-
                     b.HasKey("EquationID", "UnitTypeID");
-
-                    b.HasIndex("UnitTypeID");
 
                     b.ToTable("EquationUnitTypes");
                 });
@@ -234,8 +244,6 @@ namespace NSSDB.Migrations
 
                     b.Property<int>("RegionID");
 
-                    b.Property<DateTime>("LastModified");
-
                     b.HasKey("ManagerID", "RegionID");
 
                     b.HasIndex("RegionID");
@@ -248,8 +256,6 @@ namespace NSSDB.Migrations
                     b.Property<int>("RegionID");
 
                     b.Property<int>("RegressionRegionID");
-
-                    b.Property<DateTime>("LastModified");
 
                     b.HasKey("RegionID", "RegressionRegionID");
 
@@ -272,8 +278,7 @@ namespace NSSDB.Migrations
 
                     b.Property<DateTime>("LastModified");
 
-                    b.Property<Polygon>("Location")
-                        .IsRequired();
+                    b.Property<Polygon>("Location");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -285,30 +290,6 @@ namespace NSSDB.Migrations
                     b.HasIndex("Code");
 
                     b.ToTable("RegressionRegions");
-                });
-
-            modelBuilder.Entity("NSSDB.Resources.RegressionRegionCoefficient", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Criteria")
-                        .IsRequired();
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<int>("RegressionRegionID");
-
-                    b.Property<string>("Value")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("RegressionRegionID");
-
-                    b.ToTable("RegressionRegionCoefficients");
                 });
 
             modelBuilder.Entity("NSSDB.Resources.Role", b =>
@@ -329,31 +310,12 @@ namespace NSSDB.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("NSSDB.Resources.UserType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<int>("UnitSystemID");
-
-                    b.Property<int?>("UnitSystemTypeID");
-
-                    b.Property<string>("User")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("UnitSystemTypeID");
-
-                    b.ToTable("UserTypes");
-                });
-
             modelBuilder.Entity("NSSDB.Resources.Variable", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("CoefficientID");
 
                     b.Property<string>("Comments");
 
@@ -367,8 +329,6 @@ namespace NSSDB.Migrations
 
                     b.Property<double?>("MinValue");
 
-                    b.Property<int?>("RegressionRegionCoefficientID");
-
                     b.Property<int?>("RegressionTypeID");
 
                     b.Property<int>("UnitTypeID");
@@ -377,17 +337,11 @@ namespace NSSDB.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("CoefficientID");
+
                     b.HasIndex("EquationID");
 
                     b.HasIndex("LimitationID");
-
-                    b.HasIndex("RegressionRegionCoefficientID");
-
-                    b.HasIndex("RegressionTypeID");
-
-                    b.HasIndex("UnitTypeID");
-
-                    b.HasIndex("VariableTypeID");
 
                     b.ToTable("Variables");
                 });
@@ -398,148 +352,17 @@ namespace NSSDB.Migrations
 
                     b.Property<int>("UnitTypeID");
 
-                    b.Property<DateTime>("LastModified");
-
                     b.HasKey("VariableID", "UnitTypeID");
-
-                    b.HasIndex("UnitTypeID");
 
                     b.ToTable("VariableUnitTypes");
                 });
 
-            modelBuilder.Entity("SharedDB.Resources.ErrorType", b =>
+            modelBuilder.Entity("NSSDB.Resources.Coefficient", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .IsRequired();
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.ToTable("ErrorType_view");
-                });
-
-            modelBuilder.Entity("SharedDB.Resources.RegressionType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .IsRequired();
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.ToTable("RegressionType_view");
-                });
-
-            modelBuilder.Entity("SharedDB.Resources.StatisticGroupType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .IsRequired();
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.ToTable("StatisticGroupType_view");
-                });
-
-            modelBuilder.Entity("SharedDB.Resources.UnitConversionFactor", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<double>("Factor");
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<int>("UnitTypeInID");
-
-                    b.Property<int>("UnitTypeOutID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("UnitTypeInID");
-
-                    b.HasIndex("UnitTypeOutID");
-
-                    b.ToTable("UnitConversionFactor_view");
-                });
-
-            modelBuilder.Entity("SharedDB.Resources.UnitSystemType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<string>("UnitSystem")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.ToTable("UnitSystemType_view");
-                });
-
-            modelBuilder.Entity("SharedDB.Resources.UnitType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Abbreviation")
-                        .IsRequired();
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int>("UnitSystemTypeID");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("UnitSystemTypeID");
-
-                    b.ToTable("UnitType_view");
-                });
-
-            modelBuilder.Entity("SharedDB.Resources.VariableType", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .IsRequired();
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime>("LastModified");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.ToTable("VariableType_view");
+                    b.HasOne("NSSDB.Resources.RegressionRegion", "RegressionRegion")
+                        .WithMany("RegressionRegionCoefficients")
+                        .HasForeignKey("RegressionRegionID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("NSSDB.Resources.Equation", b =>
@@ -552,21 +375,6 @@ namespace NSSDB.Migrations
                         .WithMany("Equations")
                         .HasForeignKey("RegressionRegionID")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SharedDB.Resources.RegressionType", "RegressionType")
-                        .WithMany()
-                        .HasForeignKey("RegressionTypeID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SharedDB.Resources.StatisticGroupType", "StatisticGroupType")
-                        .WithMany()
-                        .HasForeignKey("StatisticGroupTypeID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SharedDB.Resources.UnitType", "UnitType")
-                        .WithMany()
-                        .HasForeignKey("UnitTypeID")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("NSSDB.Resources.EquationError", b =>
@@ -575,23 +383,13 @@ namespace NSSDB.Migrations
                         .WithMany("EquationErrors")
                         .HasForeignKey("EquationID")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SharedDB.Resources.ErrorType", "ErrorType")
-                        .WithMany()
-                        .HasForeignKey("ErrorTypeID")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("NSSDB.Resources.EquationUnitType", b =>
                 {
                     b.HasOne("NSSDB.Resources.Equation", "Equation")
-                        .WithMany()
+                        .WithMany("EquationUnitTypes")
                         .HasForeignKey("EquationID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SharedDB.Resources.UnitType", "UnitType")
-                        .WithMany()
-                        .HasForeignKey("UnitTypeID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -614,12 +412,12 @@ namespace NSSDB.Migrations
             modelBuilder.Entity("NSSDB.Resources.RegionManager", b =>
                 {
                     b.HasOne("NSSDB.Resources.Manager", "Manager")
-                        .WithMany()
+                        .WithMany("RegionManagers")
                         .HasForeignKey("ManagerID")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("NSSDB.Resources.Region", "Region")
-                        .WithMany()
+                        .WithMany("RegionManagers")
                         .HasForeignKey("RegionID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -627,12 +425,12 @@ namespace NSSDB.Migrations
             modelBuilder.Entity("NSSDB.Resources.RegionRegressionRegion", b =>
                 {
                     b.HasOne("NSSDB.Resources.Region", "Region")
-                        .WithMany()
+                        .WithMany("RegionRegressionRegions")
                         .HasForeignKey("RegionID")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("NSSDB.Resources.RegressionRegion", "RegressionRegion")
-                        .WithMany()
+                        .WithMany("RegionRegressionRegions")
                         .HasForeignKey("RegressionRegionID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -645,23 +443,12 @@ namespace NSSDB.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("NSSDB.Resources.RegressionRegionCoefficient", b =>
-                {
-                    b.HasOne("NSSDB.Resources.RegressionRegion", "RegressionRegion")
-                        .WithMany("RegressionRegionCoefficients")
-                        .HasForeignKey("RegressionRegionID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("NSSDB.Resources.UserType", b =>
-                {
-                    b.HasOne("SharedDB.Resources.UnitSystemType", "UnitSystemType")
-                        .WithMany()
-                        .HasForeignKey("UnitSystemTypeID");
-                });
-
             modelBuilder.Entity("NSSDB.Resources.Variable", b =>
                 {
+                    b.HasOne("NSSDB.Resources.Coefficient", "Coefficient")
+                        .WithMany("Variables")
+                        .HasForeignKey("CoefficientID");
+
                     b.HasOne("NSSDB.Resources.Equation", "Equation")
                         .WithMany("Variables")
                         .HasForeignKey("EquationID");
@@ -669,57 +456,13 @@ namespace NSSDB.Migrations
                     b.HasOne("NSSDB.Resources.Limitation", "Limitation")
                         .WithMany("Variables")
                         .HasForeignKey("LimitationID");
-
-                    b.HasOne("NSSDB.Resources.RegressionRegionCoefficient", "RegressionRegionCoefficient")
-                        .WithMany("Variables")
-                        .HasForeignKey("RegressionRegionCoefficientID");
-
-                    b.HasOne("SharedDB.Resources.RegressionType", "RegressionType")
-                        .WithMany()
-                        .HasForeignKey("RegressionTypeID");
-
-                    b.HasOne("SharedDB.Resources.UnitType", "UnitType")
-                        .WithMany()
-                        .HasForeignKey("UnitTypeID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SharedDB.Resources.VariableType", "VariableType")
-                        .WithMany()
-                        .HasForeignKey("VariableTypeID")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("NSSDB.Resources.VariableUnitType", b =>
                 {
-                    b.HasOne("SharedDB.Resources.UnitType", "UnitType")
-                        .WithMany()
-                        .HasForeignKey("UnitTypeID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("NSSDB.Resources.Variable", "Variable")
-                        .WithMany()
+                        .WithMany("VariableUnitTypes")
                         .HasForeignKey("VariableID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("SharedDB.Resources.UnitConversionFactor", b =>
-                {
-                    b.HasOne("SharedDB.Resources.UnitType", "UnitTypeIn")
-                        .WithMany("UnitConversionFactorsIn")
-                        .HasForeignKey("UnitTypeInID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SharedDB.Resources.UnitType", "UnitTypeOut")
-                        .WithMany("UnitConversionFactorsOut")
-                        .HasForeignKey("UnitTypeOutID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("SharedDB.Resources.UnitType", b =>
-                {
-                    b.HasOne("SharedDB.Resources.UnitSystemType", "UnitSystemType")
-                        .WithMany("UnitTypes")
-                        .HasForeignKey("UnitSystemTypeID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

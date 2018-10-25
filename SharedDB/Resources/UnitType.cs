@@ -30,7 +30,7 @@ namespace SharedDB.Resources
         [Required]
         public int ID { get; set; }
         [Required]
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         [Required]
         public string Abbreviation { get; set; }
         [Required]

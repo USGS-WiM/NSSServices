@@ -27,12 +27,14 @@ using SharedDB.Resources;
 using Microsoft.EntityFrameworkCore.Metadata;
 //using SharedDB.Resources;
 using System;
+using System.Collections.Generic;
 //specifying the data provider and connection string
 namespace NSSDB
 {
     public class NSSDBContext:DbContext
     {
         public virtual DbSet<Citation> Citations { get; set; }
+        public virtual DbSet<Coefficient> Coefficients { get; set; }
         public virtual DbSet<EquationError> EquationErrors { get; set; }
         public virtual DbSet<Equation> Equations { get; set; }        
         public virtual DbSet<EquationUnitType> EquationUnitTypes { get; set; }        
@@ -40,11 +42,9 @@ namespace NSSDB
         public virtual DbSet<Manager> Managers { get; set; }
         public virtual DbSet<PredictionInterval> PredictionIntervals { get; set; }        
         public virtual DbSet<RegionRegressionRegion> RegionRegressionRegions { get; set; }
-        public virtual DbSet<Region> Regions { get; set; }
-        public virtual DbSet<RegressionRegionCoefficient> RegressionRegionCoefficients { get; set; }
+        public virtual DbSet<Region> Regions { get; set; }        
         public virtual DbSet<RegressionRegion> RegressionRegions { get; set; }        
-        public virtual DbSet<Role> Roles { get; set; }              
-        public virtual DbSet<UserType> UserTypes { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Variable> Variables { get; set; }       
         public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }        
         
@@ -61,7 +61,7 @@ namespace NSSDB
         {
         }
         public NSSDBContext(DbContextOptions<NSSDBContext> options) : base(options)
-        {
+        {            
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -94,7 +94,15 @@ namespace NSSDB
             //https://stackoverflow.com/questions/9556474/how-do-i-automatically-update-a-timestamp-in-postgresql
             //https://x-team.com/blog/automatic-timestamps-with-postgresql/
             foreach (var entitytype in modelBuilder.Model.GetEntityTypes())
-            {
+            {                
+                //"EquationError","EquationUnitType","RegionManager","RegionRegressionRegion","VariableUnitType" 
+                if (new List<string>() { typeof(EquationError).FullName, typeof(EquationUnitType).FullName,
+                                         typeof(RegionManager).FullName,typeof(RegionRegressionRegion).FullName,
+                                         typeof(VariableUnitType).FullName,typeof(ErrorType).FullName,typeof(RegressionType).FullName,
+                                         typeof(StatisticGroupType).FullName,typeof(UnitConversionFactor).FullName,typeof(UnitSystemType).FullName,
+                                         typeof(UnitType).FullName,typeof(VariableType).FullName }
+                .Contains(entitytype.Name))
+                { continue; }                 
                 modelBuilder.Entity(entitytype.Name).Property<DateTime>("LastModified");
             }//next entitytype
 
@@ -123,7 +131,15 @@ namespace NSSDB
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            base.OnModelCreating(modelBuilder);             
+            base.OnModelCreating(modelBuilder);
+            //Must Comment out after migration
+            //modelBuilder.Ignore(typeof(ErrorType));
+            //modelBuilder.Ignore(typeof(RegressionType));
+            //modelBuilder.Ignore(typeof(StatisticGroupType));
+            //modelBuilder.Ignore(typeof(UnitConversionFactor));
+            //modelBuilder.Ignore(typeof(UnitSystemType));
+            //modelBuilder.Ignore(typeof(UnitType));
+            //modelBuilder.Ignore(typeof(VariableType));
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

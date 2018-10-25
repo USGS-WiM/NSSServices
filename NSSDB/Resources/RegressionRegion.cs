@@ -21,17 +21,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using NetTopologySuite.Geometries;
-using System.ComponentModel.DataAnnotations.Schema;
-using WiM.Utilities;
-
 namespace NSSDB.Resources
 {
     public partial class RegressionRegion
     {
-        public RegressionRegion() {
-            RegionRegressionRegions = new List<RegionRegressionRegion>();
-            Regions = new JoinCollectionFacade<Region, RegressionRegion, RegionRegressionRegion>(this, RegionRegressionRegions);
-        }
         [Required]
         public int ID { get; set; }
         [Required]
@@ -40,17 +33,15 @@ namespace NSSDB.Resources
         public string Code { get; set; }
         public string Description { get; set; }
         public int CitationID { get; set; }
-        [Required]
+        
         public Polygon Location { get; set; }
 
         public virtual Citation Citation { get; set; }
         public virtual ICollection<Equation> Equations { get; set; }
-        private ICollection<RegionRegressionRegion> RegionRegressionRegions { get;}
+        public ICollection<RegionRegressionRegion> RegionRegressionRegions { get; set; }
         public virtual ICollection<Limitation> Limitations { get; set; }
-        public virtual ICollection<RegressionRegionCoefficient> RegressionRegionCoefficients { get; set; }
-        
-        [NotMapped]
-        public ICollection<Region> Regions { get;}
+        public virtual ICollection<Coefficient> RegressionRegionCoefficients { get; set; }
+
 
     }
 }

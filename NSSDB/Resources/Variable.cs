@@ -20,7 +20,6 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using SharedDB.Resources;
 
 namespace NSSDB.Resources
@@ -39,17 +38,16 @@ namespace NSSDB.Resources
         public double? MaxValue { get; set; }
         public string Comments { get; set; }
         public int? LimitationID { get; set; }
-        public int? RegressionRegionCoefficientID { get; set; }
+        public int? CoefficientID { get; set; }
 
         public virtual Equation Equation { get; set; }
         public virtual VariableType VariableType { get; set; }
         public virtual UnitType UnitType { get; set; }
 
-        [NotMapped]
-        public virtual ICollection<UnitType> AvailableUnitTypes { get; set; }
+        public ICollection<VariableUnitType> VariableUnitTypes { get; set; }
 
         public virtual RegressionType RegressionType { get; set; }
         public virtual Limitation Limitation { get; set; }
-        public virtual RegressionRegionCoefficient RegressionRegionCoefficient { get; set; }
+        public virtual Coefficient Coefficient { get; set; }
     }
 }

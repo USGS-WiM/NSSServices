@@ -18,7 +18,7 @@ namespace NSSDB.Test
         [TestMethod]
         public void ConnectionTest()
         {
-            using (NSSDBContext context = new NSSDBContext(new DbContextOptionsBuilder<NSSDBContext>().UseNpgsql(this.connectionstring).Options))
+            using (NSSDBContext context = new NSSDBContext(new DbContextOptionsBuilder<NSSDBContext>().UseNpgsql(this.connectionstring,x=>x.UseNetTopologySuite()).Options))
             {
                 try
                 {
@@ -26,23 +26,23 @@ namespace NSSDB.Test
                 }
                 catch (Exception ex)
                 {
-                    Assert.IsTrue(false, ex.Message);
+                    Assert.Fail(ex.Message);
                 }
             }
         }
         [TestMethod]
         public void QueryTest()
         {
-            using (NSSDBContext context = new NSSDBContext(new DbContextOptionsBuilder<NSSDBContext>().UseNpgsql(this.connectionstring).Options))
+            using (NSSDBContext context = new NSSDBContext(new DbContextOptionsBuilder<NSSDBContext>().UseNpgsql(this.connectionstring, x => x.UseNetTopologySuite()).Options))
             {
                 try
                 {
-                    var testQuery = context.Equations.Include("EquationErrors.ErrorType").ToList();
+                    var testQuery = context.Equations.Include("EquationErrors.ErrorType").Include("EquationUnitTypes.UnitType").ToList();
                     Assert.IsNotNull(testQuery, testQuery.Count.ToString());
                 }
                 catch (Exception ex)
                 {
-                    Assert.IsTrue(false, ex.Message);
+                    Assert.Fail(ex.Message);
                 }
                 finally
                 {

@@ -38,77 +38,152 @@ namespace NSSAgent
 {
     public interface INSSAgent
     {
-        IQueryable<T> Select<T>() where T : class, new();
-        Task<T> Find<T>(Int32 pk) where T : class, new();
-        Task<T> Add<T>(T item) where T : class, new();
-        Task<IEnumerable<T>> Add<T>(List<T> items) where T : class, new();
-        Task<T> Update<T>(Int32 pkId, T item) where T : class, new();
-        Task Delete<T>(T item) where T : class, new();
+        //Citations
+        IQueryable<Citation> GetCitations();
+        Task<Citation> GetCitation(Int32 ID);
+        Task<Citation> Add(Citation item);
+        Task<IEnumerable<Citation>> Add(List<Citation> items);
+        Task<Citation> Update(Int32 pkId, Citation item);
+        Task DeleteCitation(Int32 pkID);
 
-        Region GetRegionByIDOrCode(string identifier);
+        //Limitations
+        IQueryable<Limitation> GetRegressionRegionLimitations(Int32 RegressionRegionID);
+        Task<IEnumerable<Limitation>> AddRegressionRegionLimitations(Int32 RegressionRegionID, List<Limitation> items);
+        IEnumerable<Limitation> RemoveRegressionRegionLimitations(Int32 RegressionRegionID, List<Limitation> items);
+        Task<Limitation> Update(Int32 pkId, Limitation item);
+        Task DeleteLimitation(Int32 pkID);
+
+        //Managers
+        IQueryable<Manager> GetManagers();
+        Task<Manager> GetManager(Int32 ID);
+        Task<Manager> Add(Manager item);
+        Task<IEnumerable<Manager>> Add(List<Manager> items);
+        Task<Manager> Update(Int32 pkId, Manager item);
+        Task DeleteManager(Int32 pkID);
+
+        //Regions
+        IQueryable<Region> GetRegions();
+        Task<Region> GetRegion(Int32 ID);
+        Task<Region> Add(Region item);
+        Task<IEnumerable<Region>> Add(List<Region> items);
+        Task<Region> Update(Int32 pkId, Region item);
+        Task DeleteRegion(Int32 pkID);
+
+        //Coefficents
+        IQueryable<Coefficient> GetRegressionRegionCoefficients(Int32 RegressionRegionID);
+        Task<IEnumerable<Coefficient>> AddRegressionRegionCoefficients(Int32 RegressionRegionID, List<Coefficient> items);
+        IEnumerable<Coefficient> RemoveRegressionRegionCoefficients(int RegressionRegionID, List<Coefficient> items);
+        Task<Coefficient> Update(Int32 pkId, Coefficient item);
+        Task DeleteCoefficient(Int32 pkID);
+
+        //Roles
+        IQueryable<Role> GetRoles();
+        Task<Role> GetRole(Int32 ID);
+        Task<Role> Add(Role item);
+        Task<IEnumerable<Role>> Add(List<Role> items);
+        Task<Role> Update(Int32 pkId, Role item);
+        Task DeleteRole(Int32 pkID);
+
+        //Readonly (Shared Views) methods
+        IQueryable<ErrorType> GetErrors();
+        Task<ErrorType> GetError(Int32 ID);
+        IQueryable<RegressionType> GetRegression();
+        Task<RegressionType> GetRegression(Int32 ID);
+        IQueryable<StatisticGroupType> StatisticGroups();
+        Task<StatisticGroupType> GetStatisticGroups(Int32 ID);
+        IQueryable<UnitType> GetUnits();
+        Task<UnitType> GetUnit(Int32 ID);
+        IQueryable<VariableType> GetVariables();
+        Task<VariableType> GetVariable(Int32 ID);
     }
     public class NSSServiceAgent : DBAgentBase, INSSAgent, IBasicUserAgent
     {
         #region "Properties"
-        public UserType user { get; private set; }
         #endregion
         #region "Collections & Dictionaries"
         private List<UnitConversionFactor> unitConversionFactors { get; set; }
         private List<Limitation> limitations { get; set; }
         #endregion
-
+        #region Constructors
         public NSSServiceAgent(NSSDBContext context) : base(context) {
 
             //optimize query for disconnected databases.
             this.context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
-
-        #region Universal
-        public new IQueryable<T> Select<T>() where T : class, new()
+        #endregion
+        #region Methods
+        #region Citations
+        public IQueryable<Citation> GetCitations()
         {
-            return base.Select<T>();
+            return this.Select<Citation>();
         }
-        public new Task<T> Find<T>(Int32 pk) where T : class, new()
+        public Task<Citation> GetCitation(int ID)
         {
-            return base.Find<T>(pk);
+            return this.Find<Citation>(ID);
         }
-        public new Task<T> Add<T>(T item) where T : class, new()
+        public Task<Citation> Add(Citation item)
         {
-            return base.Add<T>(item);
+            return this.Add<Citation>(item);
         }
-        public new Task<IEnumerable<T>> Add<T>(List<T> items) where T : class, new()
+        public Task<IEnumerable<Citation>> Add(List<Citation> items)
         {
-            return base.Add<T>(items);
+            return this.Add<Citation>(items);
         }
-        public new Task<T> Update<T>(Int32 pkId, T item) where T : class, new()
+        public Task<Citation> Update(int pkId, Citation item)
         {
-            return base.Update<T>(pkId, item);
+            return this.Update<Citation>(pkId, item);
         }
-        public new Task Delete<T>(T item) where T : class, new()
+        public Task DeleteCitation(int pkID)
         {
-            return base.Delete<T>(item);
+            return this.Delete<Citation>(pkID);
         }
         #endregion
-        #region Roles
-        public IQueryable<Role> GetRoles() {
-            try
-            {
-                return this.Select<Role>();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+        #region Limitations
+        public IQueryable<Limitation> GetRegressionRegionLimitations(Int32 RegressionRegionID)
+        {
+            return this.Select<Limitation>().Where(l => l.RegressionRegionID == RegressionRegionID);
+        }
+        public Task<IEnumerable<Limitation>> AddRegressionRegionLimitations(Int32 RegressionRegionID,List<Limitation> items)
+        {
+            //ensure limitations are assigned to region
+            items.ForEach(i => i.RegressionRegionID = RegressionRegionID);
+            return this.Add<Limitation>(items);
+        }
+        public IEnumerable<Limitation> RemoveRegressionRegionLimitations(int RegressionRegionID, List<Limitation> items)
+        {
+            //find limitations
+            this.Select<Limitation>()
+                .Where(l => l.RegressionRegionID == RegressionRegionID)
+                .Where(l => items.Contains(l)).ToList().ForEach(item=> this.Delete(item));
+
+            return this.Select<Limitation>().Where(l => l.RegressionRegionID == RegressionRegionID).AsEnumerable();
+        }
+        public Task<Limitation> Update(Int32 pkId, Limitation item) {
+            return this.Update<Limitation>(pkId, item);
+        }
+        public Task DeleteLimitation(Int32 pkID) {
+            return this.Delete<Limitation>(pkID);
         }
         #endregion
         #region Manager
-        public IBasicUser GetUserByUsername(string username) {
+        public IBasicUser GetUserByUsername(string username)
+        {
             try
             {
 
                 return Select<Manager>().Include(p => p.Role).Where(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase))
-                    .Select(u => new User() { FirstName = u.FirstName, LastName = u.LastName,
-                     Email = u.Email, Role= u.Role.Name, RoleID = u.RoleID, ID= u.ID, Username = u.Username, Salt=u.Salt, password = u.Password} ).FirstOrDefault();
+                    .Select(u => new User()
+                    {
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email,
+                        Role = u.Role.Name,
+                        RoleID = u.RoleID,
+                        ID = u.ID,
+                        Username = u.Username,
+                        Salt = u.Salt,
+                        password = u.Password
+                    }).FirstOrDefault();
             }
             catch (Exception)
             {
@@ -117,7 +192,31 @@ namespace NSSAgent
 
 
         }
-        #endregion
+        public IQueryable<Manager> GetManagers()
+        {
+            return this.Select<Manager>();
+        }
+        public Task<Manager> GetManager(int ID)
+        {
+            return this.Find<Manager>(ID);
+        }
+        public Task<Manager> Add(Manager item)
+        {
+            return this.Add<Manager>(item);
+        }
+        public Task<IEnumerable<Manager>> Add(List<Manager> items)
+        {
+            return this.Add<Manager>(items);
+        }
+        public Task<Manager> Update(int pkId, Manager item)
+        {
+            return this.Update<Manager>(pkId, item);
+        }
+        public Task DeleteManager(int pkID)
+        {
+            return this.Delete<Manager>(pkID);
+        }
+        #endregion        
         #region Region
         public Region GetRegionByIDOrCode(string identifier)
         {
@@ -136,43 +235,99 @@ namespace NSSAgent
 
 
         }
-        #endregion
-        #region Equation
-        internal IQueryable<Equation> GetEquations(string region, List<string> regionEquationList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
+        public IQueryable<Region> GetRegions()
         {
-            IQueryable<Equation> equery = null;
-            equery = Select<RegionRegressionRegion>()
-                       .Where(rer => String.Equals(region.Trim().ToLower(), rer.Region.Code.ToLower().Trim())
-                               || String.Equals(region.ToLower().Trim(), rer.RegionID.ToString())).SelectMany(rr => rr.RegressionRegion.Equations).Include(e => e.RegressionType).AsQueryable();
-
-            if (regionEquationList != null && regionEquationList.Count() > 0)
-                equery = equery.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString().Trim())
-                                            || regionEquationList.Contains(e.RegressionRegion.Code.ToLower().Trim()));
-
-            if (statisticgroupList != null && statisticgroupList.Count() > 0)
-                equery = equery.Where(e => statisticgroupList.Contains(e.StatisticGroupTypeID.ToString().Trim())
-                                        || statisticgroupList.Contains(e.StatisticGroupType.Code.ToLower().Trim()));
-
-            if (regressionTypeIDList != null && regressionTypeIDList.Count() > 0)
-                equery = equery.Where(e => regressionTypeIDList.Contains(e.RegressionTypeID.ToString().Trim())
-                                        || regressionTypeIDList.Contains(e.RegressionType.Code.ToLower().Trim()));
-
-            return equery.OrderBy(e => e.OrderIndex);
+            return this.Select<Region>();
+        }
+        public Task<Region> GetRegion(int ID)
+        {
+            return this.Find<Region>(ID);
+        }
+        public Task<Region> Add(Region item)
+        {
+            return this.Add<Region>(item);
+        }
+        public Task<IEnumerable<Region>> Add(List<Region> items)
+        {
+            return this.Add<Region>(items);
+        }
+        public Task<Region> Update(int pkId, Region item)
+        {
+            return this.Update<Region>(pkId, item);
+        }
+        public Task DeleteRegion(int pkID)
+        {
+            return this.Delete<Region>(pkID);
         }
         #endregion
+        #region Coefficient
+        public IQueryable<Coefficient> GetRegressionRegionCoefficients(Int32 RegressionRegionID)
+        {
+            return this.Select<Coefficient>().Where(l => l.RegressionRegionID == RegressionRegionID);
+        }
+        public Task<IEnumerable<Coefficient>> AddRegressionRegionCoefficients(Int32 RegressionRegionID, List<Coefficient> items)
+        {
+            //ensure Coefficients are assigned to region
+            items.ForEach(i => i.RegressionRegionID = RegressionRegionID);
+            return this.Add<Coefficient>(items);
+        }
+        public IEnumerable<Coefficient> RemoveRegressionRegionCoefficients(int RegressionRegionID, List<Coefficient> items)
+        {
+            //find Coefficients
+            this.Select<Coefficient>()
+                .Where(l => l.RegressionRegionID == RegressionRegionID)
+                .Where(l => items.Contains(l)).ToList().ForEach(item => this.Delete(item));
+
+            return this.Select<Coefficient>().Where(l => l.RegressionRegionID == RegressionRegionID).AsEnumerable();
+        }
+        public Task<Coefficient> Update(Int32 pkId, Coefficient item)
+        {
+            return this.Update<Coefficient>(pkId, item);
+        }
+        public Task DeleteCoefficient(Int32 pkID)
+        {
+            return this.Delete<Coefficient>(pkID);
+        }
+        #endregion
+        #region Roles
+        public IQueryable<Role> GetRoles()
+        {
+            return this.Select<Role>();
+        }
+        public Task<Role> GetRole(int ID)
+        {
+            return this.Find<Role>(ID);
+        }
+        public Task<Role> Add(Role item)
+        {
+            return this.Add<Role>(item);
+        }
+        public Task<IEnumerable<Role>> Add(List<Role> items)
+        {
+            return this.Add<Role>(items);
+        }
+        public Task<Role> Update(int pkId, Role item)
+        {
+            return this.Update<Role>(pkId, item);
+        }
+        public Task DeleteRole(int pkID)
+        {
+            return this.Delete<Role>(pkID);
+        }
+        #endregion        
         #region Scenarios
-        internal IQueryable<Scenario> GetScenarios(string region, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0)
+        public IQueryable<Scenario> GetScenarios(string region, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0)
         {
             IQueryable<ScenarioParameterView> equery = null;
             this.limitations = new List<Limitation>();
-            List<RegressionRegionCoefficient> flowCoefficents = new List<RegressionRegionCoefficient>();
+            List<Coefficient> flowCoefficents = new List<Coefficient>();
             try
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
                 if (this.user.ID == 2)
                 {
                     this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
-                    flowCoefficents = Select<RegressionRegionCoefficient>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+                    flowCoefficents = Select<Coefficient>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
                 }//end if
 
                 List<RegionRegressionRegion> SelectedRegionRegressions = Select<RegionRegressionRegion>().Include("RegressionRegion")
@@ -242,20 +397,20 @@ namespace NSSAgent
                 throw;
             }
         }
-        internal IQueryable<Scenario> EstimateScenarios(string region, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0)
+        public IQueryable<Scenario> EstimateScenarios(string region, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0)
         {
             IQueryable<Equation> equery = null;
             List<Equation> EquationList = null;
             ExpressionOps eOps = null;
             this.limitations = new List<Limitation>();
-            List<RegressionRegionCoefficient> regressionregionCoeff = new List<RegressionRegionCoefficient>();
+            List<Coefficient> regressionregionCoeff = new List<Coefficient>();
             try
             {
                 this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
                 if (this.user.ID == 2)
                 {
                     this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
-                    regressionregionCoeff = Select<RegressionRegionCoefficient>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+                    regressionregionCoeff = Select<Coefficient>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
                 }//end if
 
                 equery = GetEquations(region, regionEquationList, statisticgroupList, regressiontypeList);
@@ -329,8 +484,78 @@ namespace NSSAgent
             }
         }
         #endregion
-        
+        #region ReadOnly
+        public IQueryable<ErrorType> GetErrors()
+        {
+            return this.Select<ErrorType>();
+        }
+        public Task<ErrorType> GetError(Int32 ID)
+        {
+            return this.Find<ErrorType>(ID);
+        }
+        public IQueryable<RegressionType> GetRegression()
+        {
+            return this.Select<RegressionType>();
+        }
+        public Task<RegressionType> GetRegression(Int32 ID)
+        {
+            return this.Find<RegressionType>(ID);
+        }
+        public IQueryable<StatisticGroupType> StatisticGroups()
+        {
+            return this.Select<StatisticGroupType>();
+        }
+        public Task<StatisticGroupType> GetStatisticGroups(Int32 ID)
+        {
+            return this.Find<StatisticGroupType>(ID);
+        }
+        public IQueryable<UnitType> GetUnits()
+        {
+            return this.Select<UnitType>();
+        }
+        public Task<UnitType> GetUnit(Int32 ID)
+        {
+            return this.Find<UnitType>(ID);
+        }
+        public IQueryable<VariableType> GetVariables()
+        {
+            return this.Select<VariableType>();
+        }
+        public Task<VariableType> GetVariable(Int32 ID)
+        {
+            return this.Find<VariableType>(ID);
+        }
+        #endregion
+        #endregion
         #region HELPER METHODS
+        private Task Delete<T>(Int32 id) where T : class, new()
+        {
+            var entity = base.Find<T>(id).Result;
+            if (entity == null) return new Task(null);
+            return base.Delete<T>(entity);
+        }
+        internal IQueryable<Equation> GetEquations(string region, List<string> regionEquationList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
+        {
+            IQueryable<Equation> equery = null;
+            equery = Select<RegionRegressionRegion>()
+                       .Where(rer => String.Equals(region.Trim().ToLower(), rer.Region.Code.ToLower().Trim())
+                               || String.Equals(region.ToLower().Trim(), rer.RegionID.ToString())).SelectMany(rr => rr.RegressionRegion.Equations).Include(e => e.RegressionType).AsQueryable();
+
+            if (regionEquationList != null && regionEquationList.Count() > 0)
+                equery = equery.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString().Trim())
+                                            || regionEquationList.Contains(e.RegressionRegion.Code.ToLower().Trim()));
+
+            if (statisticgroupList != null && statisticgroupList.Count() > 0)
+                equery = equery.Where(e => statisticgroupList.Contains(e.StatisticGroupTypeID.ToString().Trim())
+                                        || statisticgroupList.Contains(e.StatisticGroupType.Code.ToLower().Trim()));
+
+            if (regressionTypeIDList != null && regressionTypeIDList.Count() > 0)
+                equery = equery.Where(e => regressionTypeIDList.Contains(e.RegressionTypeID.ToString().Trim())
+                                        || regressionTypeIDList.Contains(e.RegressionType.Code.ToLower().Trim()));
+
+            return equery.OrderBy(e => e.OrderIndex);
+        }
+
         private IQueryable<T> getTable<T>(object[] args) where T : class, new()
         {
             try
@@ -350,42 +575,42 @@ namespace NSSAgent
             {
                 case "ScenarioParameterView":
                     return @"    SELECT 
-	                                `e`.`ID` AS `EquationID`,
-	                                `e`.`RegressionTypeID` AS `RegressionTypeID`,
-	                                `e`.`StatisticGroupTypeID` AS `StatisticGroupTypeID`,
-	                                `e`.`RegressionRegionID` AS `RegressionRegionID`,
-	                                `rt`.`Code` AS `RegressionTypeCode`,
-	                                `rr`.`Name` AS `RegressionRegionName`,
-	                                `rr`.`Code` AS `RegressionRegionCode`,
-	                                `st`.`Code` AS `StatisticGroupTypeCode`,
-	                                `st`.`Name` AS `StatisticGroupTypeName`,
-	                                `v`.`ID` AS `VariableID`,
-                                    `v`.`UnitTypeID` AS `UnitTypeID`,
-                                    `u`.`Abbr` AS `UnitAbbr`,
-                                    `u`.`Unit` AS `UnitName`,
-									`u`.`UnitSystemTypeID` AS `UnitSystemTypeID`,
-                                    `v`.`MaxValue` AS `VariableMaxValue`,
-                                    `v`.`MinValue` AS `VariableMinValue`, 
-	                                `vt`.`Name` AS `VariableName`,
-	                                `vt`.`Code` AS `VariableCode`,
-	                                `vt`.`Description` AS `VariableDescription`
+	                                ""e"".""ID"" AS ""EquationID"",
+	                                ""e"".""RegressionTypeID"" AS ""RegressionTypeID"",
+	                                ""e"".""StatisticGroupTypeID"" AS ""StatisticGroupTypeID"",
+	                                ""e"".""RegressionRegionID"" AS ""RegressionRegionID"",
+	                                ""rt"".""Code"" AS ""RegressionTypeCode"",
+	                                ""rr"".""Name"" AS ""RegressionRegionName"",
+	                                ""rr"".""Code"" AS ""RegressionRegionCode"",
+	                                ""st"".""Code"" AS ""StatisticGroupTypeCode"",
+	                                ""st"".""Name"" AS ""StatisticGroupTypeName"",
+	                                ""v"".""ID"" AS ""VariableID"",
+                                    ""v"".""UnitTypeID"" AS ""UnitTypeID"",
+                                    ""u"".""Abbr"" AS ""UnitAbbr"",
+                                    ""u"".""Unit"" AS ""UnitName"",
+									""u"".""UnitSystemTypeID"" AS ""UnitSystemTypeID"",
+                                    ""v"".""MaxValue"" AS ""VariableMaxValue"",
+                                    ""v"".""MinValue"" AS ""VariableMinValue"", 
+	                                ""vt"".""Name"" AS ""VariableName"",
+	                                ""vt"".""Code"" AS ""VariableCode"",
+	                                ""vt"".""Description"" AS ""VariableDescription""
     
                                 FROM
-	                                ((((((`Equation` `e`
-	                                JOIN `Variable` `v`)
-	                                JOIN `UnitType` `u`)
-	                                JOIN `VariableType` `vt`)
-	                                JOIN `RegressionRegion` `rr`)
-	                                JOIN `RegressionType` `rt`)
-	                                JOIN `StatisticGroupType` `st`)
+	                                ((((((""Equation"" ""e""
+	                                JOIN ""Variable"" ""v"")
+	                                JOIN ""UnitType_view"" ""u"")
+	                                JOIN ""VariableType_view"" ""vt"")
+	                                JOIN ""RegressionRegion"" ""rr"")
+	                                JOIN ""RegressionType_view"" ""rt"")
+	                                JOIN ""StatisticGroupType_view"" ""st"")
     
                                 WHERE
-	                                ((`v`.`EquationID` = `e`.`ID`)
-		                                AND (`u`.`ID` = `v`.`UnitTypeID`)
-		                                AND (`st`.`ID` = `e`.`StatisticGroupTypeID`)
-		                                AND (`rr`.`ID` = `e`.`RegressionRegionID`)
-		                                AND (`rt`.`ID` = `e`.`RegressionTypeID`)
-		                                AND (`vt`.`ID` = `v`.`VariableTypeID`))";
+	                                ((""v"".""EquationID"" = ""e"".""ID"")
+		                                AND (""u"".""ID"" = ""v"".""UnitTypeID"")
+		                                AND (""st"".""ID"" = ""e"".""StatisticGroupTypeID"")
+		                                AND (""rr"".""ID"" = ""e"".""RegressionRegionID"")
+		                                AND (""rt"".""ID"" = ""e"".""RegressionTypeID"")
+		                                AND (""vt"".""ID"" = ""v"".""VariableTypeID""))";
 
                 default:
                     throw new Exception("No sql for table " + type);
@@ -464,7 +689,7 @@ namespace NSSAgent
                 return 1;
             }
         }
-        private bool valid(SimpleRegionEquation regressionRegion, double? maxRegressionregion = null)
+        private bool valid(SimpleRegionRegion regressionRegion, double? maxRegressionregion = null)
         {
             ExpressionOps eOps = null;
             try
@@ -574,7 +799,7 @@ namespace NSSAgent
                 return null;
             }//end try
         }
-        private void evaluateExtension(Extension ext, SimpleRegionEquation regressionregion)
+        private void evaluateExtension(Extension ext, SimpleRegionRegion regressionregion)
         {
             ExtensionServiceAgentBase sa = null;
             try
@@ -597,7 +822,7 @@ namespace NSSAgent
                 this.sm(sa.Messages);
             }
         }
-        private bool canAreaWeight(List<SimpleRegionEquation> regressionRegions)
+        private bool canAreaWeight(List<SimpleRegionRegion> regressionRegions)
         {
             double? areaSum;
             try
@@ -631,7 +856,7 @@ namespace NSSAgent
             }
 
         }
-        private SimpleRegionEquation evaluateWeightedAverage(List<SimpleRegionEquation> regressionRegions)
+        private SimpleRegionRegion evaluateWeightedAverage(List<SimpleRegionRegion> regressionRegions)
         {
             SimpleRegionEquation weightedRR = null;
             try
@@ -705,7 +930,7 @@ namespace NSSAgent
                 return null;
             }
         }
-        private SimpleRegionEquation evaluateTransitionBetweenFlowZones(List<SimpleRegionEquation> regressionRegions, List<RegressionRegionCoefficient> regressionregionCoeff)
+        private SimpleRegionRegion evaluateTransitionBetweenFlowZones(List<SimpleRegionRegion> regressionRegions, List<Coefficient> regressionregionCoeff)
         {
             SimpleRegionEquation RRTransZone = null;
             ExpressionOps eOps = null;
@@ -751,6 +976,6 @@ namespace NSSAgent
         }
 
         #endregion
-        
+
     }
 }

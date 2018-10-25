@@ -51,8 +51,9 @@ namespace NSSServices
                                                         options.UseNpgsql(String.Format(Configuration
                                                             .GetConnectionString("NSSConnection"), Configuration["dbuser"], Configuration["dbpassword"], Configuration["dbHost"]),
                                                             //default is 1000, if > maxbatch, then EF will group requests in maxbatch size
-                                                            opt => opt.MaxBatchSize(1000))
-                                                            .EnableSensitiveDataLogging());
+                                                            opt => { opt.MaxBatchSize(1000);opt.UseNetTopologySuite(); })
+                                                            //.EnableSensitiveDataLogging()
+                                                            );
 
             services.AddScoped<IAnalyticsAgent, GoogleAnalyticsAgent>((gaa) => new GoogleAnalyticsAgent(Configuration["AnalyticsKey"]));
 
@@ -77,8 +78,6 @@ namespace NSSServices
                     .AddXmlDataContractSeria‌​lizerFormatters()
                     .AddJsonOptions(options => loadJsonOptions(options));
         }
-
-     
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

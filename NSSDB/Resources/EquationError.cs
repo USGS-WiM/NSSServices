@@ -20,7 +20,6 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using WiM.Utilities;
 using SharedDB.Resources;
 
 namespace NSSDB.Resources

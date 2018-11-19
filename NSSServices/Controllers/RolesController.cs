@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WiM - USGS
+// copyright:   2019 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -38,7 +38,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.Select<Role>());   
+                return Ok(agent.GetRoles());   
             }
             catch (Exception ex)
             {
@@ -53,7 +53,7 @@ namespace NSSServices.Controllers
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok(await agent.Find<Role>(id));
+                return Ok(await agent.GetRole(id));
             }
             catch (Exception ex)
             {
@@ -68,7 +68,7 @@ namespace NSSServices.Controllers
             {
                 if (!isValid(entity)) return new BadRequestObjectResult("Object is invalid");
 
-                return Ok(await agent.Add<Role>(entity));
+                return Ok(await agent.Add(entity));
             }
             catch (Exception ex)
             {
@@ -83,7 +83,7 @@ namespace NSSServices.Controllers
             {
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
-                return Ok(await agent.Add<Role>(entities));
+                return Ok(await agent.Add(entities));
             }
             catch (Exception ex)
             {
@@ -97,7 +97,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (!isValid(entity) || id < 1) return new BadRequestResult();
-                return Ok(await agent.Update<Role>(id,entity));
+                return Ok(await agent.Update(id,entity));
             }
             catch (Exception ex)
             {
@@ -111,10 +111,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (id < 1) return new BadRequestResult();
-                var role = await agent.Find<Role>(id);
-                if (role == null) return new NotFoundResult();
-
-                await agent.Delete<Role>(role);
+                await agent.DeleteRole(id);
                 return Ok();
 
             }

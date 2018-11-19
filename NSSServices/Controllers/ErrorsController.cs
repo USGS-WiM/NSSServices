@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WiM - USGS
+// copyright:   2019 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -21,7 +21,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using NSSDB.Resources;
+using SharedDB.Resources;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -60,7 +60,86 @@ namespace NSSServices.Controllers
             {
                 return await HandleExceptionAsync(ex);
             }
-        }        
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> Post([FromBody]ErrorType entity)
+        {
+            try
+            {
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                //return Ok(await agent.Add<ErrorType>(entity));
+                //return Ok();
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
+        [Route("Batch")]
+        public async Task<IActionResult> Batch([FromBody]List<ErrorType> entities)
+        {
+            try
+            {
+#warning check if logged in user allowed to modify based on regionManager
+
+                //if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+
+                //return Ok(await agent.Add<StatisticGroupType>(entities));
+                //return Ok();
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> Put(int id, [FromBody]ErrorType entity)
+        {
+            try
+            {
+#warning check if logged in user allowed to modify based on regionManager
+
+                //if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                //return Ok(await agent.Update<StatisticGroupType>(id,entity));
+                //return Ok();
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+#warning check if logged in user allowed to modify based on regionManager
+                //if (id < 1) return new BadRequestResult();
+                //var entity = await agent.Find<StatisticGroupType>(id);
+                //if (entity == null) return new NotFoundResult();
+                //await agent.Delete<StatisticGroupType>(entity);
+
+                //return Ok();
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
         #endregion    
     }
 }

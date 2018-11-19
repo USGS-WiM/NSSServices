@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WiM - USGS
+// copyright:   2019 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -40,18 +40,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                var query = agent.Select<Region>();
-                if (User.Identity.IsAuthenticated && !User.IsInRole("Administrator"))
-                {
-                    query = query.Include(r => "RegionManagers.Regions").Where(r => r.Managers
-                                    .Any(rm => rm.ID == LoggedInUser().ID)).Select(r => new Region()
-                                                                                        {
-                                                                                            Description = r.Description,
-                                                                                            ID =r.ID,
-                                                                                            Name = r.Name,
-                                                                                            Code = r.Code
-                                                                                        });
-                }//end if
+                var query = agent.GetRegions();                
                 return Ok(query);
             }
             catch (Exception ex)
@@ -83,7 +72,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (!isValid(entity)) return new BadRequestResult();
-                return Ok(await agent.Add<Region>(entity));
+                return Ok(await agent.Add(entity));
             }
             catch (Exception ex)
             {
@@ -99,7 +88,7 @@ namespace NSSServices.Controllers
             {
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
-                return Ok(await agent.Add<Region>(entities));
+                return Ok(await agent.Add(entities));
             }
             catch (Exception ex)
             {
@@ -113,7 +102,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (id < 1 || !isValid(entity)) return new BadRequestResult();
-                return Ok(await agent.Update<Region>(id, entity));
+                return Ok(await agent.Update(id, entity));
             }
             catch (Exception ex)
             {
@@ -129,9 +118,7 @@ namespace NSSServices.Controllers
             {
 
                 if (id < 1) return new BadRequestResult();
-                var entity = await agent.Find<Region>(id);
-                if (entity == null) return new NotFoundResult();
-                await agent.Delete<Region>(entity);
+                await agent.DeleteRegion(id);
 
                 return Ok();
             }

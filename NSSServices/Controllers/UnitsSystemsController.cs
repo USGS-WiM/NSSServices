@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WiM - USGS
+// copyright:   2019 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -21,7 +21,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using NSSDB.Resources;
+using SharedDB.Resources;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -40,7 +40,8 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.Select<UnitSystemType>());  
+                //return Ok(agent.Select<UnitSystemType>());  
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -53,9 +54,10 @@ namespace NSSServices.Controllers
         {
             try
             {
-                if(id<0) return new BadRequestResult(); // This returns HTTP 404
+                return NotFound();
+                //if (id<0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok(await agent.Find<UnitSystemType>(id));
+                //return Ok(await agent.Find<UnitSystemType>(id));
             }
             catch (Exception ex)
             {
@@ -68,8 +70,9 @@ namespace NSSServices.Controllers
         {
             try
             {
-                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.Add<UnitSystemType>(entity));
+                return NotFound();
+                // if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                //return Ok(await agent.Add<UnitSystemType>(entity));
             }
             catch (Exception ex)
             {
@@ -82,8 +85,9 @@ namespace NSSServices.Controllers
         {
             try
             {
-                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.Update<UnitSystemType>(id,entity));
+                return NotFound();
+                //if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                //return Ok(await agent.Update<UnitSystemType>(id,entity));
             }
             catch (Exception ex)
             {
@@ -97,13 +101,13 @@ namespace NSSServices.Controllers
         {
             try
             {
+                return NotFound();
+                //if (id < 1) return new BadRequestResult();
+                //var entity = await agent.Find<UnitSystemType>(id);
+                //if (entity == null) return new NotFoundResult();
+                //await agent.Delete<UnitSystemType>(entity);
 
-                if (id < 1) return new BadRequestResult();
-                var entity = await agent.Find<UnitSystemType>(id);
-                if (entity == null) return new NotFoundResult();
-                await agent.Delete<UnitSystemType>(entity);
-
-                return Ok();
+                //return Ok();
             }
             catch (Exception ex)
             {

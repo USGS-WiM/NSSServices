@@ -14,7 +14,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "WaterUseServices": {
+    "NSSServices": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/values",

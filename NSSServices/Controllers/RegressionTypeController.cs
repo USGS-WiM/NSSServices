@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WiM - USGS
+// copyright:   2019 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using NSSDB.Resources;
+using SharedDB.Resources;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.Select<RegressionType>());  
+                return Ok(agent.GetRegressions());  
             }
             catch (Exception ex)
             {
@@ -55,7 +56,7 @@ namespace NSSServices.Controllers
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok(await agent.Find<RegressionType>(id));
+                return Ok(await agent.GetRegression(id));
             }
             catch (Exception ex)
             {
@@ -64,14 +65,14 @@ namespace NSSServices.Controllers
         }
 
         [HttpGet("Regions/{region}/[controller]")]
-        [HttpGet("[controller]?region={region}")]
+        //[HttpGet("[controller]?region={region}")]
         public async Task<IActionResult> GetRegressionTypes(int region, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "")
         {
             try
             {
                 //if (id < 0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok();
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -84,8 +85,9 @@ namespace NSSServices.Controllers
         {
             try
             {
-                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.Add<RegressionType>(entity));
+                //if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                //return Ok(await agent.Add<RegressionType>(entity));
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -100,9 +102,10 @@ namespace NSSServices.Controllers
             try
             {
 
-                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+                //if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
-                return Ok(await agent.Add<RegressionType>(entities));
+                //return Ok(await agent.Add<RegressionType>(entities));
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -116,8 +119,9 @@ namespace NSSServices.Controllers
             try
             {
 
-                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.Update<RegressionType>(id,entity));
+                //if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                //return Ok(await agent.Update<RegressionType>(id,entity));
+                return NotFound();
             }
             catch (Exception ex)
             {
@@ -131,12 +135,12 @@ namespace NSSServices.Controllers
         {
             try
             {
-                if (id < 1) return new BadRequestResult();
-                var entity = await agent.Find<RegressionType>(id);
-                if (entity == null) return new NotFoundResult();
-                await agent.Delete<RegressionType>(entity);
+                //if (id < 1) return new BadRequestResult();
+                //var entity = await agent.Find<RegressionType>(id);
+                //if (entity == null) return new NotFoundResult();
+                //await agent.Delete<RegressionType>(entity);
 
-                return Ok();
+                return NotFound();
             }
             catch (Exception ex)
             {

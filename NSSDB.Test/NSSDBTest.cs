@@ -4,7 +4,10 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using WiM.Security;
 using System.Linq;
+using NSSDB.Resources;
+using System.Collections.Generic;
 
 namespace NSSDB.Test
 {
@@ -39,6 +42,45 @@ namespace NSSDB.Test
                 {
                     var testQuery = context.Equations.Include("EquationErrors.ErrorType").Include("EquationUnitTypes.UnitType").ToList();
                     Assert.IsNotNull(testQuery, testQuery.Count.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Assert.Fail(ex.Message);
+                }
+                finally
+                {
+                }
+
+            }
+        }
+        [TestMethod]
+        public void AddManagerTest()
+        {
+            using (NSSDBContext context = new NSSDBContext(new DbContextOptionsBuilder<NSSDBContext>().UseNpgsql(this.connectionstring, x => x.UseNetTopologySuite()).Options))
+            {
+                try
+                {
+                    var salt = Cryptography.CreateSalt();
+                    var password = "";
+
+                    if (String.IsNullOrEmpty(password)) throw new Exception("password cannot be empty");
+
+                    Manager manager = new Manager()
+                    {
+                        FirstName ="Test",
+                        Email = "testAdmin@usgs.gov",
+                        LastName = "Admin", RoleID =1,
+                        Username ="testAdmin", 
+                        Password = Cryptography.GenerateSHA256Hash(password, salt),
+                        Salt = salt,
+                        RegionManagers = new List<RegionManager>() { new RegionManager() { RegionID = 1 } }
+                       
+                    };
+                    context.Managers.Add(manager);
+                    context.SaveChanges();
+
+                    Assert.IsTrue(Cryptography.VerifyPassword(password, manager.Salt, manager.Password));
+
                 }
                 catch (Exception ex)
                 {

@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WiM - USGS
+// copyright:   2019 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -40,7 +40,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.Select<RegressionRegion>());  
+                return Ok(agent.GetRegressionRegions());  
             }
             catch (Exception ex)
             {
@@ -55,7 +55,7 @@ namespace NSSServices.Controllers
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok(await agent.Find<RegressionRegion>(id));
+                return Ok(await agent.GetRegressionRegion(id));
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace NSSServices.Controllers
         }
 
         [HttpGet("Regions/{region}/[controller]")]
-        [HttpGet("[controller]?region={region}")]
+        //[HttpGet("[controller]?region={region}")]
         public async Task<IActionResult> GetRegressionRegions(int region, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             try
@@ -86,7 +86,7 @@ namespace NSSServices.Controllers
             {
 #warning check if logged in user allowed to modify based on regionManager
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.Add<RegressionRegion>(entity));
+                return Ok(await agent.Add(entity));
             }
             catch (Exception ex)
             {
@@ -104,7 +104,7 @@ namespace NSSServices.Controllers
 
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
-                return Ok(await agent.Add<RegressionRegion>(entities));
+                return Ok(await agent.Add(entities));
             }
             catch (Exception ex)
             {
@@ -120,7 +120,7 @@ namespace NSSServices.Controllers
 #warning check if logged in user allowed to modify based on regionManager
 
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.Update<RegressionRegion>(id,entity));
+                return Ok(await agent.Update(id,entity));
             }
             catch (Exception ex)
             {
@@ -136,9 +136,7 @@ namespace NSSServices.Controllers
             {
 #warning check if logged in user allowed to modify based on regionManager
                 if (id < 1) return new BadRequestResult();
-                var entity = await agent.Find<RegressionRegion>(id);
-                if (entity == null) return new NotFoundResult();
-                await agent.Delete<RegressionRegion>(entity);
+                await agent.DeleteRegressionRegion(id);
 
                 return Ok();
             }

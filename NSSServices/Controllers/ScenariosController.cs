@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WiM - USGS
+// copyright:   2019 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -38,7 +38,7 @@ namespace NSSServices.Controllers
         #region METHOD
 
         [HttpGet("Regions/{region}/[controller]")]
-        [HttpGet("[controller]?region={region}")]
+        //[HttpGet("[controller]?region={region}")]
         public async Task<IActionResult> GetScenarios(int region,[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
                                                                  [FromQuery] Int32 unitsystem=1, [FromQuery] Int32 config =1, [FromQuery] string extensions ="")
         {
@@ -54,7 +54,7 @@ namespace NSSServices.Controllers
             }
         }
         [HttpGet("Regions/{region}/[controller]/[action]")]
-        [HttpGet("[controller]/[action]?region={region}")]
+        //[HttpGet("[controller]/[action]?region={region}")]
         public async Task<IActionResult> Estimate([FromQuery] string regressionRegions)
         {
             try
@@ -139,7 +139,8 @@ namespace NSSServices.Controllers
             {
 #warning check if logged in user allowed to modify based on regionManager
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.Add<Scenario>(entity));
+                //return Ok(await agent.Add(entity));
+                return NotFound();
             }
             catch (Exception ex)
             {

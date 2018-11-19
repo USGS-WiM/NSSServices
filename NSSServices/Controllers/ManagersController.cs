@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WiM - USGS
+// copyright:   2019 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -42,7 +42,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.Select<Manager>().Select(m=>new Manager() {
+                return Ok(agent.GetManagers().Select(m=>new Manager() {
                                                              ID = m.ID,
                                                              Email = m.Email,
                                                              FirstName=m.FirstName,
@@ -83,7 +83,7 @@ namespace NSSServices.Controllers
             {
                 if (id < 0) return new BadRequestResult(); // This returns HTTP 404
 
-                var x = await agent.Find<Manager>(id);
+                var x = await agent.GetManager(id);
                 //remove info not relevant
                 x.Salt = string.Empty;
                 x.Password = string.Empty;
@@ -114,7 +114,7 @@ namespace NSSServices.Controllers
                 entity.Password = Cryptography.GenerateSHA256Hash(entity.Password, entity.Salt);
 
                 if (! isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                var x = await agent.Add<Manager>(entity);
+                var x = await agent.Add(entity);
                 //remove info not relevant
                 x.Salt = string.Empty;
                 x.Password = string.Empty;
@@ -138,7 +138,7 @@ namespace NSSServices.Controllers
                     entity.RoleID < 1) return new BadRequestObjectResult(new Error(errorEnum.e_badRequest)); // This returns HTTP 404
 
                 //fetch object, assuming it exists
-                ObjectToBeUpdated = await agent.Find<Manager>(id);
+                ObjectToBeUpdated = await agent.GetManager(id);
                 if (ObjectToBeUpdated == null) return new NotFoundObjectResult(entity);
 
                 if (!User.IsInRole("Administrator")|| LoggedInUser().ID !=id)
@@ -149,7 +149,6 @@ namespace NSSServices.Controllers
                 ObjectToBeUpdated.OtherInfo = entity.OtherInfo;
                 ObjectToBeUpdated.PrimaryPhone = entity.PrimaryPhone;
                 ObjectToBeUpdated.SecondaryPhone = entity.SecondaryPhone;
-                ObjectToBeUpdated.Username = entity.Username;
                 ObjectToBeUpdated.Email = entity.Email;
 
                 //admin can only change role
@@ -167,7 +166,7 @@ namespace NSSServices.Controllers
 
                 }//end if
 
-                var x = await agent.Update<Manager>(id, entity);
+                var x = await agent.Update(id, entity);
 
                 //remove info not relevant
                 x.Salt = string.Empty;
@@ -187,10 +186,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (id < 1) return new BadRequestResult();
-                var entity = await agent.Find<Manager>(id);
-                if (entity == null) return new NotFoundResult();
-
-                await agent.Delete<Manager>(entity);
+                await agent.DeleteManager(id);
 
                 return Ok();
 

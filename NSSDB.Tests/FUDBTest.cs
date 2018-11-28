@@ -35,22 +35,22 @@ namespace NSSDB.Tests
             }
 
             //cleanup
-            //A) ACCESS DB has 2 Regions named TN
-            //  Change STate code of ID 10047 to 'XX'
-            //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-            //B) Change Statistic group type to: Urban flows(31) and Rural flows (32)
+            ////A) ACCESS DB has 2 Regions named TN
+            ////  Change STate code of ID 10047 to 'XX'
+            ////-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            ////B) Change Statistic group type to: Urban flows(31) and Rural flows (32)
             //UPDATE Equation e LEFT JOIN RegressionRegion rr ON(e.RegressionRegionID = rr.ID) SET e.StatisticGroupTypeID = 31 Where rr.`Code` IN('GC1540', 'GC1539', 'GC1541', 'GC1542', 'GC1543', 'GC1481', 'GC1577', 'GC1576', 'GC1578', 'GC1579', 'GC1614', 'GC1615', 'GC1616', 'GC1584', 'GC1583', 'GC1585', 'GC1586', 'GC1251');
             //UPDATE Equation e LEFT JOIN RegressionRegion rr ON(e.RegressionRegionID = rr.ID) SET e.StatisticGroupTypeID = 32 Where rr.`Code` IN('GC1540');
 
-            //C) hookup RegressionRegionCoefficient
-            //- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            ////C) hookup RegressionRegionCoefficient
+            ////- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC730") up set rc.RegressionRegionID = up.ID Where rc.ID = 1;
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC731") up set rc.RegressionRegionID = up.ID Where rc.ID = 2;
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC660") up set rc.RegressionRegionID = up.ID Where rc.ID = 3;
             //update RegressionRegionCoefficient rc, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC661") up set rc.RegressionRegionID = up.ID Where rc.ID = 4;
 
-            //D) hookup Limitations
-            //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            ////D) hookup Limitations
+            ////-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1656") up set l.RegressionRegionID = up.ID Where l.ID = 1;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1657") up set l.RegressionRegionID = up.ID Where l.ID = 2;
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1438") up set l.RegressionRegionID = up.ID Where l.ID = 3;
@@ -123,8 +123,8 @@ namespace NSSDB.Tests
             //update Limitation l, (Select rr.ID from RegressionRegion rr where rr.`Code` = "GC1769") up set l.RegressionRegionID = up.ID Where l.ID = 129;
 
 
-            //E) ReInsert limitations/Coeff to variable reference
-            //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            ////E) ReInsert limitations/Coeff to variable reference
+            ////-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES(256, 1, 76);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES(256, 1, 77);
             //INSERT INTO `Variable` (`VariableTypeID`, `UnitTypeID`, `LimitationID`) VALUES(256, 1, 78);
@@ -248,10 +248,10 @@ namespace NSSDB.Tests
             //INSERT INTO `Variable`(`VariableTypeID`, `UnitTypeID`, `LimitationID`, `Comments`) VALUES(87, 11, 128, "PA Statewide_Bankfull_Carbonate_2018_5066 (GC1770) Limitation");
             //INSERT INTO `Variable`(`VariableTypeID`, `UnitTypeID`, `LimitationID`, `Comments`) VALUES(87, 11, 129, "PA Statewide_Bankfull_Carbonate_2018_5066 (GC1769) Limitation");
 
-            //F) Flash Citations to remove #
+            ////F) Flash Citations to remove #
             //UPDATE Citation Set CitationURL = REPLACE(CitationURL,'#','');
 
-            //G) add missing/default variable units
+            ////G) add missing/default variable units
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(23, 35, "Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(25, 35, "Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES(43, 11, "Default unit");

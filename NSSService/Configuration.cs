@@ -196,7 +196,7 @@ namespace NSSService
         private void AddScenarioEndpoints() 
                 {
                     ResourceSpace.Has.ResourcesOfType<List<Scenario>>()
-                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={unitsystemID}&" + userTypeResource + "={configID}&" +extensionResource+" ={extensionmethods}").Named("GetScenarios")
+                        .AtUri(scenarioResource + "?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={unitsystemID}&" + userTypeResource + "={configID}&" +extensionResource+"={extensionmethods}").Named("GetScenarios")
                         .And.AtUri(regionResource + "/{region}/" + scenarioResource + "?" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={unitsystemID}&" + userTypeResource + "={configID}&" + extensionResource + "={extensionmethods}").Named("GetScenarios")
 
                         .And.AtUri(scenarioResource + "/estimate?region={region}&" + RegressionRegionResource + "={regressionRegionIDs}&" + statisticGroupTypeResource + "={statisticgroups}&" + regressionTypeResource + "={regressiontypeIDs}&" + unitSystemTypeResource + "={unitsystemID}&" + userTypeResource + "={configID}&" + extensionResource + "={extensionmethods}").Named("EstimatesScenarios")

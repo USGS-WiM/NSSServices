@@ -26,6 +26,7 @@ using WiM.TimeSeries;
 using WiM.Utilities.ServiceAgent;
 
 using NSSService.Resources;
+using System.Net;
 
 namespace NSSService.Utilities.ServiceAgent
 {
@@ -39,6 +40,10 @@ namespace NSSService.Utilities.ServiceAgent
         public StationServiceAgent(String BaseURL)
             : base(BaseURL)
         {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                                                     | SecurityProtocolType.Tls11
+                                                     | SecurityProtocolType.Tls12;
         }
         #endregion
         #endregion
@@ -50,6 +55,8 @@ namespace NSSService.Utilities.ServiceAgent
             {
                 //
                 RestRequest r = new RestRequest(String.Format(getURI(serviceType.e_nwis_info), stationID));
+
+
                 site s = Execute<usgs_nwis>(r).Data.site;
                 return new Station(s);
             }
@@ -96,7 +103,7 @@ namespace NSSService.Utilities.ServiceAgent
 
             return uri;
         }//end getURL
-       
+        
         #endregion 
         #region Enumerations
         public enum serviceType

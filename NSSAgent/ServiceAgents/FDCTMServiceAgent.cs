@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2014 WiM - USGS
+// copyright:   2014 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
 //              
@@ -34,9 +34,10 @@ using Newtonsoft;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using WiM.Resources.TimeSeries;
+using WIM.Resources.TimeSeries;
 using NSSAgent.Resources;
-using WiM.Utilities;
+using WIM.Utilities;
+using WIM.Resources;
 
 namespace NSSAgent.ServiceAgents
 {
@@ -79,19 +80,19 @@ namespace NSSAgent.ServiceAgents
                 var sdate = Parameters.FirstOrDefault(i => String.Equals(i.Code, "sdate", StringComparison.OrdinalIgnoreCase));
                 var edate = Parameters.FirstOrDefault(i => String.Equals(i.Code, "edate", StringComparison.OrdinalIgnoreCase));
 
-                if (sid == null || sdate == null || edate == null) { sm(WiM.Resources.MessageType.error, "one or more input params are null"); return false; }
+                if (sid == null || sdate == null || edate == null) throw new Exception("One or more input params are null");
                 this.StartDate = Convert.ToDateTime(sdate.Value);
                 this.EndDate = Convert.ToDateTime(edate.Value);
 
                 ((QPPQResult)Result).ReferanceGage = Station.NWISStation(sid.Value);
-                if (!((QPPQResult)Result).ReferanceGage.LoadFullRecord()) { sm(WiM.Resources.MessageType.error, "Failed to load refrance gage "); return false; }
+                if (!((QPPQResult)Result).ReferanceGage.LoadFullRecord()) throw new Exception("Failed to load reference gage ");
                 transferFlowDuration(((QPPQResult)Result).ReferanceGage.GetExceedanceProbability());
                 
                 return true;
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, "Failed to initialize FDCTMService Agent "+ex.Message);
+                sm($"Failed to initialize FDCTMService Agent {ex.Message}", MessageType.error);
                 return false;
             }
         }
@@ -115,7 +116,7 @@ namespace NSSAgent.ServiceAgents
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, "Failed to Execute FDCTMService Agent " + ex.Message);
+                sm($"Failed to Execute FDCTMService Agent {ex.Message}", MessageType.error);
                 return false;
             }
         }
@@ -221,6 +222,9 @@ namespace NSSAgent.ServiceAgents
 
                 throw;
             }
+        }
+        protected void sm(string msg, MessageType type = MessageType.info)
+        {
         }
         #endregion
         #region Structures

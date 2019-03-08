@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2014 WiM - USGS
+// copyright:   2014 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Wisconsin Internet Mapping
 //              
@@ -23,23 +23,18 @@ using NSSAgent.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WiM.Resources;
+using WIM.Resources;
 
 namespace NSSAgent.ServiceAgents
 {
-    public abstract class ExtensionServiceAgentBase:IMessage
+    public abstract class ExtensionServiceAgentBase
     {
         #region "Properties"       
         public IExtensionResult Result { get; protected set; }
         public bool isInitialized { get; protected set; }
         #endregion
         #region "Collections & Dictionaries"
-        private List<Message> _message = new List<Message>();
-        public List<Message> Messages
-        {
-            get { return _message.Distinct().ToList(); }
-        }
-        #endregion
+          #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
         public ExtensionServiceAgentBase()
@@ -60,14 +55,6 @@ namespace NSSAgent.ServiceAgents
         protected virtual Boolean IsValid()
         {
             throw new NotImplementedException();    
-        }
-        protected void sm(MessageType t, string msg)
-        {
-            this._message.Add(new Message() { type = t, msg = msg });
-        }
-        protected void sm(List<Message> msg)
-        {
-            this._message.AddRange(msg);
         }
         #endregion
     }//end class

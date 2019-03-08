@@ -1,0 +1,72 @@
+[
+        {
+            "ID": "1",
+            "Name": "Nation",
+            "Code": "US",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "2",
+            "Name": "Alabama",
+            "Code": "AL",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "3",
+            "Name": "Alaska",
+            "Code": "AK",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "4",
+            "Name": "Arizona",
+            "Code": "AZ",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "5",
+            "Name": "Arkansas",
+            "Code": "AR",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "6",
+            "Name": "California",
+            "Code": "CA",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "7",
+            "Name": "Colorado",
+            "Code": "CO",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "8",
+            "Name": "Connecticut",
+            "Code": "CT",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "9",
+            "Name": "Delaware",
+            "Code": "DE",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        },
+        {
+            "ID": "10",
+            "Name": "Florida",
+            "Code": "FL",
+            "Description": "",
+            "LastModified": "25/10/2018 18:38:33.418467"
+        }
+    ]

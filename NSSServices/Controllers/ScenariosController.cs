@@ -26,6 +26,9 @@ using NSSAgent;
 using NSSAgent.Resources;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using WIM.Exceptions.Services;
+using System.Linq;
+using NetTopologySuite.Geometries;
 
 namespace NSSServices.Controllers
 {
@@ -36,32 +39,68 @@ namespace NSSServices.Controllers
         { }
 
         #region METHOD
-
-        [HttpGet("Regions/{region}/[controller]")]
-        //[HttpGet("[controller]?region={region}")]
-        public async Task<IActionResult> GetScenarios(int region,[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
-                                                                 [FromQuery] Int32 unitsystem=1, [FromQuery] Int32 config =1, [FromQuery] string extensions ="")
+        [HttpGet("[action]")]
+        [HttpGet("/Regions/{regions}/[controller]/[action]")]
+        [HttpPost("[action]")]
+        [HttpPost("/Regions/{regions}/[controller]/[action]")]
+        public async Task<IActionResult> GetScenariosConfigurations([FromBody] Geometry geom = null, string regions="",[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
+                                                                 [FromQuery] Int32 unitsystem=0, [FromQuery] Int32? config =1, [FromQuery] string extensions ="")
         {
+            List<string> statisticgroupList = null;
+            List<string> regressiontypeList = null;
+            List<string> regressionregionList = null;
+            List<string> extensionList = null;
+            List<Scenario> entities = null;
+            List<string> RegionList = null;
             try
             {
-                //if (id < 0) return new BadRequestResult(); // This returns HTTP 404
+                if (string.IsNullOrEmpty(regions)) throw new BadRequestException("region must be specified");
+                RegionList = parse(regions);
+                statisticgroupList = parse(statisticgroups);
+                regressiontypeList = parse(regressiontypes);
+                regressionregionList = parse(regressionRegions);
+                extensionList = parse(extensions);
+                if (!config.HasValue) config = 1;
 
-                return Ok();
+                entities = agent.GetScenarios(RegionList, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+                sm("Count: " + entities.Count());
+
+                return Ok(entities);
             }
             catch (Exception ex)
             {
                 return await HandleExceptionAsync(ex);
             }
         }
-        [HttpGet("Regions/{region}/[controller]/[action]")]
-        //[HttpGet("[controller]/[action]?region={region}")]
-        public async Task<IActionResult> Estimate([FromQuery] string regressionRegions)
+        [HttpGet("/Regions/{regions}/[controller]/[action]")]
+        [HttpGet("[action]")]
+        [HttpPost("/Regions/{regions}/[controller]/[action]")]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Estimate(string regions, [FromBody]List<Scenario> scenarioList, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
+                                                                 [FromQuery] Int32 unitsystem = 0, [FromQuery] Int32? config = 1, [FromQuery] string extensions = "")
         {
+            List<string> statisticgroupList = null;
+            List<string> regressiontypeList = null;
+            List<string> regressionregionList = null;
+            List<string> extensionList = null;
+            List<Scenario> entities = null;
+            List<string> RegionList = null;
             try
             {
-                //if (id < 0) return new BadRequestResult(); // This returns HTTP 404
+                if (string.IsNullOrEmpty(regions)) throw new BadRequestException("region must be specified");                
+                if (scenarioList == null || scenarioList.Count() < 1) throw new BadRequestException("scenario must be specified in the body of request");
 
-                return Ok();
+                RegionList = parse(regions);
+                statisticgroupList = parse(statisticgroups);
+                regressiontypeList = parse(regressiontypes);
+                regressionregionList = parse(regressionRegions);
+                extensionList = parse(extensions);
+                if (!config.HasValue) config = 1;
+
+                entities = agent.EstimateScenarios(RegionList, scenarioList, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+                sm("Count: " + entities.Count());
+
+                return Ok(entities);
             }
             catch (Exception ex)
             {
@@ -69,70 +108,31 @@ namespace NSSServices.Controllers
             }
         }
 
+        
 
-        //[HttpPost]
-        //[HttpGet]
-        //public async Task<IActionResult> Get([FromQuery] Int32 year, [FromQuery]Int32? endyear = null, [FromBody] object basin = null,
-        //                                        [FromQuery]string sources = "", [FromQuery]bool includePermits = false,
-        //                                        [FromQuery]bool computeDomestic = false)
-        //{
-        //    try
-        //    {
-        //        if (year < 1950 || (basin == null && string.IsNullOrEmpty(sources))) return new BadRequestResult(); //return HTTP 404
+        public async Task<IActionResult> Execute([FromBody]List<Scenario> scenarioList, [FromQuery] Int32 unitsystem = 0, [FromQuery] Int32? config = 1)
+        {
+            List<Scenario> entities = null;
+            try
+            {
+                if (scenarioList == null || scenarioList.Count() < 1) throw new BadRequestException("scenario must be specified in the body of request");
 
-        //        if (includePermits) agent.IncludePermittedWithdrawals = includePermits;
+                if (!config.HasValue) config = 1;
+#warning refactor to perform actions on all scenarios passed in.
+                //entities = agent.EstimateScenarios( scenarioList, unitsystem).ToList();
+                sm("Count: " + entities.Count());
 
-        //        if (computeDomestic)
-        //            agent.ComputeDomesticWateruse();
+                return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
 
-        //        if (!string.IsNullOrEmpty(sources))
-        //        {
-        //            if (!User.Identity.IsAuthenticated) return new UnauthorizedResult();// return HTTP 401
-        //            return Ok(agent.GetWateruse(parse(sources), year, endyear));
-        //        }//end if
-
-        //        if (basin == null) return new BadRequestResult(); //return HTTP 404
-        //        return Ok(agent.GetWateruse(basin, year, endyear));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return await HandleExceptionAsync(ex);
-        //    }
-        //}
-
-        //[HttpPost]
-        //[HttpGet]
-        //[Authorize(Policy = "Restricted")]
-        //[Route("BySource")]
-        //public async Task<IActionResult> BySource([FromQuery] Int32 year, [FromQuery]Int32? endyear = null, [FromBody] object basin = null,
-        //                                            [FromQuery]string sources = "", [FromQuery]bool includePermits = false,
-        //                                            [FromQuery]bool computeDomestic = false)
-        //{
-        //    try
-        //    {
-        //        if (year < 1950 || (basin == null && string.IsNullOrEmpty(sources))) return new BadRequestResult(); //return HTTP 404
-
-        //        if (includePermits) agent.IncludePermittedWithdrawals = includePermits;
-
-        //        if (computeDomestic)
-        //            agent.ComputeDomesticWateruse();
-
-        //        if (!string.IsNullOrEmpty(sources))
-        //        {
-        //            if (!User.Identity.IsAuthenticated) return new UnauthorizedResult(); //return HTTP 404                   
-        //            return Ok(agent.GetWaterusebySource(parse(sources), year, endyear));
-        //        }//end if
-
-        //        if (basin == null) return new BadRequestResult(); //return HTTP 401
-        //        return Ok(agent.GetWaterusebySource(basin, year, endyear));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return await HandleExceptionAsync(ex);
-        //    }
-        //}
-
-        [HttpPost][Authorize(Policy = "CanModify")]
+        [HttpPost("/Regions/{regions}/[controller]")]
+        [HttpPost]
+        [Authorize(Policy = "CanModify")]
         public async Task<IActionResult> Post([FromBody]Scenario entity)
         {
             try
@@ -147,9 +147,7 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }            
         }
+        #endregion
 
-        #endregion
-        #region HELPER METHODS
-        #endregion
     }
 }

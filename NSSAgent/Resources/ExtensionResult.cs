@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using WiM.Resources.TimeSeries;
+using WIM.Resources.TimeSeries;
 using System.Xml.Serialization;
 
 namespace NSSAgent.Resources

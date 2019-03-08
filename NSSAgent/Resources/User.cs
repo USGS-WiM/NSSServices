@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WiM.Security.Authentication.Basic;
+using WIM.Security.Authentication.Basic;
 
 namespace NSSAgent.Resources
 {

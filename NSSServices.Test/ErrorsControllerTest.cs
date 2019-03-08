@@ -27,7 +27,7 @@ namespace NSSServices.Test
         public ErrorsController controller { get; private set; }
         public ErrorsControllerTest() {
             //Arrange
-            controller = new ErrorsController(new InMemoryNSSAgent());
+            controller = new ErrorsController(new InMemoryNSSAgent(),new InMemorySharedAgent());
             controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext()

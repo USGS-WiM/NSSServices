@@ -24,20 +24,23 @@ using System.Collections.Generic;
 using System.Linq;
 using NSSDB;
 using NSSDB.Resources;
-using WiM.Utilities;
+using WIM.Utilities;
 using Microsoft.EntityFrameworkCore;
 using NSSAgent.Resources;
-using System.Globalization;
 using System.Threading.Tasks;
-using WiM.Security.Authentication.Basic;
+using WIM.Security.Authentication.Basic;
 using Newtonsoft.Json;
 using NSSAgent.ServiceAgents;
 using SharedDB.Resources;
-using WiM.Resources;
+using WIM.Resources;
+using Microsoft.AspNetCore.Http;
+using System.Data;
+using System.Data.Common;
+using WIM.Extensions;
 
 namespace NSSAgent
 {
-    public interface INSSAgent:IMessage
+    public interface INSSAgent: IBasicUserAgent
     {
         //Citations
         IQueryable<Citation> GetCitations();
@@ -65,6 +68,7 @@ namespace NSSAgent
         IQueryable<Region> GetRegions();
         Task<Region> GetRegion(Int32 ID);
         Region GetRegionByIDOrCode(string identifier);
+        IQueryable<Region> GetManagerRegions(int managerID);
         Task<Region> Add(Region item);
         Task<IEnumerable<Region>> Add(List<Region> items);
         Task<Region> Update(Int32 pkId, Region item);
@@ -72,9 +76,11 @@ namespace NSSAgent
 
         //RegressionRegions
         IQueryable<RegressionRegion> GetRegressionRegions();
+        IQueryable<RegressionRegion> GetRegressionRegions(List<String> regionList, List<String> statisticgroupList, List<String> regressiontypeList);
         Task<RegressionRegion> GetRegressionRegion(Int32 ID);
-        Task<RegressionRegion> Add(RegressionRegion item);
-        Task<IEnumerable<RegressionRegion>> Add(List<RegressionRegion> items);
+        IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID);
+        Task<RegionRegressionRegion> Add(RegionRegressionRegion item);
+        Task<IEnumerable<RegionRegressionRegion>> Add(List<RegionRegressionRegion> items);
         Task<RegressionRegion> Update(Int32 pkId, RegressionRegion item);
         Task DeleteRegressionRegion(Int32 pkID);
 
@@ -92,30 +98,39 @@ namespace NSSAgent
         Task<IEnumerable<Role>> Add(List<Role> items);
         Task<Role> Update(Int32 pkId, Role item);
         Task DeleteRole(Int32 pkID);
-
+        
+        //Scenarios
+        IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
+        IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
+        
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
         Task<ErrorType> GetError(Int32 ID);
         IQueryable<RegressionType> GetRegressions();
+        IQueryable<RegressionType> GetRegressions(List<String> regionList, List<String> regressionRegionList, List<String> statisticgroupList);
         Task<RegressionType> GetRegression(Int32 ID);
         IQueryable<StatisticGroupType> GetStatisticGroups();
+        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList, List<String> regressionRegionList, List<String> regressionsList);
         Task<StatisticGroupType> GetStatisticGroup(Int32 ID);
         IQueryable<UnitType> GetUnits();
         Task<UnitType> GetUnit(Int32 ID);
+        IQueryable<UnitSystemType> GetUnitSystems();
+        Task<UnitSystemType> GetUnitSystem(Int32 ID);
         IQueryable<VariableType> GetVariables();
         Task<VariableType> GetVariable(Int32 ID);
     }
-    public class NSSServiceAgent : DBAgentBase, INSSAgent, IBasicUserAgent
+    public class NSSServiceAgent : DBAgentBase, INSSAgent
     {
         #region "Properties"
+        private readonly IDictionary<Object,Object> _messages;
         #endregion
         #region "Collections & Dictionaries"
         private List<UnitConversionFactor> unitConversionFactors { get; set; }
         private List<Limitation> limitations { get; set; }
         #endregion
         #region Constructors
-        public NSSServiceAgent(NSSDBContext context) : base(context) {
-
+        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor) : base(context) {
+            _messages = httpContextAccessor.HttpContext.Items;
             //optimize query for disconnected databases.
             this.context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
@@ -234,7 +249,7 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, "Error finding region " + ex.Message);
+                sm("Error finding region " + ex.Message, WIM.Resources.MessageType.error);
                 return null;
             }
 
@@ -247,6 +262,11 @@ namespace NSSAgent
         public Task<Region> GetRegion(int ID)
         {
             return this.Find<Region>(ID);
+        }
+        public IQueryable<Region> GetManagerRegions(int managerID)
+        {
+            return Select<RegionManager>().Where(rm => rm.ManagerID == managerID)
+                                .Include("Region").Select(rm => rm.Region);
         }
         public Task<Region> Add(Region item)
         {
@@ -270,34 +290,41 @@ namespace NSSAgent
         {
             try
             {
-
                 return Select<RegressionRegion>().FirstOrDefault(e => String.Equals(e.ID.ToString().Trim().ToLower(),
                                                         identifier.Trim().ToLower()) || String.Equals(e.Code.Trim().ToLower(),
                                                         identifier.Trim().ToLower()));
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, "Error finding region " + ex.Message);
+                sm("Error finding region " + ex.Message, WIM.Resources.MessageType.error);
                 return null;
             }
-
-
         }
         public IQueryable<RegressionRegion> GetRegressionRegions()
         {
             return this.Select<RegressionRegion>();
         }
+        public IQueryable<RegressionRegion> GetRegressionRegions(List<String> regionList, List<String> statisticgroupList, List<String> regressiontypeList)
+        {
+            return this.GetEquations(regionList, null, statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion).Distinct().OrderBy(e => e.ID);
+        }
         public Task<RegressionRegion> GetRegressionRegion(int ID)
         {
             return this.Find<RegressionRegion>(ID);
         }
-        public Task<RegressionRegion> Add(RegressionRegion item)
+        public IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID)
         {
-            return this.Add<RegressionRegion>(item);
+            return Select<RegionManager>().Where(rm => rm.ManagerID == managerID)
+                                .Include("Region.RegionRegressionRegions.RegressionRegion")
+                                .SelectMany(e => e.Region.RegionRegressionRegions.Select(s => s.RegressionRegion));
         }
-        public Task<IEnumerable<RegressionRegion>> Add(List<RegressionRegion> items)
+        public Task<RegionRegressionRegion> Add(RegionRegressionRegion item)
         {
-            return this.Add<RegressionRegion>(items);
+            return this.Add<RegionRegressionRegion>(item);
+        }
+        public Task<IEnumerable<RegionRegressionRegion>> Add(List<RegionRegressionRegion> items)
+        {
+            return this.Add<RegionRegressionRegion>(items);
         }
         public Task<RegressionRegion> Update(int pkId, RegressionRegion item)
         {
@@ -364,7 +391,7 @@ namespace NSSAgent
         }
         #endregion        
         #region Scenarios
-        public IQueryable<Scenario> GetScenarios(string region, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0)
+        public IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0)
         {
             IQueryable<ScenarioParameterView> equery = null;
             this.limitations = new List<Limitation>();
@@ -378,15 +405,15 @@ namespace NSSAgent
                 
 
                 List<RegionRegressionRegion> SelectedRegionRegressions = Select<RegionRegressionRegion>().Include("RegressionRegion")
-                           .Where(rer => String.Equals(region.Trim().ToLower(), rer.Region.Code.ToLower().Trim())
-                                   || String.Equals(region.ToLower().Trim(), rer.RegionID.ToString())).ToList();
+                           .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
+                           || regionList.Contains(rer.RegionID.ToString())).ToList();             
+
 
                 if (regionEquationList != null && regionEquationList.Count() > 0)
                     SelectedRegionRegressions = SelectedRegionRegressions.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString()) || regionEquationList.Contains(e.RegressionRegion.Code.ToLower().Trim())).ToList();
 
-                equery = getTable<ScenarioParameterView>(sqltypeenum.ScenarioParameterView,new Object[0]).Where(s => SelectedRegionRegressions.Select(rr => rr.RegressionRegionID).Contains(s.RegressionRegionID));
-
-
+                equery = GetScenarioParameterView().Where(s => SelectedRegionRegressions.Select(rr => rr.RegressionRegionID).Contains(s.RegressionRegionID));
+                
 
                 if (statisticgroupList != null && statisticgroupList.Count() > 0)
                     equery = equery.Where(e => statisticgroupList.Contains(e.StatisticGroupTypeID.ToString().Trim())
@@ -440,7 +467,7 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, "Error getting Scenario: " + ex.Message);
+                sm("Error getting Scenario: " + ex.Message,WIM.Resources.MessageType.error);
                 throw;
             }
         }
@@ -469,14 +496,15 @@ namespace NSSAgent
                     foreach (SimpleRegressionRegion regressionregion in scenario.RegressionRegions)
                     {
                         regressionregion.Results = new List<RegressionResultBase>();
-                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).Select(e => e).ToList();
+                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID)
+                            .Select(Equation.Projection).ToList();                            
 
                         Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                         if (paramsOutOfRange)
                         {
                             var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors";
                             regressionregion.Disclaimer = outofRangemsg;
-                            sm(WiM.Resources.MessageType.warning, outofRangemsg);
+                            sm(outofRangemsg, WIM.Resources.MessageType.warning);
                         }//end if
 
                         foreach (Equation equation in EquationList)
@@ -497,7 +525,7 @@ namespace NSSAgent
                                 code = equation.RegressionType.Code,
                                 Description = equation.RegressionType.Description,
                                 Unit = unit,
-                                Errors = paramsOutOfRange ? new List<Error>() : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType.Name, Value = e.Value, Code = e.ErrorType.Code }).ToList(),
+                                Errors = paramsOutOfRange ? new List<Error>() : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType?.Name, Value = e.Value, Code = e.ErrorType?.Code }).ToList(),
                                 EquivalentYears = paramsOutOfRange ? null : equation.EquivalentYears,
                                 IntervalBounds = paramsOutOfRange ? null : evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value * unit.factor),
                                 Value = eOps.Value * unit.factor
@@ -524,7 +552,7 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, "Error Estimating Scenarios: " + ex.Message);
+                sm("Error Estimating Scenarios: " + ex.Message, WIM.Resources.MessageType.error);
                 throw;
             }
         }
@@ -538,22 +566,34 @@ namespace NSSAgent
         {
             return this.Find<ErrorType>(ID);
         }
+
         public IQueryable<RegressionType> GetRegressions()
         {
             return this.Select<RegressionType>();
+        }
+        public IQueryable<RegressionType> GetRegressions(List<String> regionList, List<String> regressionRegionList, List<String> statisticgroupList)
+        {
+            return this.GetEquations(regionList, regressionRegionList, statisticgroupList).Select(e => e.RegressionType).Distinct().OrderBy(e => e.ID);
         }
         public Task<RegressionType> GetRegression(Int32 ID)
         {
             return this.Find<RegressionType>(ID);
         }
+
         public IQueryable<StatisticGroupType> GetStatisticGroups()
         {
             return this.Select<StatisticGroupType>();
+        }
+        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList, List<String> regressionRegionList, List<String> regressionsList)
+        {
+            return this.GetEquations(regionList, regressionRegionList,null, regressionsList).Select(e => e.StatisticGroupType).Distinct().OrderBy(e => e.ID);
+
         }
         public Task<StatisticGroupType> GetStatisticGroup(Int32 ID)
         {
             return this.Find<StatisticGroupType>(ID);
         }
+
         public IQueryable<UnitType> GetUnits()
         {
             return this.Select<UnitType>();
@@ -562,6 +602,16 @@ namespace NSSAgent
         {
             return this.Find<UnitType>(ID);
         }
+
+        public IQueryable<UnitSystemType> GetUnitSystems()
+        {
+            return this.Select<UnitSystemType>();
+        }
+        public Task<UnitSystemType> GetUnitSystem(Int32 ID)
+        {
+            return this.Find<UnitSystemType>(ID);
+        }
+
         public IQueryable<VariableType> GetVariables()
         {
             return this.Select<VariableType>();
@@ -569,7 +619,7 @@ namespace NSSAgent
         public Task<VariableType> GetVariable(Int32 ID)
         {
             return this.Find<VariableType>(ID);
-        }
+        }       
         #endregion
         #endregion
         #region HELPER METHODS
@@ -579,24 +629,24 @@ namespace NSSAgent
             if (entity == null) return new Task(null);
             return base.Delete<T>(entity);
         }
-        internal IQueryable<Equation> GetEquations(List<string> regionList, List<string> regionEquationList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
+        internal IQueryable<Equation> GetEquations(List<string> regionList, List<string> regressionRegions = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null)
         {
 
             IQueryable<Equation> equery = null;
 
             if (regionList != null && regionList.Count() > 0)
-                equery = Select<RegionRegressionRegion>()
+                equery = Select<RegionRegressionRegion>().Include(rrr=>rrr.Region).Include(rrr=>rrr.RegressionRegion).ThenInclude(rr=>rr.Equations)
                        .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
                                || regionList.Contains(rer.RegionID.ToString())).SelectMany(rr => rr.RegressionRegion.Equations).Include(e => e.RegressionType).AsQueryable();
             else
                 equery = Select<Equation>().Include(e => e.RegressionType).AsQueryable();
 
-            if (regionEquationList != null && regionEquationList.Count() > 0)
-                equery = equery.Where(e => regionEquationList.Contains(e.RegressionRegionID.ToString().Trim())
-                                            || regionEquationList.Contains(e.RegressionRegion.Code.ToLower().Trim()));
+            if (regressionRegions != null && regressionRegions.Count() > 0)
+                equery = equery.Include(e=>e.RegressionRegion).Where(e => regressionRegions.Contains(e.RegressionRegionID.ToString().Trim())
+                                            || regressionRegions.Contains(e.RegressionRegion.Code.ToLower().Trim()));
 
             if (statisticgroupList != null && statisticgroupList.Count() > 0)
-                equery = equery.Where(e => statisticgroupList.Contains(e.StatisticGroupTypeID.ToString().Trim())
+                equery = equery.Include(e=>e.StatisticGroupType).Where(e => statisticgroupList.Contains(e.StatisticGroupTypeID.ToString().Trim())
                                         || statisticgroupList.Contains(e.StatisticGroupType.Code.ToLower().Trim()));
 
             if (regressionTypeIDList != null && regressionTypeIDList.Count() > 0)
@@ -613,8 +663,32 @@ namespace NSSAgent
                 string sql = String.Format(getSQLStatement(type), args);
                 return FromSQL<T>(sql);
             }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        protected IQueryable<ScenarioParameterView> GetScenarioParameterView()
+        {
+            try
+            {
+                string sql = getSQLStatement(sqltypeenum.ScenarioParameterView);
+                Func<IDataReader, ScenarioParameterView> fromdr = (Func<IDataReader, ScenarioParameterView>)Delegate.CreateDelegate(typeof(Func<IDataReader, ScenarioParameterView>), null, typeof(ScenarioParameterView).GetMethod("FromDataReader"));
+
+                using (var command = context.Database.GetDbConnection().CreateCommand())
+                {
+                    command.CommandText = sql;
+                    context.Database.OpenConnection();
+                    using (DbDataReader reader = command.ExecuteReader())
+                    {
+                        return reader.Select<ScenarioParameterView>(fromdr).ToList().AsQueryable();
+                    }//end using
+                }//end using
+
+            }
             catch (Exception)
             {
+
                 throw;
             }
         }
@@ -624,50 +698,39 @@ namespace NSSAgent
             switch (type)
             {
                 case sqltypeenum.ScenarioParameterView:
-                    return @"    SELECT 
-	                                ""e"".""ID"" AS ""EquationID"",
-	                                ""e"".""RegressionTypeID"" AS ""RegressionTypeID"",
-	                                ""e"".""StatisticGroupTypeID"" AS ""StatisticGroupTypeID"",
-	                                ""e"".""RegressionRegionID"" AS ""RegressionRegionID"",
-	                                ""rt"".""Code"" AS ""RegressionTypeCode"",
-	                                ""rr"".""Name"" AS ""RegressionRegionName"",
-	                                ""rr"".""Code"" AS ""RegressionRegionCode"",
-	                                ""st"".""Code"" AS ""StatisticGroupTypeCode"",
-	                                ""st"".""Name"" AS ""StatisticGroupTypeName"",
-	                                ""v"".""ID"" AS ""VariableID"",
-                                    ""v"".""UnitTypeID"" AS ""UnitTypeID"",
-                                    ""u"".""Abbr"" AS ""UnitAbbr"",
-                                    ""u"".""Unit"" AS ""UnitName"",
-									""u"".""UnitSystemTypeID"" AS ""UnitSystemTypeID"",
-                                    ""v"".""MaxValue"" AS ""VariableMaxValue"",
-                                    ""v"".""MinValue"" AS ""VariableMinValue"", 
-	                                ""vt"".""Name"" AS ""VariableName"",
-	                                ""vt"".""Code"" AS ""VariableCode"",
-	                                ""vt"".""Description"" AS ""VariableDescription""
-    
-                                FROM
-	                                ((((((""Equation"" ""e""
-	                                JOIN ""Variable"" ""v"")
-	                                JOIN ""UnitType_view"" ""u"")
-	                                JOIN ""VariableType_view"" ""vt"")
-	                                JOIN ""RegressionRegion"" ""rr"")
-	                                JOIN ""RegressionType_view"" ""rt"")
-	                                JOIN ""StatisticGroupType_view"" ""st"")
-    
-                                WHERE
-	                                ((""v"".""EquationID"" = ""e"".""ID"")
-		                                AND (""u"".""ID"" = ""v"".""UnitTypeID"")
-		                                AND (""st"".""ID"" = ""e"".""StatisticGroupTypeID"")
-		                                AND (""rr"".""ID"" = ""e"".""RegressionRegionID"")
-		                                AND (""rt"".""ID"" = ""e"".""RegressionTypeID"")
-		                                AND (""vt"".""ID"" = ""v"".""VariableTypeID""))";
+                    return @"SELECT e.""ID"" AS ""EquationID"",
+		                            e.""RegressionTypeID"" AS ""RegressionTypeID"",
+		                            e.""StatisticGroupTypeID"" AS ""StatisticGroupTypeID"",
+		                            e.""RegressionRegionID"" AS ""RegressionRegionID"",
+		                            rt.""Code"" AS ""RegressionTypeCode"",
+		                            rr.""Name"" AS ""RegressionRegionName"",
+		                            rr.""Code"" AS ""RegressionRegionCode"",
+		                            st.""Code"" AS ""StatisticGroupTypeCode"",
+		                            st.""Name"" AS ""StatisticGroupTypeName"",
+		                            v.""ID"" AS ""VariableID"",
+		                            v.""UnitTypeID"" AS ""UnitTypeID"",
+		                            u.""Abbreviation"" AS ""UnitAbbr"",
+		                            u.""Name"" AS ""UnitName"",
+		                            u.""UnitSystemTypeID"" AS ""UnitSystemTypeID"",
+		                            v.""MaxValue"" AS ""VariableMaxValue"",
+		                            v.""MinValue"" AS ""VariableMinValue"", 
+		                            vt.""Name"" AS ""VariableName"",
+		                            vt.""Code"" AS ""VariableCode"",
+		                            vt.""Description"" AS ""VariableDescription""
+		                            FROM ""Equations"" e
+		                            JOIN ""Variables"" v ON (v.""EquationID"" = e.""ID"")
+		                            JOIN ""UnitType_view"" u ON (u.""ID"" = v.""UnitTypeID"")
+		                            JOIN ""VariableType_view"" vt ON (vt.""ID"" = v.""VariableTypeID"")
+		                            JOIN ""RegressionRegions"" rr ON ( rr.""ID"" = e.""RegressionRegionID"")
+		                            JOIN ""RegressionType_view"" rt ON (rt.""ID"" = e.""RegressionTypeID"")
+		                            JOIN ""StatisticGroupType_view"" st ON (st.""ID"" = e.""StatisticGroupTypeID"");";
 
                 case sqltypeenum.managerCitations:
                     return @"SELECT DISTINCT c.* FROM ""RegionManager"" rm
                                 JOIN ""RegionRegressionRegions"" rrr ON(rrr.""RegionID"" = rm.""RegionID"")
                                 JOIN ""RegressionRegions"" rr ON(rrr.""RegressionRegionID"" = rr.""ID"") 
                                 JOIN ""Citations"" c ON(c.""ID"" = rr.""CitationID"")
-                                Where rm.""ManagerID"" = 1; ";
+                                Where rm.""ManagerID"" = {0}; ";
 
                 default:
                     throw new Exception("No sql for table " + type);
@@ -760,7 +823,7 @@ namespace NSSAgent
                         if (!maxRegressionregion.HasValue || !regressionRegion.PercentWeight.HasValue) break;
                         if (regressionRegion.PercentWeight != maxRegressionregion)
                         {
-                            sm(WiM.Resources.MessageType.info, "Majority area Used for computation " + regressionRegion.Name + " removed PercentArea" + Math.Round(regressionRegion.PercentWeight.Value, 2));
+                            sm($"Majority area Used for computation {regressionRegion.Name} removed PercentArea {Math.Round(regressionRegion.PercentWeight.Value, 2)}");
                             return false;
                         }
                         else
@@ -771,7 +834,7 @@ namespace NSSAgent
                     if (!eOps.IsValid) throw new Exception("Validation equation invalid.");
                     if (!Convert.ToBoolean(eOps.Value))
                     {
-                        sm(WiM.Resources.MessageType.info, regressionRegion.Name + " removed; limitation criteria: " + item.Criteria);
+                        sm($"{regressionRegion.Name} removed; limitation criteria: {item.Criteria}");
                         return false;
                     }
                 }//next item                
@@ -779,7 +842,7 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, regressionRegion.Name + " is not valid: " + ex.Message);
+                sm($"{regressionRegion.Name} is not valid: {ex.Message}", WIM.Resources.MessageType.error);
                 return false;
             }
         }
@@ -871,12 +934,10 @@ namespace NSSAgent
 
                 if (sa.isInitialized && sa.Execute())
                     ext.Result = sa.Result;
-                this.sm(sa.Messages);
             }
             catch (Exception ex)
             {
-                this.sm(WiM.Resources.MessageType.error, "Error evaluating extension: " + ex.Message);
-                this.sm(sa.Messages);
+                this.sm($"Error evaluating extension: {ex.Message}", WIM.Resources.MessageType.error);                
             }
         }
         private bool canAreaWeight(List<SimpleRegressionRegion> regressionRegions)
@@ -898,7 +959,7 @@ namespace NSSAgent
                     {
                         string msg = "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates. Percentage of area falls outside where region is undefined. Whole estimates have been provided using available regional equations.";
                         regressionRegions.ForEach(r => r.Disclaimer += msg);
-                        sm(WiM.Resources.MessageType.warning, msg);
+                        sm(msg, WIM.Resources.MessageType.error);
                     }
                     if (Math.Round(areaSum.Value) > 100)
                         return regressionRegions.SelectMany(rr => rr.Results.Select(r => new { weight = rr.PercentWeight, code = r.code }))
@@ -944,8 +1005,8 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, ex.Message);
-                sm(WiM.Resources.MessageType.warning, "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
+                sm(ex.Message, WIM.Resources.MessageType.error);
+                sm("Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.", WIM.Resources.MessageType.warning);
                 return null;
             }
         }
@@ -982,8 +1043,8 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, ex.Message);
-                sm(WiM.Resources.MessageType.warning, "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
+                sm(ex.Message, WIM.Resources.MessageType.error);
+                sm("Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.", WIM.Resources.MessageType.warning);
                 return null;
             }
         }
@@ -1026,12 +1087,25 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm(WiM.Resources.MessageType.error, ex.Message);
-                sm(WiM.Resources.MessageType.warning, "Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.");
+                sm(ex.Message, WIM.Resources.MessageType.error);
+                sm("Weighted flows were not calculated. Users should be careful to evaluate the applicability of the provided estimates.", WIM.Resources.MessageType.warning);
                 return null;
             }
         }
 
+        protected override void sm(string msg, MessageType type = MessageType.info)
+        {
+            sm(new Message() { msg = msg, type = type });
+        }
+        private void sm(Message msg)
+        {
+            //wim_msgs comes from WIM.Standard/blob/staging/Services/Middleware/X-Messages.cs
+            //manually added to avoid including libr in project.
+            if (!this._messages.ContainsKey("wim_msgs"))
+                this._messages["wim_msgs"] = new List<Message>();
+
+            ((List<Message>)this._messages["wim_msgs"]).Add(msg);
+        }
         #endregion
 
         private enum sqltypeenum

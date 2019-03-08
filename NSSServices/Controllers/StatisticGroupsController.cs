@@ -25,27 +25,50 @@ using SharedDB.Resources;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SharedAgent;
+using System.Linq;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     public class StatisticGroupsController : NSSControllerBase
     {
-        public StatisticGroupsController(INSSAgent sa) : base(sa)
-        { }
+        protected ISharedAgent shared_agent;
+        public StatisticGroupsController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
+        {
+            this.shared_agent = shared_sa;
+        }
 
         #region METHOD
         [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("/Regions/{regions}/[controller]")]
+        public async Task<IActionResult> GetStatisticGroups(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "")
         {
+            IQueryable<StatisticGroupType> entities = null;
+            List<string> RegionList = null;
+            List<string> regressionRegionList = null;
+            List<string> regressionsList = null;
             try
             {
-                return Ok(agent.GetStatisticGroups());  
+                if (String.IsNullOrEmpty(regions) && String.IsNullOrEmpty(regressionRegions) &&
+                    string.IsNullOrEmpty(regressions))
+                { entities = agent.GetStatisticGroups(); }
+
+                else
+                {
+                    RegionList = parse(regions);
+                    regressionRegionList = parse(regressionRegions);
+                    regressionsList = parse(regressions);
+
+                    entities = agent.GetStatisticGroups(RegionList, regressionRegionList, regressionsList);
+                }
+
+                return Ok(entities);
             }
             catch (Exception ex)
             {
                 return await HandleExceptionAsync(ex);
-            }      
+            }
         }
 
         [HttpGet("{id}")]
@@ -63,33 +86,14 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("Regions/{region}/[controller]")]
-        //[HttpGet("[controller]?region={region}")]
-        public async Task<IActionResult> GetStatisticGroups(int region,[FromQuery] string regressionRegions ="", [FromQuery] string regressiontypes = "")
-        {
-            try
-            {
-                //if (id < 0) return new BadRequestResult(); // This returns HTTP 404
-
-                //return Ok();
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
         [HttpPost][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Post([FromBody]StatisticGroupType entity)
         {
             try
             {
-#warning check if logged in user allowed to modify based on regionManager
-                //if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Add<StatisticGroupType>(entity));
-                //return Ok();
-                return NotFound();
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                return Ok(await shared_agent.Add(entity));
+             
             }
             catch (Exception ex)
             {
@@ -97,19 +101,14 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost][Authorize(Policy = "AdminOnly")]
-        [Route("Batch")]
+        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Batch([FromBody]List<StatisticGroupType> entities)
         {
             try
             {
-#warning check if logged in user allowed to modify based on regionManager
+                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+                return Ok(await shared_agent.Add(entities));
 
-                //if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
-
-                //return Ok(await agent.Add<StatisticGroupType>(entities));
-                //return Ok();
-                return NotFound();
             }
             catch (Exception ex)
             {
@@ -122,12 +121,8 @@ namespace NSSServices.Controllers
         {
             try
             {
-#warning check if logged in user allowed to modify based on regionManager
-
-                //if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Update<StatisticGroupType>(id,entity));
-                //return Ok();
-                return NotFound();
+                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                return Ok(await shared_agent.Update(id,entity));
             }
             catch (Exception ex)
             {
@@ -141,22 +136,14 @@ namespace NSSServices.Controllers
         {
             try
             {
-#warning check if logged in user allowed to modify based on regionManager
-                //if (id < 1) return new BadRequestResult();
-                //var entity = await agent.Find<StatisticGroupType>(id);
-                //if (entity == null) return new NotFoundResult();
-                //await agent.Delete<StatisticGroupType>(entity);
-
-                //return Ok();
-                return NotFound();
+                await shared_agent.DeleteStatisticGroup(id);
+                return Ok();
             }
             catch (Exception ex)
             {
                 return await HandleExceptionAsync(ex);
             }
         }
-        #endregion
-        #region HELPER METHODS
         #endregion
     }
 }

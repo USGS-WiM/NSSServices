@@ -1,7 +1,7 @@
 ﻿using NSSAgent.ServiceAgents;
 using System;
 using System.Collections.Generic;
-using WiM.Resources.TimeSeries;
+using WIM.Resources.TimeSeries;
 
 namespace NSSAgent.Resources
 {

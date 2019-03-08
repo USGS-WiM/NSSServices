@@ -11,7 +11,7 @@
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
 //  
-//   purpose:   Resonsible for interacting with Database 
+//   purpose:   Responsible for interacting with Database 
 //
 //discussion:   The primary class that is responsible for interacting with data as objects. 
 //              The context class manages the entity objects during run time, which includes 
@@ -24,11 +24,8 @@
 using Microsoft.EntityFrameworkCore;
 using NSSDB.Resources;
 using SharedDB.Resources;
-using Microsoft.EntityFrameworkCore.Metadata;
-//using SharedDB.Resources;
 using System;
 using System.Collections.Generic;
-//specifying the data provider and connection string
 namespace NSSDB
 {
     public class NSSDBContext:DbContext

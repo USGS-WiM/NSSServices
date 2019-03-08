@@ -26,29 +26,21 @@ using SharedDB.Resources;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SharedAgent;
+using System.Linq;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     public class RegressionTypesController : NSSControllerBase
     {
-        public RegressionTypesController(INSSAgent sa) : base(sa)
-        { }
-
-        #region METHOD
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        protected ISharedAgent shared_agent;
+        public RegressionTypesController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
         {
-            try
-            {
-                return Ok(agent.GetRegressions());  
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }      
+            this.shared_agent = shared_sa;
         }
 
+        #region METHOD
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -64,15 +56,30 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("Regions/{region}/[controller]")]
-        //[HttpGet("[controller]?region={region}")]
-        public async Task<IActionResult> GetRegressionTypes(int region, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "")
+        [HttpGet]
+        [HttpGet("Regions/{regions}/[controller]")]
+        public async Task<IActionResult> GetRegressionTypes(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "")
         {
+            IQueryable<RegressionType> entities = null;
+            List<string> RegionList = null;
+            List<string> regressionRegionList = null;
+            List<string> statisticgroupList = null;
             try
             {
-                //if (id < 0) return new BadRequestResult(); // This returns HTTP 404
+                if (String.IsNullOrEmpty(regions) && String.IsNullOrEmpty(regressionRegions) &&
+                    string.IsNullOrEmpty(statisticgroups))
+                { entities = agent.GetRegressions(); }
 
-                return NotFound();
+                else
+                {
+                    RegionList = parse(regions);
+                    regressionRegionList = parse(regressionRegions);
+                    statisticgroupList = parse(statisticgroups);
+
+                    entities = agent.GetRegressions(RegionList, regressionRegionList, statisticgroupList);
+                }
+
+                return Ok(entities);
             }
             catch (Exception ex)
             {
@@ -85,9 +92,9 @@ namespace NSSServices.Controllers
         {
             try
             {
-                //if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Add<RegressionType>(entity));
-                return NotFound();
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                return Ok(await shared_agent.Add(entity));
+            
             }
             catch (Exception ex)
             {
@@ -95,17 +102,14 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost][Authorize(Policy = "AdminOnly")]
-        [Route("Batch")]
+        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Batch([FromBody]List<RegressionType> entities)
         {
             try
             {
 
-                //if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
-
-                //return Ok(await agent.Add<RegressionType>(entities));
-                return NotFound();
+                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+                return Ok(await shared_agent.Add(entities));
             }
             catch (Exception ex)
             {
@@ -119,9 +123,9 @@ namespace NSSServices.Controllers
             try
             {
 
-                //if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Update<RegressionType>(id,entity));
-                return NotFound();
+                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                return Ok(await shared_agent.Update(id,entity));
+               
             }
             catch (Exception ex)
             {
@@ -135,12 +139,9 @@ namespace NSSServices.Controllers
         {
             try
             {
-                //if (id < 1) return new BadRequestResult();
-                //var entity = await agent.Find<RegressionType>(id);
-                //if (entity == null) return new NotFoundResult();
-                //await agent.Delete<RegressionType>(entity);
+                await shared_agent.DeleteRegressionType(id);
 
-                return NotFound();
+                return Ok();
             }
             catch (Exception ex)
             {

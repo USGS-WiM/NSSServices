@@ -25,14 +25,18 @@ using SharedDB.Resources;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using SharedAgent;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     public class UnitsSystemsController : NSSControllerBase
     {
-        public UnitsSystemsController(INSSAgent sa) : base(sa)
-        { }
+        protected ISharedAgent shared_agent;
+        public UnitsSystemsController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
+        {
+            this.shared_agent = shared_sa;
+        }
 
         #region METHOD
         [HttpGet]
@@ -40,8 +44,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                //return Ok(agent.Select<UnitSystemType>());  
-                return NotFound();
+                return Ok(agent.GetUnitSystems());  
             }
             catch (Exception ex)
             {
@@ -54,10 +57,9 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return NotFound();
-                //if (id<0) return new BadRequestResult(); // This returns HTTP 404
+                if (id<0) return new BadRequestResult(); // This returns HTTP 404
 
-                //return Ok(await agent.Find<UnitSystemType>(id));
+                return Ok(await agent.GetUnitSystem(id));
             }
             catch (Exception ex)
             {
@@ -70,9 +72,8 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return NotFound();
-                // if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Add<UnitSystemType>(entity));
+                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                return Ok(await shared_agent.Add(entity));
             }
             catch (Exception ex)
             {
@@ -85,9 +86,8 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return NotFound();
-                //if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Update<UnitSystemType>(id,entity));
+                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                return Ok(await shared_agent.Update(id,entity));
             }
             catch (Exception ex)
             {
@@ -101,21 +101,15 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return NotFound();
-                //if (id < 1) return new BadRequestResult();
-                //var entity = await agent.Find<UnitSystemType>(id);
-                //if (entity == null) return new NotFoundResult();
-                //await agent.Delete<UnitSystemType>(entity);
-
-                //return Ok();
+                if (id < 1) return new BadRequestResult();
+                await shared_agent.DeleteUnitSystem(id);
+                return Ok();
             }
             catch (Exception ex)
             {
                 return await HandleExceptionAsync(ex);
             }
         }
-        #endregion
-        #region HELPER METHODS
         #endregion
     }
 }

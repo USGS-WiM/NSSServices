@@ -7,15 +7,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using NSSDB;
+using SharedDB;
 using NSSAgent;
-using WiM.Security.Authentication.Basic;
+using WIM.Security.Authentication.Basic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Net.Http.Headers;
-using WiM.Services.Middleware;
-using WiM.Services.Analytics;
-using WiM.Utilities.ServiceAgent;
-using WiM.Services.Resources;
+using SharedAgent;
+using WIM.Services.Analytics;
+using WIM.Utilities.ServiceAgent;
+using WIM.Services.Resources;
+using WIM.Services.Middleware;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 
 namespace NSSServices
 {
@@ -43,15 +46,31 @@ namespace NSSServices
         {
             //Configure injectable obj
             services.Configure<APIConfigSettings>(Configuration.GetSection("APIConfigSettings"));
+            //Transient objects are always different; a new instance is provided to every controller and every service.
+            //Singleton objects are the same for every object and every request.
+            //Scoped objects are the same within a request, but different across different requests.
+            //provides access to httpcontext
+            services.AddHttpContextAccessor();
             services.AddScoped<INSSAgent, NSSServiceAgent>();
+            services.AddScoped<ISharedAgent, SharedAgent.SharedAgent>();
             services.AddScoped<IBasicUserAgent, NSSServiceAgent>();
+            //for use to get msgs
+            services.AddHttpContextAccessor();
+
 
             // Add framework services.
             services.AddDbContext<NSSDBContext>(options =>
                                                         options.UseNpgsql(String.Format(Configuration
-                                                            .GetConnectionString("NSSConnection"), Configuration["dbuser"], Configuration["dbpassword"], Configuration["dbHost"]),
+                                                            .GetConnectionString("Connection"), Configuration["dbuser"], Configuration["dbpassword"], Configuration["dbHost"]),
                                                             //default is 1000, if > maxbatch, then EF will group requests in maxbatch size
                                                             opt => { opt.MaxBatchSize(1000);opt.UseNetTopologySuite(); })
+                                                            //.EnableSensitiveDataLogging()
+                                                            );
+            services.AddDbContext<SharedDBContext>(options =>
+                                                        options.UseNpgsql(String.Format(Configuration
+                                                            .GetConnectionString("Connection"), Configuration["dbuser"], Configuration["dbpassword"], Configuration["dbHost"]),
+                                                            //default is 1000, if > maxbatch, then EF will group requests in maxbatch size
+                                                            opt => opt.MaxBatchSize(1000))
                                                             //.EnableSensitiveDataLogging()
                                                             );
 
@@ -73,6 +92,10 @@ namespace NSSServices
             services.AddMvc(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
+                //needed for geojson deserializer
+                options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(Polygon)));
+                options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(MultiPolygon)));
+                options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(Geometry)));
             })
                     .AddXmlSerializerFormatters()
                     .AddXmlDataContractSeria‌​lizerFormatters()
@@ -82,9 +105,8 @@ namespace NSSServices
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
             // global policy - assign here or on each controller
+            app.UseX_Messages();
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
             app.UseMvc();
@@ -105,12 +127,16 @@ namespace NSSServices
         }
         private void loadJsonOptions(MvcJsonOptions options)
         {
+            //options.SerializerSettings.TraceWriter = new memoryTraceWriter();
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             options.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
             options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             options.SerializerSettings.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
             options.SerializerSettings.TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple;
             options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.None;
+            //needed for geojson serializer
+            foreach (var converter in GeoJsonSerializer.Create(new GeometryFactory(new PrecisionModel(), 4326)).Converters)
+            { options.SerializerSettings.Converters.Add(converter); }
         }
   
         #endregion

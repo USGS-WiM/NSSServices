@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using WiM.Security;
+using WIM.Security;
 using System.Linq;
 using NSSDB.Resources;
 using System.Collections.Generic;

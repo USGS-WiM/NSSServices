@@ -21,11 +21,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using WiM.Utilities.ServiceAgent;
+using WIM.Utilities.ServiceAgent;
 using NSSAgent.Resources;
 using System.Linq;
 using System.Collections;
-using WiM.Utilities.Resources;
+using WIM.Utilities.Resources;
 
 namespace NSSAgent.ServiceAgents
 {

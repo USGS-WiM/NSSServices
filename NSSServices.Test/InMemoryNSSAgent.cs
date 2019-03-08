@@ -1,45 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Newtonsoft.Json;
 using NSSAgent;
+using NSSAgent.Resources;
 using NSSDB.Resources;
 using SharedDB.Resources;
-using WiM.Resources;
+using WIM.Resources;
+using WIM.Security.Authentication.Basic;
 
 namespace NSSServices.Test
 {
     public class InMemoryNSSAgent : INSSAgent
     {
         private List<Citation> Citations { get; set; }
-        private List<Role> Roles { get; set; }
+        private List<Coefficient> Coefficients { get; set; }
+        private List<EquationError> EquationErrors { get; set; }
+        private List<Equation> Equations { get; set; }
+        private List<EquationUnitType> EquationUnitTypes { get; set; }
+        private List<Limitation> Limitations { get; set; }
         private List<Manager> Managers { get; set; }
-        private List<ErrorType> Errors { get; set; }
+        private List<PredictionInterval> PredictionIntervals { get; set; }
+        private List<RegionRegressionRegion> RegionRegressionRegions { get; set; }
+        private List<Region> Regions { get; set; }
+        private List<RegressionRegion> RegressionRegions { get; set; }
+        private List<Role> Roles { get; set; }
+        private List<Variable> Variables { get; set; }
+        private List<VariableUnitType> VariableUnitTypes { get; set; }
+
+        private ReadOnlyCollection<ErrorType> Errors { get; set; }
+        private ReadOnlyCollection<RegressionType> RegressionTypes { get; set; }
+        private ReadOnlyCollection<StatisticGroupType> StatisticGroupTypes { get; set; }
+        private ReadOnlyCollection<UnitConversionFactor> UnitConversionFactors { get; set; }
+        private ReadOnlyCollection<UnitSystemType> UnitSystemTypes { get; set; }
+        private ReadOnlyCollection<UnitType> UnitTypes { get; set; }
+        private ReadOnlyCollection<VariableType> VariableTypes { get; set; }
 
         public InMemoryNSSAgent()
         {
-            this.Citations = new List<Citation>()
-                        { new Citation(){ Author = "test Author", CitationURL="url", ID = 1, Title="test title" },
-                          new Citation(){ Author = "test2 Author", CitationURL="url2", ID = 2, Title="test2 title" }
-                        };
-            this.Errors = new List<ErrorType>()
-                    { new ErrorType() { ID=1,Name= "Error Test", Code ="error1" },
-                        new ErrorType() { ID=2,Name= "Error Test 2", Code="error2" }};
-            this.Roles = new List<Role>()
-                    { new Role() { ID=1,Name= "MockTestRole1", Description="test mock role 1" },
-                        new Role() { ID=2,Name= "MockTestRole2", Description="test mock role 2" }};
-            this.Managers = new List<Manager>()
-                        { new Manager(){  FirstName = "Test", LastName="Manager", ID = 1, Username="testManager", Email="test@usgs.gov",RoleID=2},
-                          new Manager(){ FirstName = "Test", LastName="Admin", ID = 2, Username="testAdmin", Email="testAdmin@usgs.gov",RoleID=1 }
-                        };
+            var path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Data");
+            this.Citations = JsonConvert.DeserializeObject<List<Citation>>(System.IO.File.ReadAllText(Path.Combine(path, "citations.json")));
+            this.Coefficients = JsonConvert.DeserializeObject<List<Coefficient>>(System.IO.File.ReadAllText(Path.Combine(path, "coefficients.json")));
+            this.Managers = JsonConvert.DeserializeObject<List<Manager>>(System.IO.File.ReadAllText(Path.Combine(path, "managers.json")));
+            this.Roles = JsonConvert.DeserializeObject<List<Role>>(System.IO.File.ReadAllText(Path.Combine(path, "roles.json")));
+
         }
 
-        public List<Message> Messages => new List<Message>();
-        
         public Task<Manager> Add(Manager item)
         {
             try
@@ -324,6 +337,66 @@ namespace NSSServices.Test
         }
 
         public Region GetRegionByIDOrCode(string identifier)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<UnitSystemType> GetUnitSystems()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UnitSystemType> GetUnitSystem(int ID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBasicUser GetUserByUsername(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<Scenario> GetScenarios(string region, List<string> regionEquationList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, int systemtypeID = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, int systemtypeID = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<Region> GetManagerRegions(int managerID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<RegressionRegion> GetRegressionRegions(List<string> regionList, List<string> statisticgroupList, List<string> regressiontypeList)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RegionRegressionRegion> Add(RegionRegressionRegion item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<RegionRegressionRegion>> Add(List<RegionRegressionRegion> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<RegressionType> GetRegressions(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<StatisticGroupType> GetStatisticGroups(List<string> regionList, List<string> regressionRegionList, List<string> regressionsList)
         {
             throw new NotImplementedException();
         }

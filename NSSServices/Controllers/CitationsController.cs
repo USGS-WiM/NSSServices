@@ -58,14 +58,12 @@ namespace NSSServices.Controllers
                     regressiontypeList = parse(regressiontypes);
 
                     entities = agent.GetCitations(RegionList, regressionRegionList, statisticgroupList, regressiontypeList);
-
                 }
-                this.sm(agent.Messages);
+                sm("test from citations handler");
                 return Ok(entities);
             }
             catch (Exception ex)
             {
-                this.sm(agent.Messages);
                 return await HandleExceptionAsync(ex);
             }
         }
@@ -76,38 +74,59 @@ namespace NSSServices.Controllers
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
+                
                 return Ok(await agent.GetCitation(id));
             }
             catch (Exception ex)
             {
-                this.sm(agent.Messages);
                 return await HandleExceptionAsync(ex);
             }
         }
 
-        //
-        //POST/Delete should occur at the Regression region level
-        //
+        [HttpPost]
+        [HttpPost("/RegressionRegions/{regressionRegionID}/[controller]")]
+        [Authorize(Policy = "CanModify")]
+        public async Task<IActionResult> Post([FromBody]Citation entity, Int32 regressionRegionID = -1)
+        {
+            try
+            {
+                RegressionRegion regRegion = await agent.GetRegressionRegion(regressionRegionID);
+
+                if (regRegion == null) return new BadRequestResult();
+                if (!IsAuthorizedToEdit(regRegion)) return new UnauthorizedResult();
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
+                regRegion.Citation = entity;
+                var result = await agent.Update(regressionRegionID, regRegion);
+                return Ok(result.Citation);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
 
         [HttpPut("{id}")][Authorize(Policy = "CanModify")]
         public async Task<IActionResult> Put(int id, [FromBody]Citation entity)
         {
             try
             {
-                if (!IsAuthorizedToEdit<Citation>(await agent.GetCitation(id)))
-                    return new UnauthorizedResult();
+                if (!IsAuthorizedToEdit(await agent.GetCitation(id)))return new UnauthorizedResult();
+
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
                 return Ok(await agent.Update(id,entity));
             }
             catch (Exception ex)
             {
-                this.sm(agent.Messages);
                 return await HandleExceptionAsync(ex);
             }
-        }        
+        }
 
+        //
+        //Delete should occur at the Regression region level
+        //
         #endregion
-        #region HELPER METHODS
-        #endregion
+
     }
 }

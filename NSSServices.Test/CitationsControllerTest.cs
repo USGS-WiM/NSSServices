@@ -19,11 +19,14 @@ using System.Threading;
 using NSSAgent.Resources;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Http;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace NSSServices.Test
 {
     public class CitationsControllerTest
     {
+        private IEnumerable<Citation> AssertItems;
         public CitationsController controller { get; private set; }
         public CitationsControllerTest() {
             //Arrange
@@ -39,7 +42,10 @@ namespace NSSServices.Test
             
             //must set explicitly for tests to work
             controller.ObjectValidator = new InMemoryModelValidator();
-            
+
+            var path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Data");
+            this.AssertItems = JsonConvert.DeserializeObject<IEnumerable<Citation>>(System.IO.File.ReadAllText(Path.Combine(path, "citations.json")));
+
         }
         [Fact]
         public async Task GetAll()
@@ -51,16 +57,32 @@ namespace NSSServices.Test
             var okResult = Assert.IsType<OkObjectResult>(response);
             var result = Assert.IsType<EnumerableQuery<Citation>>(okResult.Value);
 
-            Assert.Equal(2, result.Count());
-            Assert.Equal("test2 Author", result.LastOrDefault().Author);
-            Assert.Equal("url2", result.LastOrDefault().CitationURL);
+            Assert.Equal(AssertItems.Count(), result.Count());
+            Assert.Equal(AssertItems.LastOrDefault().Author, result.LastOrDefault().Author);
+            Assert.Equal(AssertItems.LastOrDefault().CitationURL, result.LastOrDefault().CitationURL);
+        }
+        [Fact]
+        public async Task GetAllByQuery()
+        {
+            //Act
+            var regressionregions="21,22,23,24,25,26,27,28";
+            var response = await controller.Get(regressionRegions:regressionregions );
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(response);
+            var result = Assert.IsType<EnumerableQuery<Citation>>(okResult.Value);
+
+            Assert.Equal(AssertItems.Count(), result.Count());
+            Assert.Equal(AssertItems.LastOrDefault().Author, result.LastOrDefault().Author);
+            Assert.Equal(AssertItems.LastOrDefault().CitationURL, result.LastOrDefault().CitationURL);
         }
 
         [Fact]
         public async Task Get()
         {
             //Arrange
-            var id = 1;
+            var assertItem = AssertItems.FirstOrDefault();
+            var id = assertItem.ID;
 
             //Act
             var response = await controller.Get(id);
@@ -68,23 +90,23 @@ namespace NSSServices.Test
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(response);
             var result = Assert.IsType<Citation>(okResult.Value);
-            
-            Assert.Equal("test Author", result.Author);
-            Assert.Equal("url", result.CitationURL);
+            Assert.Equal(assertItem.Author, result.Author);
         }
 
         [Fact]
         public async Task Put()
         {
-            //Arrange            
-            var get = await controller.Get(1);
+            //Arrange 
+            var assertItem = AssertItems.FirstOrDefault();
+
+            var get = await controller.Get(assertItem.ID);
             var okgetResult = Assert.IsType<OkObjectResult>(get);
             var entity = Assert.IsType<Citation>(okgetResult.Value);
 
             entity.Author = "editedAuthor";
 
             //Act
-            var response = await controller.Put(1,entity);
+            var response = await controller.Put(assertItem.ID, entity);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(response);

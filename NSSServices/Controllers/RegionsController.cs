@@ -33,7 +33,7 @@ namespace NSSServices.Controllers
     public class RegionsController : NSSControllerBase
     {
         public RegionsController(INSSAgent sa) : base(sa)
-        {}
+        { }
         #region METHODS
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -80,8 +80,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost][Authorize(Policy = "AdminOnly")]
-        [Route("Batch")]
+        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Batch([FromBody]List<Region> entities)
         {
             try
@@ -127,8 +126,6 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }
         }
-        #endregion
-        #region HELPER METHODS
         #endregion
     }
 }

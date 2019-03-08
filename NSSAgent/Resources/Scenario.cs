@@ -5,7 +5,7 @@ using System.Web;
 using System.Xml.Serialization;
 using NSSDB;
 using Newtonsoft.Json;
-using WiM.Hypermedia;
+using WIM.Hypermedia;
 
 namespace NSSAgent.Resources
 {

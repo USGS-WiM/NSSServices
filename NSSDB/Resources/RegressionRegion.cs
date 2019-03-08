@@ -34,7 +34,7 @@ namespace NSSDB.Resources
         public string Description { get; set; }
         public int CitationID { get; set; }
         
-        public Polygon Location { get; set; }
+        public Geometry Location { get; set; }
 
         public virtual Citation Citation { get; set; }
         public virtual ICollection<Equation> Equations { get; set; }

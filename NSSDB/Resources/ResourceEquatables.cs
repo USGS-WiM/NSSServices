@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2018 WiM - USGS
+// copyright:   2018 WIM - USGS
 
 //    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
 //              
@@ -41,13 +41,17 @@ namespace NSSDB.Resources
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Citation);
-        } 
+        }
+        public override int GetHashCode()
+        {
+            return (this.Title + this.Author).GetHashCode();
+        }
     }
     public partial class Coefficient : IEquatable<Coefficient>
     {
         public bool Equals(Coefficient other)
         {
-            return String.Equals(this.Criteria.ToLower(), other.Criteria.ToLower()) &&
+            return String.Equals(Criteria.ToLower(), other.Criteria.ToLower()) &&
                 String.Equals(this.Value.ToLower(), other.Value.ToLower())&&
                 this.RegressionRegionID == other.RegressionRegionID;
 
@@ -59,7 +63,11 @@ namespace NSSDB.Resources
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Coefficient);
         }
-  
+        public override int GetHashCode()
+        {
+            return (this.Criteria + this.Value + this.RegressionRegionID).GetHashCode();
+        }
+
     }
     public partial class Equation : IEquatable<Equation>
     {
@@ -77,6 +85,10 @@ namespace NSSDB.Resources
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Equation);
         }
+        public override int GetHashCode()
+        {
+            return (this.RegressionRegionID + this.Expression + this.RegressionRegionID + this.StatisticGroupTypeID).GetHashCode();
+        }
     }
     public partial class EquationError : IEquatable<EquationError>
     {
@@ -93,6 +105,10 @@ namespace NSSDB.Resources
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as EquationError);
         }
+        public override int GetHashCode()
+        {
+            return (this.EquationID + this.Value + this.ErrorTypeID).GetHashCode();
+        }
     }
     public partial class EquationUnitType : IEquatable<EquationUnitType>
     {
@@ -107,6 +123,10 @@ namespace NSSDB.Resources
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as EquationUnitType);
+        }
+        public override int GetHashCode()
+        {
+            return (this.EquationID + this.UnitTypeID).GetHashCode();
         }
     }
     public partial class Limitation : IEquatable<Limitation>
@@ -123,6 +143,10 @@ namespace NSSDB.Resources
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Limitation);
+        }
+        public override int GetHashCode()
+        {
+            return (this.Criteria + this.RegressionRegionID).GetHashCode();
         }
     }
     public partial class Manager : IEquatable<Manager>
@@ -146,9 +170,30 @@ namespace NSSDB.Resources
             return (this.Username + this.FirstName + this.LastName + Email).GetHashCode();
         }
     }//end 
-    //public partial class PredictionInterval : IEquatable<PredictionInterval>
-    //{
-    //}
+    public partial class PredictionInterval : IEquatable<PredictionInterval>
+    {
+        public bool Equals(PredictionInterval other)
+        {
+            return ((this.BiasCorrectionFactor.HasValue && other.BiasCorrectionFactor.HasValue && this.BiasCorrectionFactor.Value == other.BiasCorrectionFactor.Value) &&
+               (this.Student_T_Statistic.HasValue && other.Student_T_Statistic.HasValue && this.Student_T_Statistic.Value == other.Student_T_Statistic.Value) &&
+               (this.Variance.HasValue && other.Variance.HasValue && this.Variance.Value == other.Variance.Value) &&
+               String.Equals(this.XIRowVector.ToLower(), other.XIRowVector.ToLower()) &&
+               String.Equals(this.CovarianceMatrix.ToLower(), other.CovarianceMatrix.ToLower()));
+
+
+        }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Manager);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
     public partial class Region : IEquatable<Region>
     {
         public bool Equals(Region other)
@@ -163,6 +208,10 @@ namespace NSSDB.Resources
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Region);
         }
+        public override int GetHashCode()
+        {
+            return (this.Name + this.Code).GetHashCode();
+        }
     }//end 
     public partial class RegionManager : IEquatable<RegionManager>
     {
@@ -176,6 +225,10 @@ namespace NSSDB.Resources
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as RegionManager);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }//end   
     public partial class RegionRegressionRegion : IEquatable<RegionRegressionRegion>
@@ -192,6 +245,30 @@ namespace NSSDB.Resources
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as RegionRegressionRegion);
         }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
+    public partial class RegressionRegion : IEquatable<RegressionRegion>
+    {
+        public bool Equals(RegressionRegion other)
+        {
+            return string.Equals(this.Name.ToLower(), other.Name.ToLower()) &&
+                   string.Equals(this.Code.ToLower(), other.Code.ToLower()) &&
+                   this.CitationID == other.CitationID;
+        }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Role);
+        }
+        public override int GetHashCode()
+        {
+            return (this.Name + this.Code + this.CitationID).GetHashCode();
+        }
     }
     public partial class Role : IEquatable<Role>
     {
@@ -205,6 +282,10 @@ namespace NSSDB.Resources
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Role);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }//end
     public partial class Variable : IEquatable<Variable>
@@ -228,6 +309,10 @@ namespace NSSDB.Resources
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as Variable);
         }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
     public partial class VariableUnitType : IEquatable<VariableUnitType>
     {
@@ -242,6 +327,10 @@ namespace NSSDB.Resources
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals(obj as VariableUnitType);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

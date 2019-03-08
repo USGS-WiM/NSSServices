@@ -25,7 +25,7 @@ using NSSDB.Resources;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using WiM.Security;
+using WIM.Security;
 using System.Text;
 using System.Linq;
 
@@ -35,7 +35,7 @@ namespace NSSServices.Controllers
     public class ManagersController : NSSControllerBase
     {
         public ManagersController(INSSAgent sa) : base(sa)
-        {}
+        { }
         #region METHODS
         [HttpGet][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Get()
@@ -58,7 +58,6 @@ namespace NSSServices.Controllers
             {
                 return await HandleExceptionAsync(ex);
             }
-
         }
 
         [HttpGet("/Login")]
@@ -73,7 +72,6 @@ namespace NSSServices.Controllers
             {
                 return await HandleExceptionAsync(ex);
             }
-
         }
 
         [HttpGet("{id}")][Authorize(Policy = "AdminOnly")]
@@ -94,7 +92,7 @@ namespace NSSServices.Controllers
             {
                 return await HandleExceptionAsync(ex);
             }
-        }
+        } 
         
         [HttpPost][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Post([FromBody]Manager entity)
@@ -106,9 +104,7 @@ namespace NSSServices.Controllers
                     entity.RoleID <1) return new BadRequestObjectResult(new Error( errorEnum.e_badRequest, "You are missing one or more required parameter.")); // This returns HTTP 404
 
                 if (string.IsNullOrEmpty(entity.Password))
-                    entity.Password = generateDefaultPassword(entity);
-                else
-                    entity.Password = Encoding.UTF8.GetString(Convert.FromBase64String(entity.Password));
+                    entity.Password = generateDefaultPassword(entity);                
 
                 entity.Salt = Cryptography.CreateSalt();
                 entity.Password = Cryptography.GenerateSHA256Hash(entity.Password, entity.Salt);
@@ -157,13 +153,10 @@ namespace NSSServices.Controllers
 
                 //change password if needed
                 if (!string.IsNullOrEmpty(entity.Password) && !Cryptography
-                            .VerifyPassword(Encoding.UTF8.GetString(Convert.FromBase64String(entity.Password)),
-                                                                    ObjectToBeUpdated.Salt, ObjectToBeUpdated.Password))
+                            .VerifyPassword(entity.Password,ObjectToBeUpdated.Salt, ObjectToBeUpdated.Password))
                 {
                     ObjectToBeUpdated.Salt = Cryptography.CreateSalt();
-                    ObjectToBeUpdated.Password = Cryptography.GenerateSHA256Hash(Encoding.UTF8
-                                .GetString(Convert.FromBase64String(entity.Password)), ObjectToBeUpdated.Salt);
-
+                    ObjectToBeUpdated.Password = Cryptography.GenerateSHA256Hash(entity.Password, ObjectToBeUpdated.Salt);
                 }//end if
 
                 var x = await agent.Update(id, entity);
@@ -179,7 +172,7 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }           
         }
-        
+               
         [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -189,7 +182,6 @@ namespace NSSServices.Controllers
                 await agent.DeleteManager(id);
 
                 return Ok();
-
             }
             catch (Exception ex)
             {

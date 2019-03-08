@@ -6,32 +6,42 @@ using NSSDB.Resources;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using WiM.Services.Controllers;
-using WiM.Resources;
+using WIM.Services.Controllers;
+using WIM.Resources;
 using NSSAgent;
+
 
 namespace NSSServices.Controllers
 {
 
-    public abstract class NSSControllerBase: WiM.Services.Controllers.ControllerBase
+    public abstract class NSSControllerBase: WIM.Services.Controllers.ControllerBase
     {
         protected INSSAgent agent;
 
         public NSSControllerBase(INSSAgent sa)
         {
-            this.agent = sa;
+            this.agent = sa;            
         }
 
-        public bool IsAuthorizedToEdit<T> (T item) where T:class
+        public bool IsAuthorizedToEdit(Object item)
         {
             if (User.IsInRole("Administrator")) return true;
             var username = LoggedInUser();
 
-            switch (typeof(T).Name)
+            Dictionary<Type, int> typeDict = new Dictionary<Type, int> {
+                                                                            {typeof(Citation),0},
+                                                                            {typeof(RegressionRegion),1},
+                                                                            {typeof(Region),2}
+                                                                        };
+
+            switch (typeDict[item.GetType()])
             {
-                case "Citation":
+                case 0://citation
                     return agent.GetManagerCitations(username.ID).Select(w => w.ID).Contains((item as Citation).ID);
-                    
+                case 1://regressionregion
+                    return agent.GetManagerRegressionRegions(username.ID).Select(rr => rr.ID).Contains((item as RegressionRegion).ID);
+                case 2://region
+                    return agent.GetManagerRegions(username.ID).Select(rr => rr.ID).Contains((item as Region).ID);
                 default:
                     break;
             }
@@ -55,7 +65,7 @@ namespace NSSServices.Controllers
             };
         }
 
-        protected new IActionResult HandleException(Exception ex)
+        protected override IActionResult HandleException(Exception ex)
         {
             if (ex is DbUpdateException)
             {
@@ -66,14 +76,12 @@ namespace NSSServices.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, new Error(errorEnum.e_internalError, "A managed database error occured."));
+                    sm($"Database error {ex.Message}");
+                    return StatusCode(500, new Error(errorEnum.e_internalError, "A managed database error occured, See error message for more information"));
                 }
             }
 
-            else
-            {
-                return StatusCode(500, new Error(errorEnum.e_internalError, "An error occured while processing your request."));
-            }
+            return base.HandleException(ex);
         }
 
         private Dictionary<int, string> dbBadRequestErrors = new Dictionary<int, string>
@@ -83,12 +91,5 @@ namespace NSSServices.Controllers
             {23505, "One of the properties is marked as Unique index and there is already an entry with that value."},
             {23503, "One of the related features prevents you from performing this operation to the database." }
         };
-
-        protected void sm(List<Message> messages)
-        {
-            if (messages.Count < 1) return;
-            HttpContext.Items[WiM.Services.Middleware.X_MessagesExtensions.msgKey] = messages;
-        }
-
     }
 }

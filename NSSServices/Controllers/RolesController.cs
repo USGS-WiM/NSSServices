@@ -31,7 +31,7 @@ namespace NSSServices.Controllers
     public class RolesController : NSSControllerBase
     {
         public RolesController(INSSAgent sa) : base(sa)
-        {}
+        { }
         #region METHODS
         [HttpGet][Authorize(Policy = "Restricted")]
         public async Task<IActionResult> Get()
@@ -76,8 +76,7 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost][Authorize(Policy = "AdminOnly")]
-        [Route("Batch")]
+        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Batch([FromBody]List<Role> entities) {
             try
             {
@@ -121,8 +120,6 @@ namespace NSSServices.Controllers
             }
             
         }
-        #endregion
-        #region HELPER METHODS
         #endregion
     }
 }

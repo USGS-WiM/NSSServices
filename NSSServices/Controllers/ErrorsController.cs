@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using SharedDB.Resources;
 using NSSAgent;
+using SharedAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -31,8 +32,11 @@ namespace NSSServices.Controllers
     [Route("[controller]")]
     public class ErrorsController : NSSControllerBase
     {
-        public ErrorsController(INSSAgent sa) : base(sa)
-        { }
+        protected ISharedAgent shared_agent;
+        public ErrorsController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
+        {
+            this.shared_agent = shared_sa;
+        }
 
         #region METHOD
         [HttpGet]
@@ -62,16 +66,13 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
+        [HttpPost][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Post([FromBody]ErrorType entity)
         {
             try
             {
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Add<ErrorType>(entity));
-                //return Ok();
-                return NotFound();
+                return Ok(await shared_agent.Add(entity));
             }
             catch (Exception ex)
             {
@@ -79,20 +80,14 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
-        [Route("Batch")]
+        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Batch([FromBody]List<ErrorType> entities)
         {
             try
             {
-#warning check if logged in user allowed to modify based on regionManager
 
-                //if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
-
-                //return Ok(await agent.Add<StatisticGroupType>(entities));
-                //return Ok();
-                return NotFound();
+                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+                return Ok(await shared_agent.Add(entities));
             }
             catch (Exception ex)
             {
@@ -100,18 +95,14 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        [Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Put(int id, [FromBody]ErrorType entity)
         {
             try
             {
-#warning check if logged in user allowed to modify based on regionManager
-
-                //if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Update<StatisticGroupType>(id,entity));
-                //return Ok();
-                return NotFound();
+                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                return Ok(await shared_agent.Update(id,entity));
+             
             }
             catch (Exception ex)
             {
@@ -120,20 +111,13 @@ namespace NSSServices.Controllers
 
         }
 
-        [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-#warning check if logged in user allowed to modify based on regionManager
-                //if (id < 1) return new BadRequestResult();
-                //var entity = await agent.Find<StatisticGroupType>(id);
-                //if (entity == null) return new NotFoundResult();
-                //await agent.Delete<StatisticGroupType>(entity);
-
-                //return Ok();
-                return NotFound();
+                await shared_agent.DeleteError(id);
+                return Ok();
             }
             catch (Exception ex)
             {

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using WIM.Exceptions.Services;
 using System.Linq;
 using NetTopologySuite.Geometries;
+using GeoAPI.Geometries;
 
 namespace NSSServices.Controllers
 {
@@ -39,13 +40,14 @@ namespace NSSServices.Controllers
         { }
 
         #region METHOD
-        [HttpGet("[action]")]
-        [HttpGet("/Regions/{regions}/[controller]/[action]")]
+        [HttpGet]
+        [HttpGet("/Regions/{regions}/[controller]")]
         [HttpPost("[action]")]
         [HttpPost("/Regions/{regions}/[controller]/[action]")]
-        public async Task<IActionResult> GetScenariosConfigurations([FromBody] Geometry geom = null, string regions="",[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
-                                                                 [FromQuery] Int32 unitsystem=0, [FromQuery] Int32? config =1, [FromQuery] string extensions ="")
+        public async Task<IActionResult> Get([FromBody] IGeometry geom = null, string regions="",[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
+                                                                 [FromQuery] Int32 unitsystem=0, [FromQuery] string extensions ="")
         {
+            String[] allowableGeometries = new String[] { "Polygon", "MuliPolygon" };
             List<string> statisticgroupList = null;
             List<string> regressiontypeList = null;
             List<string> regressionregionList = null;
@@ -54,17 +56,24 @@ namespace NSSServices.Controllers
             List<string> RegionList = null;
             try
             {
-                if (string.IsNullOrEmpty(regions)) throw new BadRequestException("region must be specified");
+                if (string.IsNullOrEmpty(regions)&& geom == null ) throw new BadRequestException("region and regression regions or a geometry must be specified");
                 RegionList = parse(regions);
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypes);
-                regressionregionList = parse(regressionRegions);
                 extensionList = parse(extensions);
-                if (!config.HasValue) config = 1;
+                
 
-                entities = agent.GetScenarios(RegionList, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+                if (geom != null)
+                {
+                    if (!allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', allowableGeometries));
+                    entities = agent.GetScenarios(RegionList, geom, null, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+                }
+                else
+                {                    
+                    regressionregionList = parse(regressionRegions);
+                    entities = agent.GetScenarios(RegionList,null, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+                }                
                 sm("Count: " + entities.Count());
-
                 return Ok(entities);
             }
             catch (Exception ex)
@@ -77,7 +86,7 @@ namespace NSSServices.Controllers
         [HttpPost("/Regions/{regions}/[controller]/[action]")]
         [HttpPost("[action]")]
         public async Task<IActionResult> Estimate(string regions, [FromBody]List<Scenario> scenarioList, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
-                                                                 [FromQuery] Int32 unitsystem = 0, [FromQuery] Int32? config = 1, [FromQuery] string extensions = "")
+                                                                 [FromQuery] Int32 unitsystem = 0, [FromQuery] string extensions = "")
         {
             List<string> statisticgroupList = null;
             List<string> regressiontypeList = null;
@@ -88,14 +97,13 @@ namespace NSSServices.Controllers
             try
             {
                 if (string.IsNullOrEmpty(regions)) throw new BadRequestException("region must be specified");                
-                if (scenarioList == null || scenarioList.Count() < 1) throw new BadRequestException("scenario must be specified in the body of request");
+                if (!scenarioList.Any()) throw new BadRequestException("scenario must be specified in the body of request");
 
                 RegionList = parse(regions);
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypes);
                 regressionregionList = parse(regressionRegions);
                 extensionList = parse(extensions);
-                if (!config.HasValue) config = 1;
 
                 entities = agent.EstimateScenarios(RegionList, scenarioList, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
                 sm("Count: " + entities.Count());
@@ -108,18 +116,24 @@ namespace NSSServices.Controllers
             }
         }
 
-        
-
-        public async Task<IActionResult> Execute([FromBody]List<Scenario> scenarioList, [FromQuery] Int32 unitsystem = 0, [FromQuery] Int32? config = 1)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Execute([FromBody]List<Scenario> scenarioList, [FromQuery] string regressiontypes = "", [FromQuery] Int32 unitsystem = 0)
         {
             List<Scenario> entities = null;
+            List<string> statisticgroupList = null;
+            List<string> regressiontypeList = null;
+            List<string> regressionregionList = null;
+            List<string> extensionList = null;
             try
             {
-                if (scenarioList == null || scenarioList.Count() < 1) throw new BadRequestException("scenario must be specified in the body of request");
+                if (!scenarioList.Any()) throw new BadRequestException("scenarios must be specified in the body of request");
+                statisticgroupList = scenarioList.Select(s => s.StatisticGroupID.ToString()).ToList();
+                regressiontypeList = parse(regressiontypes);
+                regressionregionList = scenarioList.SelectMany(s => s.RegressionRegions.Select(rr => rr.ID.ToString())).ToList();
+                //extensionList = parse(extensions);
 
-                if (!config.HasValue) config = 1;
-#warning refactor to perform actions on all scenarios passed in.
-                //entities = agent.EstimateScenarios( scenarioList, unitsystem).ToList();
+                entities = agent.EstimateScenarios(null, scenarioList, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+
                 sm("Count: " + entities.Count());
 
                 return Ok(entities);
@@ -148,6 +162,5 @@ namespace NSSServices.Controllers
             }            
         }
         #endregion
-
     }
 }

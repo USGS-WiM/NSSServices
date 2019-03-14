@@ -1,218 +1,246 @@
-
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 /*Change Statistic group type to: Urban flows(31) and Rural flows (32)*/
 UPDATE "nss"."Equations" e SET "StatisticGroupTypeID" = 31 FROM "nss"."RegressionRegions" rr  WHERE e."RegressionRegionID" = rr."ID" AND rr."Code" IN('GC1540', 'GC1539', 'GC1541', 'GC1542', 'GC1543', 'GC1481', 'GC1577', 'GC1576', 'GC1578', 'GC1579', 'GC1614', 'GC1615', 'GC1616', 'GC1584', 'GC1583', 'GC1585', 'GC1586', 'GC1251');
 UPDATE "nss"."Equations" e SET "StatisticGroupTypeID" = 32 FROM "nss"."RegressionRegions" rr  WHERE e."RegressionRegionID" = rr."ID" AND rr."Code" IN('GC1540');
 
+
+/*Flash Citations to remove #*/
+UPDATE "nss"."Citations" Set "CitationURL" = REPLACE("CitationURL",'#','');
+
 /*hookup "nss"."Coefficient"*/
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 INSERT INTO "nss"."Coefficients"("ID","RegressionRegionID", "Criteria", "Description", "Value") VALUES (1, (SELECT "ID" FROM "RegressionRegions" where "Code" = 'GC730'), '(2875<ELEV) AND (ELEV <3125) AND ((ORREG2=10001) OR (ORREG2=10003))', 'OR, Ensures a smooth transition between Flood Regions 2A (GC730) and 2B (GC731), peak discharges for watersheds with mean elevations near 3,000 feet are estimated by a weighted average of peak discharges estimated by prediction equations for both regions.', '(ELEV-2875)/250');
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (6,41,1);
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (259,1,1);
+
 INSERT INTO "nss"."Coefficients"("ID","RegressionRegionID", "Criteria", "Description", "Value") VALUES (2, (SELECT "ID" FROM "RegressionRegions" where "Code" = 'GC731'), '(2875<ELEV) AND (ELEV <3125) AND ((ORREG2=10001) OR (ORREG2=10003))', 'OR, Ensures a smooth transition between Flood Regions 2A (GC730) and 2B (GC731), peak discharges for watersheds with mean elevations near 3,000 feet are estimated by a weighted average of peak discharges estimated by prediction equations for both regions.', '(3125-ELEV)/250');
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (6,41,2);
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (259,1,2);
+
 INSERT INTO "nss"."Coefficients"("ID","RegressionRegionID", "Criteria", "Description", "Value") VALUES (3, (SELECT "ID" FROM "RegressionRegions" where "Code" = 'GC660'), 'PERENNIAL=0', 'NM, Low flow statewide (GC 660)', '0');
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (249,1,3);
+
 INSERT INTO "nss"."Coefficients"("ID","RegressionRegionID", "Criteria", "Description", "Value") VALUES (4, (SELECT "ID" FROM "RegressionRegions" where "Code" = 'GC661'), 'PERENNIAL=0', 'NM, Low flow mountain (GC 661)', '0');
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (249,1,4);
 
 /*hookup "nss"."Limitation"s*/
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (1, 'DRNAREA<=1000.0', 'AK, Peak flows (GC1656) area less than 1000', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1656'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (2, 'DRNAREA>1000.0', 'AK, Peak flows (GC1657) area greater than 1000', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1657'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (3, 'LOWREG=1438', 'AR, Low flows region 1 (GC1438)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1438'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (4, 'LOWREG=1439', 'AR, Low flows region 2 (GC1439)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1439'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (5, 'LOWREG=1440', 'AR, Low flows region 3 (GC1440)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1440'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (10, 'PZNSSREGNO=1445', 'AR, Probability of Zero flows region 1 (GC1445)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1445'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (11, 'PZNSSREGNO=1446', 'AR, Probability of Zero flows region 2 (GC1446)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1446'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (12, 'PZNSSREGNO=1447', 'AR, Probability of Zero flows region 3 (GC1447)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1447'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (13, 'FD_Region=1623', 'AZ,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1623'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (14, 'ELEV < 7500.0', 'AZ, Peak flows region 2 (GC1619) elevation less than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1619'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (15, 'ELEV < 7500.0', 'AZ, Peak flows region 3 (GC1620) elevation less than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1620'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (16, 'ELEV < 7500.0', 'AZ, Peak flows region 4 (GC1621) elevation less than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1621'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (17, 'ELEV < 7500.0', 'AZ, Peak flows region 5 (GC1622) elevation less than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1622'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (18, 'ELEV>=7500.0', 'AZ, Peak flows (GC1618) elevation greater than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1618'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (22, '(DRNAREA>=1.0)', 'GA, Southeast US Rural (GC1250) area over 1 sqr mile', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1250'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (24, '(DRNAREA<1.0)', 'GA, Region 5 Rural flows (GC1575) area under 1 sqr mile', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1575'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (30, '(DRNAREA<3.0)', 'GA, Region 1 Urban flows (GC1539) area under 3 sqr mil', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1539'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (32, '(DRNAREA>=3.0)', 'GA, Region 1 Urban (GC 1540) over 3 sqr mil.', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1540'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (37, '(DRNAREA<1.0)', 'GA, Region 1 Rural flows (GC 1572) area under 1 sqr mile', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1572'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (38, '(DRNAREA<1.0)', 'GA, Region 3 Rural (GC 1573) area under 1 sqr mil', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1573'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (39, '(DRNAREA<1.0)', 'GA, Region 4 Rural (GC 1574) area under 1 sqr mil', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1574'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (40, 'DRNAREA <= 2.22 * STRMTOT', 'IA, Region 1 Area (GC1561) LE 2.22 * streamtotal', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1561'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (41, 'DRNAREA > 2.22 * STRMTOT', 'IA, Region 1 Area (GC 1564) GT 2.22 * streamtotal', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1564'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (42, 'BFREGNO=1566', 'IN, Bankfull_Central_Till_Plain_region (GC 1566)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1566'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (44, 'BFREGNO=1567', 'IN, Bankfull_South_Hills_and_lowlands_region (GC1567)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1567'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (46, 'HIGHREG=1005', 'IN, Region_1_Peak_Flow (GC 1005)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1005'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (47, 'HIGHREG=1006', 'IN, Region_2_Peak_Flow (GC 1006)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1006'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (48, 'HIGHREG=1007', 'IN, Region_3_Peak_Flow (GC 1007)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1007'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (49, 'HIGHREG=1008', 'IN, Region_4_Peak_Flow (GC 1008)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1008'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (50, 'HIGHREG=1009', 'IN, Region_5_Peak_Flow (GC 1009)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1009'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (51, 'HIGHREG=1010', 'IN, Region_6_Peak_Flow (GC 1010)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1010'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (52, 'HIGHREG=1011', 'IN, Region_7_Peak_Flow (GC 1011)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1011'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (53, 'HIGHREG=1012', 'IN, Region_8_Peak_Flow (GC 1012)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1012'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (54, '(DRNAREA<=3.0)', 'NC, Region 1 (GC1576) Urban undr 3 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1576'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (56, '((DRNAREA>=1.0) OR PCTREG2 >0)', 'NC, SouthEast (GC 1254) Rural all reg. over 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1254'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (61, '(DRNAREA<1.0)', 'NC, Region 1 (GC 1580) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1580'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (62, '(DRNAREA<1.0)', 'NC, Region 3 (GC 1581) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1581'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (63, '(DRNAREA<1.0)', 'NC, Region 4 (GC 1582) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1582'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (64, '(DRNAREA>3.0)', 'NC, Region 1 (GC 1577) Urban over 3 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1577'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (70, 'HIGHREG=1092', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1092'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (71, 'HIGHREG=1093', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1093'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (72, 'HIGHREG=1094', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1094'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (73, 'HIGHREG=1095', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1095'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (74, 'HIGHREG=1096', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1096'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (75, 'HIGHREG=1097', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1097'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (76, 'HIGHREG=1098', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1098'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (77, 'HIGHREG=1099', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1099'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (78, 'HIGHREG=1100', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1100'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (79, 'ELEV<7500', 'NM, Low flow statewide (GC 660) ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC660'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (80, 'ELEV>=7500', 'NM, Low flow mountain (GC 661) ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC661'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (83, 'LAT_CENT<=41.2', 'OH, Low flow lat LE 41.2 (GC 1450)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1450'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (84, 'LAT_CENT>41.2', 'OH, Low flow lat GT 41.2 (GC 1449)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1449'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (86, '(2875<ELEV) AND ((ORREG2=10001) OR (ORREG2=10003))', 'OR, Elevation GT 2875 to include transition zone (2875<=ELEV<3125) for region Reg_2A_Western_Interior_GE_3000_ft_Cooper', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC730'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (87, '(ELEV<3125) AND ((ORREG2=10001) OR (ORREG2=10003))', 'OR, Elevation LT 3125 to include transition zone (2875<=ELEV<3125) for region Reg_2B_Western_Interior_LT_3000_ft_Cooper', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC731'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (89, '(ORREG2=729) OR (ORREG2=10003) ', 'OR, region Reg_1_Coastal_Cooper', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC729'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (97, 'CONTDA<=30.2', 'TN, Multivariable are region 3 (GC 346) CDA LE 30.2', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC346'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (98, 'CONTDA>30.2', 'TN, Multivariable are region 3 (GC 348) CDA GT 30.2', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC348'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (111, 'DRNAREA < 12', 'ME, Peak flows statewide (GC1632)DRNAREA less than 12 sqr mi ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1632'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (112, 'DRNAREA >=12', 'ME, Peak flows statewide (GC1435)DRNAREA greater than or equal 12 sqr mi ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1435'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (116, 'LOWREG=1728', 'IN, Harmonic_Mean_Northern_Region_2016_5102 (GC 1728)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1728'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (117, 'LOWREG=1729', 'IN, Harmonic_Mean_Central_Region_2016_5102 (GC 1729)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1729'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (118, 'LOWREG=1730', 'IN, Harmonic_Mean_Southern_Region_2016_5102 (GC 1730)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1730'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (121, '(DRNAREA>=1.0)', 'SC, SouthEast US (GC1270) over 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1270'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (122, '(DRNAREA<1.0)', 'SC, Region 1 (GC1587) Rural under 1.0 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1587'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (123, '(DRNAREA<1.0)', 'SC, Region 3 (GC1588) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1588'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (124, '(DRNAREA<1.0)', 'SC,Region 4 (GC1586) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1586'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (125, '(DRNAREA>3.0)', 'SC, Region 1 (GC1584) Urban over 3.0 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1584'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (126, '(DRNAREA<=3.0)', 'SC, Region 1 (GC1583) Urban under 3.0 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1583'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (128, '(CARBON>30)', 'PA, Statewide_Bankfull_Carbonate_2018_5066 (GC1770) Over 30% Carbonate ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1770'));
-INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (129, '(CARBON <=30)', 'PA, Statewide_Bankfull_Noncarbonate_2018_5066 (GC1769) less 30% Carbonate', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1769'));
-
-
-
-/*ReInsert "Limitation"s/Coeff to variable reference*/
-/*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(256, 1, 76);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(256, 1, 77);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(256, 1, 78);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(249, 1, 79);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 79);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(249, 1, 80);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 80);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(249, 1, 81);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 81);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(249, 1, 82);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 82);*/
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(159, 18, 83);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(159, 18, 84);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 85);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 85);*/
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 86);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 86);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 87);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 87);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 88);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 88);*/
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 89);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 90);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 91);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 92);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,93);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (259,1,93);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,94);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (259,1,94);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,95);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (259,1,95);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,96);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (259,1,96);*/
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (7,35,97);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (7,35,98);
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,1);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (2, 'DRNAREA>1000.0', 'AK, Peak flows (GC1657) area greater than 1000', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1657'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,2);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (3, 'LOWREG=1438', 'AR, Low flows region 1 (GC1438)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1438'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,3);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (4, 'LOWREG=1439', 'AR, Low flows region 2 (GC1439)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1439'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,4);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (5, 'LOWREG=1440', 'AR, Low flows region 3 (GC1440)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1440'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,5);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (10, 'PZNSSREGNO=1445', 'AR, Probability of Zero flows region 1 (GC1445)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1445'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (257,1,10);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (11, 'PZNSSREGNO=1446', 'AR, Probability of Zero flows region 2 (GC1446)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1446'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (257,1,11);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (12, 'PZNSSREGNO=1447', 'AR, Probability of Zero flows region 3 (GC1447)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1447'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (257,1,12);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (13, 'FD_Region=1623', 'AZ,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1623'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (262,1,13);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (14, 'ELEV < 7500.0', 'AZ, Peak flows region 2 (GC1619) elevation less than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1619'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,14);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (15, 'ELEV < 7500.0', 'AZ, Peak flows region 3 (GC1620) elevation less than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1620'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,15);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (16, 'ELEV < 7500.0', 'AZ, Peak flows region 4 (GC1621) elevation less than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1621'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,16);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (17, 'ELEV < 7500.0', 'AZ, Peak flows region 5 (GC1622) elevation less than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1622'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,17);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (18, 'ELEV>=7500.0', 'AZ, Peak flows (GC1618) elevation greater than 7500', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1618'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,18);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,19);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,20);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (6,41,21);*/
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (22, '(DRNAREA>=1.0)', 'GA, Southeast US Rural (GC1250) area over 1 sqr mile', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1250'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,22);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,23);*/
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (24, '(DRNAREA<1.0)', 'GA, Region 5 Rural flows (GC1575) area under 1 sqr mile', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1575'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,24);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,25);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,26);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,27);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,28);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,29);*/
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (30, '(DRNAREA<3.0)', 'GA, Region 1 Urban flows (GC1539) area under 3 sqr mil', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1539'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,30);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,31);*/
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (32, '(DRNAREA>=3.0)', 'GA, Region 1 Urban (GC 1540) over 3 sqr mil.', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1540'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,32);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,33);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,34);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,35);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,36);*/
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (37, '(DRNAREA<1.0)', 'GA, Region 1 Rural flows (GC 1572) area under 1 sqr mile', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1572'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,37);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (38, '(DRNAREA<1.0)', 'GA, Region 3 Rural (GC 1573) area under 1 sqr mil', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1573'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,38);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (39, '(DRNAREA<1.0)', 'GA, Region 4 Rural (GC 1574) area under 1 sqr mil', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1574'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,39);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (40, 'DRNAREA <= 2.22 * STRMTOT', 'IA, Region 1 Area (GC1561) LE 2.22 * streamtotal', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1561'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (221,40,40);
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,40);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (41, 'DRNAREA > 2.22 * STRMTOT', 'IA, Region 1 Area (GC 1564) GT 2.22 * streamtotal', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1564'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (221,40,41);
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,41);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (42, 'BFREGNO=1566', 'IN, Bankfull_Central_Till_Plain_region (GC 1566)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1566'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (258,1,42);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (258,1,43);*/
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (44, 'BFREGNO=1567', 'IN, Bankfull_South_Hills_and_lowlands_region (GC1567)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1567'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (258,1,44);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (258,1,45);*/
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (46, 'HIGHREG=1005', 'IN, Region_1_Peak_Flow (GC 1005)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1005'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,46);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (47, 'HIGHREG=1006', 'IN, Region_2_Peak_Flow (GC 1006)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1006'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,47);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (48, 'HIGHREG=1007', 'IN, Region_3_Peak_Flow (GC 1007)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1007'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,48);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (49, 'HIGHREG=1008', 'IN, Region_4_Peak_Flow (GC 1008)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1008'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,49);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (50, 'HIGHREG=1009', 'IN, Region_5_Peak_Flow (GC 1009)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1009'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,50);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (51, 'HIGHREG=1010', 'IN, Region_6_Peak_Flow (GC 1010)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1010'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,51);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (52, 'HIGHREG=1011', 'IN, Region_7_Peak_Flow (GC 1011)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1011'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,52);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (53, 'HIGHREG=1012', 'IN, Region_8_Peak_Flow (GC 1012)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1012'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,53);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (54, '(DRNAREA<=3.0)', 'NC, Region 1 (GC1576) Urban undr 3 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1576'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,54);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (56, '((DRNAREA>=1.0) OR PCTREG2 >0)', 'NC, SouthEast (GC 1254) Rural all reg. over 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1254'));
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,56);
 INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (28,11,56);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,58);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,60);*/
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,61);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,62);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,63);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,64);
-/*INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,65);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (250,11,65);*/
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,70);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,71);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,72);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,73);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,74);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,75);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (6,41,1);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (259,1,1);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (6,41,2);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (259,1,2);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (249,1,3);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "CoefficientID") VALUES (249,1,4);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,111);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,112);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,121);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,122);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,123);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,124);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,125);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,126);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,116);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,117);
-INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,118);
-INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "LimitationID", "Comments") VALUES(87, 11, 128, 'PA Statewide_Bankfull_Carbonate_2018_5066 (GC1770) Limitation');
-INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "LimitationID", "Comments") VALUES(87, 11, 129, 'PA Statewide_Bankfull_Carbonate_2018_5066 (GC1769) Limitation');
 
-/*Flash Citations to remove #*/
-UPDATE "nss"."Citations" Set "CitationURL" = REPLACE("CitationURL",'#','');
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (61, '(DRNAREA<1.0)', 'NC, Region 1 (GC 1580) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1580'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,61);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (62, '(DRNAREA<1.0)', 'NC, Region 3 (GC 1581) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1581'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,62);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (63, '(DRNAREA<1.0)', 'NC, Region 4 (GC 1582) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1582'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,63);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (64, '(DRNAREA>3.0)', 'NC, Region 1 (GC 1577) Urban over 3 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1577'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,64);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (70, 'HIGHREG=1092', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1092'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,70);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (71, 'HIGHREG=1093', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1093'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,71);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (72, 'HIGHREG=1094', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1094'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,72);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (73, 'HIGHREG=1095', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1095'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,73);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (74, 'HIGHREG=1096', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1096'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,74);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (75, 'HIGHREG=1097', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1097'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (256,1,75);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (76, 'HIGHREG=1098', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1098'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(256, 1, 76);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (77, 'HIGHREG=1099', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1099'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(256, 1, 77);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (78, 'HIGHREG=1100', 'NM,', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1100'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(256, 1, 78);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (79, 'ELEV<7500', 'NM, Low flow statewide (GC 660) ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC660'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(249, 1, 79);
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 79);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (80, 'ELEV>=7500', 'NM, Low flow mountain (GC 661) ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC661'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(249, 1, 80);
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 80);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (83, 'LAT_CENT<=41.2', 'OH, Low flow lat LE 41.2 (GC 1450)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1450'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(159, 18, 83);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (84, 'LAT_CENT>41.2', 'OH, Low flow lat GT 41.2 (GC 1449)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1449'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(159, 18, 84);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (86, '(2875<ELEV) AND ((ORREG2=10001) OR (ORREG2=10003))', 'OR, Elevation GT 2875 to include transition zone (2875<=ELEV<3125) for region Reg_2A_Western_Interior_GE_3000_ft_Cooper', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC730'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 86);
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 86);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (87, '(ELEV<3125) AND ((ORREG2=10001) OR (ORREG2=10003))', 'OR, Elevation LT 3125 to include transition zone (2875<=ELEV<3125) for region Reg_2B_Western_Interior_LT_3000_ft_Cooper', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC731'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(6, 41, 87);
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 87);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (89, '(ORREG2=729) OR (ORREG2=10003) ', 'OR, region Reg_1_Coastal_Cooper', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC729'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES(259, 1, 89);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (97, 'CONTDA<=30.2', 'TN, Multivariable are region 3 (GC 346) CDA LE 30.2', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC346'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (7,35,97);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (98, 'CONTDA>30.2', 'TN, Multivariable are region 3 (GC 348) CDA GT 30.2', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC348'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (7,35,98);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (111, 'DRNAREA < 12', 'ME, Peak flows statewide (GC1632)DRNAREA less than 12 sqr mi ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1632'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,111);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (112, 'DRNAREA >=12', 'ME, Peak flows statewide (GC1435)DRNAREA greater than or equal 12 sqr mi ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1435'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,112);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (116, 'LOWREG=1728', 'IN, Harmonic_Mean_Northern_Region_2016_5102 (GC 1728)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1728'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,116);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (117, 'LOWREG=1729', 'IN, Harmonic_Mean_Central_Region_2016_5102 (GC 1729)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1729'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,117);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (118, 'LOWREG=1730', 'IN, Harmonic_Mean_Southern_Region_2016_5102 (GC 1730)', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1730'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (255,1,118);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (121, '(DRNAREA>=1.0)', 'SC, SouthEast US (GC1270) over 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1270'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,121);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (122, '(DRNAREA<1.0)', 'SC, Region 1 (GC1587) Rural under 1.0 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1587'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,122);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (123, '(DRNAREA<1.0)', 'SC, Region 3 (GC1588) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1588'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,123);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (124, '(DRNAREA<1.0)', 'SC,Region 4 (GC1586) Rural under 1 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1586'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,124);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (125, '(DRNAREA>3.0)', 'SC, Region 1 (GC1584) Urban over 3.0 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1584'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,125);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (126, '(DRNAREA<=3.0)', 'SC, Region 1 (GC1583) Urban under 3.0 sqr mi', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1583'));
+INSERT INTO "nss"."Variables" ("VariableTypeID", "UnitTypeID", "LimitationID") VALUES (1,35,126);
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (128, '(CARBON>30)', 'PA, Statewide_Bankfull_Carbonate_2018_5066 (GC1770) Over 30% Carbonate ', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1770'));
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "LimitationID", "Comments") VALUES(87, 11, 128, 'PA Statewide_Bankfull_Carbonate_2018_5066 (GC1770) Limitation');
+
+INSERT INTO "nss"."Limitations"("ID", "Criteria", "Description", "RegressionRegionID") VALUES (129, '(CARBON <=30)', 'PA, Statewide_Bankfull_Noncarbonate_2018_5066 (GC1769) less 30% Carbonate', (Select rr."ID" from "RegressionRegions" rr where rr."Code" = 'GC1769'));
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "LimitationID", "Comments") VALUES(87, 11, 129, 'PA Statewide_Bankfull_Carbonate_2018_5066 (GC1769) Limitation');
 
 /*add missing/default variable units*/
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(23, 35, 'Default unit');

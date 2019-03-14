@@ -26,6 +26,8 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using GeoAPI.Geometries;
+using WIM.Exceptions.Services;
 
 namespace NSSServices.Controllers
 {
@@ -38,25 +40,24 @@ namespace NSSServices.Controllers
         #region METHOD
         [HttpGet]
         [HttpGet("/Regions/{regions}/[controller]")]
-        public async Task<IActionResult> GetRegressionRegions(string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        [HttpPost("[action]")]
+        [HttpPost("/Regions/{regions}/[controller]")]
+        public async Task<IActionResult> Get(string regions = "", [FromBody] IGeometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
+            String[] allowableGeometries = new String[] { "Polygon", "MuliPolygon" };
             IQueryable<RegressionRegion> entities = null;
             List<string> RegionList = null;
             List<string> statisticgroupList = null;
             List<string> regressiontypeList = null;
             try
             {
-                if (String.IsNullOrEmpty(regions) &&
-                    string.IsNullOrEmpty(statisticgroups) && string.IsNullOrEmpty(regressiontypes))
-                { entities = agent.GetRegressionRegions(); }
-                else
-                {
-                    RegionList = parse(regions);
-                    statisticgroupList = parse(statisticgroups);
-                    regressiontypeList = parse(regressiontypes);
-
-                    entities = agent.GetRegressionRegions(RegionList, statisticgroupList, regressiontypeList);
-                }
+                if (geom != null && !allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', allowableGeometries));
+                                
+                RegionList = parse(regions);
+                statisticgroupList = parse(statisticgroups);
+                regressiontypeList = parse(regressiontypes);                
+                
+                entities = agent.GetRegressionRegions(RegionList,geom, statisticgroupList,regressiontypeList);                
 
                 return Ok(entities);
             }

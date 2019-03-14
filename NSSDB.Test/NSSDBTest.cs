@@ -16,7 +16,7 @@ namespace NSSDB.Test
     {
         private string connectionstring = new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json")
-                    .Build().GetConnectionString("nssConnection");
+                    .Build().GetConnectionString("Connection");
 
         [TestMethod]
         public void ConnectionTest()
@@ -68,12 +68,12 @@ namespace NSSDB.Test
                     Manager manager = new Manager()
                     {
                         FirstName ="Test",
-                        Email = "testAdmin@usgs.gov",
-                        LastName = "Admin", RoleID =1,
-                        Username ="testAdmin", 
+                        Email = "testManager@usgs.gov",
+                        LastName = "Manager", RoleID =2,
+                        Username ="testManager", 
                         Password = Cryptography.GenerateSHA256Hash(password, salt),
-                        Salt = salt,
-                        RegionManagers = new List<RegionManager>() { new RegionManager() { RegionID = 1 } }
+                        Salt = salt
+                        //RegionManagers = new List<RegionManager>() { new RegionManager() { RegionID = 1 } }
                        
                     };
                     context.Managers.Add(manager);

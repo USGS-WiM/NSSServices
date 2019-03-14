@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NSSDB.Migrations
 {
     [DbContext(typeof(NSSDBContext))]
-    [Migration("20181025152541_init")]
+    [Migration("20190313184751_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,9 +19,9 @@ namespace NSSDB.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("nss")
-                .HasAnnotation("Npgsql:PostgresExtension:postgis", "'postgis', '', ''")
+                .HasAnnotation("Npgsql:PostgresExtension:postgis", ",,")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("NSSDB.Resources.Citation", b =>
@@ -154,6 +154,21 @@ namespace NSSDB.Migrations
                     b.ToTable("Limitations");
                 });
 
+            modelBuilder.Entity("NSSDB.Resources.Location", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AssociatedCodes");
+
+                    b.Property<Geometry>("Geometry")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Locations");
+                });
+
             modelBuilder.Entity("NSSDB.Resources.Manager", b =>
                 {
                     b.Property<int>("ID")
@@ -280,16 +295,22 @@ namespace NSSDB.Migrations
 
                     b.Property<DateTime>("LastModified");
 
-                    b.Property<Polygon>("Location");
+                    b.Property<int?>("LocationID");
 
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<int?>("StatusID");
 
                     b.HasKey("ID");
 
                     b.HasIndex("CitationID");
 
                     b.HasIndex("Code");
+
+                    b.HasIndex("LocationID");
+
+                    b.HasIndex("StatusID");
 
                     b.ToTable("RegressionRegions");
                 });
@@ -302,14 +323,67 @@ namespace NSSDB.Migrations
                     b.Property<string>("Description")
                         .IsRequired();
 
-                    b.Property<DateTime>("LastModified");
-
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.HasKey("ID");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Description = "System Administrator",
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Description = "Region Manager",
+                            Name = "Manager"
+                        });
+                });
+
+            modelBuilder.Entity("NSSDB.Resources.Status", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Status");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Description = "Working and disabled for all public users",
+                            Name = "Work/Disabled"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Description = "Reviewing and disabled for all public users",
+                            Name = "Review"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            Description = "Approved and enabled for public NSS users",
+                            Name = "Approved"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            Description = "Approved and enabled for public StreamStats users",
+                            Name = "SS Approved"
+                        });
                 });
 
             modelBuilder.Entity("NSSDB.Resources.Variable", b =>
@@ -443,6 +517,16 @@ namespace NSSDB.Migrations
                         .WithMany("RegressionRegions")
                         .HasForeignKey("CitationID")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("NSSDB.Resources.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("NSSDB.Resources.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusID")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("NSSDB.Resources.Variable", b =>

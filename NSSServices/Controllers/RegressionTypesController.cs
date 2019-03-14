@@ -57,7 +57,7 @@ namespace NSSServices.Controllers
         }
 
         [HttpGet]
-        [HttpGet("Regions/{regions}/[controller]")]
+        [HttpGet("/Regions/{regions}/[controller]")]
         public async Task<IActionResult> GetRegressionTypes(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "")
         {
             IQueryable<RegressionType> entities = null;

@@ -1,0 +1,22 @@
+[
+  {
+    "ID": "1",
+    "Name": "Work/Disabled",
+    "Description": "Working and disabled for all public users"
+  },
+  {
+    "ID": "2",
+    "Name": "Review",
+    "Description": "Reviewing and disabled for all public users"
+  },
+  {
+    "ID": "3",
+    "Name": "Approved",
+    "Description": "Approved and enabled for public NSS users"
+  },
+  {
+    "ID": "4",
+    "Name": "SS Approved",
+    "Description": "Approved and enabled for public StreamStats users"
+  }
+]

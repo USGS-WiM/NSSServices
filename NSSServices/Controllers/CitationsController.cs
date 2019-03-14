@@ -26,6 +26,8 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using GeoAPI.Geometries;
+using WIM.Exceptions.Services;
 
 namespace NSSServices.Controllers
 {
@@ -38,8 +40,11 @@ namespace NSSServices.Controllers
         #region METHOD
         [HttpGet]
         [HttpGet("/Regions/{regions}/[controller]")]
-        public async Task<IActionResult> Get(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        [HttpPost("[action]")]
+        [HttpPost("/Regions/{regions}/[controller]")]
+        public async Task<IActionResult> Get(string regions="", [FromBody] IGeometry geom = null, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
+            String[] allowableGeometries = new String[] { "Polygon", "MuliPolygon" };
             IQueryable<Citation> entities = null;
             List<string> RegionList = null;
             List<string> regressionRegionList = null;
@@ -47,18 +52,15 @@ namespace NSSServices.Controllers
             List<string> regressiontypeList = null;
             try
             {
-                if(String.IsNullOrEmpty(regions)&&String.IsNullOrEmpty(regressionRegions)&& 
-                    string.IsNullOrEmpty(statisticgroups)&& string.IsNullOrEmpty(regressiontypes))
-                { entities = agent.GetCitations(); }
-                else
-                {
-                    RegionList = parse(regions);
-                    regressionRegionList = parse(regressionRegions);
-                    statisticgroupList = parse(statisticgroups);
-                    regressiontypeList = parse(regressiontypes);
+                if (geom != null && !allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', allowableGeometries));
 
-                    entities = agent.GetCitations(RegionList, regressionRegionList, statisticgroupList, regressiontypeList);
-                }
+                RegionList = parse(regions);
+                regressionRegionList = parse(regressionRegions);
+                statisticgroupList = parse(statisticgroups);
+                regressiontypeList = parse(regressiontypes);
+
+                entities = agent.GetCitations(RegionList, geom, regressionRegionList, statisticgroupList, regressiontypeList);
+                
                 sm("test from citations handler");
                 return Ok(entities);
             }

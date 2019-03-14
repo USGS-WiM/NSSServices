@@ -22,10 +22,13 @@
 //   
 
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using NSSDB.Resources;
 using SharedDB.Resources;
 using System;
 using System.Collections.Generic;
+using System.IO;
+
 namespace NSSDB
 {
     public class NSSDBContext:DbContext
@@ -43,8 +46,10 @@ namespace NSSDB
         public virtual DbSet<RegressionRegion> RegressionRegions { get; set; }        
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Variable> Variables { get; set; }       
-        public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }        
-        
+        public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }     
+        public virtual DbSet<Location> Locations { get; set; }
+        public virtual DbSet<Status> Status { get; set; }
+
         //Shared views
         public virtual DbSet<ErrorType> ErrorTypes { get; set; }
         public virtual DbSet<RegressionType> RegressionTypes { get; set; }
@@ -97,11 +102,14 @@ namespace NSSDB
                                          typeof(RegionManager).FullName,typeof(RegionRegressionRegion).FullName,
                                          typeof(VariableUnitType).FullName,typeof(ErrorType).FullName,typeof(RegressionType).FullName,
                                          typeof(StatisticGroupType).FullName,typeof(UnitConversionFactor).FullName,typeof(UnitSystemType).FullName,
-                                         typeof(UnitType).FullName,typeof(VariableType).FullName }
+                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName,
+                                         typeof(Role).FullName}
                 .Contains(entitytype.Name))
                 { continue; }                 
                 modelBuilder.Entity(entitytype.Name).Property<DateTime>("LastModified");
             }//next entitytype
+
+            modelBuilder.Entity<Location>().Property<string>("AssociatedCodes");
 
             //cascade delete is default, rewrite behavior
             modelBuilder.Entity(typeof(EquationError).ToString(), b =>
@@ -127,6 +135,24 @@ namespace NSSDB
                     .HasForeignKey("UnitTypeID")
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
+            modelBuilder.Entity(typeof(RegressionRegion).ToString(), b =>
+            {
+                b.HasOne(typeof(Status).ToString(), "Status")
+                    .WithMany()
+                    .HasForeignKey("StatusID")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(typeof(Location).ToString(), "Location")
+                    .WithMany()
+                    .HasForeignKey("LocationID")
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            //seed the db
+            //var path = Path.Combine(Environment.CurrentDirectory, "Data");
+            //modelBuilder.Entity<Status>().HasData(JsonConvert.DeserializeObject<Status[]>(File.ReadAllText(Path.Combine(path, "Status.json"))));
+            //modelBuilder.Entity<Role>().HasData(JsonConvert.DeserializeObject<Role[]>(File.ReadAllText(Path.Combine(path, "Roles.json"))));
 
             base.OnModelCreating(modelBuilder);
             //Must Comment out after migration

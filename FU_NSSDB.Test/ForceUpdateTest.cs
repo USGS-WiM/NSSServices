@@ -11,10 +11,12 @@ namespace FU_NSSDB.Test
         {
             try
             {
-                var x = new ForceUpdate("", "", @"");
-                //if (x.VerifyLists())
-                // x.Load();
-                //x.LoadSqlFiles(@"D:\WiM\GitHub\NSSServices\FU_NSSDB\SQL_files\small");
+                var x = new ForceUpdate("**dbuser**", "**dbpass**", @"D:\WiM\Projects\NSS\DB\StreamStatsDB_2019-02-11.mdb");
+                if (x.VerifyLists())
+                {
+                    x.Load();
+                    x.LoadSqlFiles(@"D:\WiM\GitHub\NSSServices\FU_NSSDB\SQL_files");
+                }
 
             }
             catch (Exception ex)

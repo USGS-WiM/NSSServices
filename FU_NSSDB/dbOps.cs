@@ -168,28 +168,13 @@ namespace FU_NSSDB
                 this.CloseConnection();
             }
         }
-        public void ExecuteSql(string fileName)
+        public void ExecuteSql(string sql)
         {
             try
             {
-                List<string> sqlList = null;
-                
-                using (StreamReader reader = new StreamReader(fileName))
-                {
-                    sqlList = Regex.Split(reader.ReadToEnd(), @"(?<=[;])").ToList();    
-                }//end using   
-                sm($"Count: {sqlList.Count}");
                 this.OpenConnection();
-                for (int i = 0; i < sqlList.Count; i++)
-                {
-                    var sql = sqlList[i];
-                    using (DbCommand command = getCommand(sql))
-                    {
-                        command.CommandTimeout = 2*60;// timeout
-                        var updatedRows = command.ExecuteNonQuery();
-                        sm($"Updated {i}, out of {sqlList.Count}");
-                    }//end using                        
-                }//next item                
+                DbCommand command = getCommand(sql);
+                command.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
@@ -199,6 +184,43 @@ namespace FU_NSSDB
             finally
             {
                 this.CloseConnection();
+            }
+
+
+        }
+        public void ExecuteSql(FileInfo file)
+        {
+            try
+            {
+                List<string> sqlList = null;
+                
+                using (StreamReader reader = new StreamReader(file.FullName))
+                {
+                    //sqlList = Regex.Split(reader.ReadToEnd(), @"(?<=[;])").ToList();   
+                    ExecuteSql(reader.ReadToEnd());
+                    
+                }//end using   
+                //sm($"Count: {sqlList.Count}");
+                //this.OpenConnection();
+                //for (int i = 0; i < sqlList.Count; i++)
+                //{
+                //    var sql = sqlList[i];
+                //    using (DbCommand command = getCommand(sql))
+                //    {
+                //        command.CommandTimeout = 2*60;// timeout
+                //        var updatedRows = command.ExecuteNonQuery();
+                //        sm($"Updated {i}, out of {sqlList.Count}");
+                //    }//end using                        
+                //}//next item                
+            }
+            catch (Exception ex)
+            {
+                this.sm(ex.Message);
+                throw ex;
+            }
+            finally
+            {
+                //this.CloseConnection();
             }
         } 
         public Int32 AddItem(SQLType type, Object[] args) {

@@ -13,7 +13,7 @@ namespace NSSDB.Migrations
                 name: "nss");
 
             migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:PostgresExtension:postgis", "'postgis', '', ''");
+                .Annotation("Npgsql:PostgresExtension:postgis", ",,");
 
             migrationBuilder.CreateTable(
                 name: "Citations",
@@ -30,6 +30,21 @@ namespace NSSDB.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Citations", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Locations",
+                schema: "nss",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Geometry = table.Column<Geometry>(nullable: false),
+                    AssociatedCodes = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Locations", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -76,8 +91,7 @@ namespace NSSDB.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: false),
-                    LastModified = table.Column<DateTime>(nullable: false)
+                    Description = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,29 +99,18 @@ namespace NSSDB.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RegressionRegions",
+                name: "Status",
                 schema: "nss",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Name = table.Column<string>(nullable: false),
-                    Code = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    CitationID = table.Column<int>(nullable: false),
-                    Location = table.Column<Polygon>(nullable: true),
-                    LastModified = table.Column<DateTime>(nullable: false)
+                    Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RegressionRegions", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_RegressionRegions_Citations_CitationID",
-                        column: x => x.CitationID,
-                        principalSchema: "nss",
-                        principalTable: "Citations",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_Status", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -139,6 +142,74 @@ namespace NSSDB.Migrations
                         principalTable: "Roles",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RegressionRegions",
+                schema: "nss",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Name = table.Column<string>(nullable: false),
+                    Code = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    CitationID = table.Column<int>(nullable: false),
+                    StatusID = table.Column<int>(nullable: true),
+                    LocationID = table.Column<int>(nullable: true),
+                    LastModified = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RegressionRegions", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_RegressionRegions_Citations_CitationID",
+                        column: x => x.CitationID,
+                        principalSchema: "nss",
+                        principalTable: "Citations",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RegressionRegions_Locations_LocationID",
+                        column: x => x.LocationID,
+                        principalSchema: "nss",
+                        principalTable: "Locations",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RegressionRegions_Status_StatusID",
+                        column: x => x.StatusID,
+                        principalSchema: "nss",
+                        principalTable: "Status",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RegionManager",
+                schema: "nss",
+                columns: table => new
+                {
+                    RegionID = table.Column<int>(nullable: false),
+                    ManagerID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RegionManager", x => new { x.ManagerID, x.RegionID });
+                    table.ForeignKey(
+                        name: "FK_RegionManager_Managers_ManagerID",
+                        column: x => x.ManagerID,
+                        principalSchema: "nss",
+                        principalTable: "Managers",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RegionManager_Regions_RegionID",
+                        column: x => x.RegionID,
+                        principalSchema: "nss",
+                        principalTable: "Regions",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -255,33 +326,6 @@ namespace NSSDB.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RegionManager",
-                schema: "nss",
-                columns: table => new
-                {
-                    RegionID = table.Column<int>(nullable: false),
-                    ManagerID = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RegionManager", x => new { x.ManagerID, x.RegionID });
-                    table.ForeignKey(
-                        name: "FK_RegionManager_Managers_ManagerID",
-                        column: x => x.ManagerID,
-                        principalSchema: "nss",
-                        principalTable: "Managers",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RegionManager_Regions_RegionID",
-                        column: x => x.RegionID,
-                        principalSchema: "nss",
-                        principalTable: "Regions",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "EquationErrors",
                 schema: "nss",
                 columns: table => new
@@ -388,6 +432,28 @@ namespace NSSDB.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                schema: "nss",
+                table: "Roles",
+                columns: new[] { "ID", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "System Administrator", "Admin" },
+                    { 2, "Region Manager", "Manager" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "nss",
+                table: "Status",
+                columns: new[] { "ID", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Working and disabled for all public users", "Work/Disabled" },
+                    { 2, "Reviewing and disabled for all public users", "Review" },
+                    { 3, "Approved and enabled for public NSS users", "Approved" },
+                    { 4, "Approved and enabled for public StreamStats users", "SS Approved" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Coefficients_RegressionRegionID",
                 schema: "nss",
@@ -461,6 +527,18 @@ namespace NSSDB.Migrations
                 column: "Code");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RegressionRegions_LocationID",
+                schema: "nss",
+                table: "RegressionRegions",
+                column: "LocationID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RegressionRegions_StatusID",
+                schema: "nss",
+                table: "RegressionRegions",
+                column: "StatusID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Variables_CoefficientID",
                 schema: "nss",
                 table: "Variables",
@@ -497,11 +575,8 @@ namespace NSSDB.Migrations
                 CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON ""Regions""  FOR EACH ROW EXECUTE PROCEDURE ""nss"".""trigger_set_lastmodified""();
                 CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON  ""RegressionRegions"" FOR EACH ROW EXECUTE PROCEDURE  ""nss"".""trigger_set_lastmodified""();
                 CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON  ""Coefficients"" FOR EACH ROW EXECUTE PROCEDURE  ""nss"".""trigger_set_lastmodified""();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON ""Roles"" FOR  EACH ROW EXECUTE PROCEDURE ""nss"".""trigger_set_lastmodified""();
                 CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON ""Variables""  FOR EACH ROW EXECUTE PROCEDURE ""nss"".""trigger_set_lastmodified""();
                 ");
-
-
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -564,6 +639,14 @@ namespace NSSDB.Migrations
 
             migrationBuilder.DropTable(
                 name: "Citations",
+                schema: "nss");
+
+            migrationBuilder.DropTable(
+                name: "Locations",
+                schema: "nss");
+
+            migrationBuilder.DropTable(
+                name: "Status",
                 schema: "nss");
         }
     }

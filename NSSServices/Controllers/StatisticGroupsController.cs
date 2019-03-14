@@ -27,6 +27,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using SharedAgent;
 using System.Linq;
+using NetTopologySuite.Geometries;
+using WIM.Exceptions.Services;
 
 namespace NSSServices.Controllers
 {
@@ -42,8 +44,11 @@ namespace NSSServices.Controllers
         #region METHOD
         [HttpGet]
         [HttpGet("/Regions/{regions}/[controller]")]
-        public async Task<IActionResult> GetStatisticGroups(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "")
+        [HttpPost("[action]")]
+        [HttpPost("/Regions/{regions}/[controller]")]
+        public async Task<IActionResult> Get(string regions="", [FromBody] Geometry geom = null, [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "")
         {
+            String[] allowableGeometries = new String[] { "Polygon", "MuliPolygon" };
             IQueryable<StatisticGroupType> entities = null;
             List<string> RegionList = null;
             List<string> regressionRegionList = null;
@@ -51,16 +56,19 @@ namespace NSSServices.Controllers
             try
             {
                 if (String.IsNullOrEmpty(regions) && String.IsNullOrEmpty(regressionRegions) &&
-                    string.IsNullOrEmpty(regressions))
+                    string.IsNullOrEmpty(regressions) && geom == null)
                 { entities = agent.GetStatisticGroups(); }
 
-                else
-                {
-                    RegionList = parse(regions);
+                RegionList = parse(regions);
+                regressionsList = parse(regressions);
+                if (geom == null)
+                {                    
                     regressionRegionList = parse(regressionRegions);
-                    regressionsList = parse(regressions);
-
                     entities = agent.GetStatisticGroups(RegionList, regressionRegionList, regressionsList);
+                }
+                else {
+                    if (!allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', allowableGeometries));
+                    entities = agent.GetStatisticGroups(RegionList, geom, regressionsList);
                 }
 
                 return Ok(entities);

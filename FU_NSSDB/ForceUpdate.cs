@@ -160,7 +160,7 @@ namespace FU_NSSDB
             foreach (FileInfo fi in rgFiles)
             {
                 sm(fi.Name);
-                NSSDBOps.ExecuteSql(fi.FullName);
+                NSSDBOps.ExecuteSql(fi);
             }//next file              
         }
         #endregion

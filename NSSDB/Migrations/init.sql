@@ -18,6 +18,13 @@ CREATE TABLE nss."Citations" (
     CONSTRAINT "PK_Citations" PRIMARY KEY ("ID")
 );
 
+CREATE TABLE nss."Locations" (
+    "ID" serial NOT NULL,
+    "Geometry" geometry NOT NULL,
+    "AssociatedCodes" text NULL,
+    CONSTRAINT "PK_Locations" PRIMARY KEY ("ID")
+);
+
 CREATE TABLE nss."PredictionIntervals" (
     "ID" serial NOT NULL,
     "BiasCorrectionFactor" double precision NULL,
@@ -42,20 +49,14 @@ CREATE TABLE nss."Roles" (
     "ID" serial NOT NULL,
     "Name" text NOT NULL,
     "Description" text NOT NULL,
-    "LastModified" timestamp without time zone NOT NULL,
     CONSTRAINT "PK_Roles" PRIMARY KEY ("ID")
 );
 
-CREATE TABLE nss."RegressionRegions" (
+CREATE TABLE nss."Status" (
     "ID" serial NOT NULL,
     "Name" text NOT NULL,
-    "Code" text NOT NULL,
     "Description" text NULL,
-    "CitationID" integer NOT NULL,
-    "Location" geometry NULL,
-    "LastModified" timestamp without time zone NOT NULL,
-    CONSTRAINT "PK_RegressionRegions" PRIMARY KEY ("ID"),
-    CONSTRAINT "FK_RegressionRegions_Citations_CitationID" FOREIGN KEY ("CitationID") REFERENCES nss."Citations" ("ID") ON DELETE CASCADE
+    CONSTRAINT "PK_Status" PRIMARY KEY ("ID")
 );
 
 CREATE TABLE nss."Managers" (
@@ -73,6 +74,29 @@ CREATE TABLE nss."Managers" (
     "LastModified" timestamp without time zone NOT NULL,
     CONSTRAINT "PK_Managers" PRIMARY KEY ("ID"),
     CONSTRAINT "FK_Managers_Roles_RoleID" FOREIGN KEY ("RoleID") REFERENCES nss."Roles" ("ID") ON DELETE RESTRICT
+);
+
+CREATE TABLE nss."RegressionRegions" (
+    "ID" serial NOT NULL,
+    "Name" text NOT NULL,
+    "Code" text NOT NULL,
+    "Description" text NULL,
+    "CitationID" integer NOT NULL,
+    "StatusID" integer NULL,
+    "LocationID" integer NULL,
+    "LastModified" timestamp without time zone NOT NULL,
+    CONSTRAINT "PK_RegressionRegions" PRIMARY KEY ("ID"),
+    CONSTRAINT "FK_RegressionRegions_Citations_CitationID" FOREIGN KEY ("CitationID") REFERENCES nss."Citations" ("ID") ON DELETE CASCADE,
+    CONSTRAINT "FK_RegressionRegions_Locations_LocationID" FOREIGN KEY ("LocationID") REFERENCES nss."Locations" ("ID") ON DELETE RESTRICT,
+    CONSTRAINT "FK_RegressionRegions_Status_StatusID" FOREIGN KEY ("StatusID") REFERENCES nss."Status" ("ID") ON DELETE RESTRICT
+);
+
+CREATE TABLE nss."RegionManager" (
+    "RegionID" integer NOT NULL,
+    "ManagerID" integer NOT NULL,
+    CONSTRAINT "PK_RegionManager" PRIMARY KEY ("ManagerID", "RegionID"),
+    CONSTRAINT "FK_RegionManager_Managers_ManagerID" FOREIGN KEY ("ManagerID") REFERENCES nss."Managers" ("ID") ON DELETE CASCADE,
+    CONSTRAINT "FK_RegionManager_Regions_RegionID" FOREIGN KEY ("RegionID") REFERENCES nss."Regions" ("ID") ON DELETE CASCADE
 );
 
 CREATE TABLE nss."Coefficients" (
@@ -121,14 +145,6 @@ CREATE TABLE nss."RegionRegressionRegions" (
     CONSTRAINT "FK_RegionRegressionRegions_RegressionRegions_RegressionRegionID" FOREIGN KEY ("RegressionRegionID") REFERENCES nss."RegressionRegions" ("ID") ON DELETE CASCADE
 );
 
-CREATE TABLE nss."RegionManager" (
-    "RegionID" integer NOT NULL,
-    "ManagerID" integer NOT NULL,
-    CONSTRAINT "PK_RegionManager" PRIMARY KEY ("ManagerID", "RegionID"),
-    CONSTRAINT "FK_RegionManager_Managers_ManagerID" FOREIGN KEY ("ManagerID") REFERENCES nss."Managers" ("ID") ON DELETE CASCADE,
-    CONSTRAINT "FK_RegionManager_Regions_RegionID" FOREIGN KEY ("RegionID") REFERENCES nss."Regions" ("ID") ON DELETE CASCADE
-);
-
 CREATE TABLE nss."EquationErrors" (
     "ID" serial NOT NULL,
     "EquationID" integer NOT NULL,
@@ -170,6 +186,20 @@ CREATE TABLE nss."VariableUnitTypes" (
     CONSTRAINT "FK_VariableUnitTypes_Variables_VariableID" FOREIGN KEY ("VariableID") REFERENCES nss."Variables" ("ID") ON DELETE CASCADE
 );
 
+INSERT INTO nss."Roles" ("ID", "Description", "Name")
+VALUES (1, 'System Administrator', 'Admin');
+INSERT INTO nss."Roles" ("ID", "Description", "Name")
+VALUES (2, 'Region Manager', 'Manager');
+
+INSERT INTO nss."Status" ("ID", "Description", "Name")
+VALUES (1, 'Working and disabled for all public users', 'Work/Disabled');
+INSERT INTO nss."Status" ("ID", "Description", "Name")
+VALUES (2, 'Reviewing and disabled for all public users', 'Review');
+INSERT INTO nss."Status" ("ID", "Description", "Name")
+VALUES (3, 'Approved and enabled for public NSS users', 'Approved');
+INSERT INTO nss."Status" ("ID", "Description", "Name")
+VALUES (4, 'Approved and enabled for public StreamStats users', 'SS Approved');
+
 CREATE INDEX "IX_Coefficients_RegressionRegionID" ON nss."Coefficients" ("RegressionRegionID");
 
 CREATE INDEX "IX_EquationErrors_EquationID" ON nss."EquationErrors" ("EquationID");
@@ -193,6 +223,10 @@ CREATE INDEX "IX_Regions_Code" ON nss."Regions" ("Code");
 CREATE INDEX "IX_RegressionRegions_CitationID" ON nss."RegressionRegions" ("CitationID");
 
 CREATE INDEX "IX_RegressionRegions_Code" ON nss."RegressionRegions" ("Code");
+
+CREATE INDEX "IX_RegressionRegions_LocationID" ON nss."RegressionRegions" ("LocationID");
+
+CREATE INDEX "IX_RegressionRegions_StatusID" ON nss."RegressionRegions" ("StatusID");
 
 CREATE INDEX "IX_Variables_CoefficientID" ON nss."Variables" ("CoefficientID");
 
@@ -219,10 +253,9 @@ CREATE INDEX "IX_Variables_LimitationID" ON nss."Variables" ("LimitationID");
                 CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Regions"  FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
                 CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON  "RegressionRegions" FOR EACH ROW EXECUTE PROCEDURE  "nss"."trigger_set_lastmodified"();
                 CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON  "Coefficients" FOR EACH ROW EXECUTE PROCEDURE  "nss"."trigger_set_lastmodified"();
-                CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Roles" FOR  EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
                 CREATE TRIGGER lastupdate BEFORE INSERT OR UPDATE ON "Variables"  FOR EACH ROW EXECUTE PROCEDURE "nss"."trigger_set_lastmodified"();
                 
 
 INSERT INTO nss."_EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20181025152541_init', '2.1.4-rtm-31024');
+VALUES ('20190313184751_init', '2.2.3-servicing-35854');
 

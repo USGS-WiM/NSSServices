@@ -27,7 +27,7 @@ namespace NSSDB.Resources
     public partial class Region
     {
 
-        [Required]
+        [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required]
         public string Name { get; set; }

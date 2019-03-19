@@ -187,7 +187,7 @@ namespace NSSDB.Resources
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals(obj as Manager);
+            return Equals(obj as PredictionInterval);
         }
         public override int GetHashCode()
         {
@@ -263,7 +263,7 @@ namespace NSSDB.Resources
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals(obj as Role);
+            return Equals(obj as RegressionRegion);
         }
         public override int GetHashCode()
         {

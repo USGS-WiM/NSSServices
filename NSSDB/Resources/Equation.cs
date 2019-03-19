@@ -26,7 +26,7 @@ namespace NSSDB.Resources
 {
     public partial class Equation
     {
-        [Required]
+        [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required]
         public int RegressionRegionID { get; set; }

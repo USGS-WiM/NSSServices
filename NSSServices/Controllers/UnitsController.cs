@@ -72,6 +72,7 @@ namespace NSSServices.Controllers
         {
             try
             {
+                entity.ID = 0;
                  if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
                 return Ok(await shared_agent.Add(entity));
             }
@@ -86,6 +87,7 @@ namespace NSSServices.Controllers
         {
             try
             {
+                entities.ForEach(e => e.ID = 0);
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
                 return Ok(await shared_agent.Add(entities));
             }

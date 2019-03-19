@@ -20,11 +20,13 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace NSSDB.Resources
 {
     public partial class PredictionInterval
     {
-        [Required]
+        [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public double? BiasCorrectionFactor { get; set; }
         public double? Student_T_Statistic { get; set; }

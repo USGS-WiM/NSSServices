@@ -83,8 +83,8 @@ namespace NSSServices.Controllers
 
                 var x = await agent.GetManager(id);
                 //remove info not relevant
-                x.Salt = string.Empty;
-                x.Password = string.Empty;
+                x.Salt = null;
+                x.Password = null;
 
                 return Ok(x);
             }
@@ -99,6 +99,7 @@ namespace NSSServices.Controllers
         {
             try
             {
+                entity.ID = 0;
                 if(string.IsNullOrEmpty(entity.FirstName)|| string.IsNullOrEmpty(entity.LastName) || 
                     string.IsNullOrEmpty(entity.Username)|| string.IsNullOrEmpty(entity.Email) ||
                     entity.RoleID <1) return new BadRequestObjectResult(new Error( errorEnum.e_badRequest, "You are missing one or more required parameter.")); // This returns HTTP 404
@@ -112,8 +113,8 @@ namespace NSSServices.Controllers
                 if (! isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
                 var x = await agent.Add(entity);
                 //remove info not relevant
-                x.Salt = string.Empty;
-                x.Password = string.Empty;
+                x.Salt = null;
+                x.Password = null;
 
                 return Ok(x);
             }
@@ -162,8 +163,8 @@ namespace NSSServices.Controllers
                 var x = await agent.Update(id, entity);
 
                 //remove info not relevant
-                x.Salt = string.Empty;
-                x.Password = string.Empty;
+                x.Salt = null;
+                x.Password = null;
 
                 return Ok(x);
             }

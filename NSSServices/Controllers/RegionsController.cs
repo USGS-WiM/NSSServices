@@ -71,6 +71,7 @@ namespace NSSServices.Controllers
         {
             try
             {
+                entity.ID = 0;
                 if (!isValid(entity)) return new BadRequestResult();
                 return Ok(await agent.Add(entity));
             }
@@ -85,6 +86,7 @@ namespace NSSServices.Controllers
         {
             try
             {
+                entities.ForEach(e => e.ID = 0);
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
                 return Ok(await agent.Add(entities));

@@ -253,7 +253,7 @@ INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(114, 11, 'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(119, 11, 'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(149, 36, 'Default unit');
-INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(163, 38, 'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(163, 40, 'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(164, 45, 'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(175, 11, 'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES(195, 30, 'Default unit');

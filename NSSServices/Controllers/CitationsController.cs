@@ -92,6 +92,7 @@ namespace NSSServices.Controllers
         {
             try
             {
+                entity.ID = 0;
                 RegressionRegion regRegion = await agent.GetRegressionRegion(regressionRegionID);
 
                 if (regRegion == null) return new BadRequestResult();

@@ -20,19 +20,20 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using NetTopologySuite.Geometries;
 namespace NSSDB.Resources
 {
     public partial class RegressionRegion
     {
-        [Required]
+        [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
         public string Code { get; set; }
         public string Description { get; set; }
-        public int CitationID { get; set; }
+        public int? CitationID { get; set; }
 
         public int? StatusID { get; set; }
         public int? LocationID { get; set; }

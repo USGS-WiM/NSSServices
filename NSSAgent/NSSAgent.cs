@@ -40,6 +40,7 @@ using NetTopologySuite.Geometries;
 using ProjNet.CoordinateSystems;
 using ProjNet.CoordinateSystems.Transformations;
 using GeoAPI.Geometries;
+using System.Reflection;
 
 namespace NSSAgent
 {
@@ -80,8 +81,8 @@ namespace NSSAgent
         IQueryable<NSSDB.Resources.RegressionRegion> GetRegressionRegions(List<string> regionList = null, IGeometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
         Task<NSSDB.Resources.RegressionRegion> GetRegressionRegion(Int32 ID);
         IQueryable<NSSDB.Resources.RegressionRegion> GetManagerRegressionRegions(int managerID);
-        Task<RegionRegressionRegion> Add(RegionRegressionRegion item);
-        Task<IEnumerable<RegionRegressionRegion>> Add(List<RegionRegressionRegion> items);
+        Task<NSSDB.Resources.RegressionRegion> Add(NSSDB.Resources.RegressionRegion item);
+        Task<IEnumerable<NSSDB.Resources.RegressionRegion>> Add(List<NSSDB.Resources.RegressionRegion> items);
         Task<NSSDB.Resources.RegressionRegion> Update(Int32 pkId, NSSDB.Resources.RegressionRegion item);
         Task DeleteRegressionRegion(Int32 pkID);
 
@@ -343,13 +344,13 @@ namespace NSSAgent
                                 .Include("Region.RegionRegressionRegions.RegressionRegion")
                                 .SelectMany(e => e.Region.RegionRegressionRegions.Select(s => s.RegressionRegion));
         }
-        public Task<RegionRegressionRegion> Add(RegionRegressionRegion item)
+        public Task<NSSDB.Resources.RegressionRegion> Add(NSSDB.Resources.RegressionRegion item)
         {
-            return this.Add<RegionRegressionRegion>(item);
+            return this.Add<NSSDB.Resources.RegressionRegion>(item);
         }
-        public Task<IEnumerable<RegionRegressionRegion>> Add(List<RegionRegressionRegion> items)
+        public Task<IEnumerable<NSSDB.Resources.RegressionRegion>> Add(List<NSSDB.Resources.RegressionRegion> items)
         {
-            return this.Add<RegionRegressionRegion>(items);
+            return this.Add<NSSDB.Resources.RegressionRegion>(items);
         }
         public Task<NSSDB.Resources.RegressionRegion> Update(int pkId, NSSDB.Resources.RegressionRegion item)
         {

@@ -85,22 +85,28 @@ namespace NSSServices.Controllers
         [HttpPost]
         [HttpPost("/Regions/{region}/[controller]")]
         [Authorize(Policy = "CanModify")]
-        public async Task<IActionResult> Post([FromQuery]string region, [FromBody]RegressionRegion entity)
+        public async Task<IActionResult> Post(string region, [FromBody]RegressionRegion entity)
         {
             try
             {
+                entity.ID = 0;
                 //entity must include citation
                 if (!isValid(entity)) return BadRequest(); // This returns HTTP 404
                 Region regionEntity = agent.GetRegionByIDOrCode(region);
                 if (regionEntity == null) return BadRequest($"No region exists with {region} identifier.");              
                 if (!IsAuthorizedToEdit(regionEntity)) return Unauthorized();
 
-                RegionRegressionRegion Addeditem = await agent.Add(new RegionRegressionRegion
-                                                                        {
-                                                                            RegionID = regionEntity.ID,
-                                                                            RegressionRegion = entity
-                                                                        });
-                return Ok(Addeditem.RegressionRegion);
+                entity.StatusID = (entity.CitationID != null || entity.Citation != null) ? (int?)2 : (int?)1;
+
+                entity.RegionRegressionRegions = new List<RegionRegressionRegion>(){new RegionRegressionRegion
+                {
+                    RegionID = regionEntity.ID,
+                    RegressionRegion = entity
+                } };
+
+                RegressionRegion Addeditem = await agent.Add(entity);
+
+                return Ok(Addeditem);
             }
             catch (Exception ex)
             {
@@ -111,9 +117,8 @@ namespace NSSServices.Controllers
         [HttpPost("[action]")]
         [Authorize(Policy = "CanModify")]
         [HttpPost("/Regions/{region}/[controller]/[action]")]
-        public async Task<IActionResult> Batch([FromQuery]string region,[FromBody]List<RegressionRegion> entities)
+        public async Task<IActionResult> Batch(string region,[FromBody]List<RegressionRegion> entities)
         {
-            List<RegionRegressionRegion> rrr = new List<RegionRegressionRegion>();
             try
             {
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
@@ -121,10 +126,16 @@ namespace NSSServices.Controllers
                 if (regionEntity == null) return BadRequest($"No region exists with {region} identifier.");
                 if (!IsAuthorizedToEdit(regionEntity)) return Unauthorized();
                                 
-                entities.ForEach(rr=>rrr.Add(new RegionRegressionRegion() { RegionID = regionEntity.ID, RegressionRegion = rr }));
-                var results = await agent.Add(rrr);
+                entities.ForEach(rr=> 
+                {
+                    rr.ID = 0;
+                    rr.RegionRegressionRegions = new List<RegionRegressionRegion>() { new RegionRegressionRegion { RegionID = regionEntity.ID, RegressionRegion = rr } };
+                    rr.StatusID = (rr.CitationID != null || rr.Citation != null)?(int?)2:(int?)1;
+                });
 
-                return Ok( results.Select(r=>r.RegressionRegion));
+                var results = await agent.Add(entities);
+
+                return Ok( results);
             }
             catch (Exception ex)
             {

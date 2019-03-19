@@ -20,12 +20,14 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using SharedDB.Resources;
 
 namespace NSSDB.Resources
 {
     public partial class EquationError 
     {
+        [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required]
         public int EquationID { get; set; }

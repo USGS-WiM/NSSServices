@@ -32,6 +32,7 @@ namespace NSSAgent.Resources
         public string Name { get; set; }
         public string Code { get; set; }
         public double? PercentWeight { get; set; }
+        public Double? AreaSqMile { get; set; }
         public bool ShouldSerializePercentWeight()
         { return PercentWeight.HasValue; }
         public List<Parameter> Parameters { get; set; }

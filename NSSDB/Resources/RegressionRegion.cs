@@ -18,6 +18,7 @@
 //
 //   
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -33,8 +34,11 @@ namespace NSSDB.Resources
         [Required]
         public string Code { get; set; }
         public string Description { get; set; }
+        [NotMapped]
+        public Double? PercentWeight { get; set; }
+        [NotMapped]
+        public Double? Area { get; set; }
         public int? CitationID { get; set; }
-
         public int? StatusID { get; set; }
         public int? LocationID { get; set; }
 

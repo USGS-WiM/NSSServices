@@ -295,7 +295,7 @@ namespace NSSAgent
         }
         #endregion
         #region RegressionRegion
-        public NSSDB.Resources.RegressionRegion GetRegressionRegionByIDOrCode(string identifier)
+        public RegressionRegion GetRegressionRegionByIDOrCode(string identifier)
         {
             try
             {
@@ -309,42 +309,38 @@ namespace NSSAgent
                 return null;
             }
         }
-        public IQueryable<NSSDB.Resources.RegressionRegion> GetRegressionRegions(List<string> regionList=null, IGeometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
+        public IQueryable<RegressionRegion> GetRegressionRegions(List<string> regionList=null, IGeometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
         {
-            Dictionary<Int32, Resources.RegressionRegion> regressionRegionList = null;
+            Dictionary<Int32, RegressionRegion> regressionRegionList = null;
             if (!regionList.Any() && geom== null&& !statisticgroupList.Any() && !regressiontypeList.Any())
-                return this.Select<NSSDB.Resources.RegressionRegion>();
+                return this.Select<RegressionRegion>();
 
             if (geom != null) {
-                var ProjGeom = geom.ProjectTo(102008);
-                regressionRegionList = getRegressionRegionsByGeometry(ProjGeom)
-                    .Select(r => new Resources.RegressionRegion()
-                    { ID=r.ID,Code = r.Code, AreaSqMeter = r.Location.Geometry.Intersection(ProjGeom).Area, MaskAreaSqMeter = ProjGeom.Area }).ToList()
-                    .Where(p => Math.Round(p.AreaSqMeter.Value / p.MaskAreaSqMeter.Value * 100, 2, MidpointRounding.AwayFromZero) > 1).ToDictionary(k=>k.ID);
+                regressionRegionList = getRegressionRegionsByGeometry(geom,true).ToDictionary(k=>k.ID);
             }
             
             return this.GetEquations(regionList, regressionRegionList?.Keys.Select(k=>k.ToString()).ToList(), statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion).Distinct()
-                .Select(rr=> new Resources.RegressionRegion() {
+                .Select(rr=> new RegressionRegion() {
                     ID = rr.ID,
                     Name = rr.Name,
                     Code = rr.Code,
                     CitationID = rr.CitationID,
                     Description = rr.Description,
-                    AreaSqMeter = regressionRegionList != null ? regressionRegionList[rr.ID].AreaSqMeter:null,
-                    PercentWeight =regressionRegionList!= null? (double?)Math.Round(regressionRegionList[rr.ID].AreaSqMeter.Value / regressionRegionList[rr.ID].MaskAreaSqMeter.Value * 100, 2, MidpointRounding.AwayFromZero):null
+                    Area = regressionRegionList != null ? regressionRegionList[rr.ID].Area:null,
+                    PercentWeight = regressionRegionList != null ? regressionRegionList[rr.ID].PercentWeight : null,
                 }).OrderBy(e => e.ID);
         }
-        public Task<NSSDB.Resources.RegressionRegion> GetRegressionRegion(int ID)
+        public Task<RegressionRegion> GetRegressionRegion(int ID)
         {
             return this.Find<NSSDB.Resources.RegressionRegion>(ID);
         }
-        public IQueryable<NSSDB.Resources.RegressionRegion> GetManagerRegressionRegions(int managerID)
+        public IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID)
         {
             return Select<RegionManager>().Where(rm => rm.ManagerID == managerID)
                                 .Include("Region.RegionRegressionRegions.RegressionRegion")
                                 .SelectMany(e => e.Region.RegionRegressionRegions.Select(s => s.RegressionRegion));
         }
-        public Task<NSSDB.Resources.RegressionRegion> Add(NSSDB.Resources.RegressionRegion item)
+        public Task<RegressionRegion> Add(NSSDB.Resources.RegressionRegion item)
         {
             return this.Add<NSSDB.Resources.RegressionRegion>(item);
         }
@@ -352,7 +348,7 @@ namespace NSSAgent
         {
             return this.Add<NSSDB.Resources.RegressionRegion>(items);
         }
-        public Task<NSSDB.Resources.RegressionRegion> Update(int pkId, NSSDB.Resources.RegressionRegion item)
+        public Task<RegressionRegion> Update(int pkId, NSSDB.Resources.RegressionRegion item)
         {
             return this.Update<NSSDB.Resources.RegressionRegion>(pkId, item);
         }
@@ -496,7 +492,7 @@ namespace NSSAgent
         }
         public IQueryable<Scenario> GetScenarios(List<string> regionList=null, IGeometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0)
         {
-            Dictionary<Int32, Resources.RegressionRegion> regressionRegions = null;
+            Dictionary<Int32, RegressionRegion> regressionRegions = null;
             List<Coefficient> flowCoefficents = new List<Coefficient>();
             try
             {
@@ -504,11 +500,8 @@ namespace NSSAgent
 
                 if (geom != null)
                 {
-                    var ProjGeom = geom.ProjectTo(102008);
-                    regressionRegions = getRegressionRegionsByGeometry(ProjGeom)
-                        .Select(r => new Resources.RegressionRegion()
-                        { ID = r.ID, Code = r.Code, AreaSqMeter = r.Location.Geometry.Intersection(ProjGeom).Area, MaskAreaSqMeter = ProjGeom.Area }).ToList()
-                        .Where(p => Math.Round(p.AreaSqMeter.Value / p.MaskAreaSqMeter.Value * 100, 2, MidpointRounding.AwayFromZero) > 1).ToDictionary(k => k.ID);
+                    regressionRegions = getRegressionRegionsByGeometry(geom,true).ToDictionary(k => k.ID);
+                    regressionRegionList = regressionRegions.Keys.ToList().ConvertAll(s=>s.ToString());
                 }
 
                 var equ =  this.GetEquations(regionList, regressionRegionList, statisticgroupList,regressiontypeList)
@@ -527,6 +520,7 @@ namespace NSSAgent
                             Name = r.groupedparameters.First().RegressionRegion.Name,
                             Code = r.groupedparameters.First().RegressionRegion.Code,
                             PercentWeight = (regressionRegions!=null && regressionRegions.ContainsKey(r.groupkey))?regressionRegions[r.groupkey].PercentWeight:null,
+                            AreaSqMile = (regressionRegions != null && regressionRegions.ContainsKey(r.groupkey)) ? regressionRegions[r.groupkey].Area : null,
                             Parameters = r.groupedparameters.SelectMany(gp=>gp.Variables).Select(p => new Parameter()
                             {
                                 ID = p.ID,
@@ -1186,10 +1180,22 @@ namespace NSSAgent
                 return null;
             }
         }
-        private IQueryable<NSSDB.Resources.RegressionRegion> getRegressionRegionsByGeometry(IGeometry geom)
+        private IQueryable<RegressionRegion> getRegressionRegionsByGeometry(IGeometry geom, bool includepercent = false)
         {
             if (geom.SRID != 102008) geom = geom.ProjectTo(102008);
-            return Select<NSSDB.Resources.RegressionRegion>().Include(r=>r.Location).Where(x => x.Location != null && x.Location.Geometry.Intersects(geom));
+            var query = Select<RegressionRegion>().Include(r => r.Location).Where(x => x.Location != null && x.Location.Geometry.Intersects(geom));
+            if (includepercent)
+            {
+                query = query.Select(r =>  new RegressionRegion()
+                    {
+                         ID = r.ID,
+                         Name = r.Name,
+                         Code = r.Code,
+                         Area = r.Location.Geometry.Intersection(geom).Area * 0.000000386102159
+                    }).ToList().Select(r=> { r.PercentWeight = Math.Round(r.Area.Value / geom.Area / 0.000000386102159 * 100, 2, MidpointRounding.AwayFromZero);  return r; }).Where(r=> r.PercentWeight > 1).AsQueryable();
+
+            }
+            return query;
         }
 
         protected override void sm(string msg, MessageType type = MessageType.info)

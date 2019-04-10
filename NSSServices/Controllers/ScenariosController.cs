@@ -47,7 +47,6 @@ namespace NSSServices.Controllers
         public async Task<IActionResult> Get([FromBody] IGeometry geom = null, string regions="",[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
                                                                  [FromQuery] Int32 unitsystem=0, [FromQuery] string extensions ="")
         {
-            String[] allowableGeometries = new String[] { "Polygon", "MuliPolygon" };
             List<string> statisticgroupList = null;
             List<string> regressiontypeList = null;
             List<string> regressionregionList = null;
@@ -65,7 +64,7 @@ namespace NSSServices.Controllers
 
                 if (geom != null)
                 {
-                    if (!allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', allowableGeometries));
+                    if (!agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
                     entities = agent.GetScenarios(RegionList, geom, null, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
                 }
                 else

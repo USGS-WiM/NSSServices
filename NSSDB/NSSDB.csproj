@@ -21,6 +21,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="2.2.0" />
     <PackageReference Include="WiM.DBUtilities" Version="1.1.2" />
+    <PackageReference Include="WIM.Hypermedia" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logger\" />

@@ -48,7 +48,6 @@ namespace NSSServices.Controllers
         [HttpPost("/Regions/{regions}/[controller]")]
         public async Task<IActionResult> Get(string regions="", [FromBody] Geometry geom = null, [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "")
         {
-            String[] allowableGeometries = new String[] { "Polygon", "MuliPolygon" };
             IQueryable<StatisticGroupType> entities = null;
             List<string> RegionList = null;
             List<string> regressionRegionList = null;
@@ -67,7 +66,7 @@ namespace NSSServices.Controllers
                     entities = agent.GetStatisticGroups(RegionList, regressionRegionList, regressionsList);
                 }
                 else {
-                    if (!allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', allowableGeometries));
+                    if (!agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
                     entities = agent.GetStatisticGroups(RegionList, geom, regressionsList);
                 }
 

@@ -46,6 +46,8 @@ namespace NSSAgent
 {
     public interface INSSAgent: IBasicUserAgent
     {
+        String[] allowableGeometries { get; }
+
         //Citations
         Task<Citation> GetCitation(Int32 ID);
         IQueryable<Citation> GetCitations(List<string> regionList = null, IGeometry geom = null, List<string> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
@@ -127,10 +129,13 @@ namespace NSSAgent
     {
         #region "Properties"
         private readonly IDictionary<Object,Object> _messages;
+        string[] INSSAgent.allowableGeometries => new String[] { "Polygon", "MultiPolygon" };        
         #endregion
         #region "Collections & Dictionaries"
         private List<UnitConversionFactor> unitConversionFactors { get; set; }
         private List<Limitation> limitations { get; set; }
+
+        
         #endregion
         #region Constructors
         public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor) : base(context) {
@@ -845,11 +850,11 @@ namespace NSSAgent
                     return new Extension()
                     {
                         Code = "QPPQ",
-                        Description = "Estimats the flow at an ungaged site given the reference streamgage",
+                        Description = "Estimates the flow at an ungaged site given the reference streamgage",
                         Name = "Flow Duration Curve Transfer Method",
                         Parameters = new List<ExtensionParameter>{new ExtensionParameter() { Code = "sid", Name="NWIS Station ID", Description="USGS NWIS Station Identifier", Value="01234567" },
-                                     new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  JsonConvert.SerializeObject(DateTime.MinValue) },
-                                     new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= JsonConvert.SerializeObject(DateTime.Now) }
+                                     new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  DateTime.MinValue },
+                                     new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today }
                        }
 
                     };

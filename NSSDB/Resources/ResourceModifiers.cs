@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -8,6 +9,11 @@ using System.Text;
 
 namespace NSSDB.Resources
 {
+    public partial class RegressionRegion
+    {
+        [NotMapped] public Double? PercentWeight { get; set; }
+        [NotMapped] public Double? Area { get; set; }
+    }
     //public partial class Equation
     //{
     //    public static Expression<Func<Equation, Equation>> Projection

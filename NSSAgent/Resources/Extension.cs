@@ -28,9 +28,9 @@ namespace NSSAgent.Resources
         public String Name { get; set; }
         public String Description { get; set; }
         public String Code { get; set; }
-        public string Value { get; set; }
+        public dynamic Value { get; set; }
         public bool ShouldSerializeValue()
-        { return !String.IsNullOrEmpty(Value); }
+        { return !Object.ReferenceEquals(null, Value); }
     }//end ExtensionParameter
 
     public static class DataReaderExtensions

@@ -44,14 +44,14 @@ namespace NSSServices.Controllers
         [HttpPost("/Regions/{regions}/[controller]")]
         public async Task<IActionResult> Get(string regions = "", [FromBody] IGeometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
-            String[] allowableGeometries = new String[] { "Polygon", "MuliPolygon" };
+            
             IQueryable<RegressionRegion> entities = null;
             List<string> RegionList = null;
             List<string> statisticgroupList = null;
             List<string> regressiontypeList = null;
             try
             {
-                if (geom != null && !allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', allowableGeometries));
+                if (geom != null && !agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
                                 
                 RegionList = parse(regions);
                 statisticgroupList = parse(statisticgroups);

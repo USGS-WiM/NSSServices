@@ -38,6 +38,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="WiM.Analytics" Version="1.1.1" />
+    <PackageReference Include="WIM.Hypermedia" Version="1.1.2" />
     <PackageReference Include="WiM.Security" Version="1.1.1" />
     <PackageReference Include="WiM.Services" Version="1.1.9" />
   </ItemGroup>

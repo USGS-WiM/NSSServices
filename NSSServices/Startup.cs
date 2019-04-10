@@ -9,6 +9,7 @@ using System;
 using NSSDB;
 using SharedDB;
 using NSSAgent;
+using NSSServices.Filters;
 using WIM.Security.Authentication.Basic;
 using Microsoft.AspNetCore.Mvc;
 using SharedAgent;
@@ -92,6 +93,8 @@ namespace NSSServices
             services.AddMvc(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
+                //for hypermedia
+                options.Filters.Add(new NSSHypermedia());
                 //needed for geojson deserializer
                 options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(Polygon)));
                 options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(MultiPolygon)));

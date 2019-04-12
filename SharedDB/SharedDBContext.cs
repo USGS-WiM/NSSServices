@@ -93,21 +93,21 @@ namespace SharedDB
 
             //seed the db
             //var path = Path.Combine(Environment.CurrentDirectory, "Data");
-            //modelBuilder.Entity<ErrorType>().HasData(JsonConvert.DeserializeObject<ErrorType[]>(File.ReadAllText(Path.Combine(path,"ErrorType.json"))));
+            //modelBuilder.Entity<ErrorType>().HasData(JsonConvert.DeserializeObject<ErrorType[]>(File.ReadAllText(Path.Combine(path, "ErrorType.json"))));
             //modelBuilder.Entity<RegressionType>().HasData(JsonConvert.DeserializeObject<RegressionType[]>(File.ReadAllText(Path.Combine(path, "RegressionType.json"))));
             //modelBuilder.Entity<StatisticGroupType>().HasData(JsonConvert.DeserializeObject<StatisticGroupType[]>(File.ReadAllText(Path.Combine(path, "StatisticGroupType.json"))));
             //modelBuilder.Entity<UnitConversionFactor>().HasData(JsonConvert.DeserializeObject<UnitConversionFactor[]>(File.ReadAllText(Path.Combine(path, "UnitConversionFactor.json"))));
             //modelBuilder.Entity<UnitSystemType>().HasData(JsonConvert.DeserializeObject<UnitSystemType[]>(File.ReadAllText(Path.Combine(path, "UnitSystemType.json"))));
             //modelBuilder.Entity<UnitType>().HasData(JsonConvert.DeserializeObject<UnitType[]>(File.ReadAllText(Path.Combine(path, "UnitType.json"))));
             //modelBuilder.Entity<VariableType>().HasData(JsonConvert.DeserializeObject<VariableType[]>(File.ReadAllText(Path.Combine(path, "VariableType.json"))));
-            
+
 
             base.OnModelCreating(modelBuilder);             
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 #warning Add connectionstring for migrations
-            var connectionstring = "";
+            //var connectionstring = "User ID=;Password=;Host=;Port=5432;Database=StatsDB;Pooling=true;";
             //optionsBuilder.UseNpgsql(connectionstring,x=>x.MigrationsHistoryTable("_EFMigrationsHistory","shared"));
         }
     }

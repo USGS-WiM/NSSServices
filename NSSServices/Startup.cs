@@ -20,6 +20,8 @@ using WIM.Services.Middleware;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace NSSServices
 {
@@ -55,8 +57,9 @@ namespace NSSServices
             services.AddScoped<INSSAgent, NSSServiceAgent>();
             services.AddScoped<ISharedAgent, SharedAgent.SharedAgent>();
             services.AddScoped<IBasicUserAgent, NSSServiceAgent>();
-            //for use to get msgs
-            services.AddHttpContextAccessor();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            
+
 
 
             // Add framework services.
@@ -80,6 +83,8 @@ namespace NSSServices
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = BasicDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = BasicDefaults.AuthenticationScheme;
+                options.DefaultForbidScheme = BasicDefaults.AuthenticationScheme;
             }).AddBasicAuthentication();
             services.AddAuthorization(options => loadAutorizationPolicies(options));
 
@@ -95,6 +100,7 @@ namespace NSSServices
                 options.RespectBrowserAcceptHeader = true;
                 //for hypermedia
                 options.Filters.Add(new NSSHypermedia());
+
                 //needed for geojson deserializer
                 options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(Polygon)));
                 options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(MultiPolygon)));
@@ -130,7 +136,7 @@ namespace NSSServices
         }
         private void loadJsonOptions(MvcJsonOptions options)
         {
-            //options.SerializerSettings.TraceWriter = new memoryTraceWriter();
+            options.SerializerSettings.TraceWriter = new memoryTraceWriter();
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             options.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
             options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;

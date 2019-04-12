@@ -27,7 +27,7 @@ namespace SharedDB.Resources
 {
     public partial class UnitType
     {
-        [Required]
+        [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required]
         public virtual string Name { get; set; }

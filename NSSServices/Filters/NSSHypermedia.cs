@@ -17,27 +17,36 @@
 //              
 //
 // 
+using Microsoft.AspNetCore.Mvc;
+using NSSAgent.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WIM.Hypermedia;
 using WIM.Services.Filters;
+using NSSDB.Resources;
+using SharedDB.Resources;
+
 
 namespace NSSServices.Filters
 {
     public class NSSHypermedia : HypermediaBase
     {
-        protected override List<Link> GetEnumeratedHypermedia(IHypermedia entity)
+        
+        protected override List<WIM.Resources.Link> GetEnumeratedHypermedia(IHypermedia entity)
         {
-            List<Link> results = null;
+            List<WIM.Resources.Link> results = null;
             switch (entity.GetType().Name.ToLower())
             {
-                case "citation":
-                    results = new List<Link>();
-                    results.Add(new Link(BaseURI, "self by id", this.URLQuery + "/", WIM.Resources.refType.GET));
+                //case "citation":
+                //    results = new List<WIM.Resources.Link>();
+                //    results.Add(Hyperlinks.Generate(BaseURI, "Citation", UrlHelper.RouteUrl("Citation",((Citation)entity).ID), WIM.Resources.refType.GET));
+                //    break;
+                case "scenario":
+                    results = new List<WIM.Resources.Link>();
+                    results.Add(Hyperlinks.Generate(BaseURI,"Citations",UrlHelper.RouteUrl("Region_Citations")+$"?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}",WIM.Resources.refType.GET));
                     break;
-
                 default:
                     break;
             }
@@ -46,32 +55,20 @@ namespace NSSServices.Filters
 
         }
 
-        protected override List<Link> GetReflectedHypermedia(IHypermedia entity)
+        protected override List<WIM.Resources.Link> GetReflectedHypermedia(IHypermedia entity)
         {
-            List<Link> results = null;
+            List<WIM.Resources.Link> results = null;
             switch (entity.GetType().Name.ToLower())
             {
                 case "citation":
-                    results = new List<Link>();
-                    results.Add(new Link(BaseURI, "add new citation", this.URLQuery + "/", WIM.Resources.refType.POST));
+                    //results = new List<WIM.Resources.Link>();
+                    //results.Add(Hyperlinks.Generate(BaseURI, "add new citation", this.URLQuery + "/", WIM.Resources.refType.POST));
 
                     break;
                 default:
                     break;
             }
-
             return results;
         }
-
-        //protected override void Load(object obj)
-        //{
-        //    if(obj.GetType().IsGenericType && obj.GetType().GetInterfaces().Any(t => t.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
-        //        //this is not loading the hypermedia /shrug.
-        //        ((IEnumerable<IHypermedia>)obj).ToList().ForEach(e => e.Links = GetEnumeratedHypermedia(e));
-        //    else
-        //        ((IHypermedia)obj).Links = GetReflectedHypermedia((IHypermedia)obj);
-
-            
-        //}
     }
 }

@@ -157,8 +157,13 @@ namespace NSSAgent
         {
             if (!regionList.Any() && geom == null && !regressionRegionList.Any()&& !statisticgroupList.Any() && !regressiontypeList.Any())
                 return this.Select<Citation>();
+            if (statisticgroupList?.Any() != true && regressiontypeList?.Any() != true && !regressiontypeList.Any() != true && geom == null)
+                // for region only list
+                return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion).ThenInclude(rr=>rr.Citation)
+                       .Where(rer => (regionList.Contains(rer.Region.Code.ToLower().Trim())
+                               || regionList.Contains(rer.RegionID.ToString())) && rer.RegressionRegion.CitationID !=null).Select(r => r.RegressionRegion.Citation).Distinct().AsQueryable();
 
-            if (geom != null) //TODO: will need more work, depending on usecase. ie, if want to limit geometry by regreagionlist over (currently) overwrite.
+            if (geom != null)
                 regressionRegionList = getRegressionRegionsByGeometry(geom).Select(rr => rr.ID.ToString()).ToList();
    
             return this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID);
@@ -318,12 +323,18 @@ namespace NSSAgent
         {
             Dictionary<Int32, RegressionRegion> regressionRegionList = null;
             if (!regionList.Any() && geom== null&& !statisticgroupList.Any() && !regressiontypeList.Any())
-                return this.Select<RegressionRegion>();
+                return this.Select<RegressionRegion>();           
 
-            if (geom != null) {
-                regressionRegionList = getRegressionRegionsByGeometry(geom,true).ToDictionary(k=>k.ID);
-            }
-            
+            if (statisticgroupList?.Any() != true && regressiontypeList?.Any() != true && geom == null)
+                // for region only list
+                return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion)
+                       .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
+                               || regionList.Contains(rer.RegionID.ToString())).Select(r=>r.RegressionRegion).AsQueryable();
+
+
+            if (geom != null)
+                regressionRegionList = getRegressionRegionsByGeometry(geom, true).ToDictionary(k => k.ID);            
+
             return this.GetEquations(regionList, regressionRegionList?.Keys.Select(k=>k.ToString()).ToList(), statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion).Distinct()
                 .Select(rr=> new RegressionRegion() {
                     ID = rr.ID,

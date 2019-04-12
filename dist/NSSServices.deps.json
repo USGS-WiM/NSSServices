@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "4f34ed09e67c0d0b7d602322ac8af72223d0c249"
+    "signature": "9c6b0dff49abfd338f9ccab69cd8568a0ac36e0c"
   },
   "compilationOptions": {
     "defines": [
@@ -36,10 +36,8 @@
           "NSSAgent": "1.0.0",
           "NSSDB": "1.0.0",
           "SharedAgent": "1.0.0",
-          "WIM.Hypermedia": "1.1.2",
-          "WIM.Analytics": "1.1.1",
-          "WIM.Security": "1.1.1",
-          "WIM.Services": "1.1.9"
+          "WIM.Services": "1.1.11",
+          "WIM.Analytics": "1.1.1"
         },
         "runtime": {
           "NSSServices.dll": {}
@@ -1250,10 +1248,10 @@
           "lib/netstandard1.3/Microsoft.DotNet.PlatformAbstractions.dll": {}
         }
       },
-      "Microsoft.EntityFrameworkCore/2.2.3": {
+      "Microsoft.EntityFrameworkCore/2.2.4": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Abstractions": "2.2.3",
-          "Microsoft.EntityFrameworkCore.Analyzers": "2.2.3",
+          "Microsoft.EntityFrameworkCore.Abstractions": "2.2.4",
+          "Microsoft.EntityFrameworkCore.Analyzers": "2.2.4",
           "Microsoft.Extensions.Caching.Memory": "2.2.0",
           "Microsoft.Extensions.DependencyInjection": "2.2.0",
           "Microsoft.Extensions.Logging": "2.2.0",
@@ -1265,49 +1263,49 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.EntityFrameworkCore.dll": {
-            "assemblyVersion": "2.2.3.0",
-            "fileVersion": "2.2.3.19047"
+            "assemblyVersion": "2.2.4.0",
+            "fileVersion": "2.2.4.19081"
           }
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.EntityFrameworkCore.dll": {}
         }
       },
-      "Microsoft.EntityFrameworkCore.Abstractions/2.2.3": {
+      "Microsoft.EntityFrameworkCore.Abstractions/2.2.4": {
         "runtime": {
           "lib/netstandard2.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {
-            "assemblyVersion": "2.2.3.0",
-            "fileVersion": "2.2.3.19047"
+            "assemblyVersion": "2.2.4.0",
+            "fileVersion": "2.2.4.19081"
           }
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.EntityFrameworkCore.Abstractions.dll": {}
         }
       },
-      "Microsoft.EntityFrameworkCore.Analyzers/2.2.3": {},
-      "Microsoft.EntityFrameworkCore.Design/2.2.3": {
+      "Microsoft.EntityFrameworkCore.Analyzers/2.2.4": {},
+      "Microsoft.EntityFrameworkCore.Design/2.2.4": {
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
-          "Microsoft.EntityFrameworkCore.Relational": "2.2.3"
+          "Microsoft.EntityFrameworkCore.Relational": "2.2.4"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.EntityFrameworkCore.Design.dll": {
-            "assemblyVersion": "2.2.3.0",
-            "fileVersion": "2.2.3.19047"
+            "assemblyVersion": "2.2.4.0",
+            "fileVersion": "2.2.4.19081"
           }
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.EntityFrameworkCore.Design.dll": {}
         }
       },
-      "Microsoft.EntityFrameworkCore.Relational/2.2.3": {
+      "Microsoft.EntityFrameworkCore.Relational/2.2.4": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "2.2.3"
+          "Microsoft.EntityFrameworkCore": "2.2.4"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.EntityFrameworkCore.Relational.dll": {
-            "assemblyVersion": "2.2.3.0",
-            "fileVersion": "2.2.3.19047"
+            "assemblyVersion": "2.2.4.0",
+            "fileVersion": "2.2.4.19081"
           }
         },
         "compile": {
@@ -1881,7 +1879,7 @@
           "lib/netstandard2.0/NetTopologySuite.Features.dll": {}
         }
       },
-      "NetTopologySuite.IO.GeoJSON/1.15.0": {
+      "NetTopologySuite.IO.GeoJSON/1.15.2": {
         "dependencies": {
           "NetTopologySuite.Core": "1.15.0",
           "NetTopologySuite.Features": "1.15.0",
@@ -1890,7 +1888,7 @@
         "runtime": {
           "lib/netstandard2.0/NetTopologySuite.IO.GeoJSON.dll": {
             "assemblyVersion": "1.15.0.0",
-            "fileVersion": "1.15.0.0"
+            "fileVersion": "1.15.2.0"
           }
         },
         "compile": {
@@ -1955,9 +1953,9 @@
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL/2.2.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "2.2.3",
-          "Microsoft.EntityFrameworkCore.Abstractions": "2.2.3",
-          "Microsoft.EntityFrameworkCore.Relational": "2.2.3",
+          "Microsoft.EntityFrameworkCore": "2.2.4",
+          "Microsoft.EntityFrameworkCore.Abstractions": "2.2.4",
+          "Microsoft.EntityFrameworkCore.Relational": "2.2.4",
           "Npgsql": "4.0.4"
         },
         "runtime": {
@@ -3544,10 +3542,10 @@
       },
       "WIM.DBUtilities/1.1.2": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "2.2.3",
-          "Microsoft.EntityFrameworkCore.Relational": "2.2.3",
+          "Microsoft.EntityFrameworkCore": "2.2.4",
+          "Microsoft.EntityFrameworkCore.Relational": "2.2.4",
           "System.Reflection": "4.3.0",
-          "WIM.Resources": "1.1.2"
+          "WIM.Resources": "1.1.3"
         },
         "runtime": {
           "lib/netstandard2.0/WIM.DBUtilities.dll": {
@@ -3570,14 +3568,14 @@
           "lib/netstandard2.0/WIM.Exceptions.dll": {}
         }
       },
-      "WIM.Hypermedia/1.1.2": {
+      "WIM.Hypermedia/1.1.3": {
         "dependencies": {
-          "WIM.Resources": "1.1.2"
+          "WIM.Resources": "1.1.3"
         },
         "runtime": {
           "lib/netstandard2.0/WIM.Hypermedia.dll": {
-            "assemblyVersion": "1.1.2.0",
-            "fileVersion": "1.1.2.0"
+            "assemblyVersion": "1.1.3.0",
+            "fileVersion": "1.1.3.0"
           }
         },
         "compile": {
@@ -3595,11 +3593,11 @@
           "lib/netstandard2.0/WIM.Resource.TimeSeries.dll": {}
         }
       },
-      "WIM.Resources/1.1.2": {
+      "WIM.Resources/1.1.3": {
         "runtime": {
           "lib/netstandard2.0/WIM.Resources.dll": {
-            "assemblyVersion": "1.1.2.0",
-            "fileVersion": "1.1.2.0"
+            "assemblyVersion": "1.1.3.0",
+            "fileVersion": "1.1.3.0"
           }
         },
         "compile": {
@@ -3620,21 +3618,21 @@
           "lib/netstandard2.0/WIM.Security.dll": {}
         }
       },
-      "WIM.Services/1.1.9": {
+      "WIM.Services/1.1.11": {
         "dependencies": {
           "Microsoft.AspNetCore.Authentication": "2.2.0",
           "Microsoft.AspNetCore.Http.Abstractions": "2.2.0",
           "Microsoft.AspNetCore.Mvc": "2.2.0",
           "Microsoft.Extensions.Options": "2.2.0",
           "WIM.Exceptions": "1.0.1",
-          "WIM.Hypermedia": "1.1.2",
-          "WIM.Resources": "1.1.2",
+          "WIM.Hypermedia": "1.1.3",
+          "WIM.Resources": "1.1.3",
           "WIM.Security": "1.1.1"
         },
         "runtime": {
           "lib/netstandard2.0/WIM.Services.dll": {
-            "assemblyVersion": "1.1.9.0",
-            "fileVersion": "1.1.9.0"
+            "assemblyVersion": "1.1.11.0",
+            "fileVersion": "1.1.11.0"
           }
         },
         "compile": {
@@ -3673,9 +3671,9 @@
           "NetTopologySuite.CoordinateSystems": "1.15.2",
           "Newtonsoft.Json": "12.0.1",
           "ProjNET4GeoAPI": "1.4.1",
-          "WIM.Hypermedia": "1.1.2",
+          "WIM.Hypermedia": "1.1.3",
           "WIM.Resource.TimeSeries": "1.1.1",
-          "WIM.Resources": "1.1.2",
+          "WIM.Resources": "1.1.3",
           "WIM.Utilities": "1.1.1",
           "WIM.Utilities.ServiceAgent": "1.1.4"
         },
@@ -3688,12 +3686,12 @@
       },
       "NSSDB/1.0.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Design": "2.2.3",
-          "NetTopologySuite.IO.GeoJSON": "1.15.0",
+          "Microsoft.EntityFrameworkCore.Design": "2.2.4",
+          "NetTopologySuite.IO.GeoJSON": "1.15.2",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite": "2.2.0",
           "SharedDB": "1.0.0",
-          "WIM.Hypermedia": "1.1.2",
+          "WIM.Hypermedia": "1.1.3",
           "WIM.DBUtilities": "1.1.2"
         },
         "runtime": {
@@ -3707,7 +3705,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Http": "2.2.2",
           "SharedDB": "1.0.0",
-          "WIM.Resources": "1.1.2"
+          "WIM.Resources": "1.1.3"
         },
         "runtime": {
           "SharedAgent.dll": {}
@@ -3718,9 +3716,10 @@
       },
       "SharedDB/1.0.0": {
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Design": "2.2.3",
+          "Microsoft.EntityFrameworkCore.Design": "2.2.4",
           "Newtonsoft.Json": "12.0.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.0",
+          "WIM.Hypermedia": "1.1.3",
           "WIM.DBUtilities": "1.1.2"
         },
         "runtime": {
@@ -4416,40 +4415,40 @@
       "path": "microsoft.dotnet.platformabstractions/2.1.0",
       "hashPath": "microsoft.dotnet.platformabstractions.2.1.0.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore/2.2.3": {
+    "Microsoft.EntityFrameworkCore/2.2.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0VOFOuIMLE3ZA9yAWPbEe48pe+3pFi1CmyI4bh6rLtdTgCa5fa5TWqsbDCeZl13rjSoENPuOq6InYGSiKTR0+g==",
-      "path": "microsoft.entityframeworkcore/2.2.3",
-      "hashPath": "microsoft.entityframeworkcore.2.2.3.nupkg.sha512"
+      "sha512": "sha512-aQ0sAe2mOtSp3StjKT2wDA/BO3k8BLfpIXIG1MOlGytjQWQOvW3BzDPfgXOhxbSa7Bhdsx97aYzZUGD3DQAQjQ==",
+      "path": "microsoft.entityframeworkcore/2.2.4",
+      "hashPath": "microsoft.entityframeworkcore.2.2.4.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Abstractions/2.2.3": {
+    "Microsoft.EntityFrameworkCore.Abstractions/2.2.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-75qgcAJOIJrNtxeYkhQx8O2goAYkb/u7r1tQOk8Xs5YjAf39zkeNfl9QRBS0GIDtffD/wGpq7jJrMS/dN3TUfQ==",
-      "path": "microsoft.entityframeworkcore.abstractions/2.2.3",
-      "hashPath": "microsoft.entityframeworkcore.abstractions.2.2.3.nupkg.sha512"
+      "sha512": "sha512-GjtIOANlpy7JcGK0Q169n52713hIHHfxUHq1+xoWlAZYSI0h/n2DrEWwCIsrnInU8FaLq4cIG7UgMTL0CnUUPw==",
+      "path": "microsoft.entityframeworkcore.abstractions/2.2.4",
+      "hashPath": "microsoft.entityframeworkcore.abstractions.2.2.4.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Analyzers/2.2.3": {
+    "Microsoft.EntityFrameworkCore.Analyzers/2.2.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-AktkwwjsxeM5+CUOVKz2E/zQvEyFCaTSokbqJx643pSEckjReIDgCqgUV8rvZsGPpPm/RXIhhOXDrB/a+BEkXA==",
-      "path": "microsoft.entityframeworkcore.analyzers/2.2.3",
-      "hashPath": "microsoft.entityframeworkcore.analyzers.2.2.3.nupkg.sha512"
+      "sha512": "sha512-cLJo6dikdFQd2j9cFHhC2M1rzUeYvJLR/m7cBcuKRI6ek5t5ZyGZ0hzEJwCQmKRDV4tAl5p+NIrfDjfqTK8POw==",
+      "path": "microsoft.entityframeworkcore.analyzers/2.2.4",
+      "hashPath": "microsoft.entityframeworkcore.analyzers.2.2.4.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Design/2.2.3": {
+    "Microsoft.EntityFrameworkCore.Design/2.2.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ieO8DTCxp5fe39pv0C8UljOqRVyeYgNNB52vkwYyTIZdPnjEVbTot4GsubHy3JspmvG09uYgU64Ll9/LYDjkiA==",
-      "path": "microsoft.entityframeworkcore.design/2.2.3",
-      "hashPath": "microsoft.entityframeworkcore.design.2.2.3.nupkg.sha512"
+      "sha512": "sha512-4SfnD7wYxr+OzcPOZYlzPtKtL1cdXk+a8g4bKc8QcgaGhpvVOTK5ROTZaOe10tmvFXFEJVZSGtXpFAbgiDFtjg==",
+      "path": "microsoft.entityframeworkcore.design/2.2.4",
+      "hashPath": "microsoft.entityframeworkcore.design.2.2.4.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Relational/2.2.3": {
+    "Microsoft.EntityFrameworkCore.Relational/2.2.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-addZBOfkWf/6ZkWAs/eJMu25iFUiqSHJKmETRfrI2XqzgBZwYgV5DxgmqkhMXgkjZ9prgZ9uD6I6pwQXJTbIqQ==",
-      "path": "microsoft.entityframeworkcore.relational/2.2.3",
-      "hashPath": "microsoft.entityframeworkcore.relational.2.2.3.nupkg.sha512"
+      "sha512": "sha512-Ga+kJhoSBNYv8C2gQl2sB5bTBkWsLFn92CPjZA5ql/MyxJTWri6lf44/GSYEcOQj0tqF5HhMAaB1HxQMiIPBcQ==",
+      "path": "microsoft.entityframeworkcore.relational/2.2.4",
+      "hashPath": "microsoft.entityframeworkcore.relational.2.2.4.nupkg.sha512"
     },
     "Microsoft.Extensions.Caching.Abstractions/2.2.0": {
       "type": "package",
@@ -4724,12 +4723,12 @@
       "path": "nettopologysuite.features/1.15.0",
       "hashPath": "nettopologysuite.features.1.15.0.nupkg.sha512"
     },
-    "NetTopologySuite.IO.GeoJSON/1.15.0": {
+    "NetTopologySuite.IO.GeoJSON/1.15.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-UM+/tVrLK9SejXzGKblBB3gfjvY3WwT0SNfR8x8ykElIrOIcXl0MngpxopQU/wlCtC1LEOwgfrAcN9tKp/rzzw==",
-      "path": "nettopologysuite.io.geojson/1.15.0",
-      "hashPath": "nettopologysuite.io.geojson.1.15.0.nupkg.sha512"
+      "sha512": "sha512-tMMgJ8SuEoy+aHQVaZahNlUSBJ8cAxyCpgSY0l5nciif83MhHT1/dLB10ZpqLNmHZV8AxeaE5x1NXUx+tW3aUg==",
+      "path": "nettopologysuite.io.geojson/1.15.2",
+      "hashPath": "nettopologysuite.io.geojson.1.15.2.nupkg.sha512"
     },
     "NetTopologySuite.IO.PostGis/1.15.0": {
       "type": "package",
@@ -5634,12 +5633,12 @@
       "path": "wim.exceptions/1.0.1",
       "hashPath": "wim.exceptions.1.0.1.nupkg.sha512"
     },
-    "WIM.Hypermedia/1.1.2": {
+    "WIM.Hypermedia/1.1.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-plkhEcnwZrPT0Fy0Hvb9d7sPGZYMNyXkY48f+kMTtj2T/91HjrYTzm7blV9IVoFkTBFW09nJMH8huNR0Hi0QlQ==",
-      "path": "wim.hypermedia/1.1.2",
-      "hashPath": "wim.hypermedia.1.1.2.nupkg.sha512"
+      "sha512": "sha512-GoG5Htmm1NNF3DAm9JrLZWMf3vBylpssjPrsSgbe8QJ3PZ8eMXTwFcE8Ww8Nqk1ZSxwbjzAaVVnhTgqY2ZaXaA==",
+      "path": "wim.hypermedia/1.1.3",
+      "hashPath": "wim.hypermedia.1.1.3.nupkg.sha512"
     },
     "WIM.Resource.TimeSeries/1.1.1": {
       "type": "package",
@@ -5648,12 +5647,12 @@
       "path": "wim.resource.timeseries/1.1.1",
       "hashPath": "wim.resource.timeseries.1.1.1.nupkg.sha512"
     },
-    "WIM.Resources/1.1.2": {
+    "WIM.Resources/1.1.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wt6K/3SD5bgo+hGrDMD5P9ygc57VMK1zLZKQsDLo+a5OcOTZspTRFAxN6SI3d1XpJEWEp9nZvYWqrhYtwTJPhg==",
-      "path": "wim.resources/1.1.2",
-      "hashPath": "wim.resources.1.1.2.nupkg.sha512"
+      "sha512": "sha512-8hzcmlGZxYsU+lqj52R5j8x+ZiNhn7YxurvWi4wYY9MBr7YIIzmLvvh4KjyClbWxhEuR1Gis4oeQZtp9f3zh8A==",
+      "path": "wim.resources/1.1.3",
+      "hashPath": "wim.resources.1.1.3.nupkg.sha512"
     },
     "WIM.Security/1.1.1": {
       "type": "package",
@@ -5662,12 +5661,12 @@
       "path": "wim.security/1.1.1",
       "hashPath": "wim.security.1.1.1.nupkg.sha512"
     },
-    "WIM.Services/1.1.9": {
+    "WIM.Services/1.1.11": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-yURod4S5mz87u4Cf+EwYzIDMxgtDUjJMC9TEDxikmmcNe0uG+gLmF84RYIIX2hqXg6eJA+eCndO851U24fYE+Q==",
-      "path": "wim.services/1.1.9",
-      "hashPath": "wim.services.1.1.9.nupkg.sha512"
+      "sha512": "sha512-qGyKb3EzdLsvokuz528VesMhpNSoP/U9VjBcpQg3mBw6UeHhvjuyNpps4oMdBeJVvyYrzWUZSEjf8KpwVp9heA==",
+      "path": "wim.services/1.1.11",
+      "hashPath": "wim.services.1.1.11.nupkg.sha512"
     },
     "WIM.Utilities/1.1.1": {
       "type": "package",

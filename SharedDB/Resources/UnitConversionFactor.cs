@@ -25,7 +25,7 @@ namespace SharedDB.Resources
 {
     public partial class UnitConversionFactor
     {
-        [Required]
+        [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required]
         public int UnitTypeInID { get; set; }

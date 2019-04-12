@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using NSSDB;
 using Newtonsoft.Json;
 using WIM.Hypermedia;
+using WIM.Resources;
 
 namespace NSSAgent.Resources
 {

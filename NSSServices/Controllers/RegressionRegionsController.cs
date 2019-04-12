@@ -44,7 +44,6 @@ namespace NSSServices.Controllers
         [HttpPost("/Regions/{regions}/[controller]")]
         public async Task<IActionResult> Get(string regions = "", [FromBody] IGeometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
-            
             IQueryable<RegressionRegion> entities = null;
             List<string> RegionList = null;
             List<string> statisticgroupList = null;
@@ -105,6 +104,7 @@ namespace NSSServices.Controllers
                 } };
 
                 RegressionRegion Addeditem = await agent.Add(entity);
+                Addeditem.RegionRegressionRegions = null;
 
                 return Ok(Addeditem);
             }

@@ -38,10 +38,10 @@ namespace NSSServices.Controllers
         { }
 
         #region METHOD
-        [HttpGet]
-        [HttpGet("/Regions/{regions}/[controller]")]
-        [HttpPost("[action]")]
-        [HttpPost("/Regions/{regions}/[controller]")]
+        [HttpGet(Name = "Citations")]
+        [HttpGet("/Regions/{regions}/[controller]", Name = "Region_Citations")]
+        [HttpPost("[action]", Name = "Citations_by_Location")]
+        [HttpPost("/Regions/{regions}/[controller]", Name = "Region_Citations_by_Location")]
         public async Task<IActionResult> Get(string regions="", [FromBody] IGeometry geom = null, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<Citation> entities = null;
@@ -69,7 +69,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "Citation")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -84,8 +84,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost]
-        [HttpPost("/RegressionRegions/{regressionRegionID}/[controller]")]
+        [HttpPost(Name = "Add_Citation")]
+        [HttpPost("/RegressionRegions/{regressionRegionID}/[controller]", Name = "Add_RegressionRegion_Citation")]
         [Authorize(Policy = "CanModify")]
         public async Task<IActionResult> Post([FromBody]Citation entity, Int32 regressionRegionID = -1)
         {
@@ -108,7 +108,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "CanModify")]
+        [HttpPut("{id}", Name = "Edit_Citation")][Authorize(Policy = "CanModify")]
         public async Task<IActionResult> Put(int id, [FromBody]Citation entity)
         {
             try

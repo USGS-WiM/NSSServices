@@ -11,7 +11,7 @@ namespace FU_NSSDB.Test
         {
             try
             {
-                var x = new ForceUpdate("testadmin", "euOjmZXwywrsAt5wbXMa", @"D:\WiM\Projects\NSS\DB\StreamStatsDB_2019-02-11.mdb");
+                var x = new ForceUpdate("user", "pass", @"db.mdb");
                 if (x.VerifyLists())
                 {
                     x.Load();

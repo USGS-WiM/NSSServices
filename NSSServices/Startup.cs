@@ -92,6 +92,7 @@ namespace NSSServices
                 options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin()
                                                                  .AllowAnyMethod()
                                                                  .AllowAnyHeader()
+                                                                 .WithExposedHeaders()
                                                                  .AllowCredentials());
             });
 

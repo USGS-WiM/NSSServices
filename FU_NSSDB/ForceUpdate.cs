@@ -248,8 +248,6 @@ namespace FU_NSSDB
                 if(unit1.ID != unit2.ID)
                     NSSDBOps.AddItem(dbOps.SQLType.e_equationunitypes, new object[] { equation.ID, unit2.ID });
 
-
-
                 //if (region.ID < 1) throw new Exception("region ID came back < 0 ");
                 return true;
             }

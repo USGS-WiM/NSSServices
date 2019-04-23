@@ -131,8 +131,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (string.IsNullOrEmpty(entity.FirstName) || string.IsNullOrEmpty(entity.LastName) ||
-                    string.IsNullOrEmpty(entity.Username) || string.IsNullOrEmpty(entity.Email) ||
-                    entity.RoleID < 1) return new BadRequestObjectResult(new Error(errorEnum.e_badRequest)); // This returns HTTP 404
+                    string.IsNullOrEmpty(entity.Email)) return new BadRequestObjectResult(new Error(errorEnum.e_badRequest)); // This returns HTTP 404
 
                 //fetch object, assuming it exists
                 ObjectToBeUpdated = await agent.GetManager(id);
@@ -143,13 +142,13 @@ namespace NSSServices.Controllers
 
                 ObjectToBeUpdated.FirstName = entity.FirstName;
                 ObjectToBeUpdated.LastName = entity.LastName;
-                ObjectToBeUpdated.OtherInfo = entity.OtherInfo;
-                ObjectToBeUpdated.PrimaryPhone = entity.PrimaryPhone;
-                ObjectToBeUpdated.SecondaryPhone = entity.SecondaryPhone;
+                ObjectToBeUpdated.OtherInfo = entity.OtherInfo?? entity.OtherInfo;
+                ObjectToBeUpdated.PrimaryPhone = entity.PrimaryPhone?? entity.PrimaryPhone;
+                ObjectToBeUpdated.SecondaryPhone = entity.SecondaryPhone?? entity.SecondaryPhone;
                 ObjectToBeUpdated.Email = entity.Email;
 
                 //admin can only change role
-                if(User.IsInRole("Administrator"))
+                if(User.IsInRole("Administrator") && entity.RoleID > 0)
                     ObjectToBeUpdated.RoleID = entity.RoleID;
 
                 //change password if needed
@@ -160,7 +159,7 @@ namespace NSSServices.Controllers
                     ObjectToBeUpdated.Password = Cryptography.GenerateSHA256Hash(entity.Password, ObjectToBeUpdated.Salt);
                 }//end if
 
-                var x = await agent.Update(id, entity);
+                var x = await agent.Update(id, ObjectToBeUpdated);
 
                 //remove info not relevant
                 x.Salt = null;

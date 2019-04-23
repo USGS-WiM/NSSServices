@@ -1198,7 +1198,10 @@ namespace NSSAgent
         }
         private IQueryable<RegressionRegion> getRegressionRegionsByGeometry(IGeometry geom, bool includepercent = false)
         {
-            if (geom.SRID != 102008) geom = geom.ProjectTo(102008);
+            if (geom.SRID != 102008)
+                geom = geom.ProjectTo(102008).Normalized().Buffer(0);
+            if (!geom.IsValid)
+                geom = geom.Normalized().Buffer(0);
             var query = Select<RegressionRegion>().Include(r => r.Location).Where(x => x.Location != null && x.Location.Geometry.Intersects(geom));
             if (includepercent)
             {

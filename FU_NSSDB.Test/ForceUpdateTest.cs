@@ -11,7 +11,7 @@ namespace FU_NSSDB.Test
         {
             try
             {
-                var x = new ForceUpdate("user", "pass", @"db.mdb");
+                var x = new ForceUpdate("**dbuser**", "**dbpass**", @"db.mdb");
                 if (x.VerifyLists())
                 {
                     x.Load();

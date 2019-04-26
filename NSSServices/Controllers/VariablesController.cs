@@ -26,10 +26,12 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SharedAgent;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/summary.md")]
     public class VariablesController : NSSControllerBase
     {
         protected ISharedAgent shared_agent;
@@ -39,7 +41,8 @@ namespace NSSServices.Controllers
         }
 
         #region METHOD
-        [HttpGet]
+        [HttpGet(Name ="Variables")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Get.md")]
         public async Task<IActionResult> Get()
         {
             try
@@ -52,7 +55,8 @@ namespace NSSServices.Controllers
             }      
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name ="Variable")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -66,7 +70,8 @@ namespace NSSServices.Controllers
             }
         }
         
-        [HttpPost][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Variable")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Add.md")]
         public async Task<IActionResult> Post([FromBody]VariableType entity)
         {
             try
@@ -81,7 +86,8 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]", Name ="Variable Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<VariableType> entities)
         {
             try
@@ -97,7 +103,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Variable")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]VariableType entity)
         {
             try
@@ -112,7 +119,8 @@ namespace NSSServices.Controllers
 
         }        
 
-        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Variable")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
             try

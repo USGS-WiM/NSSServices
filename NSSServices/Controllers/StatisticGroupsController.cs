@@ -29,10 +29,12 @@ using SharedAgent;
 using System.Linq;
 using NetTopologySuite.Geometries;
 using WIM.Exceptions.Services;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/summary.md")]
     public class StatisticGroupsController : NSSControllerBase
     {
         protected ISharedAgent shared_agent;
@@ -42,10 +44,11 @@ namespace NSSServices.Controllers
         }
 
         #region METHOD
-        [HttpGet]
-        [HttpGet("/Regions/{regions}/[controller]")]
-        [HttpPost("[action]")]
-        [HttpPost("/Regions/{regions}/[controller]")]
+        [HttpGet(Name ="Statistic Groups")]
+        [HttpGet("/Regions/{regions}/[controller]", Name ="Region Statistic Groups")]
+        [HttpPost("[action]", Name = "(Alternative Method) Statistic Groups")]
+        [HttpPost("/Regions/{regions}/[controller]", Name = "Region Statistic Groups")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Get.md")]
         public async Task<IActionResult> Get(string regions="", [FromBody] Geometry geom = null, [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "")
         {
             IQueryable<StatisticGroupType> entities = null;
@@ -78,7 +81,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name ="Statistic Group")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -93,7 +97,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Statistic Group")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Add.md")]
         public async Task<IActionResult> Post([FromBody]StatisticGroupType entity)
         {
             try
@@ -109,7 +114,8 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]", Name ="Statistic Group Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<StatisticGroupType> entities)
         {
             try
@@ -125,7 +131,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Statistic Group")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]StatisticGroupType entity)
         {
             try
@@ -140,7 +147,8 @@ namespace NSSServices.Controllers
 
         }        
 
-        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Statistic Group")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
             try

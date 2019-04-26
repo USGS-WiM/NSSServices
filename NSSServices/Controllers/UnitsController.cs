@@ -26,10 +26,12 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SharedAgent;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/summary.md")]
     public class UnitsController : NSSControllerBase
     {
         protected ISharedAgent shared_agent;
@@ -39,7 +41,8 @@ namespace NSSServices.Controllers
         }
 
         #region METHOD
-        [HttpGet]
+        [HttpGet(Name ="Units")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Get.md")]
         public async Task<IActionResult> Get()
         {
             try
@@ -52,7 +55,8 @@ namespace NSSServices.Controllers
             }      
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name ="Unit")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -67,7 +71,8 @@ namespace NSSServices.Controllers
             }
         }
         
-        [HttpPost][Authorize(Policy = "CanModify")]
+        [HttpPost(Name ="Add Unit")][Authorize(Policy = "CanModify")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Add.md")]
         public async Task<IActionResult> Post([FromBody]UnitType entity)
         {
             try
@@ -82,7 +87,8 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]", Name ="Unit Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<UnitType> entities)
         {
             try
@@ -97,7 +103,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Unit")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]UnitType entity)
         {
             try
@@ -112,7 +119,8 @@ namespace NSSServices.Controllers
 
         }        
 
-        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Unit")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
             try

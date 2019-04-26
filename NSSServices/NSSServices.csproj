@@ -7,16 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Middleware\**" />
     <Compile Remove="Resources\**" />
     <Compile Remove="wwwroot\**" />
-    <Content Remove="Middleware\**" />
     <Content Remove="Resources\**" />
     <Content Remove="wwwroot\**" />
-    <EmbeddedResource Remove="Middleware\**" />
     <EmbeddedResource Remove="Resources\**" />
     <EmbeddedResource Remove="wwwroot\**" />
-    <None Remove="Middleware\**" />
     <None Remove="Resources\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
@@ -38,7 +34,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="WiM.Analytics" Version="1.1.1" />
-    <PackageReference Include="WIM.Services" Version="1.1.11" />
+    <PackageReference Include="WIM.Services" Version="1.1.13" />
   </ItemGroup>
 
   <ItemGroup>

@@ -26,21 +26,25 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/summary.md")]
     public class RegionsController : NSSControllerBase
     {
         public RegionsController(INSSAgent sa) : base(sa)
         { }
         #region METHODS
-        [HttpGet]
+        [HttpGet(Name ="Regions")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Get.md")]
         public async Task<IActionResult> Get()
         {
             try
             {
-                var query = agent.GetRegions();                
+                var query = agent.GetRegions();
+                sm($"controller Return Count: {query.Count()}");
                 return Ok(query);
             }
             catch (Exception ex)
@@ -50,7 +54,8 @@ namespace NSSServices.Controllers
             
         }
         
-        [HttpGet("{id}")]
+        [HttpGet("{id}",Name ="Region")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/GetDistinct.md")]
         public async Task<IActionResult> Get(string id)
         {
             try
@@ -66,7 +71,8 @@ namespace NSSServices.Controllers
             }
         }
         
-        [HttpPost][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Region")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Add.md")]
         public async Task<IActionResult> Post([FromBody]Region entity)
         {
             try
@@ -81,7 +87,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]",Name ="Region Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<Region> entities)
         {
             try
@@ -97,7 +104,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}",Name ="Edit Region")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]Region entity)
         {
             try
@@ -112,7 +120,8 @@ namespace NSSServices.Controllers
 
         }
         
-        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Region")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
             try

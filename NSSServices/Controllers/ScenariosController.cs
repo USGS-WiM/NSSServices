@@ -30,20 +30,23 @@ using WIM.Exceptions.Services;
 using System.Linq;
 using NetTopologySuite.Geometries;
 using GeoAPI.Geometries;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/summary.md")]
     public class ScenariosController : NSSControllerBase
     {
         public ScenariosController(INSSAgent sa) : base(sa)
         { }
 
         #region METHOD
-        [HttpGet]
-        [HttpGet("/Regions/{regions}/[controller]")]
-        [HttpPost("[action]")]
-        [HttpPost("/Regions/{regions}/[controller]/[action]")]
+        [HttpGet(Name ="Scenarios")]
+        [HttpGet("/Regions/{regions}/[controller]", Name ="Region Scenarios")]
+        [HttpPost("[action]", Name ="(Alternative Method) Scenarios")]
+        [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "(Alternative Method) Region Scenarios")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Get.md")]
         public async Task<IActionResult> Get([FromBody] IGeometry geom = null, string regions="",[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
                                                                  [FromQuery] Int32 unitsystem=0, [FromQuery] string extensions ="")
         {
@@ -80,10 +83,11 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }
         }
-        [HttpGet("/Regions/{regions}/[controller]/[action]")]
-        [HttpGet("[action]")]
-        [HttpPost("/Regions/{regions}/[controller]/[action]")]
-        [HttpPost("[action]")]
+        [HttpGet("/Regions/{regions}/[controller]/[action]", Name ="Estimate Region Scenarios", Order =0)]
+        [HttpGet("[action]", Name ="Estimate Scenaros", Order =0)]
+        [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Estimate Region Scenarios", Order = 0)]
+        [HttpPost("[action]", Name = "Estimate Scenaros", Order = 0)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Estimate.md")]
         public async Task<IActionResult> Estimate(string regions, [FromBody]List<Scenario> scenarioList, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
                                                                  [FromQuery] Int32 unitsystem = 0, [FromQuery] string extensions = "")
         {
@@ -115,7 +119,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost("[action]")]
+        [HttpPost("[action]", Name ="Estimate Scenarios")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Estimate.md")]
         public async Task<IActionResult> Execute([FromBody]List<Scenario> scenarioList, [FromQuery] string regressiontypes = "", [FromQuery] Int32 unitsystem = 0)
         {
             List<Scenario> entities = null;

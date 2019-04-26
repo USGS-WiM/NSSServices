@@ -24,16 +24,19 @@ using NSSDB.Resources;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Roles/summary.md")]
     public class RolesController : NSSControllerBase
     {
         public RolesController(INSSAgent sa) : base(sa)
         { }
         #region METHODS
-        [HttpGet][Authorize(Policy = "Restricted")]
+        [HttpGet(Name ="Roles")][Authorize(Policy = "Restricted")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Roles/Get.md")]
         public async Task<IActionResult> Get()
         {
             try
@@ -46,7 +49,8 @@ namespace NSSServices.Controllers
             }                 
         }
         
-        [HttpGet("{id}")][Authorize(Policy = "Restricted")]
+        [HttpGet("{id}", Name ="Role")][Authorize(Policy = "Restricted")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Roles/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -61,67 +65,70 @@ namespace NSSServices.Controllers
             }            
         }
       
-        [HttpPost][Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Post([FromBody]Role entity)
-        {
-            try
-            {
-                entity.ID = 0;
-                if (!isValid(entity)) return new BadRequestObjectResult("Object is invalid");
+        // Commenting these out because Roles are directly tied to 
+        // authentication protocals, so must be managed at an infrastructure level.
 
-                return Ok(await agent.Add(entity));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }            
-        }
+        //[HttpPost][Authorize(Policy = "AdminOnly")]
+        //public async Task<IActionResult> Post([FromBody]Role entity)
+        //{
+        //    try
+        //    {
+        //        entity.ID = 0;
+        //        if (!isValid(entity)) return new BadRequestObjectResult("Object is invalid");
 
-        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Batch([FromBody]List<Role> entities) {
-            try
-            {
-                entities.ForEach(e => e.ID = 0);
-                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+        //        return Ok(await agent.Add(entity));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return await HandleExceptionAsync(ex);
+        //    }            
+        //}
 
-                return Ok(await agent.Add(entities));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
+        //[HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
+        //public async Task<IActionResult> Batch([FromBody]List<Role> entities) {
+        //    try
+        //    {
+        //        entities.ForEach(e => e.ID = 0);
+        //        if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+
+        //        return Ok(await agent.Add(entities));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return await HandleExceptionAsync(ex);
+        //    }
+        //}
         
-        [HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Put(int id, [FromBody]Role entity)
-        {
-            try
-            {
-                if (!isValid(entity) || id < 1) return new BadRequestResult();
-                return Ok(await agent.Update(id,entity));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
+        //[HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
+        //public async Task<IActionResult> Put(int id, [FromBody]Role entity)
+        //{
+        //    try
+        //    {
+        //        if (!isValid(entity) || id < 1) return new BadRequestResult();
+        //        return Ok(await agent.Update(id,entity));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return await HandleExceptionAsync(ex);
+        //    }
+        //}
        
-        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                if (id < 1) return new BadRequestResult();
-                await agent.DeleteRole(id);
-                return Ok();
+        //[HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    try
+        //    {
+        //        if (id < 1) return new BadRequestResult();
+        //        await agent.DeleteRole(id);
+        //        return Ok();
 
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return await HandleExceptionAsync(ex);
+        //    }
             
-        }
+        //}
         #endregion
     }
 }

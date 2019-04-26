@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GeoAPI.Geometries;
 using WIM.Exceptions.Services;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
@@ -38,10 +39,11 @@ namespace NSSServices.Controllers
         { }
 
         #region METHOD
-        [HttpGet]
-        [HttpGet("/Regions/{regions}/[controller]")]
-        [HttpPost("[action]")]
-        [HttpPost("/Regions/{regions}/[controller]")]
+        [HttpGet(Name ="Regression Regions")]
+        [HttpGet("/Regions/{regions}/[controller]",Name ="Region Regression Regions")]
+        [HttpPost("[action]", Name = "(Alternative Method) Regression Regions")]
+        [HttpPost("/Regions/{regions}/[controller]", Name = "Region Regression Regions")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Get.md")]
         public async Task<IActionResult> Get(string regions = "", [FromBody] IGeometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<RegressionRegion> entities = null;
@@ -66,7 +68,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name ="Regression Region")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -81,9 +84,10 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost]
-        [HttpPost("/Regions/{region}/[controller]")]
+        [HttpPost(Name ="Add Regression Region")]
+        [HttpPost("/Regions/{region}/[controller]", Name ="Add Region Regression Region")]
         [Authorize(Policy = "CanModify")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Add.md")]
         public async Task<IActionResult> Post(string region, [FromBody]RegressionRegion entity)
         {
             try
@@ -114,9 +118,10 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost("[action]")]
+        [HttpPost("[action]", Name ="Regression Region Batch Upload")]
         [Authorize(Policy = "CanModify")]
-        [HttpPost("/Regions/{region}/[controller]/[action]")]
+        [HttpPost("/Regions/{region}/[controller]/[action]", Name ="Region Regression Region Batch Upload")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Edit.md")]
         public async Task<IActionResult> Batch(string region,[FromBody]List<RegressionRegion> entities)
         {
             try
@@ -143,7 +148,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "CanModify")]
+        [HttpPut("{id}", Name ="Edit Regression Region")][Authorize(Policy = "CanModify")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]RegressionRegion entity)
         {
             try
@@ -163,7 +169,8 @@ namespace NSSServices.Controllers
             }
         }        
 
-        [HttpDelete("{id}")][Authorize(Policy = "CanModify")]
+        [HttpDelete("{id}", Name ="Delete Regression Region")][Authorize(Policy = "CanModify")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
             try

@@ -28,16 +28,19 @@ using System.Collections.Generic;
 using WIM.Security;
 using System.Text;
 using System.Linq;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/summary.md")]
     public class ManagersController : NSSControllerBase
     {
         public ManagersController(INSSAgent sa) : base(sa)
         { }
         #region METHODS
-        [HttpGet][Authorize(Policy = "AdminOnly")]
+        [HttpGet(Name = "Managers")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Get.md")]
         public async Task<IActionResult> Get()
         {
             try
@@ -60,8 +63,9 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("/Login")]
+        [HttpGet("/Login", Name ="Login")]
         [Authorize(Policy = "Restricted")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Login.md")]
         public async Task<IActionResult> GetLoggedInUser()
         {
             try
@@ -74,7 +78,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpGet("{id}",Name ="Manager")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -94,7 +99,8 @@ namespace NSSServices.Controllers
             }
         } 
         
-        [HttpPost][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Manager")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Add.md")]
         public async Task<IActionResult> Post([FromBody]Manager entity)
         {
             try
@@ -124,7 +130,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "CanModify")]
+        [HttpPut("{id}",Name ="Edit Manager")][Authorize(Policy = "CanModify")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]Manager entity)
         {
             Manager ObjectToBeUpdated = null;
@@ -173,7 +180,8 @@ namespace NSSServices.Controllers
             }           
         }
                
-        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}",Name ="Delete Manager")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
             try

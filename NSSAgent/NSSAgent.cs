@@ -276,6 +276,7 @@ namespace NSSAgent
         }
         public IQueryable<Region> GetRegions()
         {
+            sm("test messages");
             return this.Select<Region>();
         }
         public Task<Region> GetRegion(int ID)
@@ -1225,10 +1226,10 @@ namespace NSSAgent
         {
             //wim_msgs comes from WIM.Standard/blob/staging/Services/Middleware/X-Messages.cs
             //manually added to avoid including libr in project.
-            if (!this._messages.ContainsKey("wim_msgs"))
-                this._messages["wim_msgs"] = new List<Message>();
+            if (!this._messages.ContainsKey("my_key"))
+                this._messages["my_key"] = new List<Message>();
 
-            ((List<Message>)this._messages["wim_msgs"]).Add(msg);
+            ((List<Message>)this._messages["my_key"]).Add(msg);
         }
         #endregion
 

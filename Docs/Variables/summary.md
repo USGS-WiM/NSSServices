@@ -1,0 +1,1 @@
+The time series resource represents the month, value, unit of measure of source water use.

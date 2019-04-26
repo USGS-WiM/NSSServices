@@ -16,17 +16,17 @@ using SharedAgent;
 using WIM.Services.Analytics;
 using WIM.Utilities.ServiceAgent;
 using WIM.Services.Resources;
-using WIM.Services.Middleware;
+using WIM.Services.Messaging;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace NSSServices
 {
     public class Startup
     {
+        private string _hostKey = "USGSWiM_HostName";
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -47,6 +47,7 @@ namespace NSSServices
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             //Configure injectable obj
             services.Configure<APIConfigSettings>(Configuration.GetSection("APIConfigSettings"));
             //Transient objects are always different; a new instance is provided to every controller and every service.
@@ -92,10 +93,10 @@ namespace NSSServices
                 options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin()
                                                                  .AllowAnyMethod()
                                                                  .AllowAnyHeader()
-                                                                 .WithExposedHeaders()
+                                                                 .WithExposedHeaders(new string[]{this._hostKey,X_MessagesDefault.msgheader})
                                                                  .AllowCredentials());
             });
-
+            
             services.AddMvc(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
@@ -107,8 +108,8 @@ namespace NSSServices
                 options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(MultiPolygon)));
                 options.ModelMetadataDetailsProviders.Add(new SuppressChildValidationMetadataProvider(typeof(Geometry)));
             })
-                    .AddXmlSerializerFormatters()
-                    .AddXmlDataContractSeria‌​lizerFormatters()
+                    //.AddXmlSerializerFormatters()
+                    //.AddXmlDataContractSeria‌​lizerFormatters()
                     .AddJsonOptions(options => loadJsonOptions(options));
         }
 
@@ -116,7 +117,7 @@ namespace NSSServices
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             // global policy - assign here or on each controller
-            app.UseX_Messages();
+            app.UseX_Messages(option => { option.HostKey = this._hostKey;});
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
             app.UseMvc();

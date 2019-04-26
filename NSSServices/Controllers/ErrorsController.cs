@@ -26,10 +26,12 @@ using NSSAgent;
 using SharedAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/summary.md")]
     public class ErrorsController : NSSControllerBase
     {
         protected ISharedAgent shared_agent;
@@ -39,7 +41,9 @@ namespace NSSServices.Controllers
         }
 
         #region METHOD
-        [HttpGet]
+
+        [HttpGet(Name = "Errors")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Get.md")]
         public async Task<IActionResult> Get()
         {
             try
@@ -52,7 +56,8 @@ namespace NSSServices.Controllers
             }      
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}",Name ="Error")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -66,7 +71,9 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name = "Add Error")]
+        [Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Add.md")]
         public async Task<IActionResult> Post([FromBody]ErrorType entity)
         {
             try
@@ -81,7 +88,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]",Name ="Error Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<ErrorType> entities)
         {
             try
@@ -97,7 +105,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Error")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]ErrorType entity)
         {
             try
@@ -113,7 +122,8 @@ namespace NSSServices.Controllers
 
         }
 
-        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Error")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
             try

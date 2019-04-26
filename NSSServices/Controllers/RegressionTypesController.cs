@@ -28,10 +28,12 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using SharedAgent;
 using System.Linq;
+using WIM.Services.Attributes;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/summary.md")]
     public class RegressionTypesController : NSSControllerBase
     {
         protected ISharedAgent shared_agent;
@@ -41,7 +43,8 @@ namespace NSSServices.Controllers
         }
 
         #region METHOD
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name ="Regression Type")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -56,8 +59,9 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet]
-        [HttpGet("/Regions/{regions}/[controller]")]
+        [HttpGet(Name ="Regression Types")]
+        [HttpGet("/Regions/{regions}/[controller]", Name ="Region Regression Types")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Get.md")]
         public async Task<IActionResult> GetRegressionTypes(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "")
         {
             IQueryable<RegressionType> entities = null;
@@ -87,7 +91,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Regression Type")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Add.md")]
         public async Task<IActionResult> Post([FromBody]RegressionType entity)
         {
             try
@@ -103,7 +108,8 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost("[action]")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]", Name ="Regression Type Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<RegressionType> entities)
         {
             try
@@ -118,7 +124,8 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Regression Type")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]RegressionType entity)
         {
             try
@@ -135,7 +142,8 @@ namespace NSSServices.Controllers
 
         }        
 
-        [HttpDelete("{id}")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Regression Type")][Authorize(Policy = "AdminOnly")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -149,8 +157,6 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }
         }
-        #endregion
-        #region HELPER METHODS
         #endregion
     }
 }

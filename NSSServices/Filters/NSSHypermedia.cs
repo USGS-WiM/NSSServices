@@ -65,6 +65,10 @@ namespace NSSServices.Filters
                     //results.Add(Hyperlinks.Generate(BaseURI, "add new citation", this.URLQuery + "/", WIM.Resources.refType.POST));
 
                     break;
+                case "scenario":
+                    results = new List<WIM.Resources.Link>();
+                    results.Add(Hyperlinks.Generate(BaseURI, "Citations", UrlHelper.RouteUrl("Citations") + $"?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}", WIM.Resources.refType.GET));
+                    break;
                 default:
                     break;
             }

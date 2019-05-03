@@ -9,6 +9,7 @@
     <PackageReference Include="NetTopologySuite.CoordinateSystems" Version="1.15.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="ProjNET4GeoAPI" Version="1.4.1" />
+    <PackageReference Include="WIM.Exceptions" Version="1.0.1" />
     <PackageReference Include="WiM.Hypermedia" Version="1.1.3" />
     <PackageReference Include="WiM.Resource.TimeSeries" Version="1.1.1" />
     <PackageReference Include="WiM.Resources" Version="1.1.3" />

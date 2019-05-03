@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Xml.Serialization;
-using NSSDB;
 using Newtonsoft.Json;
+using NSSDB.Resources;
 using WIM.Hypermedia;
 using WIM.Resources;
+
 
 namespace NSSAgent.Resources
 {
@@ -17,6 +17,7 @@ namespace NSSAgent.Resources
         [XmlArrayItem("RegressionRegion")]
         public List<SimpleRegressionRegion> RegressionRegions { get; set; }
         public List<Link> Links { get; set; }
+
     }//end Scenario
 
   
@@ -47,4 +48,5 @@ namespace NSSAgent.Resources
         public bool ShouldSerializeDisclaimer()
         { return !string.IsNullOrEmpty(Disclaimer) ; }
     }
+   
 }

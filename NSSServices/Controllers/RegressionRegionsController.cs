@@ -33,6 +33,7 @@ using WIM.Services.Attributes;
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/summary.md")]
     public class RegressionRegionsController : NSSControllerBase
     {
         public RegressionRegionsController(INSSAgent sa) : base(sa)

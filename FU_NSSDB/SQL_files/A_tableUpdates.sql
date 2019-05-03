@@ -439,3 +439,7 @@ INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (463,11,'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (464,11,'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (465,11,'Default unit');
+
+/*update regions*/
+UPDATE "nss"."Regions" SET "Code" = 'MO_SL' WHERE "Code" = 'SL';
+UPDATE "nss"."Regions" SET "Code" = 'RRB' WHERE "Code" = 'RR';

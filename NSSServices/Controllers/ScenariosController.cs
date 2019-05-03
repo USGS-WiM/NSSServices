@@ -148,23 +148,51 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost("/Regions/{regions}/[controller]")]
-        [HttpPost]
+//        [HttpPost(Name = "Edit Scenario")]
+//        [Authorize(Policy = "CanModify")]
+//        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Edit.md")]
+//        public async Task<IActionResult> Put([FromBody]NSSServices.Resources.Scenario entity)
+//        {
+//            try
+//            {
+//                //will need to find the equations etc and edit accordingly. 
+
+//#warning check if logged in user allowed to modify based on regionManager
+//                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+//                //return Ok(await agent.Add(entity));
+//                return NotFound();
+//            }
+//            catch (Exception ex)
+//            {
+//                return await HandleExceptionAsync(ex);
+//            }
+//        }
+
+        [HttpPost(Name ="Add Scenario")]
         [Authorize(Policy = "CanModify")]
-        public async Task<IActionResult> Post([FromBody]Scenario entity)
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Add.md")]
+        public async Task<IActionResult> Post([FromBody]ScenarioUploadPackage entity)
         {
             try
             {
-#warning check if logged in user allowed to modify based on regionManager
+                if (!IsAuthorizedToEdit(new RegressionRegion() { ID = entity.RegressionRegionID })) return new UnauthorizedResult();       
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                //return Ok(await agent.Add(entity));
-                return NotFound();
+                //verify that there isn't a competing scenario already uploaded
+                if (agent.GetScenarios(null, null, new List<string>() { entity.RegressionRegionID.ToString() },
+                                            new List<string>() { entity.StatisticGroupID.ToString() },
+                                            new List<string>() { entity.RegressionTypeID.ToString() },null,0).Any())
+                    return new BadRequestObjectResult("The scenario's statistic group and regression type already exists for the given regression region.");
+
+
+                //process and push to db
+                return Ok(await agent.Add(entity));
             }
             catch (Exception ex)
             {
                 return await HandleExceptionAsync(ex);
             }            
         }
+                
         #endregion
     }
 }

@@ -41,6 +41,7 @@ using ProjNet.CoordinateSystems;
 using ProjNet.CoordinateSystems.Transformations;
 using GeoAPI.Geometries;
 using System.Reflection;
+using WIM.Exceptions.Services;
 
 namespace NSSAgent
 {
@@ -107,7 +108,8 @@ namespace NSSAgent
         IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> GetScenarios(List<string> regionList=null, IGeometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
-        
+        Task<Scenario> Add(ScenarioUploadPackage item);
+
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
         Task<ErrorType> GetError(Int32 ID);
@@ -532,7 +534,7 @@ namespace NSSAgent
                         RegressionRegions = s.groupedparameters.ToList().GroupBy(e => e.RegressionRegionID, e => e, (key, g) => new { groupkey = key, groupedparameters = g }).ToList()
                         .Select(r => new SimpleRegressionRegion()
                         {
-                            Extensions = extensionMethodList.Where(ex => canIncludeExension(ex, s.groupkey)).Select(ex => getScenarioExtensionDef(ex, s.groupkey)).ToList(),
+                            Extensions = extensionMethodList?.Where(ex => canIncludeExension(ex, s.groupkey)).Select(ex => getScenarioExtensionDef(ex, s.groupkey)).ToList(),
                             ID = r.groupkey,
                             Name = r.groupedparameters.First().RegressionRegion.Name,
                             Code = r.groupedparameters.First().RegressionRegion.Code,
@@ -654,6 +656,103 @@ namespace NSSAgent
                 throw;
             }
         }
+        public async Task<Scenario> Add(ScenarioUploadPackage item)
+        {
+            ExpressionOps eOps = null;
+            try
+            {
+                //asyncrous call to get lookups
+                var rr = this.Find<RegressionRegion>(item.RegressionRegionID);
+                var sg =  this.Find<StatisticGroupType>(item.StatisticGroupID);
+                var reg =  this.Find<RegressionType>(item.RegressionTypeID);
+                var unit =  this.Find<UnitType>(item.UnitID);
+                var eqErrors = this.Select<ErrorType>().Where(e => item.Errors.Keys.Contains(e.ID));
+                var vari = this.Select<VariableType>().Where(v => item.Variables.Keys.Contains(v.ID));
+
+                await Task.WhenAll(rr,sg,reg,unit);
+
+                //validate
+                if (rr == null || sg == null || reg == null || unit == null || eqErrors.Count() != item.Errors.Count() || vari.Count()!= item.Variables.Count())
+                    throw new BadRequestException("Scenario contains invalid information.");
+
+
+                var variables = item.Expected.Variables.ToDictionary(k=> vari.FirstOrDefault(v => v.ID == k.Key).Code, v=>(double?)v.Value);                    
+                eOps = new ExpressionOps(item.Expression, variables);
+
+                if (!eOps.IsValid) throw new BadRequestException("Scenario expression failed to execute. Expression is invalid");
+                if (eOps.Value != item.Expected.Value) throw new BadRequestException($"Expected value {item.Expected.Value} does not match computed {eOps.Value}");
+
+                if (item.PredictionInterval != null)
+                {
+                    IntervalBounds computedBound = evaluateUncertainty(item.PredictionInterval, variables, eOps.Value);
+                    if (computedBound.Upper != item.Expected.IntervalBounds.Upper || computedBound.Lower != item.Expected.IntervalBounds.Lower)
+                        throw new BadRequestException($"Expected interval bound values; Upper: {item.Expected.IntervalBounds.Upper}, Lower: {item.Expected.IntervalBounds.Lower} do not match computed; Upper: {computedBound.Upper}, Lower: {computedBound.Lower}");
+                }
+
+
+                Equation eq = new Equation()
+                {
+                    RegressionRegionID = (await rr).ID,
+                    UnitTypeID = (await unit).ID,
+                    Expression = item.Expression,
+                    RegressionTypeID = (await reg).ID,
+                    StatisticGroupTypeID = (await sg).ID,
+                    EquivalentYears = item.EquivalentYears,
+                    Variables = item.Variables.Select(v => new Variable()
+                                                                {
+                                                                    MaxValue = v.Value.MaximumValue,
+                                                                    MinValue = v.Value.MinimumValue,
+                                                                    UnitTypeID = v.Value.UnitID,
+                                                                    VariableTypeID = v.Key
+                                                                }).ToList(),
+                    PredictionInterval = item.PredictionInterval,
+                    EquationErrors = item.Errors.Select(e => new EquationError()
+                                                                    {
+                                                                        ErrorTypeID = e.Key,
+                                                                        Value = e.Value
+                                                                    }).ToList()
+                };
+
+                //sumbit
+                var newItem = await this.Add<Equation>(eq);
+                var newequ = this.GetEquations(null, new List<string>() { newItem.RegressionRegionID.ToString() }, new List<string>() { newItem.StatisticGroupTypeID.ToString() }, 
+                                                    new List<string>() {newItem.RegressionTypeID.ToString() }).Include("UnitType").Include("EquationErrors.ErrorType").Include("PredictionInterval").Include("Variables.VariableType").Include("Variables.UnitType")
+                                                    .FirstOrDefault(e=>e.ID == newItem.ID);
+                
+                
+
+                return new Scenario()
+                {
+                    StatisticGroupID = newequ.StatisticGroupType.ID,
+                    StatisticGroupName = newequ.StatisticGroupType.Name,
+                    RegressionRegions = new List<SimpleRegressionRegion>()
+                    { new SimpleRegressionRegion()
+                    {
+                        ID = newequ.RegressionRegion.ID,
+                        Name = newequ.RegressionRegion.Name,
+                        Code = newequ.RegressionRegion.Code,
+                        Parameters = newequ.Variables.Select(p => new Parameter()
+                        {
+                            ID = p.ID,
+                            UnitType = getUnit(new UnitType() { ID = p.UnitTypeID, Name = p.UnitType.Name, Abbreviation = p.UnitType.Abbreviation, UnitSystemTypeID = p.UnitType.UnitSystemTypeID }, p.UnitType.UnitSystemTypeID),
+                            Limits = new Limit() { Min = p.MinValue, Max = p.MaxValue },
+                            Code = p.VariableType.Code,
+                            Description = p.VariableType.Description,
+                            Name = p.VariableType.Name
+                        }).Distinct().ToList()
+                    }
+                    }
+                };
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
         #endregion
         #region ReadOnly
         public IQueryable<ErrorType> GetErrors()
@@ -664,10 +763,17 @@ namespace NSSAgent
         {
             return this.Find<ErrorType>(ID);
         }
-
+        public ErrorType GetErrorByCode(string code)
+        {
+            return this.Select<ErrorType>().FirstOrDefault(e => e.Code == code);
+        }
         public IQueryable<RegressionType> GetRegressions()
         {
             return this.Select<RegressionType>();
+        }
+        public RegressionType GetRegressionByCode(string code)
+        {
+            return this.Select<RegressionType>().FirstOrDefault(r => r.Code == code);
         }
         public IQueryable<RegressionType> GetRegressions(List<String> regionList, List<String> regressionRegionList, List<String> statisticgroupList)
         {
@@ -681,10 +787,13 @@ namespace NSSAgent
         {
             return this.Find<RegressionType>(ID);
         }
-
         public IQueryable<StatisticGroupType> GetStatisticGroups()
         {
             return this.Select<StatisticGroupType>();
+        }
+        public StatisticGroupType GetStatisticGroupByCode(string code)
+        {
+            return this.Select<StatisticGroupType>().FirstOrDefault(s => s.Code == code);
         }
         public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList, List<String> regressionRegionList, List<String> regressionsList)
         {
@@ -699,7 +808,6 @@ namespace NSSAgent
         {
             return this.Find<StatisticGroupType>(ID);
         }
-
         public IQueryable<UnitType> GetUnits()
         {
             return this.Select<UnitType>();
@@ -708,7 +816,10 @@ namespace NSSAgent
         {
             return this.Find<UnitType>(ID);
         }
-
+        public UnitType GetUnitByAbbreviation(string abbr)
+        {
+            return this.Select<UnitType>().FirstOrDefault(s => s.Abbreviation == abbr);
+        }
         public IQueryable<UnitSystemType> GetUnitSystems()
         {
             return this.Select<UnitSystemType>();
@@ -717,7 +828,6 @@ namespace NSSAgent
         {
             return this.Find<UnitSystemType>(ID);
         }
-
         public IQueryable<VariableType> GetVariables()
         {
             return this.Select<VariableType>();
@@ -725,6 +835,10 @@ namespace NSSAgent
         public Task<VariableType> GetVariable(Int32 ID)
         {
             return this.Find<VariableType>(ID);
+        }
+        public VariableType GetVariableByCode(string code)
+        {
+            return this.Select<VariableType>().FirstOrDefault(v => v.Code == code);
         }
         #endregion
         #endregion
@@ -1019,7 +1133,7 @@ namespace NSSAgent
 
                 return new IntervalBounds() { Lower = lowerBound, Upper = upperBound };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }//end try

@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using WIM.Resources;
 
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace NSSAgent.Resources
 {
@@ -14,11 +15,14 @@ namespace NSSAgent.Resources
         public Int32 ID { get; set; }
         public String Name { get; set; }
         public String Description { get; set; }
+        [Required]
         public String Code { get; set; }
+        [Required]
         public SimpleUnitType UnitType { get; set; }
         public Double? Value { get; set; }
         public bool ShouldSerializeValue()
         { return Value.HasValue; }
+        [Required]
         public Limit Limits { get; set; }
 
         [XmlIgnore]
@@ -74,7 +78,9 @@ namespace NSSAgent.Resources
     }//end PARAMETER
     public class Limit
     {
+        [Required]
         public Double? Max { get; set; }
+        [Required]
         public Double? Min { get; set; }
     }
 }

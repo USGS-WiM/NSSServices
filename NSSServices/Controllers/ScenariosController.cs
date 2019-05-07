@@ -148,44 +148,54 @@ namespace NSSServices.Controllers
             }
         }
 
-//        [HttpPost(Name = "Edit Scenario")]
-//        [Authorize(Policy = "CanModify")]
-//        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Edit.md")]
-//        public async Task<IActionResult> Put([FromBody]NSSServices.Resources.Scenario entity)
-//        {
-//            try
-//            {
-//                //will need to find the equations etc and edit accordingly. 
+        [HttpPost(Name = "Edit Scenario")]
+        [Authorize(Policy = "CanModify")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Edit.md")]
+        public async Task<IActionResult> Put([FromBody]Scenario scenario)
+        {
+            try
+            {
+                if (!isValid(scenario)) return new BadRequestResult(); // This returns HTTP 404
 
-//#warning check if logged in user allowed to modify based on regionManager
-//                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-//                //return Ok(await agent.Add(entity));
-//                return NotFound();
-//            }
-//            catch (Exception ex)
-//            {
-//                return await HandleExceptionAsync(ex);
-//            }
-//        }
+                if (!scenario.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList()
+                    .All(rr => IsAuthorizedToEdit(rr))) return new UnauthorizedResult();
+
+                return Ok(await agent.Update(scenario));
+
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
 
         [HttpPost(Name ="Add Scenario")]
         [Authorize(Policy = "CanModify")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Add.md")]
-        public async Task<IActionResult> Post([FromBody]ScenarioUploadPackage entity)
+        public async Task<IActionResult> Post([FromBody]Scenario scenario)
         {
+            List<string> regressiontypeList = null;
+            List<RegressionRegion> regressionregionList = null;
             try
             {
-                if (!IsAuthorizedToEdit(new RegressionRegion() { ID = entity.RegressionRegionID })) return new UnauthorizedResult();       
-                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                if (!isValid(scenario)) return new BadRequestResult(); // This returns HTTP 404
+
+                regressionregionList = scenario.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList();
+                if (!regressionregionList.All(rr => IsAuthorizedToEdit(rr))) return new UnauthorizedResult();       
+          
+                regressiontypeList = scenario.RegressionRegions.SelectMany(s=>s.Regressions.Select(x=>x.code.ToLower())).ToList();
+
+
                 //verify that there isn't a competing scenario already uploaded
-                if (agent.GetScenarios(null, null, new List<string>() { entity.RegressionRegionID.ToString() },
-                                            new List<string>() { entity.StatisticGroupID.ToString() },
-                                            new List<string>() { entity.RegressionTypeID.ToString() },null,0).Any())
+                if (agent.GetScenarios(null, null, regressionregionList.Select(s=>s.Code).ToList(),
+                                            new List<string>() { scenario.StatisticGroupID.ToString() },
+                                            regressiontypeList, null,0).Any())
                     return new BadRequestObjectResult("The scenario's statistic group and regression type already exists for the given regression region.");
 
 
                 //process and push to db
-                return Ok(await agent.Add(entity));
+                return Ok(await agent.Add(scenario));
+                
             }
             catch (Exception ex)
             {

@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Resources\ScenarioUploadPackage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="NetTopologySuite.CoordinateSystems" Version="1.15.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />

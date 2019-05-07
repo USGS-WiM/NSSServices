@@ -7,32 +7,35 @@ using WIM.Resources;
 using Newtonsoft.Json;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.ComponentModel.DataAnnotations;
 
 namespace NSSAgent.Resources
 {
     [XmlInclude(typeof(RegressionResult))]
     [Serializable]
-    public abstract class RegressionResultBase
+    public abstract class RegressionBase
     {
+        public Int32 ID { get; set; }
         public string Name { get; set; }
+        [Required]
         public string code { get; set; }
         public string Description { get; set; }
-        public Double? Value { get; set; }
-        private List<Error> _errors;
-        public List<Error> Errors { get { return _errors; } set { _errors = value; } }
-        private SimpleUnitType _unit;
+        public Double? Value { get; set; }        
+        public List<Error> Errors { get; set; }
         [XmlElement("UnitType")]
-        public SimpleUnitType Unit { get { return _unit; } set { _unit = value; } }
+        [Required]
+        public SimpleUnitType Unit { get; set; }
+        [Required]
         public String Equation { get; set; }     
-        public abstract RegressionResultBase Clone();
+        public abstract RegressionBase Clone();
         public IntervalBounds IntervalBounds { get; set; }
 
     }
     [Serializable]
-    public class RegressionResult : RegressionResultBase
+    public class RegressionResult : RegressionBase
     {
         public Double? EquivalentYears { get; set; }        
-        public override RegressionResultBase Clone()
+        public override RegressionBase Clone()
         {
             using (var ms = new MemoryStream())
             {
@@ -47,9 +50,12 @@ namespace NSSAgent.Resources
     [Serializable]
     public class Error
     {
+        [Required]
+        public Int32 ID { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
-        public Double? Value { get; set; }
+        [Required]
+        public Double Value { get; set; }
     }//end class
     [Serializable]
     public class IntervalBounds
@@ -60,6 +66,7 @@ namespace NSSAgent.Resources
     [Serializable]
     public class SimpleUnitType
     {
+        [Required]
         public Int32 ID { get; set; }
         public string Unit { get; set; }
         public string Abbr { get; set; }       

@@ -9,31 +9,31 @@ namespace NSSAgent.Resources
     public class ScenarioUploadPackage
     {
         [Required]
-        public Int32 RegressionRegionID { get; set; }
+        public Int32 RegressionRegionID { get; set; } //x
         [Required]
-        public Int32 RegressionTypeID { get; set; }
+        public Int32 RegressionTypeID { get; set; }//x
         [Required]
-        public string Expression { get; set; }
+        public string Expression { get; set; }//x
         [Required]
-        public Int32 StatisticGroupID { get; set; }
-        public double? EquivalentYears { get; set; }
-        public PredictionInterval PredictionInterval { get; set; }
-        public Int32 UnitID { get; set; }
-        public Dictionary<Int32, double> Errors { get; set; }
+        public Int32 StatisticGroupID { get; set; } //x
+        public double? EquivalentYears { get; set; }//x
+        public PredictionInterval PredictionInterval { get; set; }//x
+        public Int32 UnitID { get; set; }//x
+        public Dictionary<Int32, double> Errors { get; set; }//x
         [Required]
-        public Dictionary<Int32, Variable> Variables { get; set; }
+        public Dictionary<Int32, Variable> Variables { get; set; }//x
         [Required]
-        public ExpectedValue Expected { get; set; }
+        public ExpectedValue Expected { get; set; }//x
 
 
         public struct Variable
         {
             [Required]
-            public double MaximumValue { get; set; }
+            public double MaximumValue { get; set; }//x
             [Required]
-            public double MinimumValue { get; set; }
+            public double MinimumValue { get; set; }//x
             [Required]
-            public Int32 UnitID { get; set; }
+            public Int32 UnitID { get; set; }//x
             public string Comments { get; set; }
         }
         public struct ExpectedValue

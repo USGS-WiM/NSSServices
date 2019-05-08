@@ -44,84 +44,76 @@ namespace NSSServices.Controllers
         #region METHOD
         [HttpGet(Name ="Scenarios")]
         [HttpGet("/Regions/{regions}/[controller]", Name ="Region Scenarios")]
-        [HttpPost("[action]", Name ="(Alternative Method) Scenarios")]
-        [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "(Alternative Method) Region Scenarios")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Get.md")]
-        public async Task<IActionResult> Get([FromBody] IGeometry geom = null, string regions="",[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
+        public async Task<IActionResult> Get(string regions="",[FromQuery] string regressionRegions ="", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
                                                                  [FromQuery] Int32 unitsystem=0, [FromQuery] string extensions ="")
         {
-            List<string> statisticgroupList = null;
-            List<string> regressiontypeList = null;
-            List<string> regressionregionList = null;
-            List<string> extensionList = null;
-            List<Scenario> entities = null;
-            List<string> RegionList = null;
             try
             {
-                if (string.IsNullOrEmpty(regions)&& geom == null ) throw new BadRequestException("region and regression regions or a geometry must be specified");
-                RegionList = parse(regions);
-                statisticgroupList = parse(statisticgroups);
-                regressiontypeList = parse(regressiontypes);
-                extensionList = parse(extensions);
-                
-
-                if (geom != null)
-                {
-                    if (!agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
-                    entities = agent.GetScenarios(RegionList, geom, null, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
-                }
-                else
-                {                    
-                    regressionregionList = parse(regressionRegions);
-                    entities = agent.GetScenarios(RegionList,null, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
-                }                
-                sm("Count: " + entities.Count());
-                return Ok(entities);
+                return GetScenario(null, regions, regressionRegions, statisticgroups, regressiontypes, unitsystem, extensions);
             }
             catch (Exception ex)
             {
+
                 return await HandleExceptionAsync(ex);
-            }
+            }            
         }
-        [HttpGet("/Regions/{regions}/[controller]/[action]", Name ="Estimate Region Scenarios", Order =0)]
-        [HttpGet("[action]", Name ="Estimate Scenaros", Order =0)]
-        [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Estimate Region Scenarios", Order = 0)]
-        [HttpPost("[action]", Name = "Estimate Scenaros", Order = 0)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Estimate.md")]
-        public async Task<IActionResult> Estimate(string regions, [FromBody]List<Scenario> scenarioList, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
-                                                                 [FromQuery] Int32 unitsystem = 0, [FromQuery] string extensions = "")
+
+        [HttpPost("[action]", Name = "Scenarios by Polygon")]
+        [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Region Scenarios by Polygon")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Get.md")]
+        public async Task<IActionResult> GetByPolygon([FromBody] IGeometry geom = null, string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
+                                                            [FromQuery] Int32 unitsystem = 0, [FromQuery] string extensions = "")
         {
-            List<string> statisticgroupList = null;
-            List<string> regressiontypeList = null;
-            List<string> regressionregionList = null;
-            List<string> extensionList = null;
-            List<Scenario> entities = null;
-            List<string> RegionList = null;
             try
             {
-                if (string.IsNullOrEmpty(regions)) throw new BadRequestException("region must be specified");                
-                if (!scenarioList.Any()) throw new BadRequestException("scenario must be specified in the body of request");
-
-                RegionList = parse(regions);
-                statisticgroupList = parse(statisticgroups);
-                regressiontypeList = parse(regressiontypes);
-                regressionregionList = parse(regressionRegions);
-                extensionList = parse(extensions);
-
-                entities = agent.EstimateScenarios(RegionList, scenarioList, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
-                sm("Count: " + entities.Count());
-
-                return Ok(entities);
+                return GetScenario(geom, regions, null, statisticgroups, regressiontypes, unitsystem, extensions);
             }
             catch (Exception ex)
             {
                 return await HandleExceptionAsync(ex);
             }
         }
+
+        //[HttpGet("/Regions/{regions}/[controller]/[action]", Name ="Estimate Region Scenarios")]
+        //[HttpGet("[action]", Name ="Estimate Scenaros")]
+        //[HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Estimate Region Scenarios")]
+        //[HttpPost("[action]", Name = "Estimate Scenaros")]
+        //[APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Estimate.md")]
+        //public async Task<IActionResult> Estimate(string regions, [FromBody]List<Scenario> scenarioList, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
+        //                                                         [FromQuery] Int32 unitsystem = 0, [FromQuery] string extensions = "")
+        //{
+        //    List<string> statisticgroupList = null;
+        //    List<string> regressiontypeList = null;
+        //    List<string> regressionregionList = null;
+        //    List<string> extensionList = null;
+        //    List<Scenario> entities = null;
+        //    List<string> RegionList = null;
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(regions)) throw new BadRequestException("region must be specified");                
+        //        if (!scenarioList.Any()) throw new BadRequestException("scenario must be specified in the body of request");
+
+        //        RegionList = parse(regions);
+        //        statisticgroupList = parse(statisticgroups);
+        //        regressiontypeList = parse(regressiontypes);
+        //        regressionregionList = parse(regressionRegions);
+        //        extensionList = parse(extensions);
+
+        //        entities = agent.EstimateScenarios(RegionList, scenarioList, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+        //        sm("Count: " + entities.Count());
+
+        //        return Ok(entities);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return await HandleExceptionAsync(ex);
+        //    }
+        //}
 
         [HttpPost("[action]", Name ="Estimate Scenarios")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Estimate.md")]
-        public async Task<IActionResult> Execute([FromBody]List<Scenario> scenarioList, [FromQuery] string regressiontypes = "", [FromQuery] Int32 unitsystem = 0)
+        public async Task<IActionResult> Estimate([FromBody]List<Scenario> scenarioList, [FromQuery] string regressiontypes = "", [FromQuery] Int32 unitsystem = 0)
         {
             List<Scenario> entities = null;
             List<string> statisticgroupList = null;
@@ -151,16 +143,16 @@ namespace NSSServices.Controllers
         [HttpPost(Name = "Edit Scenario")]
         [Authorize(Policy = "CanModify")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Edit.md")]
-        public async Task<IActionResult> Put([FromBody]Scenario scenario)
+        public async Task<IActionResult> Put([FromBody]Scenario entity)
         {
             try
             {
-                if (!isValid(scenario)) return new BadRequestResult(); // This returns HTTP 404
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                if (!scenario.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList()
+                if (!entity.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList()
                     .All(rr => IsAuthorizedToEdit(rr))) return new UnauthorizedResult();
 
-                return Ok(await agent.Update(scenario));
+                return Ok(await agent.Update(entity));
 
             }
             catch (Exception ex)
@@ -172,29 +164,29 @@ namespace NSSServices.Controllers
         [HttpPost(Name ="Add Scenario")]
         [Authorize(Policy = "CanModify")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Add.md")]
-        public async Task<IActionResult> Post([FromBody]Scenario scenario)
+        public async Task<IActionResult> Post([FromBody]Scenario entity, string statisticgroupIDorCode)
         {
             List<string> regressiontypeList = null;
             List<RegressionRegion> regressionregionList = null;
             try
             {
-                if (!isValid(scenario)) return new BadRequestResult(); // This returns HTTP 404
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                regressionregionList = scenario.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList();
+                regressionregionList = entity.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList();
                 if (!regressionregionList.All(rr => IsAuthorizedToEdit(rr))) return new UnauthorizedResult();       
           
-                regressiontypeList = scenario.RegressionRegions.SelectMany(s=>s.Regressions.Select(x=>x.code.ToLower())).ToList();
+                regressiontypeList = entity.RegressionRegions.SelectMany(s=>s.Regressions.Select(x=>x.code.ToLower())).ToList();
 
 
                 //verify that there isn't a competing scenario already uploaded
                 if (agent.GetScenarios(null, null, regressionregionList.Select(s=>s.Code).ToList(),
-                                            new List<string>() { scenario.StatisticGroupID.ToString() },
+                                            new List<string>() { entity.StatisticGroupID.ToString() },
                                             regressiontypeList, null,0).Any())
                     return new BadRequestObjectResult("The scenario's statistic group and regression type already exists for the given regression region.");
 
 
                 //process and push to db
-                return Ok(await agent.Add(scenario));
+                return Ok(await agent.Add(entity));
                 
             }
             catch (Exception ex)
@@ -202,7 +194,46 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }            
         }
-                
+
+        #endregion
+
+        #region HelperMethod
+        private IActionResult GetScenario(IGeometry geom = null, string regions = "", string regressionRegions = "", string statisticgroups = "", string regressiontypes = "",
+                                                             Int32 unitsystem = 0, string extensions = "")
+        {
+            List<string> statisticgroupList = null;
+            List<string> regressiontypeList = null;
+            List<string> regressionregionList = null;
+            List<string> extensionList = null;
+            List<Scenario> entities = null;
+            List<string> RegionList = null;
+            try
+            {
+                if (string.IsNullOrEmpty(regions) && geom == null) throw new BadRequestException("region and regression regions or a geometry must be specified");
+                RegionList = parse(regions);
+                statisticgroupList = parse(statisticgroups);
+                regressiontypeList = parse(regressiontypes);
+                extensionList = parse(extensions);
+
+
+                if (geom != null)
+                {
+                    if (!agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
+                    entities = agent.GetScenarios(RegionList, geom, null, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+                }
+                else
+                {
+                    regressionregionList = parse(regressionRegions);
+                    entities = agent.GetScenarios(RegionList, null, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem).ToList();
+                }
+                sm("Count: " + entities.Count());
+                return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         #endregion
     }
 }

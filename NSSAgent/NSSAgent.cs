@@ -110,6 +110,7 @@ namespace NSSAgent
         IQueryable<Scenario> GetScenarios(List<string> regionList=null, IGeometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
         Task<IQueryable<Scenario>> Add(Scenario item);
+        Task<Scenario> Update(Scenario item);
 
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
@@ -725,6 +726,40 @@ namespace NSSAgent
                 throw;
             }
         }
+        public async Task<Scenario> Update(Scenario item, StatisticGroupType oldStatisticGroup = null)
+        {
+            List<string> regressiontypeList = null;
+            List<RegressionRegion> regressionregionList = null;
+
+            try
+            {
+                regressionregionList = item.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList();
+                regressiontypeList = item.RegressionRegions.SelectMany(s => s.Regressions.Select(x => x.code.ToLower())).ToList();
+
+
+                if(GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),
+                                            new List<string>() { item.StatisticGroupID.ToString() }, regressiontypeList, null, 0).Count() != 1) throw new BadRequestException("Query return more or less than 1 scenario");
+
+                var equations = this.GetEquations(null, regressionregionList.Select(s => s.Code).ToList(), new List<string>() { item.StatisticGroupID.ToString() }, regressiontypeList)
+                                        .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType);
+
+                foreach (var equation in equations)
+                {
+                    var 
+
+
+                }//next equation
+
+                return GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),
+                                    new List<string>() { item.StatisticGroupID.ToString() }, regressiontypeList, null, 0).FirstOrDefault();
+
+            }
+            catch (Exception ex)
+            {
+                sm($"Error adding scenario {ex.Message}", MessageType.error);
+                throw;
+            }
+        }
 
         #endregion
         #region ReadOnly
@@ -961,7 +996,6 @@ namespace NSSAgent
             }//end switch
             return null;
         }
-        //[DebuggerHidden]
         private SimpleUnitType getUnit(UnitType inUnitType, int OutSystemtypeID)
         {
             try
@@ -985,8 +1019,7 @@ namespace NSSAgent
             {
                 return new SimpleUnitType() { Abbr = inUnitType.Abbreviation, Unit = inUnitType.Name, factor = 1 };
             }
-        }
-        //[DebuggerHidden]
+        }  
         private double getUnitConversionFactor(int inUnitID, int OutUnitSystemTypeID)
         {
             try

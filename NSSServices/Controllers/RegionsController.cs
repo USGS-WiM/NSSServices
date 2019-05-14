@@ -41,11 +41,17 @@ namespace NSSServices.Controllers
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Get.md")]
         public async Task<IActionResult> Get()
         {
+            IQueryable<Region> entities = null;
             try
             {
-                var query = agent.GetRegions();
-                sm($"controller Return Count: {query.Count()}");
-                return Ok(query);
+                if (IsAuthenticated)
+                {
+                    sm("Is authenticated, will only retrieve managed regions");
+                    entities = agent.GetManagedRegions(LoggedInUser());
+                }
+                else
+                    entities = agent.GetRegions();
+                return Ok(entities);
             }
             catch (Exception ex)
             {

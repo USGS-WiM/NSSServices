@@ -46,10 +46,8 @@ namespace NSSServices.Controllers
         #region METHOD
         [HttpGet(Name ="Statistic Groups")]
         [HttpGet("/Regions/{regions}/[controller]", Name ="Region Statistic Groups")]
-        [HttpPost("[action]", Name = "(Alternative Method) Statistic Groups")]
-        [HttpPost("/Regions/{regions}/[controller]", Name = "Region Statistic Groups")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Get.md")]
-        public async Task<IActionResult> Get(string regions="", [FromBody] Geometry geom = null, [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "")
+        public async Task<IActionResult> Get(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "")
         {
             IQueryable<StatisticGroupType> entities = null;
             List<string> RegionList = null;
@@ -57,22 +55,50 @@ namespace NSSServices.Controllers
             List<string> regressionsList = null;
             try
             {
-                if (String.IsNullOrEmpty(regions) && String.IsNullOrEmpty(regressionRegions) &&
-                    string.IsNullOrEmpty(regressions) && geom == null)
-                { entities = agent.GetStatisticGroups(); }
+                RegionList = parse(regions);
+                regressionRegionList = parse(regressionRegions);
+                regressionsList = parse(regressions);
 
+                if (IsAuthenticated)
+                {
+                    sm("Is authenticated, will only retrieve managed regression types");
+                    entities = agent.GetManagedStatisticGroups(LoggedInUser(), RegionList, null, regressionRegionList, regressionsList);
+                }
+                else
+                    entities = agent.GetStatisticGroups(RegionList, null, regressionRegionList, regressionsList);
+
+                sm($"statistic group count {entities.Count()}");
+                return Ok(entities);
+
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPost("[action]", Name = "Statistic Groups By Location")]
+        [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Region Statistic Groups By Location")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Get.md")]
+        public async Task<IActionResult> ByLocation([FromBody] Geometry geom= null, string regions = "", [FromQuery] string regressions = "")
+        {
+            IQueryable<StatisticGroupType> entities = null;
+            List<string> RegionList = null;
+            List<string> regressionsList = null;
+            try
+            {
                 RegionList = parse(regions);
                 regressionsList = parse(regressions);
-                if (geom == null)
-                {                    
-                    regressionRegionList = parse(regressionRegions);
-                    entities = agent.GetStatisticGroups(RegionList, regressionRegionList, regressionsList);
-                }
-                else {
-                    if (!agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
-                    entities = agent.GetStatisticGroups(RegionList, geom, regressionsList);
-                }
 
+                if (IsAuthenticated)
+                {
+                    sm("Is authenticated, will only retrieve managed regression types");
+                    entities = agent.GetManagedStatisticGroups(LoggedInUser(), RegionList, geom, null, regressionsList);
+                }
+                else
+                    entities = agent.GetStatisticGroups(RegionList, geom, null, regressionsList);
+
+                sm($"statistic group count {entities.Count()}");
                 return Ok(entities);
             }
             catch (Exception ex)

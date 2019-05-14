@@ -17,6 +17,11 @@ namespace NSSServices.Controllers
     public abstract class NSSControllerBase: WIM.Services.Controllers.ControllerBase
     {
         protected INSSAgent agent;
+        public bool IsAuthenticated
+        {
+            get { return User.Identity.IsAuthenticated; }
+        }
+
 
         public NSSControllerBase(INSSAgent sa)
         {
@@ -49,7 +54,7 @@ namespace NSSServices.Controllers
             return false;
         }
 
-        public Manager LoggedInUser() {
+         public Manager LoggedInUser() {
             return new Manager()
             {
                 ID = Convert.ToInt32( User.Claims.Where(c => c.Type == ClaimTypes.PrimarySid)

@@ -42,10 +42,40 @@ namespace NSSServices.Controllers
         #region METHOD
         [HttpGet(Name ="Regression Regions")]
         [HttpGet("/Regions/{regions}/[controller]",Name ="Region Regression Regions")]
-        [HttpPost("[action]", Name = "(Alternative Method) Regression Regions")]
-        [HttpPost("/Regions/{regions}/[controller]", Name = "Region Regression Regions")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Get.md")]
-        public async Task<IActionResult> Get(string regions = "", [FromBody] IGeometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        public async Task<IActionResult> Get(string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        {
+            IQueryable<RegressionRegion> entities = null;
+            List<string> RegionList = null;
+            List<string> statisticgroupList = null;
+            List<string> regressiontypeList = null;
+            try
+            {
+                                
+                RegionList = parse(regions);
+                statisticgroupList = parse(statisticgroups);
+                regressiontypeList = parse(regressiontypes);
+                if (IsAuthenticated)
+                {
+                    sm("Is authenticated, will only retrieve managed regression regions");
+                    entities = agent.GetManagedRegressionRegions(LoggedInUser(), RegionList, null, statisticgroupList, regressiontypeList);
+                }
+                else
+                    entities = agent.GetRegressionRegions(RegionList,null, statisticgroupList,regressiontypeList);
+
+                sm($"regression region count {entities.Count()}");
+                return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPost("[action]", Name = "Regression Regions By Location")]
+        [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Region Regression Regions By Location")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Get.md")]
+        public async Task<IActionResult> ByLocation(string regions = "", [FromBody] IGeometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<RegressionRegion> entities = null;
             List<string> RegionList = null;
@@ -54,13 +84,20 @@ namespace NSSServices.Controllers
             try
             {
                 if (geom != null && !agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
-                                
+
                 RegionList = parse(regions);
                 statisticgroupList = parse(statisticgroups);
-                regressiontypeList = parse(regressiontypes);                
-                
-                entities = agent.GetRegressionRegions(RegionList,geom, statisticgroupList,regressiontypeList);                
+                regressiontypeList = parse(regressiontypes);
 
+                if (IsAuthenticated)
+                {
+                    sm("Is authenticated, will only retrieve managed regression regions");
+                    entities = agent.GetManagedRegressionRegions(LoggedInUser(), RegionList, geom, statisticgroupList, regressiontypeList);
+                }
+                else
+                    entities = agent.GetRegressionRegions(RegionList, geom, statisticgroupList, regressiontypeList);
+
+                sm($"regression region count {entities.Count()}");
                 return Ok(entities);
             }
             catch (Exception ex)

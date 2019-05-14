@@ -48,8 +48,8 @@ namespace NSSAgent.Resources
         public List<RegressionBase> Results { get; set; }
         public List<Regression> Regressions { get; set; }
         public List<Extension> Extensions { get; set; }
-        public bool ShouldSerializeExtension()
-        { return Extensions != null || Extensions.Count > 1; }
+        public bool ShouldSerializeExtensions()
+        { return Extensions?.Any() == true; }
 
         public string Disclaimer { get; set; }
         public bool ShouldSerializeDisclaimer()

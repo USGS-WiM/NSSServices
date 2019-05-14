@@ -43,6 +43,38 @@ namespace NSSServices.Controllers
         }
 
         #region METHOD
+        [HttpGet(Name = "Regression Types")]
+        [HttpGet("/Regions/{regions}/[controller]", Name = "Region Regression Types")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Get.md")]
+        public async Task<IActionResult> GetRegressionTypes(string regions = "", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "")
+        {
+            IQueryable<RegressionType> entities = null;
+            List<string> RegionList = null;
+            List<string> regressionRegionList = null;
+            List<string> statisticgroupList = null;
+            try
+            {
+                
+                RegionList = parse(regions);
+                regressionRegionList = parse(regressionRegions);
+                statisticgroupList = parse(statisticgroups);
+
+                if (IsAuthenticated)
+                {
+                    sm("Is authenticated, will only retrieve managed regression types");
+                    entities = agent.GetManagedRegressions(LoggedInUser(), RegionList, null, regressionRegionList, statisticgroupList);
+                }
+                else
+                    entities = agent.GetRegressions(RegionList, null, regressionRegionList, statisticgroupList);
+
+                sm($"regressiontype count {entities.Count()}");
+                return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
         [HttpGet("{id}", Name ="Regression Type")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
@@ -52,38 +84,6 @@ namespace NSSServices.Controllers
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
 
                 return Ok(await agent.GetRegression(id));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpGet(Name ="Regression Types")]
-        [HttpGet("/Regions/{regions}/[controller]", Name ="Region Regression Types")]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Get.md")]
-        public async Task<IActionResult> GetRegressionTypes(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "")
-        {
-            IQueryable<RegressionType> entities = null;
-            List<string> RegionList = null;
-            List<string> regressionRegionList = null;
-            List<string> statisticgroupList = null;
-            try
-            {
-                if (String.IsNullOrEmpty(regions) && String.IsNullOrEmpty(regressionRegions) &&
-                    string.IsNullOrEmpty(statisticgroups))
-                { entities = agent.GetRegressions(); }
-
-                else
-                {
-                    RegionList = parse(regions);
-                    regressionRegionList = parse(regressionRegions);
-                    statisticgroupList = parse(statisticgroups);
-
-                    entities = agent.GetRegressions(RegionList, regressionRegionList, statisticgroupList);
-                }
-
-                return Ok(entities);
             }
             catch (Exception ex)
             {

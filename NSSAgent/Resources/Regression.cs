@@ -19,6 +19,9 @@ namespace NSSAgent.Resources
 
         [Required]
         public ExpectedValue Expected { get; set; }
+        public bool ShouldSerializeExpected()
+        { return Expected != null; }
+
         public PredictionInterval PredictionInterval { get; set; }
         public List<Parameter> Parameters { get; set; }
         public override RegressionBase Clone()
@@ -33,7 +36,7 @@ namespace NSSAgent.Resources
             }//end using
         }
     }
-    public struct ExpectedValue
+    public class ExpectedValue
     {
         [Required]
         public double Value { get; set; }

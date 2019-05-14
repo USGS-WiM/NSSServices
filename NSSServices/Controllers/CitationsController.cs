@@ -43,10 +43,8 @@ namespace NSSServices.Controllers
         #region METHOD        
         [HttpGet(Name = "Citations")]
         [HttpGet("/Regions/{regions}/[controller]", Name = "Region Citations")]
-        [HttpPost("[action]", Name = "Citations by Location")]
-        [HttpPost("/Regions/{regions}/[controller]", Name = "Region Citations by Location")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Get.md")]
-        public async Task<IActionResult> Get(string regions="", [FromBody] IGeometry geom = null, [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        public async Task<IActionResult> Get(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<Citation> entities = null;
             List<string> RegionList = null;
@@ -55,16 +53,22 @@ namespace NSSServices.Controllers
             List<string> regressiontypeList = null;
             try
             {
-                if (geom != null && !agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
-
+               
                 RegionList = parse(regions);
                 regressionRegionList = parse(regressionRegions);
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypes);
 
-                entities = agent.GetCitations(RegionList, geom, regressionRegionList, statisticgroupList, regressiontypeList);
-                
-                sm("test from citations handler");
+                if (IsAuthenticated)
+                {
+                    sm("Is authenticated, will only retrieve managed citations");
+                    entities = agent.GetManagedCitations(LoggedInUser(), RegionList, null, regressionRegionList, statisticgroupList, regressiontypeList);
+                }
+                else
+                    entities = agent.GetCitations(RegionList, null, regressionRegionList, statisticgroupList, regressiontypeList);
+
+
+                sm($"citation count {entities.Count()}");
                 return Ok(entities);
             }
             catch (Exception ex)
@@ -72,6 +76,42 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }
         }
+
+        [HttpPost("[action]", Name = "Citations By Location")]
+        [HttpPost("/Regions/{regions}/[controller]/[[action]]", Name = "Region Citations By Location")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Get.md")]
+        public async Task<IActionResult> ByLocation([FromBody] IGeometry geom, string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        {
+            IQueryable<Citation> entities = null;
+            List<string> RegionList = null;
+            List<string> statisticgroupList = null;
+            List<string> regressiontypeList = null;
+            try
+            {
+                if (geom != null && !agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
+
+                RegionList = parse(regions);
+                statisticgroupList = parse(statisticgroups);
+                regressiontypeList = parse(regressiontypes);
+
+                if (IsAuthenticated)
+                {
+                    sm("Is authenticated, will only retrieve managed citations");
+                    entities = agent.GetManagedCitations(LoggedInUser(), RegionList, geom, null, statisticgroupList, regressiontypeList);
+                }
+                else
+                    entities = agent.GetCitations(RegionList, geom, null, statisticgroupList, regressiontypeList);
+
+
+                sm($"citation count {entities.Count()}");
+                return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+                
         [HttpGet("{id}", Name = "Citation")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
@@ -131,9 +171,22 @@ namespace NSSServices.Controllers
             }
         }
 
-        //
-        //Delete should occur at the Regression region level
-        //
+        [HttpDelete("{id}", Name = "Delete Citation")]
+        [Authorize(Policy = "CanModify")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Delete.md")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (!IsAuthorizedToEdit(await agent.GetCitation(id))) return new UnauthorizedResult();
+                await agent.DeleteCitation(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
         #endregion
 
     }

@@ -43,6 +43,7 @@ using GeoAPI.Geometries;
 using System.Reflection;
 using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace NSSAgent
 {
@@ -203,7 +204,7 @@ namespace NSSAgent
                                           || regressiontypeList.Contains(e.RegressionType.Code.ToLower().Trim())));
 
             if (geom != null)
-                query = query.Where(rr=> getRegressionRegionsByGeometry(geom,false).Select(grr => grr.ID).Contains(rr.RegressionRegionID));
+                query = query.Where(rr=> getRegressionRegionsByGeometry(geom).Select(grr => grr.ID).Contains(rr.RegressionRegionID));
 
             return query.Select(rrr => rrr.RegressionRegion.Citation).Distinct();
             
@@ -386,7 +387,7 @@ namespace NSSAgent
 
 
             if (geom != null)
-                regressionRegionList = getRegressionRegionsByGeometry(geom, true).ToDictionary(k => k.ID);            
+                regressionRegionList = getRegressionRegionsByGeometry(geom).ToDictionary(k => k.ID);            
 
             return this.GetEquations(regionList, regressionRegionList?.Keys.Select(k=>k.ToString()).ToList(), statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion).Distinct()
                 .Select(rr=> new RegressionRegion() {
@@ -423,7 +424,7 @@ namespace NSSAgent
                                           || regressiontypeList.Contains(e.RegressionType.Code.ToLower().Trim())));
 
             if (geom != null)
-                query = query.Where(rr => getRegressionRegionsByGeometry(geom, false).Select(grr => grr.ID).Contains(rr.RegressionRegionID));
+                query = query.Where(rr => getRegressionRegionsByGeometry(geom).Select(grr => grr.ID).Contains(rr.RegressionRegionID));
 
             return query.Select(rrr => rrr.RegressionRegion).Distinct();
 
@@ -599,7 +600,7 @@ namespace NSSAgent
 
                 if (geom != null)
                 {
-                    regressionRegions = getRegressionRegionsByGeometry(geom,true).ToDictionary(k => k.ID);
+                    regressionRegions = getRegressionRegionsByGeometry(geom).ToDictionary(k => k.ID);
                     regressionRegionList = regressionRegions.Keys.ToList().ConvertAll(s=>s.ToString());
                 }
                 if (manager?.Username != null && manager.RoleID != 1)
@@ -953,18 +954,20 @@ namespace NSSAgent
 
                     EquationErrorToRemove?.ForEach(v => Delete<EquationError>(v));
                     EquationErrorToAdd?.ForEach(v => { if (equation.EquationErrors == null) equation.EquationErrors = new List<EquationError>(); equation.EquationErrors.Add(v); });
-
                     if (EquationErrorToKeep != null)
                     {
+
                         foreach (var error in EquationErrorToKeep)
                         {
                             var editError = errors.FirstOrDefault(v => v.ID == error.ErrorTypeID);
                             error.Value = editError.Value;
+                            
                         }//next error
                     }
 
                     if (valid(equation, regression.Expected))
                         await this.Update<Equation>(equation.ID, equation);
+                    
 
                 }//next equation
                 
@@ -992,7 +995,7 @@ namespace NSSAgent
 
                 return Delete<Equation>(equationToDelete.FirstOrDefault());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 throw;
@@ -1023,7 +1026,7 @@ namespace NSSAgent
 
             var equations = this.GetEquations(regionList, regressionRegionList, statisticgroupList);
             if (geom != null)
-                equations = equations.Where(e => getRegressionRegionsByGeometry(geom,false).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
+                equations = equations.Where(e => getRegressionRegionsByGeometry(geom).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
 
             return equations.Select(e => e.RegressionType).Distinct().OrderBy(e => e.ID);
         }
@@ -1052,7 +1055,7 @@ namespace NSSAgent
 
 
             if (geom != null)
-                query = query.Where(rr => getRegressionRegionsByGeometry(geom, false).Select(grr => grr.ID).Contains(rr.RegressionRegionID));
+                query = query.Where(rr => getRegressionRegionsByGeometry(geom).Select(grr => grr.ID).Contains(rr.RegressionRegionID));
 
             return query.SelectMany(rrr => rrr.RegressionRegion.Equations.Select(e=>e.RegressionType)).Distinct();
         }
@@ -1072,7 +1075,7 @@ namespace NSSAgent
             var equations = this.GetEquations(regionList, regressionRegionList, null, regressionsList);
 
             if (geom != null)
-                equations = equations.Where(e => getRegressionRegionsByGeometry(geom, false).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
+                equations = equations.Where(e => getRegressionRegionsByGeometry(geom).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
 
             return equations.Select(e => e.StatisticGroupType).Distinct().OrderBy(e => e.ID);
 
@@ -1102,7 +1105,7 @@ namespace NSSAgent
 
 
             if (geom != null)
-                query = query.Where(rr => getRegressionRegionsByGeometry(geom, false).Select(grr => grr.ID).Contains(rr.RegressionRegionID));
+                query = query.Where(rr => getRegressionRegionsByGeometry(geom).Select(grr => grr.ID).Contains(rr.RegressionRegionID));
 
             return query.SelectMany(rrr => rrr.RegressionRegion.Equations.Select(e => e.StatisticGroupType)).Distinct();
 
@@ -1253,6 +1256,18 @@ namespace NSSAgent
                                 JOIN ""RegressionRegions"" rr ON(rrr.""RegressionRegionID"" = rr.""ID"") 
                                 JOIN ""Citations"" c ON(c.""ID"" = rr.""CitationID"")
                                 Where rm.""ManagerID"" = {0}; ";
+                case sqltypeenum.regionbygeom:
+                    return @"WITH Feature(geom) as (
+                                SELECT st_makevalid(ST_Transform(
+	                                ST_SetSRID(
+			                                ST_GeomFromText('{0}'),
+                                    4236),
+                                102008)))
+                                SELECT ""ID"",""Name"", ""Code"", ""Description"", ""CitationID"", ""StatusID"",""LocationID"", ""Area"" * 0.000000386102159 as ""Area"", ""MaskArea""* 0.000000386102159 as ""MaskArea"", ""Area""/""MaskArea""*100 as ""PercentWeight"" FROM
+                                    (SELECT r.*, st_area(ST_Intersection(l.""Geometry"", f.geom)) as ""Area"", st_area(f.geom) as ""MaskArea""
+                                    FROM Feature AS f, nss.""RegressionRegions"" AS r
+                                    LEFT JOIN nss.""Locations"" AS l ON r.""LocationID"" = l.""ID""
+                                    WHERE r.""LocationID"" IS NOT NULL AND(ST_Intersects(l.""Geometry"", f.geom) = TRUE)) t";
 
                 default:
                     throw new Exception("No sql for table " + type);
@@ -1656,25 +1671,53 @@ namespace NSSAgent
                 return null;
             }
         }
-        private IQueryable<RegressionRegion> getRegressionRegionsByGeometry(IGeometry geom, bool includepercent = false)
+        private IQueryable<RegressionRegion> getRegressionRegionsByGeometry(IGeometry geom)
         {
-            if (geom.SRID != 102008)
-                geom = geom.ProjectTo(102008).Normalized().Buffer(0);
-            if (!geom.IsValid)
-                geom = geom.Normalized().Buffer(0);
-            var query = Select<RegressionRegion>().Include(r => r.Location).Where(x => x.Location != null && x.Location.Geometry.Intersects(geom));
-            if (includepercent)
-            {
-                query = query.Select(r =>  new RegressionRegion()
-                    {
-                         ID = r.ID,
-                         Name = r.Name,
-                         Code = r.Code,
-                         Area = r.Location.Geometry.Intersection(geom).Area * 0.000000386102159
-                    }).ToList().Select(r=> { r.PercentWeight = Math.Round(r.Area.Value / geom.Area / 0.000000386102159 * 100, 2, MidpointRounding.AwayFromZero);  return r; }).Where(r=> r.PercentWeight > 1).AsQueryable();
 
+            //var query = getTable<RegressionRegion>(sqltypeenum.regionbygeom, new Object[] { geom.AsText() });
+            //The below method fails to return all overlay regions, Left here because it still does a good job and may need to extend 
+            //if (geom.SRID != 102008)
+            //    geom = geom.ProjectTo(102008);
+            //if (!geom.IsValid)
+            //    geom = geom.Normalized().Buffer(0);
+            //var query = Select<RegressionRegion>().Include(r => r.Location).Where(x => x.Location != null && x.Location.Geometry.Intersects(geom));
+
+            //https://github.com/aspnet/EntityFrameworkCore/issues/7810#issuecomment-384909854
+            try
+            {
+                var query = new List<RegressionRegion>();
+                using (var command = this.context.Database.GetDbConnection().CreateCommand())
+                {
+                    command.CommandText = String.Format(getSQLStatement(sqltypeenum.regionbygeom), geom.AsText());
+                    context.Database.OpenConnection();
+                    using (System.Data.Common.DbDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if(reader.HasColumn("ID") && reader.HasColumn("Name") && reader.HasColumn("Code") && reader.HasColumn("Area")&& reader.HasColumn("PercentWeight"))
+                                query.Add(new RegressionRegion() {
+                                    ID = Convert.ToInt32(reader["ID"]),
+                                    Name = reader["Name"].ToString(),
+                                    Code = reader["Code"].ToString() ,
+                                    Area = Convert.ToDouble(reader["Area"]),
+                                    PercentWeight = Convert.ToDouble(reader["PercentWeight"]),
+                                    Description = reader.HasColumn("MaskArea")? $"Regression region Percent Area computed with a Mask Area of {Convert.ToDouble(reader["MaskArea"])} sqr. miles and overlay Area of {Convert.ToDouble(reader["Area"])} sqr miles": string.Empty
+                                });
+                        }
+                    }//end using  
+                }//end using 
+                return query.Where(r=> Math.Round(r.PercentWeight.Value,2,MidpointRounding.AwayFromZero)>1).Select(r=> { r.PercentWeight = Math.Round(r.PercentWeight.Value, 2, MidpointRounding.AwayFromZero); return r; }).AsQueryable();
             }
-            return query;
+            catch (Exception ex)
+            {
+                sm($"Error occured computing percent overlay {ex.Message}", MessageType.error);
+                throw;
+            }
+            finally
+            {
+                if (context.Database.GetDbConnection().State == System.Data.ConnectionState.Open)
+                    context.Database.CloseConnection();
+            }
         }
 
         protected override void sm(string msg, MessageType type = MessageType.info)
@@ -1695,7 +1738,8 @@ namespace NSSAgent
         private enum sqltypeenum
         {
             ScenarioParameterView,
-            managerCitations
+            managerCitations,
+            regionbygeom
         }
 
     }

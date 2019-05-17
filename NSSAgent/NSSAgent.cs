@@ -1022,7 +1022,7 @@ namespace NSSAgent
         }
         public IQueryable<RegressionType> GetRegressions(List<String> regionList=null, IGeometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null)
         {          
-            if (!regionList?.Any() != true && geom == null && !regressionRegionList?.Any()!= true && !statisticgroupList?.Any()!=true)
+            if (regionList?.Any() != true && geom == null && regressionRegionList?.Any()!= true && statisticgroupList?.Any()!=true)
                     return this.Select<RegressionType>();
 
             var equations = this.GetEquations(regionList, regressionRegionList, statisticgroupList);
@@ -1070,7 +1070,7 @@ namespace NSSAgent
         }
         public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, IGeometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null)
         {
-            if (!regionList?.Any() != true && geom == null && !regressionRegionList?.Any() != true && !regressionsList?.Any() != true)
+            if (regionList?.Any() != true && geom == null && regressionRegionList?.Any() != true && regressionsList?.Any() != true)
                 return this.Select<StatisticGroupType>();
 
             var equations = this.GetEquations(regionList, regressionRegionList, null, regressionsList);

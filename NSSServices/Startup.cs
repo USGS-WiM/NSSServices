@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using WIM.Services.Middleware;
 
 namespace NSSServices
 {
@@ -49,6 +50,7 @@ namespace NSSServices
         {
 
             //Configure injectable obj
+            services.AddScoped<IAnalyticsAgent, GoogleAnalyticsAgent>((gaa) => new GoogleAnalyticsAgent(Configuration["AnalyticsKey"]));
             services.Configure<APIConfigSettings>(Configuration.GetSection("APIConfigSettings"));
             //Transient objects are always different; a new instance is provided to every controller and every service.
             //Singleton objects are the same for every object and every request.
@@ -120,6 +122,7 @@ namespace NSSServices
             app.UseX_Messages(option => { option.HostKey = this._hostKey;});
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
+            app.Use_Analytics();
             app.UseMvc();
         }
 

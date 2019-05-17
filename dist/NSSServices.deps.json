@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "e8aaa3f7442e0921ae00c9014f3b261e0189c3ba"
+    "signature": "33cb37a48b1d1febd0f4ccb12eeb0e35b6d49082"
   },
   "compilationOptions": {
     "defines": [
@@ -37,7 +37,7 @@
           "NSSDB": "1.0.0",
           "SharedAgent": "1.0.0",
           "WIM.Services": "1.1.13",
-          "WIM.Analytics": "1.1.1"
+          "WIM.Analytics": "1.2.2"
         },
         "runtime": {
           "NSSServices.dll": {}
@@ -3525,15 +3525,15 @@
           "System.Xml.XPath": "4.3.0"
         }
       },
-      "WIM.Analytics/1.1.1": {
+      "WIM.Analytics/1.2.2": {
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "2.2.0",
           "WIM.Utilities.ServiceAgent": "1.1.4"
         },
         "runtime": {
           "lib/netstandard2.0/WIM.Services.Analytics.dll": {
-            "assemblyVersion": "1.1.1.0",
-            "fileVersion": "1.1.1.0"
+            "assemblyVersion": "1.2.2.0",
+            "fileVersion": "1.2.2.0"
           }
         },
         "compile": {
@@ -5625,12 +5625,12 @@
       "path": "system.xml.xpath.xdocument/4.3.0",
       "hashPath": "system.xml.xpath.xdocument.4.3.0.nupkg.sha512"
     },
-    "WIM.Analytics/1.1.1": {
+    "WIM.Analytics/1.2.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-cL88GOcd9uRkzzHZAqC4YEs94Ra8oNkkQJfJKcqD7MNbFWlzWt6u66s6QRnzYV2Sbi6sj5/Em/sT0yiTNZB4fA==",
-      "path": "wim.analytics/1.1.1",
-      "hashPath": "wim.analytics.1.1.1.nupkg.sha512"
+      "sha512": "sha512-rOJKuarBa5zacFynMCUnu56n1RyXn4uhHsM+/6Un4augUUclazMyY61Hq6SsYnqHHP5dRTplhkojjBy9VusxcQ==",
+      "path": "wim.analytics/1.2.2",
+      "hashPath": "wim.analytics.1.2.2.nupkg.sha512"
     },
     "WIM.DBUtilities/1.1.2": {
       "type": "package",

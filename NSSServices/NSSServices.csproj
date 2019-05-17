@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
-    <PackageReference Include="WiM.Analytics" Version="1.1.1" />
+    <PackageReference Include="WiM.Analytics" Version="1.2.2" />
     <PackageReference Include="WIM.Services" Version="1.1.13" />
   </ItemGroup>
 

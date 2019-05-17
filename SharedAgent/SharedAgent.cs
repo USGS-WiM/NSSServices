@@ -84,6 +84,8 @@ namespace SharedAgent
         #region RegressionTypes
         public Task<RegressionType> Add(RegressionType item)
         {
+            //be sure ID is set to 0
+            item.ID = 0;
             return this.Add<RegressionType>(item);
         }
         public Task<IEnumerable<RegressionType>> Add(List<RegressionType> items)

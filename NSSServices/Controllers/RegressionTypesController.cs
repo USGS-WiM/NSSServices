@@ -59,13 +59,7 @@ namespace NSSServices.Controllers
                 regressionRegionList = parse(regressionRegions);
                 statisticgroupList = parse(statisticgroups);
 
-                if (IsAuthenticated)
-                {
-                    sm("Is authenticated, will only retrieve managed regression types");
-                    entities = agent.GetManagedRegressions(LoggedInUser(), RegionList, null, regressionRegionList, statisticgroupList);
-                }
-                else
-                    entities = agent.GetRegressions(RegionList, null, regressionRegionList, statisticgroupList);
+                entities = agent.GetRegressions(RegionList, null, regressionRegionList, statisticgroupList);
 
                 sm($"regressiontype count {entities.Count()}");
                 return Ok(entities);

@@ -45,6 +45,7 @@ using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
+
 namespace NSSAgent
 {
     public interface INSSAgent: IBasicUserAgent
@@ -751,7 +752,7 @@ namespace NSSAgent
                                 Value = eOps.Value * unit.factor
                             });
                         }//next equation
-                        regressionregion.Extensions.ForEach(ext => evaluateExtension(ext, regressionregion));
+                        regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion));
                     }//next regressionregion
                     if (canAreaWeight(scenario.RegressionRegions))
                     {
@@ -1688,6 +1689,7 @@ namespace NSSAgent
                 var query = new List<RegressionRegion>();
                 using (var command = this.context.Database.GetDbConnection().CreateCommand())
                 {
+                    command.CommandTimeout = 3 * 60; //3 min
                     command.CommandText = String.Format(getSQLStatement(sqltypeenum.regionbygeom), geom.AsText());
                     context.Database.OpenConnection();
                     using (System.Data.Common.DbDataReader reader = command.ExecuteReader())

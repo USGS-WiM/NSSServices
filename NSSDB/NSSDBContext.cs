@@ -149,8 +149,14 @@ namespace NSSDB
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity<Variable>()
+                .HasOne(v => v.Equation)
+                .WithMany(e => e.Variables)
+                .HasForeignKey(v => v.EquationID)
+                .OnDelete(DeleteBehavior.Cascade);
+
             //seed the db
-            //var path = Path.Combine(Environment.CurrentDirectory, "Data");
+            var path = Path.Combine(Environment.CurrentDirectory, "Data");
             //modelBuilder.Entity<Status>().HasData(JsonConvert.DeserializeObject<Status[]>(File.ReadAllText(Path.Combine(path, "Status.json"))));
             //modelBuilder.Entity<Role>().HasData(JsonConvert.DeserializeObject<Role[]>(File.ReadAllText(Path.Combine(path, "Roles.json"))));
 

@@ -138,7 +138,7 @@ namespace NSSServices
         }
         private void loadJsonOptions(MvcJsonOptions options)
         {
-            options.SerializerSettings.TraceWriter = new memoryTraceWriter();
+            //options.SerializerSettings.TraceWriter = new memoryTraceWriter();
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             options.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
             options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;

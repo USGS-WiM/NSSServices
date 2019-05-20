@@ -105,7 +105,6 @@ namespace NSSServices.Controllers
         {
             try
             {
-                entity.ID = 0;
                 if(string.IsNullOrEmpty(entity.FirstName)|| string.IsNullOrEmpty(entity.LastName) || 
                     string.IsNullOrEmpty(entity.Username)|| string.IsNullOrEmpty(entity.Email) ||
                     entity.RoleID <1) return new BadRequestObjectResult(new Error( errorEnum.e_badRequest, "You are missing one or more required parameter.")); // This returns HTTP 404

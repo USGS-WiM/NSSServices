@@ -942,7 +942,6 @@ namespace NSSAgent
                         variable.UnitTypeID = Units.FirstOrDefault(u => u.ID == editvariable.UnitType.ID || string.Equals(u.Abbreviation, editvariable.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase)).ID;                        
                     }//next variable
 
-
                     //EquationErrors
                     var EquationErrorToRemove = equation.EquationErrors?.Where(x => errors == null || !errors.Any(y => y.ID == x.ErrorTypeID)).ToList();
                     var EquationErrorToAdd = errors?.Where(y => equation.EquationErrors == null || !equation.EquationErrors.Any(x => y.ID == x.ErrorTypeID)).Select(v => new EquationError()
@@ -952,17 +951,14 @@ namespace NSSAgent
                     }).ToList();
                     var EquationErrorToKeep = equation.EquationErrors?.Where(x => errors == null || errors.Any(y => y.ID == x.ErrorTypeID)).ToList();
 
-
                     EquationErrorToRemove?.ForEach(v => Delete<EquationError>(v));
                     EquationErrorToAdd?.ForEach(v => { if (equation.EquationErrors == null) equation.EquationErrors = new List<EquationError>(); equation.EquationErrors.Add(v); });
                     if (EquationErrorToKeep != null)
                     {
-
                         foreach (var error in EquationErrorToKeep)
                         {
                             var editError = errors.FirstOrDefault(v => v.ID == error.ErrorTypeID);
-                            error.Value = editError.Value;
-                            
+                            error.Value = editError.Value;                            
                         }//next error
                     }
 
@@ -1403,7 +1399,7 @@ namespace NSSAgent
                 var variables = expected.Parameters.ToDictionary(k => k.Key, v => (double?)v.Value);
                 eOps = new ExpressionOps(equation.Expression, variables);
 
-                if (!eOps.IsValid) { sm("Scenario expression failed to execute. Expression is invalid"); return false; }
+                if (!eOps.IsValid) { sm($"Scenario expression failed to execute. {equation.Expression} is invalid"); return false; }
                 if (eOps.Value != expected.Value) { sm($"Expected value {expected.Value} does not match computed {eOps.Value}"); return false; }
 
                 if (equation.PredictionInterval != null)
@@ -1721,7 +1717,6 @@ namespace NSSAgent
                     context.Database.CloseConnection();
             }
         }
-
         protected override void sm(string msg, MessageType type = MessageType.info)
         {
             sm(new Message() { msg = msg, type = type });

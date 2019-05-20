@@ -83,7 +83,6 @@ namespace NSSServices.Controllers
         {
             try
             {
-                entity.ID = 0;
                 if (!isValid(entity)) return new BadRequestResult();
                 return Ok(await agent.Add(entity));
             }

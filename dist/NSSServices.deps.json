@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "33cb37a48b1d1febd0f4ccb12eeb0e35b6d49082"
+    "signature": "4d6f3b7f6f1cea14484cb0b8d4d90f827fae471a"
   },
   "compilationOptions": {
     "defines": [
@@ -37,7 +37,7 @@
           "NSSDB": "1.0.0",
           "SharedAgent": "1.0.0",
           "WIM.Services": "1.1.13",
-          "WIM.Analytics": "1.2.2"
+          "WIM.Analytics": "1.2.3"
         },
         "runtime": {
           "NSSServices.dll": {}
@@ -1879,7 +1879,7 @@
           "lib/netstandard2.0/NetTopologySuite.Features.dll": {}
         }
       },
-      "NetTopologySuite.IO.GeoJSON/1.15.3": {
+      "NetTopologySuite.IO.GeoJSON/1.15.4": {
         "dependencies": {
           "NetTopologySuite.Core": "1.15.2",
           "NetTopologySuite.Features": "1.15.0",
@@ -1888,7 +1888,7 @@
         "runtime": {
           "lib/netstandard2.0/NetTopologySuite.IO.GeoJSON.dll": {
             "assemblyVersion": "1.15.0.0",
-            "fileVersion": "1.15.3.0"
+            "fileVersion": "1.15.4.0"
           }
         },
         "compile": {
@@ -3525,22 +3525,22 @@
           "System.Xml.XPath": "4.3.0"
         }
       },
-      "WIM.Analytics/1.2.2": {
+      "WIM.Analytics/1.2.3": {
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "2.2.0",
           "WIM.Utilities.ServiceAgent": "1.1.4"
         },
         "runtime": {
           "lib/netstandard2.0/WIM.Services.Analytics.dll": {
-            "assemblyVersion": "1.2.2.0",
-            "fileVersion": "1.2.2.0"
+            "assemblyVersion": "1.2.3.0",
+            "fileVersion": "1.2.3.0"
           }
         },
         "compile": {
           "lib/netstandard2.0/WIM.Services.Analytics.dll": {}
         }
       },
-      "WIM.DBUtilities/1.1.2": {
+      "WIM.DBUtilities/1.1.5": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "2.2.4",
           "Microsoft.EntityFrameworkCore.Relational": "2.2.4",
@@ -3700,12 +3700,12 @@
       "NSSDB/1.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Design": "2.2.4",
-          "NetTopologySuite.IO.GeoJSON": "1.15.3",
+          "NetTopologySuite.IO.GeoJSON": "1.15.4",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite": "2.2.0",
           "SharedDB": "1.0.0",
           "WIM.Hypermedia": "1.1.3",
-          "WIM.DBUtilities": "1.1.2"
+          "WIM.DBUtilities": "1.1.5"
         },
         "runtime": {
           "NSSDB.dll": {}
@@ -3733,7 +3733,7 @@
           "Newtonsoft.Json": "12.0.2",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.0",
           "WIM.Hypermedia": "1.1.3",
-          "WIM.DBUtilities": "1.1.2"
+          "WIM.DBUtilities": "1.1.5"
         },
         "runtime": {
           "SharedDB.dll": {}
@@ -4736,12 +4736,12 @@
       "path": "nettopologysuite.features/1.15.0",
       "hashPath": "nettopologysuite.features.1.15.0.nupkg.sha512"
     },
-    "NetTopologySuite.IO.GeoJSON/1.15.3": {
+    "NetTopologySuite.IO.GeoJSON/1.15.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-J/TEZBDlVnMIoTXbN5TMW6Dw5srl/1/U47n4FPU5emQO0uLJq/45GEayVnboWhP/E5+/bFonbmxikSpy1DVwxg==",
-      "path": "nettopologysuite.io.geojson/1.15.3",
-      "hashPath": "nettopologysuite.io.geojson.1.15.3.nupkg.sha512"
+      "sha512": "sha512-dZDUMXr4FRFmedyRa3TpFpo8TWZc6pRe2bUXbioTPrFpF2/jnrZ02BAW/tQMkrDT2OtW30fIDq/+DxLmTGLTPw==",
+      "path": "nettopologysuite.io.geojson/1.15.4",
+      "hashPath": "nettopologysuite.io.geojson.1.15.4.nupkg.sha512"
     },
     "NetTopologySuite.IO.PostGis/1.15.0": {
       "type": "package",
@@ -5625,19 +5625,19 @@
       "path": "system.xml.xpath.xdocument/4.3.0",
       "hashPath": "system.xml.xpath.xdocument.4.3.0.nupkg.sha512"
     },
-    "WIM.Analytics/1.2.2": {
+    "WIM.Analytics/1.2.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-rOJKuarBa5zacFynMCUnu56n1RyXn4uhHsM+/6Un4augUUclazMyY61Hq6SsYnqHHP5dRTplhkojjBy9VusxcQ==",
-      "path": "wim.analytics/1.2.2",
-      "hashPath": "wim.analytics.1.2.2.nupkg.sha512"
+      "sha512": "sha512-kv2SlN7WtOBU1JiXkZOfM6yYU3lPhFYZtJXencFsHlYI5x01350aVbookCyEQHhL280epfcj+VDIcjiaT97SAg==",
+      "path": "wim.analytics/1.2.3",
+      "hashPath": "wim.analytics.1.2.3.nupkg.sha512"
     },
-    "WIM.DBUtilities/1.1.2": {
+    "WIM.DBUtilities/1.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-k7ncfRxvVJqesynIsqAOZJemCG0diGnKXDufJouogu2KDe48ipyreNBQ31OlaHl6+klHUJfo8HFIPo2AUd8aIQ==",
-      "path": "wim.dbutilities/1.1.2",
-      "hashPath": "wim.dbutilities.1.1.2.nupkg.sha512"
+      "sha512": "sha512-isgYocOYMYRMWOLU0+EWzWje+5f1KtwMKJdS/Te9FvE7CGcAqf+Iqh93cDRlJW4F0uW9gnbc7Iyh6C94PvMKiA==",
+      "path": "wim.dbutilities/1.1.5",
+      "hashPath": "wim.dbutilities.1.1.5.nupkg.sha512"
     },
     "WIM.Exceptions/1.0.1": {
       "type": "package",

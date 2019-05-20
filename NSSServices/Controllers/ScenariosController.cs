@@ -197,8 +197,7 @@ namespace NSSServices.Controllers
             List<Scenario> entities = null;
             List<string> RegionList = null;
             try
-            {
-                if (string.IsNullOrEmpty(regions) && geom == null) throw new BadRequestException("region and regression regions or a geometry must be specified");
+            {                
                 RegionList = parse(regions);
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypes);

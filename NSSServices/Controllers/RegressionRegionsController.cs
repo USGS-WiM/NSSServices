@@ -130,7 +130,6 @@ namespace NSSServices.Controllers
         {
             try
             {
-                entity.ID = 0;
                 //entity must include citation
                 if (!isValid(entity)) return BadRequest(); // This returns HTTP 404
                 Region regionEntity = agent.GetRegionByIDOrCode(region);

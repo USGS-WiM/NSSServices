@@ -124,7 +124,6 @@ namespace NSSServices.Controllers
         {
             try
             {
-                entity.ID = 0;
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
                 return Ok(await shared_agent.Add(entity));
              

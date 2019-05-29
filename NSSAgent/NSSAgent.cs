@@ -396,7 +396,7 @@ namespace NSSAgent
                     Name = rr.Name,
                     Code = rr.Code,
                     CitationID = rr.CitationID,
-                    Description = rr.Description,
+                    Description = regressionRegionList != null ? regressionRegionList[rr.ID].Description : rr.Description,
                     Area = regressionRegionList != null ? regressionRegionList[rr.ID].Area:null,
                     PercentWeight = regressionRegionList != null ? regressionRegionList[rr.ID].PercentWeight : null,
                 }).OrderBy(e => e.ID);
@@ -1698,13 +1698,13 @@ namespace NSSAgent
                                     Name = reader["Name"].ToString(),
                                     Code = reader["Code"].ToString() ,
                                     Area = Convert.ToDouble(reader["Area"]),
-                                    PercentWeight = Convert.ToDouble(reader["PercentWeight"]),
+                                    PercentWeight = Math.Round(Convert.ToDouble(reader["PercentWeight"]), 2, MidpointRounding.AwayFromZero),
                                     Description = reader.HasColumn("MaskArea")? $"Regression region Percent Area computed with a Mask Area of {Convert.ToDouble(reader["MaskArea"])} sqr. miles and overlay Area of {Convert.ToDouble(reader["Area"])} sqr miles": string.Empty
                                 });
                         }
                     }//end using  
                 }//end using 
-                return query.Where(r=> Math.Round(r.PercentWeight.Value,2,MidpointRounding.AwayFromZero)>1).Select(r=> { r.PercentWeight = Math.Round(r.PercentWeight.Value, 2, MidpointRounding.AwayFromZero); return r; }).AsQueryable();
+                return query.Where(r=> r.PercentWeight.Value>1).AsQueryable();
             }
             catch (Exception ex)
             {

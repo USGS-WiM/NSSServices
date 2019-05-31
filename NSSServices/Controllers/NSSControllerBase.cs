@@ -65,8 +65,8 @@ namespace NSSServices.Controllers
                    .Select(c => c.Value).SingleOrDefault(),
                 Username = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier)
                    .Select(c => c.Value).SingleOrDefault(),
-                 RoleID = Convert.ToInt32(User.Claims.Where(c => c.Type == ClaimTypes.Anonymous)
-                   .Select(c => c.Value).SingleOrDefault())
+                 Role = User.Claims.Where(c => c.Type == ClaimTypes.Role)
+                   .Select(c => c.Value).SingleOrDefault()
             };
         }
 

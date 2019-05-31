@@ -21,10 +21,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WIM.Resources;
 
 namespace NSSDB.Resources
 {
-    public partial class Manager
+    public partial class Manager:IUser
     {
         [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
@@ -41,17 +42,14 @@ namespace NSSDB.Resources
         [Phone]
         public string SecondaryPhone { get; set; }
         [Required]
-        public int RoleID { get; set; }        
+        public string Role { get; set; }
         public string OtherInfo { get; set; }
         [Required]
         public string Password { get; set; }
         [Required]
         public string Salt { get; set; }
-
-        public Role Role { get; set; }
-
+        
         public ICollection<RegionManager> RegionManagers { get; set; }
-
-
+        
     }
 }

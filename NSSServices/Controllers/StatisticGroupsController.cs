@@ -30,6 +30,7 @@ using System.Linq;
 using NetTopologySuite.Geometries;
 using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -118,7 +119,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost(Name ="Add Statistic Group")][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Statistic Group")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Add.md")]
         public async Task<IActionResult> Post([FromBody]StatisticGroupType entity)
         {
@@ -134,7 +135,7 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost("[action]", Name ="Statistic Group Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]", Name ="Statistic Group Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<StatisticGroupType> entities)
         {
@@ -151,7 +152,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}", Name ="Edit Statistic Group")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Statistic Group")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]StatisticGroupType entity)
         {
@@ -167,7 +168,7 @@ namespace NSSServices.Controllers
 
         }        
 
-        [HttpDelete("{id}", Name ="Delete Statistic Group")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Statistic Group")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

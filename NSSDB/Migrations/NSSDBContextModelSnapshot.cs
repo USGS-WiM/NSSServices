@@ -190,7 +190,8 @@ namespace NSSDB.Migrations
 
                     b.Property<string>("PrimaryPhone");
 
-                    b.Property<int>("RoleID");
+                    b.Property<string>("Role")
+                        .IsRequired();
 
                     b.Property<string>("Salt")
                         .IsRequired();
@@ -201,8 +202,6 @@ namespace NSSDB.Migrations
                         .IsRequired();
 
                     b.HasKey("ID");
-
-                    b.HasIndex("RoleID");
 
                     b.HasIndex("Username");
 
@@ -313,22 +312,6 @@ namespace NSSDB.Migrations
                     b.ToTable("RegressionRegions");
                 });
 
-            modelBuilder.Entity("NSSDB.Resources.Role", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description")
-                        .IsRequired();
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Roles");
-                });
-
             modelBuilder.Entity("NSSDB.Resources.Status", b =>
                 {
                     b.Property<int>("ID")
@@ -433,14 +416,6 @@ namespace NSSDB.Migrations
                         .WithMany("Limitations")
                         .HasForeignKey("RegressionRegionID")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("NSSDB.Resources.Manager", b =>
-                {
-                    b.HasOne("NSSDB.Resources.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleID")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("NSSDB.Resources.RegionManager", b =>

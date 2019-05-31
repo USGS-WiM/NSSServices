@@ -43,8 +43,7 @@ namespace NSSDB
         public virtual DbSet<PredictionInterval> PredictionIntervals { get; set; }        
         public virtual DbSet<RegionRegressionRegion> RegionRegressionRegions { get; set; }
         public virtual DbSet<Region> Regions { get; set; }        
-        public virtual DbSet<RegressionRegion> RegressionRegions { get; set; }        
-        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<RegressionRegion> RegressionRegions { get; set; } 
         public virtual DbSet<Variable> Variables { get; set; }       
         public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }     
         public virtual DbSet<Location> Locations { get; set; }
@@ -102,8 +101,7 @@ namespace NSSDB
                                          typeof(RegionManager).FullName,typeof(RegionRegressionRegion).FullName,
                                          typeof(VariableUnitType).FullName,typeof(ErrorType).FullName,typeof(RegressionType).FullName,
                                          typeof(StatisticGroupType).FullName,typeof(UnitConversionFactor).FullName,typeof(UnitSystemType).FullName,
-                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName,
-                                         typeof(Role).FullName}
+                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName}
                 .Contains(entitytype.Name))
                 { continue; }                 
                 modelBuilder.Entity(entitytype.Name).Property<DateTime>("LastModified");
@@ -117,14 +115,6 @@ namespace NSSDB
                 b.HasOne(typeof(ErrorType).ToString(), "ErrorType")
                     .WithMany()
                     .HasForeignKey("ErrorTypeID")
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-
-            modelBuilder.Entity(typeof(Manager).ToString(), b =>
-            {
-                b.HasOne(typeof(Role).ToString(), "Role")
-                    .WithMany()
-                    .HasForeignKey("RoleID")
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -158,7 +148,6 @@ namespace NSSDB
             //seed the db
             var path = Path.Combine(Environment.CurrentDirectory, "Data");
             //modelBuilder.Entity<Status>().HasData(JsonConvert.DeserializeObject<Status[]>(File.ReadAllText(Path.Combine(path, "Status.json"))));
-            //modelBuilder.Entity<Role>().HasData(JsonConvert.DeserializeObject<Role[]>(File.ReadAllText(Path.Combine(path, "Roles.json"))));
 
             base.OnModelCreating(modelBuilder);
             //Must Comment out after migration
@@ -172,7 +161,7 @@ namespace NSSDB
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-#warning Add connectionstring for migrations
+            //#error Remove connectionstring after migration
             //var connectionstring = "User ID=;Password=;Host=;Port=5432;Database=StatsDB;Pooling=true;";
             //optionsBuilder.UseNpgsql(connectionstring,x=> { x.MigrationsHistoryTable("_EFMigrationsHistory", "nss"); x.UseNetTopologySuite(); });
         }

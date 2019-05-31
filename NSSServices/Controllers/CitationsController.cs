@@ -30,6 +30,7 @@ using GeoAPI.Geometries;
 using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
 using System.ComponentModel;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -128,7 +129,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost(Name = "Add Citation")][Authorize(Policy = "CanModify")]
+        [HttpPost(Name = "Add Citation")][Authorize(Policy = Policy.Managed)]
         [HttpPost("/RegressionRegions/{regressionRegionID}/[controller]", Name = "Add RegressionRegion Citation")]        
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Add.md")]
         public async Task<IActionResult> Post([FromBody]Citation entity, Int32 regressionRegionID = -1)
@@ -152,7 +153,7 @@ namespace NSSServices.Controllers
         }
 
        
-        [HttpPut("{id}", Name = "Edit Citation")][Authorize(Policy = "CanModify")]
+        [HttpPut("{id}", Name = "Edit Citation")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]Citation entity)
         {
@@ -171,7 +172,7 @@ namespace NSSServices.Controllers
         }
 
         [HttpDelete("{id}", Name = "Delete Citation")]
-        [Authorize(Policy = "CanModify")]
+        [Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

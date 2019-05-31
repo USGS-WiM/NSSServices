@@ -31,6 +31,7 @@ using System.Linq;
 using NetTopologySuite.Geometries;
 using GeoAPI.Geometries;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -106,7 +107,7 @@ namespace NSSServices.Controllers
         }
 
         [HttpPut(Name = "Edit Scenario")]
-        [Authorize(Policy = "CanModify")]
+        [Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Edit.md")]
         public async Task<IActionResult> Put([FromBody]Scenario entity, [FromQuery]string existingstatisticgroup ="")
         {
@@ -127,7 +128,7 @@ namespace NSSServices.Controllers
         }        
 
         [HttpPost(Name ="Add Scenario")]
-        [Authorize(Policy = "CanModify")]
+        [Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Add.md")]
         public async Task<IActionResult> Post([FromBody]Scenario entity, string statisticgroupIDorCode)
         {
@@ -161,7 +162,7 @@ namespace NSSServices.Controllers
         }
 
         [HttpDelete(Name = "Delete Scenario")]
-        [Authorize(Policy = "CanModify")]
+        [Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Edit.md")]
         public async Task<IActionResult> Delete([FromQuery] Int32 regressionregionID, [FromQuery]Int32 statisticgroupID, [FromQuery]Int32 regressiontypeID)
         {

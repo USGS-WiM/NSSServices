@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using SharedAgent;
 using System.Linq;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -85,7 +86,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost(Name ="Add Regression Type")][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Regression Type")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Add.md")]
         public async Task<IActionResult> Post([FromBody]RegressionType entity)
         {
@@ -101,7 +102,7 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost("[action]", Name ="Regression Type Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]", Name ="Regression Type Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<RegressionType> entities)
         {
@@ -117,7 +118,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}", Name ="Edit Regression Type")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Regression Type")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]RegressionType entity)
         {
@@ -135,7 +136,7 @@ namespace NSSServices.Controllers
 
         }        
 
-        [HttpDelete("{id}", Name ="Delete Regression Type")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Regression Type")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

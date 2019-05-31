@@ -13,6 +13,5 @@ namespace NSSDB.Resources
     public partial class Manager : IHypermedia {[NotMapped] public List<WIM.Resources.Link> Links { get; set; } }
     public partial class Region : IHypermedia {[NotMapped] public List<WIM.Resources.Link> Links { get; set; } }
     public partial class RegressionRegion : IHypermedia {[NotMapped] public List<WIM.Resources.Link> Links { get; set; } }
-    public partial class Role : IHypermedia {[NotMapped] public List<WIM.Resources.Link> Links { get; set; } }
 
 }

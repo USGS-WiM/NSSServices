@@ -22,6 +22,9 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using WIM.Services.Middleware;
+using WIM.Security.Authentication;
+using WIM.Security.Authorization;
+using WIM.Resources;
 
 namespace NSSServices
 {
@@ -57,9 +60,11 @@ namespace NSSServices
             //Scoped objects are the same within a request, but different across different requests.
             //provides access to httpcontext
             services.AddHttpContextAccessor();
-            services.AddScoped<INSSAgent, NSSServiceAgent>();
+            services.AddScoped<NSSServiceAgent>();
+            services.AddScoped<INSSAgent>(x => x.GetRequiredService<NSSServiceAgent>());
+            services.AddScoped<IAuthenticationAgent>(x => x.GetRequiredService<NSSServiceAgent>());
             services.AddScoped<ISharedAgent, SharedAgent.SharedAgent>();
-            services.AddScoped<IBasicUserAgent, NSSServiceAgent>();
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             
 
@@ -87,7 +92,6 @@ namespace NSSServices
             {
                 options.DefaultAuthenticateScheme = BasicDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = BasicDefaults.AuthenticationScheme;
-                options.DefaultForbidScheme = BasicDefaults.AuthenticationScheme;
             }).AddBasicAuthentication();
             services.AddAuthorization(options => loadAutorizationPolicies(options));
 
@@ -128,16 +132,16 @@ namespace NSSServices
 
         #region Helper Methods
         private void loadAutorizationPolicies(AuthorizationOptions options)
-        {   
+        {
+            //https://www.thereformedprogrammer.net/a-better-way-to-handle-authorization-in-asp-net-core/
+            //https://jasonwatmore.com/post/2019/01/08/aspnet-core-22-role-based-authorization-tutorial-with-example-api
+
             options.AddPolicy(
-                "CanModify",
-                policy => policy.RequireRole("Administrator", "Manager"));
+                Policy.Managed,
+                policy => policy.RequireRole(Role.Admin, Role.Manager));
             options.AddPolicy(
-                "Restricted",
-                policy => policy.RequireRole("Administrator", "Manager", "General"));
-            options.AddPolicy(
-                "AdminOnly",
-                policy => policy.RequireRole("Administrator"));
+                Policy.AdminOnly,
+                policy => policy.RequireRole(Role.Admin));
         }
         private void loadJsonOptions(MvcJsonOptions options)
         {

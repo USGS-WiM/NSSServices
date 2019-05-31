@@ -270,24 +270,6 @@ namespace NSSDB.Resources
             return (this.Name + this.Code + this.CitationID).GetHashCode();
         }
     }
-    public partial class Role : IEquatable<Role>
-    {
-        public bool Equals(Role other)
-        {
-            return string.Equals(this.Name.ToLower(), other.Name.ToLower());
-        }
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals(obj as Role);
-        }
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-    }//end
     public partial class Variable : IEquatable<Variable>
     {
         public bool Equals(Variable other)

@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using SharedAgent;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -71,7 +72,7 @@ namespace NSSServices.Controllers
             }
         }
         
-        [HttpPost(Name ="Add Unit System")][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Unit System")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/UnitSystems/Add.md")]
         public async Task<IActionResult> Post([FromBody]UnitSystemType entity)
         {
@@ -86,7 +87,7 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPut("{id}", Name ="Edit Unit System")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Unit System")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/UnitSystems/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]UnitSystemType entity)
         {
@@ -102,7 +103,7 @@ namespace NSSServices.Controllers
 
         }        
 
-        [HttpDelete("{id}", Name ="Delete Unit System")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Unit System")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/UnitSystems/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

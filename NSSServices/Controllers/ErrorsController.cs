@@ -27,6 +27,7 @@ using SharedAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -72,7 +73,7 @@ namespace NSSServices.Controllers
         }
 
         [HttpPost(Name = "Add Error")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Add.md")]
         public async Task<IActionResult> Post([FromBody]ErrorType entity)
         {
@@ -87,7 +88,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost("[action]",Name ="Error Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]",Name ="Error Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<ErrorType> entities)
         {
@@ -104,7 +105,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}", Name ="Edit Error")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Error")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]ErrorType entity)
         {
@@ -121,7 +122,7 @@ namespace NSSServices.Controllers
 
         }
 
-        [HttpDelete("{id}", Name ="Delete Error")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Error")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

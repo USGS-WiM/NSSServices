@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using SharedAgent;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -71,7 +72,7 @@ namespace NSSServices.Controllers
             }
         }
         
-        [HttpPost(Name ="Add Unit")][Authorize(Policy = "CanModify")]
+        [HttpPost(Name ="Add Unit")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Add.md")]
         public async Task<IActionResult> Post([FromBody]UnitType entity)
         {
@@ -86,7 +87,7 @@ namespace NSSServices.Controllers
             }            
         }
 
-        [HttpPost("[action]", Name ="Unit Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]", Name ="Unit Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<UnitType> entities)
         {
@@ -102,7 +103,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}", Name ="Edit Unit")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}", Name ="Edit Unit")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]UnitType entity)
         {
@@ -118,7 +119,7 @@ namespace NSSServices.Controllers
 
         }        
 
-        [HttpDelete("{id}", Name ="Delete Unit")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Unit")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

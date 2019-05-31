@@ -29,6 +29,8 @@ using WIM.Security;
 using System.Text;
 using System.Linq;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
+using WIM.Resources;
 
 namespace NSSServices.Controllers
 {
@@ -39,7 +41,7 @@ namespace NSSServices.Controllers
         public ManagersController(INSSAgent sa) : base(sa)
         { }
         #region METHODS
-        [HttpGet(Name = "Managers")][Authorize(Policy = "AdminOnly")]
+        [HttpGet(Name = "Managers")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Get.md")]
         public async Task<IActionResult> Get()
         {
@@ -52,7 +54,7 @@ namespace NSSServices.Controllers
                                                              LastName = m.LastName,
                                                              OtherInfo = m.OtherInfo,
                                                              PrimaryPhone = m.PrimaryPhone,
-                                                             RoleID = m.RoleID,
+                                                             Role = m.Role,
                                                              SecondaryPhone = m.SecondaryPhone,
                                                              Username=m.Username
                                                             }));
@@ -64,7 +66,7 @@ namespace NSSServices.Controllers
         }
 
         [HttpGet("/Login", Name ="Login")]
-        [Authorize(Policy = "Restricted")]
+        [Authorize]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Login.md")]
         public async Task<IActionResult> GetLoggedInUser()
         {
@@ -78,7 +80,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("{id}",Name ="Manager")][Authorize(Policy = "AdminOnly")]
+        [HttpGet("{id}",Name ="Manager")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
@@ -99,7 +101,7 @@ namespace NSSServices.Controllers
             }
         } 
         
-        [HttpPost(Name ="Add Manager")][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Manager")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Add.md")]
         public async Task<IActionResult> Post([FromBody]Manager entity)
         {
@@ -107,7 +109,7 @@ namespace NSSServices.Controllers
             {
                 if(string.IsNullOrEmpty(entity.FirstName)|| string.IsNullOrEmpty(entity.LastName) || 
                     string.IsNullOrEmpty(entity.Username)|| string.IsNullOrEmpty(entity.Email) ||
-                    entity.RoleID <1) return new BadRequestObjectResult(new Error( errorEnum.e_badRequest, "You are missing one or more required parameter.")); // This returns HTTP 404
+                    string.IsNullOrEmpty(entity.Role)) return new BadRequestObjectResult(new Error( errorEnum.e_badRequest, "You are missing one or more required parameter.")); // This returns HTTP 404
 
                 if (string.IsNullOrEmpty(entity.Password))
                     entity.Password = generateDefaultPassword(entity);                
@@ -129,7 +131,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}",Name ="Edit Manager")][Authorize(Policy = "CanModify")]
+        [HttpPut("{id}",Name ="Edit Manager")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]Manager entity)
         {
@@ -154,8 +156,8 @@ namespace NSSServices.Controllers
                 ObjectToBeUpdated.Email = entity.Email;
 
                 //admin can only change role
-                if(User.IsInRole("Administrator") && entity.RoleID > 0)
-                    ObjectToBeUpdated.RoleID = entity.RoleID;
+                if(User.IsInRole(Role.Admin) && !string.IsNullOrEmpty(entity.Role))
+                    ObjectToBeUpdated.Role = entity.Role;
 
                 //change password if needed
                 if (!string.IsNullOrEmpty(entity.Password) && !Cryptography
@@ -179,7 +181,7 @@ namespace NSSServices.Controllers
             }           
         }
                
-        [HttpDelete("{id}",Name ="Delete Manager")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}",Name ="Delete Manager")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

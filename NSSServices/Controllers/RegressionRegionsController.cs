@@ -29,6 +29,7 @@ using System.Linq;
 using GeoAPI.Geometries;
 using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -124,7 +125,7 @@ namespace NSSServices.Controllers
 
         [HttpPost(Name ="Add Regression Region")]
         [HttpPost("/Regions/{region}/[controller]", Name ="Add Region Regression Region")]
-        [Authorize(Policy = "CanModify")]
+        [Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Add.md")]
         public async Task<IActionResult> Post(string region, [FromBody]RegressionRegion entity)
         {
@@ -156,7 +157,7 @@ namespace NSSServices.Controllers
         }
 
         [HttpPost("[action]", Name ="Regression Region Batch Upload")]
-        [Authorize(Policy = "CanModify")]
+        [Authorize(Policy = Policy.Managed)]
         [HttpPost("/Regions/{region}/[controller]/[action]", Name ="Region Regression Region Batch Upload")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Edit.md")]
         public async Task<IActionResult> Batch(string region,[FromBody]List<RegressionRegion> entities)
@@ -185,7 +186,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}", Name ="Edit Regression Region")][Authorize(Policy = "CanModify")]
+        [HttpPut("{id}", Name ="Edit Regression Region")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]RegressionRegion entity)
         {
@@ -206,7 +207,7 @@ namespace NSSServices.Controllers
             }
         }        
 
-        [HttpDelete("{id}", Name ="Delete Regression Region")][Authorize(Policy = "CanModify")]
+        [HttpDelete("{id}", Name ="Delete Regression Region")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -28,7 +28,7 @@ using WIM.Utilities;
 using Microsoft.EntityFrameworkCore;
 using NSSAgent.Resources;
 using System.Threading.Tasks;
-using WIM.Security.Authentication.Basic;
+using WIM.Security.Authentication;
 using Newtonsoft.Json;
 using NSSAgent.ServiceAgents;
 using SharedDB.Resources;
@@ -44,11 +44,12 @@ using System.Reflection;
 using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using WIM.Security;
 
 
 namespace NSSAgent
 {
-    public interface INSSAgent: IBasicUserAgent
+    public interface INSSAgent:IAuthenticationAgent 
     {
         String[] allowableGeometries { get; }
 
@@ -104,12 +105,7 @@ namespace NSSAgent
         Task DeleteCoefficient(Int32 pkID);
 
         //Roles
-        IQueryable<Role> GetRoles();
-        Task<Role> GetRole(Int32 ID);
-        Task<Role> Add(Role item);
-        Task<IEnumerable<Role>> Add(List<Role> items);
-        Task<Role> Update(Int32 pkId, Role item);
-        Task DeleteRole(Int32 pkID);
+        IQueryable<string> GetRoles();
         
         //Scenarios
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
@@ -179,7 +175,7 @@ namespace NSSAgent
         }
         public IQueryable<Citation> GetManagedCitations(Manager manager, List<string> regionList = null, IGeometry geom = null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null)
         {
-            if (manager.RoleID == 1)//administrator
+            if (manager.Role.Equals(Role.Admin))
                 return GetCitations(regionList, geom, regressionRegionList, statisticgroupList, regressiontypeList);
 
             //return only managed citations
@@ -251,31 +247,43 @@ namespace NSSAgent
         }
         #endregion
         #region Manager
-        public IBasicUser GetUserByUsername(string username)
+        public IUser GetUserByUsername(string username)
         {
             try
             {
 
-                return Select<Manager>().Include(p => p.Role).Where(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase))
-                    .Select(u => new User()
-                    {
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        Email = u.Email,
-                        Role = u.Role.Name,
-                        RoleID = u.RoleID,
-                        ID = u.ID,
-                        Username = u.Username,
-                        Salt = u.Salt,
-                        password = u.Password
-                    }).FirstOrDefault();
+                return Select<Manager>().FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));                    
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                sm("Failed to get user by username " + ex.Message, MessageType.error);
+                return null;
             }
+        }
+        public IUser GetUserByID(int id) {
+            return this.getUserByIDAsync(id).Result;
+        }
+        private  async Task<IUser> getUserByIDAsync(int id)
+        {
+            return await Find<Manager>(id);
+        }
+        public IUser AuthenticateUser(string username, string password)
+        {
+            try
+            {
+                var user = (Manager)GetUserByUsername(username);
+                if (user == null || !WIM.Security.Cryptography.VerifyPassword(password, user.Salt, user.Password))
+                {
+                    return null;
+                }
+                return user;
 
-
+            }
+            catch (Exception ex)
+            {
+                sm("Error authenticaticating user "+ ex.Message, MessageType.error);
+                return null;
+            }
         }
         public IQueryable<Manager> GetManagers()
         {
@@ -326,7 +334,7 @@ namespace NSSAgent
         }
         public IQueryable<Region> GetManagedRegions(Manager manager)
         {
-            if (manager.RoleID == 1)//administrator
+            if (manager.Role.Equals(Role.Admin))//administrator
                 return GetRegions();
 
             return this.Select<RegionRegressionRegion>().Include(rrr => rrr.Region)
@@ -403,7 +411,7 @@ namespace NSSAgent
         }
         public IQueryable<RegressionRegion> GetManagedRegressionRegions(Manager manager, List<string> regionList = null, IGeometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
         {
-            if (manager.RoleID == 1)//administrator
+            if (manager.Role.Equals(Role.Admin))//administrator
                 return GetRegressionRegions(regionList, geom, statisticgroupList, regressiontypeList);
 
             //return only managed citations
@@ -487,30 +495,11 @@ namespace NSSAgent
         }
         #endregion
         #region Roles
-        public IQueryable<Role> GetRoles()
+        public IQueryable<String> GetRoles()
         {
-            return this.Select<Role>();
+            return Role.ToList().AsQueryable();
         }
-        public Task<Role> GetRole(int ID)
-        {
-            return this.Find<Role>(ID);
-        }
-        public Task<Role> Add(Role item)
-        {
-            return this.Add<Role>(item);
-        }
-        public Task<IEnumerable<Role>> Add(List<Role> items)
-        {
-            return this.Add<Role>(items);
-        }
-        public Task<Role> Update(int pkId, Role item)
-        {
-            return this.Update<Role>(pkId, item);
-        }
-        public Task DeleteRole(int pkID)
-        {
-            return this.Delete<Role>(pkID);
-        }
+
         #endregion        
         #region Scenarios
         //public IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0)
@@ -604,7 +593,7 @@ namespace NSSAgent
                     regressionRegions = getRegressionRegionsByGeometry(geom).ToDictionary(k => k.ID);
                     regressionRegionList = regressionRegions.Keys.ToList().ConvertAll(s=>s.ToString());
                 }
-                if (manager?.Username != null && manager.RoleID != 1)
+                if (manager?.Username != null && !manager.Role.Equals(Role.Admin))
                 {
                     var managedRegionList = Select<Manager>().Include("RegionManagers.Region").Where(r => r.ID == manager.ID).SelectMany(m => m.RegionManagers.Select(rm=>rm.Region));
                     if (regionList?.Any() != true)
@@ -836,7 +825,7 @@ namespace NSSAgent
                 if (!newItems.Any()) throw new Exception("Scenario failed to submit to repository. See messages for more information");
 
                 return GetScenarios(null, null, newItems.Select(i => i.RegressionRegionID.ToString()).ToList(), newItems.Select(i => i.StatisticGroupTypeID.ToString()).ToList(),
-                                                    newItems.Select(i => i.RegressionTypeID.ToString()).ToList(),null,0,new Manager() { Username = "temporary", RoleID =1 });
+                                                    newItems.Select(i => i.RegressionTypeID.ToString()).ToList(),null,0,new Manager() { Username = "temporary", Role= Role.Admin});
                 
             }
             catch (Exception ex)
@@ -858,15 +847,16 @@ namespace NSSAgent
                                                                                 this.Select<StatisticGroupType>().FirstOrDefault(s => s.ID == item.StatisticGroupID);
 
                 regressionregionList = item.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList();
-                regressiontypeList = item.RegressionRegions.SelectMany(s => s.Regressions.Select(x => x.code.ToLower())).ToList();               
+                regressiontypeList = item.RegressionRegions.SelectMany(s => s.Regressions?.Select(x => x.code.ToLower())).ToList();
+
+                var AvailableScenarios = GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),new List<string>() { sg.ID.ToString() }, regressiontypeList, null, 0);
+                if (AvailableScenarios.Count() != 1) throw new BadRequestException("More or less than 1 scenario returned, cannot complete update.");
 
 
-                if (GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),
-                                            new List<string>() { sg.ID.ToString() }, regressiontypeList, null, 0).Count() != 1) throw new BadRequestException("More or less than 1 scenario returned, cannot complete update.");
-
-
-                var equationsToUpdate = this.GetEquations(null, regressionregionList.Select(s => s.Code).ToList(), new List<string>() { item.StatisticGroupID.ToString() }, regressiontypeList)
+                var equationsToUpdate = this.GetEquations(null, regressionregionList.Select(s => s.Code).ToList(), new List<string>() { sg.ID.ToString() }, regressiontypeList)
                                         .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(p=>p.PredictionInterval).Include("EquationErrors.ErrorType");
+
+            
 
                 foreach (var equation in equationsToUpdate)
                 {
@@ -887,7 +877,7 @@ namespace NSSAgent
                     equation.UnitTypeID = unit.ID;
                     equation.Expression = regression.Equation;
                     //equation.RegressionTypeID = (await reg).ID;
-                    equation.StatisticGroupTypeID = sg.ID;
+                    equation.StatisticGroupTypeID = item.StatisticGroupID;
                     equation.EquivalentYears = regression.EquivalentYears;
 
                     //predictionInterval
@@ -971,7 +961,7 @@ namespace NSSAgent
 
 
                 return GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),
-                                    new List<string>() { item.StatisticGroupID.ToString() }, regressiontypeList, null, 0, new Manager() { Username="temporary", RoleID = 1 }).FirstOrDefault();
+                                    new List<string>() { item.StatisticGroupID.ToString() }, regressiontypeList, null, 0, new Manager() { Username="temporary", Role= Role.Admin }).FirstOrDefault();
 
             }
             catch (Exception ex)
@@ -1029,7 +1019,7 @@ namespace NSSAgent
         }
         public IQueryable<RegressionType> GetManagedRegressions(Manager manager, List<String> regionList = null, IGeometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null)
         {
-            if (manager.RoleID == 1)//administrator
+            if (manager.Role.Equals(Role.Admin))//administrator
                 return GetRegressions(regionList, geom, regressionRegionList, statisticgroupList);
 
             //return only managed citations
@@ -1079,7 +1069,7 @@ namespace NSSAgent
         }
         public IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, IGeometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null)
         {
-            if (manager.RoleID == 1)//administrator
+            if (manager.Role.Equals(Role.Admin))
                 return GetStatisticGroups(regionList, geom, regressionRegionList, regressionsList);
 
             //return only managed citations

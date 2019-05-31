@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -77,7 +78,7 @@ namespace NSSServices.Controllers
             }
         }
         
-        [HttpPost(Name ="Add Region")][Authorize(Policy = "AdminOnly")]
+        [HttpPost(Name ="Add Region")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Add.md")]
         public async Task<IActionResult> Post([FromBody]Region entity)
         {
@@ -92,7 +93,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost("[action]",Name ="Region Batch Upload")][Authorize(Policy = "AdminOnly")]
+        [HttpPost("[action]",Name ="Region Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Batch.md")]
         public async Task<IActionResult> Batch([FromBody]List<Region> entities)
         {
@@ -109,7 +110,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}",Name ="Edit Region")][Authorize(Policy = "AdminOnly")]
+        [HttpPut("{id}",Name ="Edit Region")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]Region entity)
         {
@@ -125,7 +126,7 @@ namespace NSSServices.Controllers
 
         }
         
-        [HttpDelete("{id}", Name ="Delete Region")][Authorize(Policy = "AdminOnly")]
+        [HttpDelete("{id}", Name ="Delete Region")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {

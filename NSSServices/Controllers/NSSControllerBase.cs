@@ -30,7 +30,7 @@ namespace NSSServices.Controllers
 
         public bool IsAuthorizedToEdit(Object item)
         {
-            if (User.IsInRole("Administrator")) return true;
+            if (User.IsInRole(Role.Admin)) return true;
             var username = LoggedInUser();
 
             Dictionary<Type, int> typeDict = new Dictionary<Type, int> {

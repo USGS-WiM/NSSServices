@@ -25,6 +25,11 @@ using WIM.Services.Middleware;
 using WIM.Security.Authentication;
 using WIM.Security.Authorization;
 using WIM.Resources;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using WIM.Services.Security.Authentication.JWTBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using NSSServices.Resources;
 
 namespace NSSServices
 {
@@ -51,13 +56,15 @@ namespace NSSServices
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Transient objects are always different; a new instance is provided to every controller and every service.
+            //Singleton objects are the same for every object and every request.
+            //Scoped objects are the same within a request, but different across different requests.
 
             //Configure injectable obj
             services.AddScoped<IAnalyticsAgent, GoogleAnalyticsAgent>((gaa) => new GoogleAnalyticsAgent(Configuration["AnalyticsKey"]));
             services.Configure<APIConfigSettings>(Configuration.GetSection("APIConfigSettings"));
-            //Transient objects are always different; a new instance is provided to every controller and every service.
-            //Singleton objects are the same for every object and every request.
-            //Scoped objects are the same within a request, but different across different requests.
+            services.Configure<JwtBearerSettings>(Configuration.GetSection("JwtBearerSettings"));
+            
             //provides access to httpcontext
             services.AddHttpContextAccessor();
             services.AddScoped<NSSServiceAgent>();
@@ -65,7 +72,7 @@ namespace NSSServices
             services.AddScoped<IAuthenticationAgent>(x => x.GetRequiredService<NSSServiceAgent>());
             services.AddScoped<ISharedAgent, SharedAgent.SharedAgent>();
 
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+           // services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             
 
 
@@ -90,9 +97,25 @@ namespace NSSServices
 
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = BasicDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = BasicDefaults.AuthenticationScheme;
-            }).AddBasicAuthentication();
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })//.AddBasicAuthentication()
+            .AddJwtBearer(options =>
+            {
+                //options.Events = new JWTBearerAuthenticationEvents();
+                options.Events = new JWTBearerAuthenticationEvents();
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JwtBearerSettings:SecretKey"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+
+                };
+            });
             services.AddAuthorization(options => loadAutorizationPolicies(options));
 
             services.AddCors(options => {

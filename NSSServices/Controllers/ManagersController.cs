@@ -31,14 +31,19 @@ using System.Linq;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
 using WIM.Resources;
+using WIM.Services.Security.Authentication.JWTBearer;
+using Microsoft.Extensions.Options;
+using NSSServices.Resources;
+using System.Security.Claims;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/summary.md")]
-    public class ManagersController : NSSControllerBase
+    public class ManagersController : JwtBearerAuthenticationBase
     {
-        public ManagersController(INSSAgent sa) : base(sa)
+        public new INSSAgent agent => (INSSAgent)base.agent;
+        public ManagersController(INSSAgent sa, IOptions<JwtBearerSettings> jwtsettings) : base(sa, jwtsettings.Value.SecretKey)
         { }
         #region METHODS
         [HttpGet(Name = "Managers")][Authorize(Policy = Policy.AdminOnly)]
@@ -58,21 +63,6 @@ namespace NSSServices.Controllers
                                                              SecondaryPhone = m.SecondaryPhone,
                                                              Username=m.Username
                                                             }));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpGet("/Login", Name ="Login")]
-        [Authorize]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Login.md")]
-        public async Task<IActionResult> GetLoggedInUser()
-        {
-            try
-            {
-                return Ok(LoggedInUser());
             }
             catch (Exception ex)
             {
@@ -145,7 +135,8 @@ namespace NSSServices.Controllers
                 ObjectToBeUpdated = await agent.GetManager(id);
                 if (ObjectToBeUpdated == null) return new NotFoundObjectResult(entity);
 
-                if (!User.IsInRole("Administrator")|| LoggedInUser().ID !=id)
+
+                if (!User.IsInRole("Administrator")|| Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid)?.Value) !=id)
                     return new UnauthorizedResult();// return HTTP 401
 
                 ObjectToBeUpdated.FirstName = entity.FirstName;

@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using SharedDB.Resources;
+using Shared.Controllers;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -31,17 +32,19 @@ using NetTopologySuite.Geometries;
 using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
+using System.Security.Claims;
+using NSSDB.Resources;
 
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/summary.md")]
-    public class StatisticGroupsController : NSSControllerBase
+    public class StatisticGroupsController : StatisticGroupsControllerBase
     {
-        protected ISharedAgent shared_agent;
-        public StatisticGroupsController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
+        protected INSSAgent agent;
+        public StatisticGroupsController(INSSAgent sa, ISharedAgent shared_sa) : base(shared_sa)
         {
-            this.shared_agent = shared_sa;
+            this.agent = sa;
         }
 
         #region METHOD
@@ -86,10 +89,10 @@ namespace NSSServices.Controllers
                 RegionList = parse(regions);
                 regressionsList = parse(regressions);
 
-                if (IsAuthenticated)
+                if (User.Identity.IsAuthenticated)
                 {
                     sm("Is authenticated, will only retrieve managed regression types");
-                    entities = agent.GetManagedStatisticGroups(LoggedInUser(), RegionList, geom, null, regressionsList);
+                    entities = agent.GetManagedStatisticGroups(getLoggedInUser(), RegionList, geom, null, regressionsList);
                 }
                 else
                     entities = agent.GetStatisticGroups(RegionList, geom, null, regressionsList);
@@ -105,7 +108,7 @@ namespace NSSServices.Controllers
 
         [HttpGet("{id}", Name ="Statistic Group")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/GetDistinct.md")]
-        public async Task<IActionResult> Get(int id)
+        public override async Task<IActionResult> Get(int id)
         {
             try
             {
@@ -118,68 +121,21 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }
         }
-
-        [HttpPost(Name ="Add Statistic Group")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Add.md")]
-        public async Task<IActionResult> Post([FromBody]StatisticGroupType entity)
+        #endregion
+        #region Helper Methods
+        private Manager getLoggedInUser()
         {
             try
             {
-                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Add(entity));
-             
+                return new Manager()
+                {
+                    ID = Convert.ToInt32(User.Claims.Where(c => c.Type == ClaimTypes.PrimarySid).Select(c => c.Value).SingleOrDefault()),
+                    Role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).SingleOrDefault()
+                };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return await HandleExceptionAsync(ex);
-            }            
-        }
-
-        [HttpPost("[action]", Name ="Statistic Group Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Batch.md")]
-        public async Task<IActionResult> Batch([FromBody]List<StatisticGroupType> entities)
-        {
-            try
-            {
-                entities.ForEach(e => e.ID = 0);
-                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
-                return Ok(await shared_agent.Add(entities));
-
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpPut("{id}", Name ="Edit Statistic Group")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Edit.md")]
-        public async Task<IActionResult> Put(int id, [FromBody]StatisticGroupType entity)
-        {
-            try
-            {
-                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Update(id,entity));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-
-        }        
-
-        [HttpDelete("{id}", Name ="Delete Statistic Group")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Delete.md")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                await shared_agent.DeleteStatisticGroup(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
+                return null;
             }
         }
         #endregion

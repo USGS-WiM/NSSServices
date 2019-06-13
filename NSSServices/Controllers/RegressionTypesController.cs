@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using NSSDB.Resources;
 using SharedDB.Resources;
+using Shared.Controllers;
 using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -35,12 +36,12 @@ namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/summary.md")]
-    public class RegressionTypesController : NSSControllerBase
+    public class RegressionTypesController : RegressionTypesControllerBase
     {
-        protected ISharedAgent shared_agent;
-        public RegressionTypesController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
+        protected INSSAgent agent;
+        public RegressionTypesController(INSSAgent sa, ISharedAgent shared_sa) : base(shared_sa)
         {
-            this.shared_agent = shared_sa;
+            this.agent = sa;
         }
 
         #region METHOD
@@ -70,81 +71,16 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }
         }
+
         [HttpGet("{id}", Name ="Regression Type")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/GetDistinct.md")]
-        public async Task<IActionResult> Get(int id)
+        public override async Task<IActionResult> Get(int id)
         {
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
 
                 return Ok(await agent.GetRegression(id));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpPost(Name ="Add Regression Type")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Add.md")]
-        public async Task<IActionResult> Post([FromBody]RegressionType entity)
-        {
-            try
-            {
-                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Add(entity));
-            
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }            
-        }
-
-        [HttpPost("[action]", Name ="Regression Type Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Batch.md")]
-        public async Task<IActionResult> Batch([FromBody]List<RegressionType> entities)
-        {
-            try
-            {
-                entities.ForEach(e => e.ID = 0);
-                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
-                return Ok(await shared_agent.Add(entities));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpPut("{id}", Name ="Edit Regression Type")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Edit.md")]
-        public async Task<IActionResult> Put(int id, [FromBody]RegressionType entity)
-        {
-            try
-            {
-
-                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Update(id,entity));
-               
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-
-        }        
-
-        [HttpDelete("{id}", Name ="Delete Regression Type")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionTypes/Delete.md")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                await shared_agent.DeleteRegressionType(id);
-
-                return Ok();
             }
             catch (Exception ex)
             {

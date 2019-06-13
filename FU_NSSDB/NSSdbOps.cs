@@ -29,122 +29,41 @@ using System.Linq;
 using System.Data.Common;
 using System.Data.Odbc;
 using Npgsql;
-using System.IO;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+using WIM.Utilities;
+using WIM.Utilities.Extensions;
 
 
 #endregion
 
 namespace FU_NSSDB
 {
-    public class dbOps : IDisposable
+    public class NSSDbOps : dbOps
     {
         #region "Fields"
-        private string connectionString = string.Empty;
-        private DbConnection connection;
         public ConnectionType connectionType { get; private set; }
         #endregion
-        #region Properties
-        private List<string> _message = new List<string>();
-        public List<string> Messages
-        {
-            get { return _message; }
-        }
-        #endregion
-        #region "Constructor and IDisposable Support"
         #region Constructors
-        public dbOps(string pSQLconnstring, ConnectionType pConnectionType, bool doResetTables=false)
+        public NSSDbOps(string pSQLconnstring, ConnectionType pConnectionType, bool doResetTables=false)
+            :base(pSQLconnstring)
         {
-            this.connection = null;
-            this.connectionString = pSQLconnstring;
-            this.connectionType = pConnectionType;
-            init();
+            this.connectionType = pConnectionType;            
             if (doResetTables) this.ResetTables();
         }
-        #endregion
-        #region IDisposable Support
-        // Track whether Dispose has been called.
-        private bool disposed = false;
-
-        // Implement IDisposable.
-        // Do not make this method virtual.
-        // A derived class should not be able to override this method.
-        public void Dispose()
-        {
-            Dispose(true);
-            // This object will be cleaned up by the Dispose method.
-            // Therefore, you should call GC.SupressFinalize to
-            // take this object off the finalization queue
-            // and prevent finalization code for this object
-            // from executing a second time.
-            GC.SuppressFinalize(this);
-        } //End Dispose
-
-        // Dispose(bool disposing) executes in two distinct scenarios.
-        // If disposing equals true, the method has been called directly
-        // or indirectly by a user's code. Managed and unmanaged resources
-        // can be disposed.
-        // If disposing equals false, the method has been called by the
-        // runtime from inside the finalizer and you should not reference
-        // other objects. Only unmanaged resources can be disposed.
-        protected virtual void Dispose(bool disposing)
-        {
-            // Check to see if Dispose has already been called.
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    // TODO:Dispose managed resources here.
-                    if (this.connection.State != ConnectionState.Closed) this.connection.Close();
-                    this.connection.Dispose();
-
-                    //ie component.Dispose();
-
-                }//EndIF
-
-                // TODO:Call the appropriate methods to clean up
-                // unmanaged resources here.
-                //ComRelease(Extent);
-
-                // Note disposing has been done.
-                disposed = true;
-
-
-            }//EndIf
-        }//End Dispose
-        #endregion
-        #endregion
+        #endregion        
         #region "Methods"
-        public List<T> GetDBItems<T>(SQLType type, params object[] args)
+        public List<T> GetItems<T>(SQLType type, params object[] args)
         {
-            List<T> dbList = null;
             string sql = string.Empty;
             try
             {
                 sql = string.Format(getSQL(type),args);
-
-                this.OpenConnection();
-                DbCommand command = getCommand(sql);
-                Func<IDataReader, T> fromdr = (Func<IDataReader, T>)Delegate.CreateDelegate(typeof(Func<IDataReader, T>),null, typeof(T).GetMethod("FromDataReader"));
-
-                using (DbDataReader reader = command.ExecuteReader())
-                {
-                    dbList = reader.Select<T>(fromdr).ToList();
-                    sm("DB return count: " + dbList.Count);
-                }//end using
-
-                return dbList;
+                return base.GetItems<T>(sql);                
             }
             catch (Exception ex)
             {
                 this.sm(ex.Message);
                 throw ex;
-            }
-            finally
-            {
-                this.CloseConnection();
-            }
+            }           
         }
         public bool Update(SQLType type, Int32 pkID, Object[] args)
         {
@@ -152,90 +71,23 @@ namespace FU_NSSDB
             string sql = string.Empty;
             try
             {
-                this.OpenConnection();
-                DbCommand command = getCommand(String.Format(getSQL(type), pkID, args));
-                command.ExecuteNonQuery();
-                return true;
+                sql = String.Format(getSQL(type), pkID, args);
+                return base.Update(sql);
             }
             catch (Exception ex)
             {
                 this.sm(ex.Message);
                 return false;
-                throw ex;
-            }
-            finally
-            {
-                this.CloseConnection();
-            }
+            }            
         }
-        public void ExecuteSql(string sql)
-        {
-            try
-            {
-                this.OpenConnection();
-                DbCommand command = getCommand(sql);
-                command.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                this.sm(ex.Message);
-                throw ex;
-            }
-            finally
-            {
-                this.CloseConnection();
-            }
-
-
-        }
-        public void ExecuteSql(FileInfo file)
-        {
-            try
-            {
-                List<string> sqlList = null;
-                
-                using (StreamReader reader = new StreamReader(file.FullName))
-                {
-                    //sqlList = Regex.Split(reader.ReadToEnd(), @"(?<=[;])").ToList();   
-                    ExecuteSql(reader.ReadToEnd());
-                    
-                }//end using   
-                //sm($"Count: {sqlList.Count}");
-                //this.OpenConnection();
-                //for (int i = 0; i < sqlList.Count; i++)
-                //{
-                //    var sql = sqlList[i];
-                //    using (DbCommand command = getCommand(sql))
-                //    {
-                //        command.CommandTimeout = 2*60;// timeout
-                //        var updatedRows = command.ExecuteNonQuery();
-                //        sm($"Updated {i}, out of {sqlList.Count}");
-                //    }//end using                        
-                //}//next item                
-            }
-            catch (Exception ex)
-            {
-                this.sm(ex.Message);
-                throw ex;
-            }
-            finally
-            {
-                //this.CloseConnection();
-            }
-        } 
         public Int32 AddItem(SQLType type, Object[] args) {
             string sql = string.Empty;
             try
             {
                 args = args.Select(a => a == null ? "null" : a).ToArray();
                 sql = String.Format(getSQL(type), args);
-
-                this.OpenConnection();
-                DbCommand command = getCommand(sql);
-                command.ExecuteNonQuery();
-                command.CommandText = "SELECT lastval();";
-                var id = command.ExecuteScalar();
-                return Convert.ToInt32(id);                
+                return base.AddItem(sql);
+                   
             }
             catch (Exception ex)
             {
@@ -263,8 +115,7 @@ namespace FU_NSSDB
                 sql += @"TRUNCATE TABLE ""Variables"" RESTART IDENTITY CASCADE;
                          TRUNCATE TABLE ""VariableUnitTypes"" RESTART IDENTITY CASCADE;";
 
-                ExecuteSql(sql);
-                
+                ExecuteSql(sql);                
 
                 return true;
             }
@@ -277,11 +128,7 @@ namespace FU_NSSDB
         }
         #endregion
         #region "Helper Methods"
-        private T FromDataReader<T>(IDataReader r)
-        {
-            return (T)Activator.CreateInstance(typeof(T), new object[] {  });
-        }
-        private DbCommand getCommand(string sql) {
+        protected override DbCommand getCommand(string sql) {
             switch (this.connectionType)
             {
                 case ConnectionType.e_access:
@@ -426,32 +273,8 @@ namespace FU_NSSDB
             }
             return results;
         }
-        private void OpenConnection()
-        {
-            try
-            {
-                if (connection.State == ConnectionState.Open) this.connection.Close();
-                this.connection.Open();
-            }
-            catch (Exception ex)
-            {
-                this.CloseConnection();
-                throw ex;
-            }
-        }
-        private void CloseConnection()
-        {
-            try
-            {
-                if (this.connection.State == ConnectionState.Open) this.connection.Close();
-            }
-            catch (Exception ex)
-            {
-                if (this.connection.State == ConnectionState.Open) connection.Close();
-                throw ex;
-            }
-        }
-        private void init() {
+
+        protected override void init(string connectionString) {
             switch (connectionType)
             {
                 case ConnectionType.e_access:
@@ -467,11 +290,7 @@ namespace FU_NSSDB
                     break;
             }
 
-        }        
-        private void sm(string msg)
-        {
-            this._message.Add(msg);
-        }
+        }                
         #endregion
         #region "Enumerated Constants"
         public enum SQLType
@@ -510,18 +329,3 @@ namespace FU_NSSDB
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

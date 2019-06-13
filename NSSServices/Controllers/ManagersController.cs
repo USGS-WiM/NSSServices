@@ -33,7 +33,6 @@ using WIM.Security.Authorization;
 using WIM.Resources;
 using WIM.Services.Security.Authentication.JWTBearer;
 using Microsoft.Extensions.Options;
-using NSSServices.Resources;
 using System.Security.Claims;
 
 namespace NSSServices.Controllers

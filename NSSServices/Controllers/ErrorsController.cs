@@ -24,6 +24,8 @@ using System;
 using SharedDB.Resources;
 using NSSAgent;
 using SharedAgent;
+using Shared.Controllers;
+
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using WIM.Services.Attributes;
@@ -33,19 +35,19 @@ namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/summary.md")]
-    public class ErrorsController : NSSControllerBase
+    public class ErrorsController : ErrorsControllerBase
     {
-        protected ISharedAgent shared_agent;
-        public ErrorsController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
+        protected INSSAgent agent;
+        public ErrorsController(INSSAgent sa, ISharedAgent shared_sa) : base(shared_sa)
         {
-            this.shared_agent = shared_sa;
+            this.agent = sa;
         }
 
         #region METHOD
 
         [HttpGet(Name = "Errors")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Get.md")]
-        public async Task<IActionResult> Get()
+        public override async Task<IActionResult> Get()
         {
             try
             {
@@ -59,77 +61,12 @@ namespace NSSServices.Controllers
 
         [HttpGet("{id}",Name ="Error")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/GetDistinct.md")]
-        public async Task<IActionResult> Get(int id)
+        public override async Task<IActionResult> Get(int id)
         {
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
                 return Ok(await agent.GetError(id));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpPost(Name = "Add Error")]
-        [Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Add.md")]
-        public async Task<IActionResult> Post([FromBody]ErrorType entity)
-        {
-            try
-            {
-                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Add(entity));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpPost("[action]",Name ="Error Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Batch.md")]
-        public async Task<IActionResult> Batch([FromBody]List<ErrorType> entities)
-        {
-            try
-            {
-
-                entities.ForEach(e => e.ID = 0);
-                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
-                return Ok(await shared_agent.Add(entities));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpPut("{id}", Name ="Edit Error")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Edit.md")]
-        public async Task<IActionResult> Put(int id, [FromBody]ErrorType entity)
-        {
-            try
-            {
-                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Update(id,entity));
-             
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-
-        }
-
-        [HttpDelete("{id}", Name ="Delete Error")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Errors/Delete.md")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                await shared_agent.DeleteError(id);
-                return Ok();
             }
             catch (Exception ex)
             {

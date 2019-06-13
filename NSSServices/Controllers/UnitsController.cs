@@ -26,6 +26,7 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SharedAgent;
+using Shared;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
 
@@ -33,18 +34,18 @@ namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/summary.md")]
-    public class UnitsController : NSSControllerBase
+    public class UnitsController : UnitsControllerBase
     {
-        protected ISharedAgent shared_agent;
-        public UnitsController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
+        protected INSSAgent agent;
+        public UnitsController(INSSAgent sa, ISharedAgent shared_sa) : base(shared_sa)
         {
-            this.shared_agent = shared_sa;
+            this.agent = sa;
         }
 
         #region METHOD
         [HttpGet(Name ="Units")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Get.md")]
-        public async Task<IActionResult> Get()
+        public override async Task<IActionResult> Get()
         {
             try
             {
@@ -58,7 +59,7 @@ namespace NSSServices.Controllers
 
         [HttpGet("{id}", Name ="Unit")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/GetDistinct.md")]
-        public async Task<IActionResult> Get(int id)
+        public override async Task<IActionResult> Get(int id)
         {
             try
             {
@@ -72,69 +73,7 @@ namespace NSSServices.Controllers
             }
         }
         
-        [HttpPost(Name ="Add Unit")][Authorize(Policy = Policy.Managed)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Add.md")]
-        public async Task<IActionResult> Post([FromBody]UnitType entity)
-        {
-            try
-            {
-                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Add(entity));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }            
-        }
-
-        [HttpPost("[action]", Name ="Unit Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Batch.md")]
-        public async Task<IActionResult> Batch([FromBody]List<UnitType> entities)
-        {
-            try
-            {
-                entities.ForEach(e => e.ID = 0);
-                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
-                return Ok(await shared_agent.Add(entities));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpPut("{id}", Name ="Edit Unit")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Edit.md")]
-        public async Task<IActionResult> Put(int id, [FromBody]UnitType entity)
-        {
-            try
-            {
-                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Update(id,entity));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-
-        }        
-
-        [HttpDelete("{id}", Name ="Delete Unit")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Units/Delete.md")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-
-                if (id < 1) return new BadRequestResult();
-                await shared_agent.DeleteUnit(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
+ 
         #endregion
     }
 }

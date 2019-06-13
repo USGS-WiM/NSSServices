@@ -29,7 +29,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WIM.Services.Security.Authentication.JWTBearer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using NSSServices.Resources;
 
 namespace NSSServices
 {

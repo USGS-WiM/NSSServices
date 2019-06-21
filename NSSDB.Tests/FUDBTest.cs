@@ -35,8 +35,9 @@ namespace NSSDB.Tests
             }
 
             //cleanup
-            ////A) ACCESS DB has 2 Regions named TN
-            ////  Change STate code of ID 10047 to 'XX'
+            ////A) Change names of RRB and MO_STL
+            //UPDATE `Region` SET `Code` = "MO_SL" WHERE `Code` = "SL";
+            //UPDATE `Region` SET `Code` = "RRB" WHERE `Code` = "RR";
             ////-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
             ////B) Change Statistic group type to: Urban flows(31) and Rural flows (32)
             //UPDATE Equation e LEFT JOIN RegressionRegion rr ON(e.RegressionRegionID = rr.ID) SET e.StatisticGroupTypeID = 31 Where rr.`Code` IN('GC1540', 'GC1539', 'GC1541', 'GC1542', 'GC1543', 'GC1481', 'GC1577', 'GC1576', 'GC1578', 'GC1579', 'GC1614', 'GC1615', 'GC1616', 'GC1584', 'GC1583', 'GC1585', 'GC1586', 'GC1251');

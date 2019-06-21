@@ -48,7 +48,7 @@ namespace FU_NSSDB
         public List<RegressionType> regressionTypeList { get; private set; }
 
 
-        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\WiM\Projects\NSS\DB\StreamStatsDB_2019-02-11.mdb");
+        private string SSDBConnectionstring = string.Format(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\WiM\Projects\NSS\DB\StreamStatsDB_2019-06-20.mdb");
         private string NSSDBConnectionstring = string.Format("Server=nsstest.c69uuui2tzs0.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "nss", ConfigurationManager.AppSettings["dbuser"], ConfigurationManager.AppSettings["dbpassword"]);
         private dbOps NSSDBOps { get; set; }
 
@@ -85,6 +85,7 @@ namespace FU_NSSDB
             var diffVariable = ssdbDBVariableList.Except(DBVariableList).ToList();
             var diffSG = ssdbStatisticGroupList.Except(DBStatisticGroupList).ToList();
             var diffRegList = ssdbRegressionList.Except(DBregressionList).ToList();
+            sm($"Can continue {diffUnits.Count < 2 && diffVariable.Count < 1 && diffSG.Count < 1 && diffRegList.Count < 1}");
 
 
         }
@@ -101,11 +102,14 @@ namespace FU_NSSDB
 
                 //connect to SSDB
                 sm("Starting migration " + DateTime.Today.ToShortDateString());
-                this.NSSDBOps = new dbOps(NSSDBConnectionstring, dbOps.ConnectionType.e_mysql, true);
+                this.NSSDBOps = new dbOps(NSSDBConnectionstring, dbOps.ConnectionType.e_mysql, false);
                 using (var ssdb = new dbOps(SSDBConnectionstring, dbOps.ConnectionType.e_access))
                 {
                     var list = ssdb.GetDBItems<FURegion>(dbOps.SQLType.e_region).Where(r => r.Code != "XX" || r.oldID != 10047).ToList();
-                    foreach (var region in ssdb.GetDBItems<FURegion>(dbOps.SQLType.e_region).Where(r => r.Code != "XX").ToList())
+
+                    list = list.Where(x => String.Equals(x.Code, "OR", StringComparison.OrdinalIgnoreCase)).ToList();
+                    
+                    foreach (var region in list)
                     {
                         //remove extra TN
                         if (region.oldID == 10047) continue;
@@ -197,7 +201,7 @@ namespace FU_NSSDB
             }
             catch (Exception ex)
             {
-                sm("Failed to post region " + regRegion.Code +" " +ex.Message);
+               sm("Failed to post region " + regRegion.Code +" " +ex.Message);
                 return false;
             }
         }
@@ -269,6 +273,7 @@ namespace FU_NSSDB
         }
         private void sm(string msg)
         {
+            Console.WriteLine(msg);
             this._message.Add(msg);
         }
         #endregion

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NSSDB.Resources;
 using SharedDB.Resources;
 using Newtonsoft.Json;
-
+using WIM.Utilities.Extensions;
 
 namespace FU_NSSDB.Resources
 {

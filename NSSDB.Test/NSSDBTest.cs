@@ -8,6 +8,7 @@ using WIM.Security;
 using System.Linq;
 using NSSDB.Resources;
 using System.Collections.Generic;
+using WIM.Resources;
 
 namespace NSSDB.Test
 {
@@ -69,7 +70,7 @@ namespace NSSDB.Test
                     {
                         FirstName ="Test",
                         Email = "testManager@usgs.gov",
-                        LastName = "Manager", RoleID =2,
+                        LastName = "Manager", Role =Role.Manager,
                         Username ="testManager", 
                         Password = Cryptography.GenerateSHA256Hash(password, salt),
                         Salt = salt

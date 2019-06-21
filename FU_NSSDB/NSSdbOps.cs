@@ -44,9 +44,10 @@ namespace FU_NSSDB
         #endregion
         #region Constructors
         public NSSDbOps(string pSQLconnstring, ConnectionType pConnectionType, bool doResetTables=false)
-            :base(pSQLconnstring)
+            :base()
         {
-            this.connectionType = pConnectionType;            
+            this.connectionType = pConnectionType;
+            init(pSQLconnstring);
             if (doResetTables) this.ResetTables();
         }
         #endregion        
@@ -274,7 +275,7 @@ namespace FU_NSSDB
             return results;
         }
 
-        protected override void init(string connectionString) {
+        protected void init(string connectionString) {
             switch (connectionType)
             {
                 case ConnectionType.e_access:

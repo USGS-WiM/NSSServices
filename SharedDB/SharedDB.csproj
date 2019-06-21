@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
-    <PackageReference Include="WiM.DBUtilities" Version="1.1.7" />
+    <PackageReference Include="WiM.DBUtilities" Version="1.1.8" />
     <PackageReference Include="WIM.Hypermedia" Version="1.1.3" />
   </ItemGroup>
   <ItemGroup>

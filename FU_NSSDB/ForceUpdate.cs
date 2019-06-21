@@ -22,18 +22,14 @@
 #endregion
 
 #region "Imports"
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FU_NSSDB.Resources;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using NSSDB;
 using SharedDB.Resources;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 #endregion
 
 namespace FU_NSSDB
@@ -54,7 +50,7 @@ namespace FU_NSSDB
 
         private string SSDBConnectionstring;
         private string NSSDBConnectionstring;
-        private dbOps NSSDBOps { get; set; }
+        private NSSDbOps NSSDBOps { get; set; }
 
 
         #endregion
@@ -80,12 +76,12 @@ namespace FU_NSSDB
             List<string> ssdbStatisticGroupList = null;
             List<string> ssdbRegressionList = null;
 
-            using (var ssdb = new dbOps(SSDBConnectionstring, dbOps.ConnectionType.e_access))
+            using (var ssdb = new NSSDbOps(SSDBConnectionstring, NSSDbOps.ConnectionType.e_access))
             {
-                ssdbUnitAbbr = ssdb.GetDBItems<FUString>(dbOps.SQLType.e_unittype).Select(f => f.Value.Trim()).ToList();
-                ssdbDBVariableList = ssdb.GetDBItems<FUString>(dbOps.SQLType.e_variabletype).Select(f => f.Value.Trim()).ToList();
-                ssdbStatisticGroupList = ssdb.GetDBItems<FUString>(dbOps.SQLType.e_statisticgrouptype).Select(f => f.Value.Trim()).ToList();
-                ssdbRegressionList = ssdb.GetDBItems<FUString>(dbOps.SQLType.e_regressiontype).Select(f => f.Value.Trim()).ToList();
+                ssdbUnitAbbr = ssdb.GetItems<FUString>(NSSDbOps.SQLType.e_unittype).Select(f => f.Value.Trim()).ToList();
+                ssdbDBVariableList = ssdb.GetItems<FUString>(NSSDbOps.SQLType.e_variabletype).Select(f => f.Value.Trim()).ToList();
+                ssdbStatisticGroupList = ssdb.GetItems<FUString>(NSSDbOps.SQLType.e_statisticgrouptype).Select(f => f.Value.Trim()).ToList();
+                ssdbRegressionList = ssdb.GetItems<FUString>(NSSDbOps.SQLType.e_regressiontype).Select(f => f.Value.Trim()).ToList();
             }//end using
 
             var diffUnits = ssdbUnitAbbr.Except(DBUnitAbbr).ToList();
@@ -112,28 +108,28 @@ namespace FU_NSSDB
                 sm("Starting migration " + DateTime.Today.ToShortDateString());
                 this.NSSDBOps.ResetTables();
 
-                using (var ssdb = new dbOps(SSDBConnectionstring, dbOps.ConnectionType.e_access))
+                using (var ssdb = new NSSDbOps(SSDBConnectionstring, NSSDbOps.ConnectionType.e_access))
                 {
-                    var list = ssdb.GetDBItems<FURegion>(dbOps.SQLType.e_region).Where(r => r.Code != "XX" || r.oldID != 10047).ToList();
-                    foreach (var region in ssdb.GetDBItems<FURegion>(dbOps.SQLType.e_region).Where(r => r.Code != "XX").ToList())
+                    var list = ssdb.GetItems<FURegion>(NSSDbOps.SQLType.e_region).Where(r => r.Code != "XX" || r.oldID != 10047).ToList();
+                    foreach (var region in ssdb.GetItems<FURegion>(NSSDbOps.SQLType.e_region).Where(r => r.Code != "XX").ToList())
                     {
                         //remove extra TN
                         if (region.oldID == 10047) continue;
 
                         if (!PostRegion(region)) continue;
                         //get regressionregion
-                        var regRegList = ssdb.GetDBItems<FURegressionRegion>(dbOps.SQLType.e_regressionregion, region.oldID.ToString("00")).Where(r => !string.Equals(r.Name, "Undefined", StringComparison.OrdinalIgnoreCase)).ToList();
-                        System.Diagnostics.Debug.WriteLine(region.Name + ":regions" + regRegList.Count());
+                        var regRegList = ssdb.GetItems<FURegressionRegion>(NSSDbOps.SQLType.e_regressionregion, region.oldID.ToString("00")).Where(r => !string.Equals(r.Name, "Undefined", StringComparison.OrdinalIgnoreCase)).ToList();
+                        sm(region.Name + ":regions" + regRegList.Count());
                         foreach (var regReg in regRegList)
                         {
                             if (!PostRegressionRegion(regReg, region.ID)) continue;
-                            var equList = ssdb.GetDBItems<FUEquation>(dbOps.SQLType.e_equation, regReg.oldID).ToList();
+                            var equList = ssdb.GetItems<FUEquation>(NSSDbOps.SQLType.e_equation, regReg.oldID).ToList();
                             foreach (var equ in equList)
                             {
-                                equ.PredictionInterval.CovarianceMatrix = JsonConvert.SerializeObject(ssdb.GetDBItems<FUCovariance>(dbOps.SQLType.e_equationcovariance, equ.oldID).GroupBy(e => e.Row, e => e, (key, g) => g.OrderBy(c => c.Column).Select(x => x.Value.ToString())).Select(c => c.ToList()).ToList());
+                                equ.PredictionInterval.CovarianceMatrix = JsonConvert.SerializeObject(ssdb.GetItems<FUCovariance>(NSSDbOps.SQLType.e_equationcovariance, equ.oldID).GroupBy(e => e.Row, e => e, (key, g) => g.OrderBy(c => c.Column).Select(x => x.Value.ToString())).Select(c => c.ToList()).ToList());
                                 PostEquation(equ, regReg.ID);
 
-                                var varList = ssdb.GetDBItems<FUVariable>(dbOps.SQLType.e_variables, regReg.oldID).Where(v => equ.Expression.Contains(v.VariableType.Code)).ToList();
+                                var varList = ssdb.GetItems<FUVariable>(NSSDbOps.SQLType.e_variables, regReg.oldID).Where(v => equ.Expression.Contains(v.VariableType.Code)).ToList();
                                 foreach (var variable in varList)
                                 {
                                     PostVariable(variable, equ.ID);
@@ -141,7 +137,7 @@ namespace FU_NSSDB
 
                             }//next equation
                         }//next regressionregions
-                        System.Diagnostics.Debug.WriteLine("Finished region " + region.Name);
+                        sm("Finished region " + region.Name);
                         sm("Finished.");
                     }//next region 
                 }//end using                   
@@ -170,19 +166,19 @@ namespace FU_NSSDB
         private void init()
         {
 
-            this.NSSDBOps = new dbOps(NSSDBConnectionstring, dbOps.ConnectionType.e_postgresql, false);
+            this.NSSDBOps = new NSSDbOps(NSSDBConnectionstring, NSSDbOps.ConnectionType.e_postgresql, false);
 
-            statisticGroupTypeList = NSSDBOps.GetDBItems<NSSStatisticGroupType>(dbOps.SQLType.e_getstatisticgroups).ToList<StatisticGroupType>();
-            variableTypeList = NSSDBOps.GetDBItems<NSSVariableType>(dbOps.SQLType.e_getvariabletypes).ToList<VariableType>();
-            unittypeList = NSSDBOps.GetDBItems<NSSUnitType>(dbOps.SQLType.e_getunittypes).ToList<UnitType>();
-            regressionTypeList = NSSDBOps.GetDBItems<NSSRegressionType>(dbOps.SQLType.e_getregressiontypes).ToList<RegressionType>();
+            statisticGroupTypeList = NSSDBOps.GetItems<NSSStatisticGroupType>(NSSDbOps.SQLType.e_getstatisticgroups).ToList<StatisticGroupType>();
+            variableTypeList = NSSDBOps.GetItems<NSSVariableType>(NSSDbOps.SQLType.e_getvariabletypes).ToList<VariableType>();
+            unittypeList = NSSDBOps.GetItems<NSSUnitType>(NSSDbOps.SQLType.e_getunittypes).ToList<UnitType>();
+            regressionTypeList = NSSDBOps.GetItems<NSSRegressionType>(NSSDbOps.SQLType.e_getregressiontypes).ToList<RegressionType>();
 
         }
         private bool PostRegion(FURegion region)
         {
             try
             {
-                region.ID = NSSDBOps.AddItem(dbOps.SQLType.e_region, new object[] { region.Name, region.Code });
+                region.ID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_region, new object[] { region.Name, region.Code });
                 if (region.ID < 1) throw new Exception("region ID came back < 0 ");
                 return true;
             }
@@ -199,18 +195,18 @@ namespace FU_NSSDB
                 //citation
                 //check if citation exists already before adding
                 //regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim()
-                var citationlist = NSSDBOps.GetDBItems<NSSCitation>(dbOps.SQLType.e_getcitation).Where(c => string.Equals(c.CitationURL.Trim(), regRegion.Citation.CitationURL.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                var citationlist = NSSDBOps.GetItems<NSSCitation>(NSSDbOps.SQLType.e_getcitation).Where(c => string.Equals(c.CitationURL.Trim(), regRegion.Citation.CitationURL.Trim(), StringComparison.OrdinalIgnoreCase) &&
                                                                                                         string.Equals(c.Author.Trim(), regRegion.Citation.Author.Trim(), StringComparison.OrdinalIgnoreCase) &&
                                                                                                         string.Equals(c.Title.Trim(), regRegion.Citation.Title.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
 
                 if (citationlist.Count < 1)
-                    regRegion.CitationID = NSSDBOps.AddItem(dbOps.SQLType.e_postcitation, new object[] { regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
+                    regRegion.CitationID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_postcitation, new object[] { regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
                 else
                     regRegion.CitationID = citationlist.FirstOrDefault().ID;
                 //regressionregion
-                regRegion.ID = NSSDBOps.AddItem(dbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID });
+                regRegion.ID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID });
                 //RegionRegressionRegion
-                NSSDBOps.AddItem(dbOps.SQLType.e_regionregressionregion, new object[] { regionID, regRegion.ID });
+                NSSDBOps.AddItem(NSSDbOps.SQLType.e_regionregressionregion, new object[] { regionID, regRegion.ID });
                 if (regRegion.CitationID < 1 || regRegion.ID < 1) throw new Exception("Error posting Regression region; Citation " + regRegion.CitationID + " Regression region " + regRegion.ID);
                 return true;
             }
@@ -231,7 +227,7 @@ namespace FU_NSSDB
                    (equation.PredictionInterval.Student_T_Statistic.HasValue && equation.PredictionInterval.Student_T_Statistic > 0) ||
                    (equation.PredictionInterval.Variance.HasValue && equation.PredictionInterval.Variance > 0) ||
                    !String.IsNullOrEmpty(equation.PredictionInterval.XIRowVector) || !String.IsNullOrEmpty(equation.PredictionInterval.CovarianceMatrix))
-                    equation.PredictionIntervalID = NSSDBOps.AddItem(dbOps.SQLType.e_predictioninterval, new object[] { equation.PredictionInterval.BiasCorrectionFactor, equation.PredictionInterval.Student_T_Statistic, equation.PredictionInterval.Variance, equation.PredictionInterval.XIRowVector, equation.PredictionInterval.CovarianceMatrix });
+                    equation.PredictionIntervalID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_predictioninterval, new object[] { equation.PredictionInterval.BiasCorrectionFactor, equation.PredictionInterval.Student_T_Statistic, equation.PredictionInterval.Variance, equation.PredictionInterval.XIRowVector, equation.PredictionInterval.CovarianceMatrix });
 
                 var unit1 = this.unittypeList.FirstOrDefault(u => string.Equals(u.Abbreviation, equation.UnitType.Abbreviation, StringComparison.OrdinalIgnoreCase));
                 var unit2 = this.unittypeList.FirstOrDefault(u => string.Equals(u.Abbreviation, equation.otherunit.Abbreviation, StringComparison.OrdinalIgnoreCase));
@@ -239,18 +235,18 @@ namespace FU_NSSDB
                 var statGrp = this.statisticGroupTypeList.FirstOrDefault(sg => string.Equals(sg.Code, equation.StatisticGroupType.Code, StringComparison.OrdinalIgnoreCase));
                 var predID = (equation.PredictionIntervalID.HasValue) ? equation.PredictionIntervalID.ToString() : "null";
                 //equation
-                equation.ID = NSSDBOps.AddItem(dbOps.SQLType.e_equation, new object[] { regressionRegionID, predID, unit1.ID, equation.Expression, equation.DA_Exponent, equation.OrderIndex, regType.ID, statGrp.ID, equation.EquivalentYears });
+                equation.ID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_equation, new object[] { regressionRegionID, predID, unit1.ID, equation.Expression, equation.DA_Exponent, equation.OrderIndex, regType.ID, statGrp.ID, equation.EquivalentYears });
 
                 //equationerrors
                 foreach (var eer in equation.EquationErrors)
                 {
-                    NSSDBOps.AddItem(dbOps.SQLType.e_equationerror, new object[] { equation.ID, eer.ErrorTypeID, eer.Value });
+                    NSSDBOps.AddItem(NSSDbOps.SQLType.e_equationerror, new object[] { equation.ID, eer.ErrorTypeID, eer.Value });
                 }//next equation error
 
                 //equation units
-                NSSDBOps.AddItem(dbOps.SQLType.e_equationunitypes, new object[] { equation.ID, unit1.ID });
+                NSSDBOps.AddItem(NSSDbOps.SQLType.e_equationunitypes, new object[] { equation.ID, unit1.ID });
                 if (unit1.ID != unit2.ID)
-                    NSSDBOps.AddItem(dbOps.SQLType.e_equationunitypes, new object[] { equation.ID, unit2.ID });
+                    NSSDBOps.AddItem(NSSDbOps.SQLType.e_equationunitypes, new object[] { equation.ID, unit2.ID });
 
                 //if (region.ID < 1) throw new Exception("region ID came back < 0 ");
                 return true;
@@ -269,12 +265,12 @@ namespace FU_NSSDB
                 var varType = this.variableTypeList.FirstOrDefault(v => string.Equals(v.Code, variable.VariableType.Code, StringComparison.OrdinalIgnoreCase));
                 var unit1 = this.unittypeList.FirstOrDefault(u => string.Equals(u.Abbreviation.Trim(), variable.UnitType.Abbreviation.Trim(), StringComparison.OrdinalIgnoreCase));
                 var unit2 = this.unittypeList.FirstOrDefault(u => string.Equals(u.Abbreviation.Trim(), variable.otherunit.Abbreviation.Trim(), StringComparison.OrdinalIgnoreCase));
-                variable.ID = NSSDBOps.AddItem(dbOps.SQLType.e_variables, new object[] { equationID, varType.ID, unit1.ID, variable.MinValue, variable.MaxValue });
+                variable.ID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_variables, new object[] { equationID, varType.ID, unit1.ID, variable.MinValue, variable.MaxValue });
 
                 //variableUnits
-                NSSDBOps.AddItem(dbOps.SQLType.e_variableunitypes, new object[] { variable.ID, unit1.ID });
+                NSSDBOps.AddItem(NSSDbOps.SQLType.e_variableunitypes, new object[] { variable.ID, unit1.ID });
                 if (unit1.ID != unit2.ID)
-                    NSSDBOps.AddItem(dbOps.SQLType.e_variableunitypes, new object[] { variable.ID, unit2.ID });
+                    NSSDBOps.AddItem(NSSDbOps.SQLType.e_variableunitypes, new object[] { variable.ID, unit2.ID });
 
                 return true;
             }

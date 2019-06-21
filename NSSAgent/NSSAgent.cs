@@ -396,7 +396,12 @@ namespace NSSAgent
 
 
             if (geom != null)
-                regressionRegionList = getRegressionRegionsByGeometry(geom).ToDictionary(k => k.ID);            
+            {
+                if (!regionList.Any() && !statisticgroupList.Any() && !regressiontypeList.Any())
+                    return getRegressionRegionsByGeometry(geom);
+
+                regressionRegionList = getRegressionRegionsByGeometry(geom).ToDictionary(k => k.ID);
+            }
 
             return this.GetEquations(regionList, regressionRegionList?.Keys.Select(k=>k.ToString()).ToList(), statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion).Distinct()
                 .Select(rr=> new RegressionRegion() {

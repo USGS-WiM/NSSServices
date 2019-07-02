@@ -85,15 +85,15 @@ namespace FU_NSSDB.Resources
             };
 
         }
-        private static string splitTitle(string authertitle, bool getTitle = false)
+        private static string splitTitle(string authortitle, bool getTitle = false)
         {
-            Int32 splitlocation = authertitle.IndexOfAny("0123456789".ToCharArray());
+            Int32 splitlocation = authortitle.IndexOfAny("0123456789".ToCharArray());
             if (!getTitle)
-                //auther
-                return authertitle.Substring(0, splitlocation - 1);
+                //author
+                return authortitle.Substring(0, splitlocation - 1);
             else
                 //title
-                return authertitle.Substring(splitlocation);
+                return authortitle.Substring(splitlocation);
         }
     }
     public class NSSStatisticGroupType : StatisticGroupType

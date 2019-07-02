@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "8ff5816bcb0a72af8c75588e5fd8592c927240a4"
+    "signature": "93a9e30f1da30c3b61b5b3e77539f0512314b23e"
   },
   "compilationOptions": {
     "defines": [
@@ -22,9 +22,9 @@
   },
   "targets": {
     ".NETCoreApp,Version=v2.2": {
-      "NSSServices/1.1.0": {
+      "NSSServices/2.0.1": {
         "dependencies": {
-          "Microsoft.ApplicationInsights.AspNetCore": "2.7.0",
+          "Microsoft.ApplicationInsights.AspNetCore": "2.7.1",
           "Microsoft.AspNetCore": "2.2.0",
           "Microsoft.AspNetCore.Authentication": "2.2.0",
           "Microsoft.AspNetCore.Mvc": "2.2.0",
@@ -36,7 +36,7 @@
           "NSSAgent": "1.0.0",
           "NSSDB": "1.0.0",
           "Shared": "1.0.0",
-          "WIM.Analytics": "1.2.4",
+          "WIM.Analytics": "1.2.6",
           "WIM.Hypermedia": "1.1.3",
           "WIM.Services": "1.2.1"
         },
@@ -45,12 +45,6 @@
         },
         "compile": {
           "NSSServices.dll": {}
-        }
-      },
-      "GeoAPI/1.7.5": {
-        "dependencies": {
-          "GeoAPI.CoordinateSystems": "1.7.5",
-          "GeoAPI.Core": "1.7.5"
         }
       },
       "GeoAPI.CoordinateSystems/1.7.5": {
@@ -93,7 +87,7 @@
           "lib/netstandard2.0/Microsoft.ApplicationInsights.dll": {}
         }
       },
-      "Microsoft.ApplicationInsights.AspNetCore/2.7.0": {
+      "Microsoft.ApplicationInsights.AspNetCore/2.7.1": {
         "dependencies": {
           "Microsoft.ApplicationInsights": "2.10.0",
           "Microsoft.ApplicationInsights.DependencyCollector": "2.10.0",
@@ -109,8 +103,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.ApplicationInsights.AspNetCore.dll": {
-            "assemblyVersion": "2.7.0.0",
-            "fileVersion": "2.7.0.0"
+            "assemblyVersion": "2.7.1.0",
+            "fileVersion": "2.7.1.0"
           }
         },
         "compile": {
@@ -1957,14 +1951,14 @@
           "ref/netstandard2.0/Microsoft.Win32.Registry.dll": {}
         }
       },
-      "NetTopologySuite.CoordinateSystems/1.15.2": {
+      "NetTopologySuite.CoordinateSystems/1.15.3": {
         "dependencies": {
           "GeoAPI.CoordinateSystems": "1.7.5"
         },
         "runtime": {
           "lib/netcoreapp2.0/NetTopologySuite.CoordinateSystems.dll": {
-            "assemblyVersion": "1.15.2.0",
-            "fileVersion": "1.15.2.0"
+            "assemblyVersion": "1.15.3.0",
+            "fileVersion": "1.15.3.0"
           }
         },
         "compile": {
@@ -1985,30 +1979,30 @@
           "lib/netcoreapp2.0/NetTopologySuite.dll": {}
         }
       },
-      "NetTopologySuite.Features/1.15.0": {
+      "NetTopologySuite.Features/1.15.1": {
         "dependencies": {
-          "GeoAPI": "1.7.5"
+          "GeoAPI.Core": "1.7.5"
         },
         "runtime": {
           "lib/netstandard2.0/NetTopologySuite.Features.dll": {
             "assemblyVersion": "1.15.0.0",
-            "fileVersion": "1.15.0.0"
+            "fileVersion": "1.15.1.0"
           }
         },
         "compile": {
           "lib/netstandard2.0/NetTopologySuite.Features.dll": {}
         }
       },
-      "NetTopologySuite.IO.GeoJSON/1.15.4": {
+      "NetTopologySuite.IO.GeoJSON/1.15.5": {
         "dependencies": {
           "NetTopologySuite.Core": "1.15.2",
-          "NetTopologySuite.Features": "1.15.0",
+          "NetTopologySuite.Features": "1.15.1",
           "Newtonsoft.Json": "12.0.2"
         },
         "runtime": {
           "lib/netstandard2.0/NetTopologySuite.IO.GeoJSON.dll": {
             "assemblyVersion": "1.15.0.0",
-            "fileVersion": "1.15.4.0"
+            "fileVersion": "1.15.5.0"
           }
         },
         "compile": {
@@ -3751,22 +3745,22 @@
           "System.Xml.XPath": "4.3.0"
         }
       },
-      "WIM.Analytics/1.2.4": {
+      "WIM.Analytics/1.2.6": {
         "dependencies": {
           "Microsoft.AspNetCore.Http.Features": "2.2.0",
           "WIM.Utilities.ServiceAgent": "1.1.4"
         },
         "runtime": {
           "lib/netstandard2.0/WIM.Services.Analytics.dll": {
-            "assemblyVersion": "1.2.4.0",
-            "fileVersion": "1.2.4.0"
+            "assemblyVersion": "1.2.6.0",
+            "fileVersion": "1.2.6.0"
           }
         },
         "compile": {
           "lib/netstandard2.0/WIM.Services.Analytics.dll": {}
         }
       },
-      "WIM.DBUtilities/1.1.8": {
+      "WIM.DBUtilities/1.1.9": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "2.2.4",
           "Microsoft.EntityFrameworkCore.Relational": "2.2.4",
@@ -3775,8 +3769,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/WIM.DBUtilities.dll": {
-            "assemblyVersion": "1.1.8.0",
-            "fileVersion": "1.1.8.0"
+            "assemblyVersion": "1.1.9.0",
+            "fileVersion": "1.1.9.0"
           }
         },
         "compile": {
@@ -3907,7 +3901,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Http": "2.2.2",
           "NSSDB": "1.0.0",
-          "NetTopologySuite.CoordinateSystems": "1.15.2",
+          "NetTopologySuite.CoordinateSystems": "1.15.3",
           "Newtonsoft.Json": "12.0.2",
           "ProjNET4GeoAPI": "1.4.1",
           "WIM.Exceptions": "1.0.1",
@@ -3928,13 +3922,13 @@
       "NSSDB/1.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Design": "2.2.4",
-          "NetTopologySuite.IO.GeoJSON": "1.15.4",
+          "NetTopologySuite.IO.GeoJSON": "1.15.5",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.4",
           "Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite": "2.2.4",
           "SharedDB": "1.0.0",
           "WIM.Hypermedia": "1.1.3",
           "WIM.Resources": "1.2.2",
-          "WIM.DBUtilities": "1.1.8"
+          "WIM.DBUtilities": "1.1.9"
         },
         "runtime": {
           "NSSDB.dll": {}
@@ -3966,7 +3960,7 @@
           "Newtonsoft.Json": "12.0.2",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.4",
           "WIM.Hypermedia": "1.1.3",
-          "WIM.DBUtilities": "1.1.8"
+          "WIM.DBUtilities": "1.1.9"
         },
         "runtime": {
           "SharedDB.dll": {}
@@ -4159,17 +4153,10 @@
     }
   },
   "libraries": {
-    "NSSServices/1.1.0": {
+    "NSSServices/2.0.1": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
-    },
-    "GeoAPI/1.7.5": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-WnmEJJUtGttciCHbBlQLrr3IEukVLz+p6w2iCmyJIi2BLTXjwOQHmbUCk0ci8C5fbv7Dow1x4wLNx4EvUtRE/Q==",
-      "path": "geoapi/1.7.5",
-      "hashPath": "geoapi.1.7.5.nupkg.sha512"
     },
     "GeoAPI.CoordinateSystems/1.7.5": {
       "type": "package",
@@ -4192,12 +4179,12 @@
       "path": "microsoft.applicationinsights/2.10.0",
       "hashPath": "microsoft.applicationinsights.2.10.0.nupkg.sha512"
     },
-    "Microsoft.ApplicationInsights.AspNetCore/2.7.0": {
+    "Microsoft.ApplicationInsights.AspNetCore/2.7.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-xiHAZWZd3+Q/hFOovELil0bd8P9j12h5jIG4mouV06waM5E8/8/sf1DWGxgj36CATOZQuKaFit5xVTYIcsKjJQ==",
-      "path": "microsoft.applicationinsights.aspnetcore/2.7.0",
-      "hashPath": "microsoft.applicationinsights.aspnetcore.2.7.0.nupkg.sha512"
+      "sha512": "sha512-XhFAwdhpmWG8upMg6ayvERlBYWzTzHcBZ0yYLk+Rs0OoOWH2RABov000Sbr2XNt0fpTPVUapjVMUv7VbODNE0g==",
+      "path": "microsoft.applicationinsights.aspnetcore/2.7.1",
+      "hashPath": "microsoft.applicationinsights.aspnetcore.2.7.1.nupkg.sha512"
     },
     "Microsoft.ApplicationInsights.DependencyCollector/2.10.0": {
       "type": "package",
@@ -4997,12 +4984,12 @@
       "path": "microsoft.win32.registry/4.5.0",
       "hashPath": "microsoft.win32.registry.4.5.0.nupkg.sha512"
     },
-    "NetTopologySuite.CoordinateSystems/1.15.2": {
+    "NetTopologySuite.CoordinateSystems/1.15.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-YTdGLCLdDkjWdrGEOblynGDI33gibOtM/DY1THCndrFSOxljOup33KT9hZLmqwIn4uiW0jy3cHsQjGHDAolV5Q==",
-      "path": "nettopologysuite.coordinatesystems/1.15.2",
-      "hashPath": "nettopologysuite.coordinatesystems.1.15.2.nupkg.sha512"
+      "sha512": "sha512-vBofdqHOWUFkd3axF1p9BNLZ+5Cw7uqcLZun5bfnALkNJ0vZ8QN9pLOa9bFUulrWKyb1njQGke3nErbY3hpWlw==",
+      "path": "nettopologysuite.coordinatesystems/1.15.3",
+      "hashPath": "nettopologysuite.coordinatesystems.1.15.3.nupkg.sha512"
     },
     "NetTopologySuite.Core/1.15.2": {
       "type": "package",
@@ -5011,19 +4998,19 @@
       "path": "nettopologysuite.core/1.15.2",
       "hashPath": "nettopologysuite.core.1.15.2.nupkg.sha512"
     },
-    "NetTopologySuite.Features/1.15.0": {
+    "NetTopologySuite.Features/1.15.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-rmN6k0iSYFig/UmyMidv+u1iTCoUwJ38oNHKz6juOhLNLrDUbbf4y1rSJAptOYbson1/bfLrarHCxm7YNu7U+g==",
-      "path": "nettopologysuite.features/1.15.0",
-      "hashPath": "nettopologysuite.features.1.15.0.nupkg.sha512"
+      "sha512": "sha512-0JVq/j9jbKYGPiaBmGihAGQqP7haDm12CIO/j4/SURMSALmD29DAhGgM5n2704NJpu7SwFP/1Ae3Eb/rZcOQBw==",
+      "path": "nettopologysuite.features/1.15.1",
+      "hashPath": "nettopologysuite.features.1.15.1.nupkg.sha512"
     },
-    "NetTopologySuite.IO.GeoJSON/1.15.4": {
+    "NetTopologySuite.IO.GeoJSON/1.15.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-dZDUMXr4FRFmedyRa3TpFpo8TWZc6pRe2bUXbioTPrFpF2/jnrZ02BAW/tQMkrDT2OtW30fIDq/+DxLmTGLTPw==",
-      "path": "nettopologysuite.io.geojson/1.15.4",
-      "hashPath": "nettopologysuite.io.geojson.1.15.4.nupkg.sha512"
+      "sha512": "sha512-RAxE5Hlm+q4RYZrdK2+vByshVEswcztuAEKUrgTDvEZ+40CVY6MEgMFT8kI0zzCgYze/i6IlDm6BO3DdycKl/Q==",
+      "path": "nettopologysuite.io.geojson/1.15.5",
+      "hashPath": "nettopologysuite.io.geojson.1.15.5.nupkg.sha512"
     },
     "NetTopologySuite.IO.PostGis/1.15.0": {
       "type": "package",
@@ -5963,19 +5950,19 @@
       "path": "system.xml.xpath.xdocument/4.3.0",
       "hashPath": "system.xml.xpath.xdocument.4.3.0.nupkg.sha512"
     },
-    "WIM.Analytics/1.2.4": {
+    "WIM.Analytics/1.2.6": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-/jpt6Jb3TfAgtA927WRuUf2zgztiLyX1aUdGiqSWyrrVzoilYeKlsbI3erEaGRHMgl1y8Dwz+EVejLAi0Y/e1Q==",
-      "path": "wim.analytics/1.2.4",
-      "hashPath": "wim.analytics.1.2.4.nupkg.sha512"
+      "sha512": "sha512-0OpswTBOvYZb6Hb6tumgUYIVDmP95pdziiv3hWfavOrQWlj4wtzTdd4g8ZIl+VfHMb8+f2JLCCA1p2xnsuvkFA==",
+      "path": "wim.analytics/1.2.6",
+      "hashPath": "wim.analytics.1.2.6.nupkg.sha512"
     },
-    "WIM.DBUtilities/1.1.8": {
+    "WIM.DBUtilities/1.1.9": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-BwpAjSj8UV4NLeyA6RueN7mO9y/ZwhleGOrARYXsOcMUwZ0yP014IbW/Ivg7g3mm78wdQGk9+086geo82faU7Q==",
-      "path": "wim.dbutilities/1.1.8",
-      "hashPath": "wim.dbutilities.1.1.8.nupkg.sha512"
+      "sha512": "sha512-KMYFCgEfgQVk4sryUPfic8ifzcWtWHsz9pfhXzLamrSEiSZlYJOrSnAIi/Nw5DZJlo5UyBbhpADfyBKjZykymw==",
+      "path": "wim.dbutilities/1.1.9",
+      "hashPath": "wim.dbutilities.1.1.9.nupkg.sha512"
     },
     "WIM.Exceptions/1.0.1": {
       "type": "package",

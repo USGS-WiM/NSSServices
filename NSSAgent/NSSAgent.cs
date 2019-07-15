@@ -1250,18 +1250,20 @@ namespace NSSAgent
                                 Where rm.""ManagerID"" = {0}; ";
                 case sqltypeenum.regionbygeom:
                     return @"WITH Feature(geom) as (
-                                SELECT (st_dump(st_makevalid(ST_Transform(
-	                                ST_SetSRID(
-			                                ST_GeomFromText('{0}'),
-                                    4236),
-                                102008)))).geom)
-                                SELECT ""ID"",""Name"", ""Code"", ""Description"", ""CitationID"", ""StatusID"",""LocationID"", ""Area"" * 0.000000386102159 as ""Area"", ""MaskArea""* 0.000000386102159 as ""MaskArea"", ""Area""/""MaskArea""*100 as ""PercentWeight"" FROM
+	                            SELECT (st_dump(st_makevalid(ST_Transform(
+		                            ST_SetSRID(
+				                            ST_GeomFromText('{0}'),
+                                    4326),
+	                            102008)))).geom),
+	                        unions(geom) as
+                                    (SELECT st_union(geom)FROM Feature
+                                       WHERE ST_GeometryType(geom) = 'ST_Polygon' OR ST_GeometryType(geom) = 'ST_MultiPolygon')
+
+                            SELECT ""ID"",""Name"", ""Code"", ""CitationID"", ""StatusID"",""LocationID"", ""Area"" * 0.000000386102159 as ""Area"", ""MaskArea"" * 0.000000386102159 as ""MaskArea"", ""Area"" / ""MaskArea"" * 100 as ""PercentWeight"" FROM
                                     (SELECT r.*, st_area(ST_Intersection(l.""Geometry"", f.geom)) as ""Area"", st_area(f.geom) as ""MaskArea""
-                                    FROM Feature AS f, nss.""RegressionRegions"" AS r
+                                    FROM unions AS f, nss.""RegressionRegions"" AS r
                                     LEFT JOIN nss.""Locations"" AS l ON r.""LocationID"" = l.""ID""
-                                    WHERE r.""LocationID"" IS NOT NULL 
-                                    AND ST_GeometryType(f.geom) = 'ST_Polygon' 
-                                    OR ST_GeometryType(f.geom) = 'ST_MultiPolygon'
+                                    WHERE r.""LocationID"" IS NOT NULL
                                     AND(ST_Intersects(l.""Geometry"", f.geom) = TRUE)) t";
 
                 default:

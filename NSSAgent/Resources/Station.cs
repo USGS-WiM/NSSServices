@@ -2,12 +2,16 @@
 using System;
 using System.Collections.Generic;
 using WIM.Resources.TimeSeries;
+using WIM.Utilities.Resources;
 
 namespace NSSAgent.Resources
 {
     public class Station
     {
         #region "Properties"
+        public Resource Resource{ get; set; }
+        public bool ShouldSerializeResource()
+        { return false; }
         public String StationID { get; set; }
         public String Name { get; set; }
         public Double? DrainageArea_sqMI { get; set; }
@@ -16,14 +20,13 @@ namespace NSSAgent.Resources
         public FlowTimeSeries Discharge { get; private set; }
         public SortedDictionary<Double, Double> ExceedanceProbabilities { get; set; }
         public String URL { get; set; }
-        
+
         #endregion
         #region "Collections & Dictionaries"
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        public Station() 
-        { }
+        public Station() { }
         public Station(String gageID)
         {
             StationID = gageID;
@@ -56,12 +59,12 @@ namespace NSSAgent.Resources
             StationServiceAgent sa = null;
             try
             {
-                //sa = new StationServiceAgent(ConfigurationManager.AppSettings["nwis"]);
-                //Discharge = sa.GetFlowSeries(sDate, eDate, StationID);
-                //if (Discharge != null)
-                //{
-                //    URL = String.Format(ConfigurationManager.AppSettings["nwisStationurl"],StationID);
-                //}
+                sa = new StationServiceAgent(this.Resource);
+                Discharge = sa.GetFlowSeries(sDate, eDate, StationID);
+                if (Discharge != null)
+                {
+                    URL = this.Resource.baseurl + String.Format(this.Resource.resources["nwisStationurl"],StationID);
+                }
                 return true;
             }
             catch (Exception)
@@ -87,11 +90,12 @@ namespace NSSAgent.Resources
         }
         #endregion
         #region "Static Methods"
-        public static Station NWISStation(string stationID)
-        {
-            throw new NotImplementedException();
-            //StationServiceAgent sa = new StationServiceAgent(ConfigurationManager.AppSettings["nwis"]);
-            //return sa.GetNWISStation(stationID);
+        public static Station NWISStation(string stationID, Resource nwisResource)
+        {            
+            StationServiceAgent sa = new StationServiceAgent(nwisResource);
+            var station = sa.GetNWISStation(stationID);
+            station.Resource = nwisResource;
+            return station;
         }
         
         #endregion

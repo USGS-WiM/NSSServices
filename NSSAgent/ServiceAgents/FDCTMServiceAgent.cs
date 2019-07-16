@@ -38,14 +38,18 @@ using WIM.Resources.TimeSeries;
 using NSSAgent.Resources;
 using WIM.Utilities;
 using WIM.Resources;
+using WIM.Utilities.Resources;
 
 namespace NSSAgent.ServiceAgents
 {
     public class FDCTMServiceAgent:ExtensionServiceAgentBase
     {
-        #region "Properties"       
+        #region "Properties"   
+        private IDictionary<object, object> _messages { get; set; }
+        private Resource _nwisResource { get; set; }
         public DateTime? StartDate { get; private set; }
         public DateTime? EndDate { get; private set; }
+        
         #endregion
         #region "Collections & Dictionaries"
         private Dictionary<Double, TimeSeriesObservation> FDCTMExceedanceTimeseries { get; set; }
@@ -60,8 +64,11 @@ namespace NSSAgent.ServiceAgents
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities)
+        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, Resource nwisResource, IDictionary<object, object> messages = null)
         {
+
+            this._messages = messages != null? messages: new Dictionary<object, object>();
+            _nwisResource = nwisResource;
             this.isInitialized = false;
             this.Parameters = qppqExtension.Parameters;
             Result = new QPPQResult();
@@ -84,7 +91,8 @@ namespace NSSAgent.ServiceAgents
                 this.StartDate = Convert.ToDateTime(sdate.Value);
                 this.EndDate = Convert.ToDateTime(edate.Value);
 
-                ((QPPQResult)Result).ReferanceGage = Station.NWISStation(sid.Value);
+                ((QPPQResult)Result).ReferanceGage = Station.NWISStation(sid.Value,_nwisResource);
+
                 if (!((QPPQResult)Result).ReferanceGage.LoadFullRecord()) throw new Exception("Failed to load reference gage ");
                 transferFlowDuration(((QPPQResult)Result).ReferanceGage.GetExceedanceProbability());
                 
@@ -225,6 +233,16 @@ namespace NSSAgent.ServiceAgents
         }
         protected void sm(string msg, MessageType type = MessageType.info)
         {
+            sm(new Message() { msg = msg, type = type });
+        }
+        private void sm(Message msg)
+        {
+            //wim_msgs comes from WIM.Standard/blob/staging/Services/Middleware/X-Messages.cs
+            //manually added to avoid including libr in project.
+            if (!this._messages.ContainsKey("wim_msgs"))
+                this._messages["wim_msgs"] = new List<Message>();
+
+            ((List<Message>)this._messages["wim_msgs"]).Add(msg);
         }
         #endregion
         #region Structures

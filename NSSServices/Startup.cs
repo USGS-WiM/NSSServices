@@ -29,6 +29,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WIM.Services.Security.Authentication.JWTBearer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using WIM.Utilities.Resources;
+using NSSAgent.Resources;
+using Microsoft.Extensions.Options;
 
 namespace NSSServices
 {
@@ -49,7 +52,6 @@ namespace NSSServices
 
             Configuration = builder.Build();
         }//end startup       
-
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -63,7 +65,9 @@ namespace NSSServices
             services.AddScoped<IAnalyticsAgent, GoogleAnalyticsAgent>((gaa) => new GoogleAnalyticsAgent(Configuration["AnalyticsKey"]));
             services.Configure<APIConfigSettings>(Configuration.GetSection("APIConfigSettings"));
             services.Configure<JwtBearerSettings>(Configuration.GetSection("JwtBearerSettings"));
-            
+            services.Configure<Resource>(Configuration.GetSection("NWIS"));
+            services.AddSingleton(sp => sp.GetService<IOptions<Resource>>().Value);
+
             //provides access to httpcontext
             services.AddHttpContextAccessor();
             services.AddScoped<NSSServiceAgent>();
@@ -101,7 +105,6 @@ namespace NSSServices
             })//.AddBasicAuthentication()
             .AddJwtBearer(options =>
             {
-                //options.Events = new JWTBearerAuthenticationEvents();
                 options.Events = new JWTBearerAuthenticationEvents();
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
@@ -115,7 +118,7 @@ namespace NSSServices
 
                 };
             });
-            services.AddAuthorization(options => loadAutorizationPolicies(options));
+            services.AddAuthorization(options => loadAuthorizationPolicies(options));
 
             services.AddCors(options => {
                 options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin()
@@ -153,7 +156,7 @@ namespace NSSServices
         }
 
         #region Helper Methods
-        private void loadAutorizationPolicies(AuthorizationOptions options)
+        private void loadAuthorizationPolicies(AuthorizationOptions options)
         {
             //https://www.thereformedprogrammer.net/a-better-way-to-handle-authorization-in-asp-net-core/
             //https://jasonwatmore.com/post/2019/01/08/aspnet-core-22-role-based-authorization-tutorial-with-example-api

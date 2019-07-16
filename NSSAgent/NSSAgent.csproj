@@ -19,7 +19,7 @@
     <PackageReference Include="WiM.Resources" Version="1.2.2" />
     <PackageReference Include="WIM.Security" Version="1.1.1" />
     <PackageReference Include="WiM.Utilities" Version="1.1.2" />
-    <PackageReference Include="WiM.Utilities.ServiceAgent" Version="1.1.4" />
+    <PackageReference Include="WiM.Utilities.ServiceAgent" Version="1.1.5" />
   </ItemGroup>
 
   <ItemGroup>

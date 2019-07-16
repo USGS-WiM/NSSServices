@@ -43,9 +43,10 @@ using GeoAPI.Geometries;
 using System.Reflection;
 using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using WIM.Security;
-
+using WIM.Utilities.Resources;
 
 namespace NSSAgent
 {
@@ -135,6 +136,7 @@ namespace NSSAgent
     {
         #region "Properties"
         private readonly IDictionary<Object,Object> _messages;
+        private readonly Resource nwisResource = null;
         string[] INSSAgent.allowableGeometries => new String[] { "Polygon", "MultiPolygon" };        
         #endregion
         #region "Collections & Dictionaries"
@@ -144,8 +146,10 @@ namespace NSSAgent
         
         #endregion
         #region Constructors
-        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor) : base(context) {
-            _messages = httpContextAccessor.HttpContext.Items;            
+        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor, Resource NWISResource) : base(context) {
+            nwisResource = NWISResource;
+            _messages = httpContextAccessor.HttpContext.Items;
+            
             //optimize query for disconnected databases.
             this.context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             this.unitConversionFactors = Select<UnitConversionFactor>().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
@@ -1271,38 +1275,6 @@ namespace NSSAgent
             }//end switch;
 
         }
-        private bool canIncludeExension(string ex, int statisticCode)
-        {
-            switch (ex.ToUpper())
-            {
-                case "QPPQ":
-                case "FDCTM":
-                    if (statisticCode == 5) return true;
-                    break;
-            }//end switch
-            return false;
-        }
-        private Extension getScenarioExtensionDef(string ex, int statisticCode)
-        {
-            switch (ex.ToUpper())
-            {
-                case "QPPQ":
-                case "FDCTM":
-                    return new Extension()
-                    {
-                        Code = "QPPQ",
-                        Description = "Estimates the flow at an ungaged site given the reference streamgage",
-                        Name = "Flow Duration Curve Transfer Method",
-                        Parameters = new List<ExtensionParameter>{new ExtensionParameter() { Code = "sid", Name="NWIS Station ID", Description="USGS NWIS Station Identifier", Value="01234567" },
-                                     new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  DateTime.MinValue },
-                                     new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today }
-                       }
-
-                    };
-
-            }//end switch
-            return null;
-        }
         private SimpleUnitType getUnit(UnitType inUnitType, int OutSystemtypeID)
         {
             try
@@ -1492,27 +1464,6 @@ namespace NSSAgent
             {
                 return null;
             }//end try
-        }
-        private void evaluateExtension(Extension ext, SimpleRegressionRegion regressionregion)
-        {
-            ExtensionServiceAgentBase sa = null;
-            try
-            {
-                switch (ext.Code.ToUpper())
-                {
-                    case "QPPQ":
-                    case "FDCTM":
-                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k => Convert.ToDouble(k.Name.Replace("Percent Duration", "").Trim()) / 100, v => v.Value.Value)));
-                        break;
-                }//end switch
-
-                if (sa.isInitialized && sa.Execute())
-                    ext.Result = sa.Result;
-            }
-            catch (Exception ex)
-            {
-                this.sm($"Error evaluating extension: {ex.Message}", WIM.Resources.MessageType.error);                
-            }
         }
         private bool canAreaWeight(List<SimpleRegressionRegion> regressionRegions)
         {
@@ -1715,6 +1666,60 @@ namespace NSSAgent
             {
                 if (context.Database.GetDbConnection().State == System.Data.ConnectionState.Open)
                     context.Database.CloseConnection();
+            }
+        }
+        private bool canIncludeExension(string ex, int statisticCode)
+        {
+            switch (ex.ToUpper())
+            {
+                case "QPPQ":
+                case "FDCTM":
+                    //flow duration
+                    if (statisticCode == 5) return true;
+                    break;
+            }//end switch
+            return false;
+        }
+        private Extension getScenarioExtensionDef(string ex, int statisticCode)
+        {
+            switch (ex.ToUpper())
+            {
+                case "QPPQ":
+                case "FDCTM":
+                    return new Extension()
+                    {
+                        Code = "QPPQ",
+                        Description = "Estimates the flow at an ungaged site given the reference streamgage",
+                        Name = "Flow Duration Curve Transfer Method",
+                        Parameters = new List<ExtensionParameter>{new ExtensionParameter() { Code = "sid", Name="NWIS Station ID", Description="USGS NWIS Station Identifier", Value="01234567" },
+                                     new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  DateTime.MinValue },
+                                     new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today }
+                       }
+
+                    };
+
+            }//end switch
+            return null;
+        }
+        private void evaluateExtension(Extension ext, SimpleRegressionRegion regressionregion)
+        {
+            ExtensionServiceAgentBase sa = null;
+            try
+            {
+                switch (ext.Code.ToUpper())
+                {
+                    case "QPPQ":
+                    case "FDCTM":
+                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k => Convert.ToDouble(k.Name.Replace("Percent Duration", "").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                        break;
+                }//end switch
+
+                if (sa.isInitialized && sa.Execute())
+                    ext.Result = sa.Result;
+            }
+            catch (Exception ex)
+            {
+                this.sm($"Error evaluating extension: {ex.Message}", WIM.Resources.MessageType.error);
             }
         }
         protected override void sm(string msg, MessageType type = MessageType.info)

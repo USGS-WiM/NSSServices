@@ -1511,7 +1511,6 @@ namespace NSSAgent
                 var Results = regressionRegions.SelectMany(x => x.Results.Select(r => r.Clone())
                                 .Select(r =>
                                 {
-                                    r.Value = 1;
                                     r.Value = r.Value * (x.PercentWeight.HasValue ? x.PercentWeight.Value / 100 : 1);
                                     if (r.Errors != null)
                                     {

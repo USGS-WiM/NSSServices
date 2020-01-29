@@ -97,6 +97,7 @@ namespace NSSAgent
         Task<IEnumerable<RegressionRegion>> Add(List<NSSDB.Resources.RegressionRegion> items);
         Task<RegressionRegion> Update(Int32 pkId, NSSDB.Resources.RegressionRegion item);
         Task DeleteRegressionRegion(Int32 pkID);
+        IQueryable<object> GroupRegressionRegionsByCitation(IQueryable<RegressionRegion> regRegionList = null);
 
         //Coefficents
         IQueryable<Coefficient> GetRegressionRegionCoefficients(Int32 RegressionRegionID);
@@ -390,13 +391,13 @@ namespace NSSAgent
         {
             Dictionary<Int32, RegressionRegion> regressionRegionList = null;
             if (!regionList.Any() && geom== null&& !statisticgroupList.Any() && !regressiontypeList.Any())
-                return this.Select<RegressionRegion>();           
+                return this.Select<RegressionRegion>();
 
             if (statisticgroupList?.Any() != true && regressiontypeList?.Any() != true && geom == null)
                 // for region only list
                 return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion)
-                       .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
-                               || regionList.Contains(rer.RegionID.ToString())).Select(r=>r.RegressionRegion).AsQueryable();
+                    .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
+                    || regionList.Contains(rer.RegionID.ToString())).Select(r=>r.RegressionRegion).AsQueryable();
 
 
             if (geom != null)
@@ -446,6 +447,15 @@ namespace NSSAgent
 
             return query.Select(rrr => rrr.RegressionRegion).Distinct();
 
+        }
+        public IQueryable<object> GroupRegressionRegionsByCitation(IQueryable<RegressionRegion> regRegions = null)
+        {
+            var query = regRegions.GroupBy(rr => rr.CitationID).Select(g => new
+            {
+                citationID = g.Key,
+                regressionRegions = g.Select(c => c)
+            });
+            return query;
         }
         public Task<RegressionRegion> GetRegressionRegion(int ID)
         {

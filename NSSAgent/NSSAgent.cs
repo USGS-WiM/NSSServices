@@ -696,7 +696,7 @@ namespace NSSAgent
                                 Value = -999.99
                             })).Distinct().ToList()
                         }).ToList()
-                    }).ToList().AsQueryable();
+                    }).OrderBy(s => s.StatisticGroupID).ToList().AsQueryable();
             }
             catch (Exception ex)
             {

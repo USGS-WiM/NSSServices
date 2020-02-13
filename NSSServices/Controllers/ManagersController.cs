@@ -52,16 +52,17 @@ namespace NSSServices.Controllers
             try
             {
                 return Ok(agent.GetManagers().Select(m=>new Manager() {
-                                                             ID = m.ID,
-                                                             Email = m.Email,
-                                                             FirstName=m.FirstName,
-                                                             LastName = m.LastName,
-                                                             OtherInfo = m.OtherInfo,
-                                                             PrimaryPhone = m.PrimaryPhone,
-                                                             Role = m.Role,
-                                                             SecondaryPhone = m.SecondaryPhone,
-                                                             Username=m.Username
-                                                            }));
+                                                            ID = m.ID,
+                                                            Email = m.Email,
+                                                            FirstName=m.FirstName,
+                                                            LastName = m.LastName,
+                                                            OtherInfo = m.OtherInfo,
+                                                            PrimaryPhone = m.PrimaryPhone,
+                                                            Role = m.Role,
+                                                            SecondaryPhone = m.SecondaryPhone,
+                                                            Username = m.Username,
+                                                            RegionManagers = m.RegionManagers
+                                                        }));
             }
             catch (Exception ex)
             {
@@ -120,7 +121,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}",Name ="Edit Manager")][Authorize(Policy = Policy.AdminOnly)]
+        [HttpPut("{id}",Name ="Edit Manager")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]Manager entity)
         {
@@ -134,16 +135,18 @@ namespace NSSServices.Controllers
                 ObjectToBeUpdated = await agent.GetManager(id);
                 if (ObjectToBeUpdated == null) return new NotFoundObjectResult(entity);
 
-
-                if (!User.IsInRole("Administrator")|| Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid)?.Value) !=id)
+                // managers cannot edit other managers, just themselves
+                if (!User.IsInRole("Administrator") && Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid)?.Value) != id)
                     return new UnauthorizedResult();// return HTTP 401
 
                 ObjectToBeUpdated.FirstName = entity.FirstName;
                 ObjectToBeUpdated.LastName = entity.LastName;
+                ObjectToBeUpdated.Username = entity.Username;
                 ObjectToBeUpdated.OtherInfo = entity.OtherInfo?? entity.OtherInfo;
                 ObjectToBeUpdated.PrimaryPhone = entity.PrimaryPhone?? entity.PrimaryPhone;
                 ObjectToBeUpdated.SecondaryPhone = entity.SecondaryPhone?? entity.SecondaryPhone;
                 ObjectToBeUpdated.Email = entity.Email;
+                ObjectToBeUpdated.RegionManagers = entity.RegionManagers;
 
                 //admin can only change role
                 if(User.IsInRole(Role.Admin) && !string.IsNullOrEmpty(entity.Role))

@@ -1168,10 +1168,10 @@ namespace NSSAgent
 
             if (regionList != null && regionList.Count() > 0)
                 equery = Select<RegionRegressionRegion>().Include(rrr=>rrr.Region).Include(rrr=>rrr.RegressionRegion).ThenInclude(rr=>rr.Equations)
-                       .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
-                               || regionList.Contains(rer.RegionID.ToString())).SelectMany(rr => rr.RegressionRegion.Equations).Include(e => e.RegressionType).AsQueryable();
+                       .Where(rer => (regionList.Contains(rer.Region.Code.ToLower().Trim()) || regionList.Contains(rer.RegionID.ToString())))
+                       .SelectMany(rr => rr.RegressionRegion.Equations).Include(e => e.RegressionType).Where(e => e.Expression != "0").AsQueryable();
             else
-                equery = Select<Equation>().Include(e => e.RegressionType).AsQueryable();
+                equery = Select<Equation>().Include(e => e.RegressionType).Where(e => e.Expression != "0").AsQueryable();
 
             if (regressionRegions != null && regressionRegions.Count() > 0)
                 equery = equery.Include(e=>e.RegressionRegion).Where(e => regressionRegions.Contains(e.RegressionRegionID.ToString().Trim())

@@ -449,6 +449,7 @@ namespace NSSDB.Tests
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (463,11,"Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (464,11,"Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (465,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (469,36,"Default unit");
 
         }
     }

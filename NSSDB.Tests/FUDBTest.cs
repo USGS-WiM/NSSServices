@@ -450,6 +450,21 @@ namespace NSSDB.Tests
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (464,11,"Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (465,11,"Default unit");
             //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (469,36,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (471,36,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (472,50,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (473,36,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (474,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (475,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (476,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (477,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (478,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (479,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (480,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (481,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (482,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (483,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (484,11,"Default unit");
+            //INSERT INTO `nss`.`Variable`(`VariableTypeID`, `UnitTypeID`, `Comments`) VALUES (485,11,"Default unit");
 
         }
     }

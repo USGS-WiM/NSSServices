@@ -91,7 +91,7 @@ namespace NSSAgent
         //RegressionRegions
         IQueryable<RegressionRegion> GetRegressionRegions(List<string> regionList = null, IGeometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
         IQueryable<RegressionRegion> GetManagedRegressionRegions(Manager manager, List<string> regionList = null, IGeometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
-        Task<RegressionRegion> GetRegressionRegion(Int32 ID);
+        IQueryable<RegressionRegion> GetRegressionRegion(Int32 ID, bool getPolygon = false);
         IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID);
         Task<RegressionRegion> Add(RegressionRegion item);
         Task<IEnumerable<RegressionRegion>> Add(List<NSSDB.Resources.RegressionRegion> items);
@@ -457,9 +457,15 @@ namespace NSSAgent
             });
             return query;
         }
-        public Task<RegressionRegion> GetRegressionRegion(int ID)
+        public IQueryable<RegressionRegion> GetRegressionRegion(int regregionID, bool getPolygon = false)
         {
-            return this.Find<NSSDB.Resources.RegressionRegion>(ID);
+            if (getPolygon)
+            {
+                return this.Select<NSSDB.Resources.RegressionRegion>().Where(rr => rr.ID == regregionID).Include("Location");
+            } else
+            {
+                return this.Select<NSSDB.Resources.RegressionRegion>().Where(rr => rr.ID == regregionID);
+            }
         }
         public IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID)
         {
@@ -521,83 +527,6 @@ namespace NSSAgent
 
         #endregion        
         #region Scenarios
-        //public IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0)
-        //{
-        //    IQueryable<ScenarioParameterView> equery = null;
-        //    List<Coefficient> flowCoefficents = new List<Coefficient>();
-        //    try
-        //    {                             
-                
-        //        flowCoefficents = Select<Coefficient>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
-                
-
-        //        List<RegionRegressionRegion> SelectedRegionRegressions = Select<RegionRegressionRegion>().Include("RegressionRegion")
-        //                   .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
-        //                   || regionList.Contains(rer.RegionID.ToString())).ToList();             
-
-
-        //        if (regressionRegionList != null && regressionRegionList.Count() > 0)
-        //            SelectedRegionRegressions = SelectedRegionRegressions.Where(e => regressionRegionList.Contains(e.RegressionRegionID.ToString()) || regressionRegionList.Contains(e.RegressionRegion.Code.ToLower().Trim())).ToList();
-
-        //        equery = GetScenarioParameterView().Where(s => SelectedRegionRegressions.Select(rr => rr.RegressionRegionID).Contains(s.RegressionRegionID));
-                
-
-        //        if (statisticgroupList != null && statisticgroupList.Count() > 0)
-        //            equery = equery.Where(e => statisticgroupList.Contains(e.StatisticGroupTypeID.ToString().Trim())
-        //                                    || statisticgroupList.Contains(e.StatisticGroupTypeCode.ToLower().Trim()));
-
-        //        if (regressionTypeIDList != null && regressionTypeIDList.Count() > 0)
-        //            equery = equery.Where(e => regressionTypeIDList.Contains(e.RegressionTypeID.ToString().Trim())
-        //                                    || regressionTypeIDList.Contains(e.RegressionTypeCode.ToLower().Trim()));
-
-
-        //        return equery.ToList().GroupBy(e => e.StatisticGroupTypeID, e => e, (key, g) => new { groupkey = key, groupedparameters = g })
-        //            .Select(s => new Scenario()
-        //            {
-        //                StatisticGroupID = s.groupkey,
-        //                StatisticGroupName = s.groupedparameters.First().StatisticGroupTypeName,
-        //                RegressionRegions = s.groupedparameters.ToList().GroupBy(e => e.RegressionRegionID, e => e, (key, g) => new { groupkey = key, groupedparameters = g }).ToList()
-        //                .Select(r => new SimpleRegressionRegion()
-        //                {
-        //                    Extensions = extensionMethodList.Where(ex => canIncludeExension(ex, s.groupkey)).Select(ex => getScenarioExtensionDef(ex, s.groupkey)).ToList(),
-        //                    ID = r.groupkey,
-        //                    Name = r.groupedparameters.First().RegressionRegionName,
-        //                    Code = r.groupedparameters.First().RegressionRegionCode,
-        //                    Parameters = r.groupedparameters.Select(p => new Parameter()
-        //                    {
-        //                        ID = p.VariableID,
-        //                        UnitType = getUnit(new UnitType() { ID = p.UnitTypeID, Name = p.UnitName, Abbreviation = p.UnitAbbr, UnitSystemTypeID = p.UnitSystemTypeID }, systemtypeID > 0 ? systemtypeID : p.UnitSystemTypeID),
-        //                        Limits = new Limit() { Min = p.VariableMinValue * this.getUnitConversionFactor(p.UnitTypeID, systemtypeID > 0 ? systemtypeID : p.UnitSystemTypeID), Max = p.VariableMaxValue * this.getUnitConversionFactor(p.UnitTypeID, systemtypeID > 0 ? systemtypeID : p.UnitSystemTypeID) },
-        //                        Code = p.VariableCode,
-        //                        Description = p.VariableDescription,
-        //                        Name = p.VariableName,
-        //                        Value = -999.99
-        //                    }).Union(limitations.Where(l => l.RegressionRegionID == r.groupkey).SelectMany(l => l.Variables).Select(v => new Parameter()
-        //                    {
-        //                        ID = v.VariableType.ID,
-        //                        UnitType = getUnit(v.UnitType, systemtypeID > 0 ? systemtypeID : v.UnitType.UnitSystemTypeID),
-        //                        Code = v.VariableType.Code,
-        //                        Description = v.VariableType.Description,
-        //                        Name = v.VariableType.Name,
-        //                        Value = -999.99
-        //                    })).Union(flowCoefficents.Where(l => l.RegressionRegionID == r.groupkey).SelectMany(l => l.Variables).Select(v => new Parameter()
-        //                    {
-        //                        ID = v.VariableType.ID,
-        //                        UnitType = this.getUnit(v.UnitType, systemtypeID > 0 ? systemtypeID : v.UnitType.UnitSystemTypeID),
-        //                        Code = v.VariableType.Code,
-        //                        Description = v.VariableType.Description,
-        //                        Name = v.VariableType.Name,
-        //                        Value = -999.99
-        //                    })).Distinct().ToList()
-        //                }).ToList()
-        //            }).AsQueryable();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        sm("Error getting Scenario: " + ex.Message,WIM.Resources.MessageType.error);
-        //        throw;
-        //    }
-        //}
         public IQueryable<Scenario> GetScenarios(List<string> regionList=null, IGeometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null)
         {
             Dictionary<Int32, RegressionRegion> regressionRegions = null;
@@ -1142,6 +1071,9 @@ namespace NSSAgent
         }
         public IQueryable<VariableType> GetVariables()
         {
+            // IQueryable<VariableUnitType> unitTypes = this.Select<VariableUnitType>();
+            // return this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableID,
+            // (var, unit) => new VariableType { ID = var.ID, Code = var.Code, Description = var.Description, UnitTypeID = unit.UnitTypeID });
             return this.Select<VariableType>();
         }
         public Task<VariableType> GetVariable(Int32 ID)

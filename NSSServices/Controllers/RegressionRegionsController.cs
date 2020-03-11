@@ -113,13 +113,13 @@ namespace NSSServices.Controllers
 
         [HttpGet("{id}", Name ="Regression Region")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/GetDistinct.md")]
-        public async Task<IActionResult> Get(int id, [FromQuery] bool getPolygon = false)
+        public async Task<IActionResult> Get(int id, [FromQuery] bool getpolygon = false)
         {
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok(agent.GetRegressionRegion(id, getPolygon).FirstOrDefault());
+                return Ok(agent.GetRegressionRegion(id, getpolygon).FirstOrDefault());
             }
             catch (Exception ex)
             {

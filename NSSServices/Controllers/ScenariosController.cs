@@ -171,7 +171,7 @@ namespace NSSServices.Controllers
                 if (regressionregionID < 1 || statisticgroupID < 1 || regressiontypeID < 1)
                     return new BadRequestResult();
 
-                RegressionRegion rr = await agent.GetRegressionRegion(regressionregionID);
+                RegressionRegion rr = agent.GetRegressionRegion(regressionregionID).FirstOrDefault();
                 if (!IsAuthorizedToEdit(rr)) return new UnauthorizedResult();
 
 

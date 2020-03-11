@@ -52,18 +52,18 @@ namespace NSSServices.Controllers
             List<string> regressiontypeList = null;
             try
             {
-                                
+
                 RegionList = parse(regions);
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypes);
                 if (IsAuthenticated)
                 {
-                        sm("Is authenticated, will only retrieve managed regression regions");
-                        entities = agent.GetManagedRegressionRegions(LoggedInUser(), RegionList, null, statisticgroupList, regressiontypeList);
+                    sm("Is authenticated, will only retrieve managed regression regions");
+                    entities = agent.GetManagedRegressionRegions(LoggedInUser(), RegionList, null, statisticgroupList, regressiontypeList);
                 }
                 else
                     entities = agent.GetRegressionRegions(RegionList,null, statisticgroupList,regressiontypeList);
-                
+
                 if (bycitation)
                 {
                     return Ok(agent.GroupRegressionRegionsByCitation(entities));
@@ -113,13 +113,13 @@ namespace NSSServices.Controllers
 
         [HttpGet("{id}", Name ="Regression Region")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/GetDistinct.md")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id, [FromQuery] bool getPolygon = false)
         {
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok(await agent.GetRegressionRegion(id));
+                return Ok(agent.GetRegressionRegion(id, getPolygon).FirstOrDefault());
             }
             catch (Exception ex)
             {
@@ -138,7 +138,7 @@ namespace NSSServices.Controllers
                 //entity must include citation
                 if (!isValid(entity)) return BadRequest(); // This returns HTTP 404
                 Region regionEntity = agent.GetRegionByIDOrCode(region);
-                if (regionEntity == null) return BadRequest($"No region exists with {region} identifier.");              
+                if (regionEntity == null) return BadRequest($"No region exists with {region} identifier.");
                 if (!IsAuthorizedToEdit(regionEntity)) return Unauthorized();
 
                 entity.StatusID = (entity.CitationID != null || entity.Citation != null) ? (int?)2 : (int?)1;
@@ -157,7 +157,7 @@ namespace NSSServices.Controllers
             catch (Exception ex)
             {
                 return await HandleExceptionAsync(ex);
-            }            
+            }
         }
 
         [HttpPost("[action]", Name ="Regression Region Batch Upload")]
@@ -172,8 +172,8 @@ namespace NSSServices.Controllers
                 Region regionEntity = agent.GetRegionByIDOrCode(region);
                 if (regionEntity == null) return BadRequest($"No region exists with {region} identifier.");
                 if (!IsAuthorizedToEdit(regionEntity)) return Unauthorized();
-                                
-                entities.ForEach(rr=> 
+
+                entities.ForEach(rr=>
                 {
                     rr.ID = 0;
                     rr.RegionRegressionRegions = new List<RegionRegressionRegion>() { new RegionRegressionRegion { RegionID = regionEntity.ID, RegressionRegion = rr } };
@@ -199,7 +199,7 @@ namespace NSSServices.Controllers
 
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                RegressionRegion rr = await agent.GetRegressionRegion(id);
+                RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();
                 if (rr == null) return BadRequest($"No regression region exists with {id} identifier.");
                 if (!IsAuthorizedToEdit(rr)) return Unauthorized();
 
@@ -209,7 +209,7 @@ namespace NSSServices.Controllers
             {
                 return await HandleExceptionAsync(ex);
             }
-        }        
+        }
 
         [HttpDelete("{id}", Name ="Delete Regression Region")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Delete.md")]
@@ -218,7 +218,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (id < 1) return new BadRequestResult();
-                RegressionRegion rr = await agent.GetRegressionRegion(id);
+                RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();
                 if (rr == null) return BadRequest($"No regression region exists with {id} identifier.");
                 if (!IsAuthorizedToEdit(rr)) return Unauthorized();
 

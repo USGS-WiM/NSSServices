@@ -13,5 +13,6 @@ namespace NSSDB.Resources
         public int ID { get; set; }
         [Required]
         public Geometry Geometry { get; set; }
+        public string AssociatedCodes { get; set; }
     }
 }

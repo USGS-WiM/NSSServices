@@ -136,7 +136,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                RegressionRegion regRegion = await agent.GetRegressionRegion(regressionRegionID);
+                RegressionRegion regRegion = agent.GetRegressionRegion(regressionRegionID).FirstOrDefault();
 
                 if (regRegion == null) return new BadRequestResult();
                 if (!IsAuthorizedToEdit(regRegion)) return new UnauthorizedResult();

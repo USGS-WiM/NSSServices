@@ -439,6 +439,22 @@ INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (463,11,'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (464,11,'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (465,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (629,36,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (630,36,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (631,50,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (633,36,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (634,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (635,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (636,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (637,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (638,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (639,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (640,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (641,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (642,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (643,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (644,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (645,11,'Default unit');
 
 /*update regions*/
 UPDATE "nss"."Regions" SET "Code" = 'MO_SL' WHERE "Code" = 'SL';

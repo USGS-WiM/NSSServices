@@ -1,8 +1,8 @@
 ![WiM](wimlogo.png)
 
-# Navigation Services
+# NSS Services
 
-StreamStats supporting wateruse REST web services.
+StreamStats supporting National StreamFlow Statistics REST web services.
 
 ### Prerequisites
 
@@ -55,7 +55,8 @@ To push tags to remote origin: `git push origin --tags`
 
 ## Authors
 
-* **[Jeremy Newson](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Jeremy Newson](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
+* **[Katrin Jacobsen](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
 
 See also the list of [contributors](../../graphs/contributors) who participated in this project.
 

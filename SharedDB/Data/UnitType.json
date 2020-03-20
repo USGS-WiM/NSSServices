@@ -1,0 +1,357 @@
+
+    [
+        {
+            "ID": "1",
+            "Name": "dimensionless",
+            "Abbreviation": "dim",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "2",
+            "Name": "square kilometers",
+            "Abbreviation": "km^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "3",
+            "Name": "millimeters",
+            "Abbreviation": "mm",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "4",
+            "Name": "degrees C",
+            "Abbreviation": "deg C",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "5",
+            "Name": "kilometer",
+            "Abbreviation": "km",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "6",
+            "Name": "meters per kilometer",
+            "Abbreviation": "m/km",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "8",
+            "Name": "meters",
+            "Abbreviation": "m",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "9",
+            "Name": "millimeters per hr",
+            "Abbreviation": "mm/hr",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "10",
+            "Name": "kilometer per kilometer",
+            "Abbreviation": "km/km",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "11",
+            "Name": "percent",
+            "Abbreviation": "%",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "12",
+            "Name": "decimal fraction",
+            "Abbreviation": "dec fract",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "13",
+            "Name": "cubic meter per second",
+            "Abbreviation": "m^3/s",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "14",
+            "Name": "meter per meter",
+            "Abbreviation": "m/m",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "15",
+            "Name": "1st-order streams per square kilometer",
+            "Abbreviation": "1-O str/km^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "16",
+            "Name": "kilometer per square kilometer",
+            "Abbreviation": "km/km^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "17",
+            "Name": "persons per square kilometer",
+            "Abbreviation": "persons/km^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "18",
+            "Name": "decimal degrees",
+            "Abbreviation": "dec deg",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "19",
+            "Name": "square kilometer per square kilometer",
+            "Abbreviation": "km^2/km^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "20",
+            "Name": "millimeter per millimeter",
+            "Abbreviation": "mm/mm",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "21",
+            "Name": "millimeter per day",
+            "Abbreviation": "mm/day",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "22",
+            "Name": "meter per day",
+            "Abbreviation": "m/day",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "23",
+            "Name": "square kilometer per kilometer",
+            "Abbreviation": "km^2/km",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "24",
+            "Name": "per square kilometer",
+            "Abbreviation": "/km^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "25",
+            "Name": "hours",
+            "Abbreviation": "hrs",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "26",
+            "Name": "years",
+            "Abbreviation": "yrs",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "27",
+            "Name": "Log base 10",
+            "Abbreviation": "Log 10",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "28",
+            "Name": "homes per square kilometer",
+            "Abbreviation": "homes/km^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "29",
+            "Name": "days per log cycle",
+            "Abbreviation": "days/log cycle",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "30",
+            "Name": "days",
+            "Abbreviation": "days",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "31",
+            "Name": "cubic meters per second per square kilometer",
+            "Abbreviation": "m^3/s/km^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "32",
+            "Name": "square meters",
+            "Abbreviation": "m^2",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "33",
+            "Name": "Log base 10 squared",
+            "Abbreviation": "(log 10)^2",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "34",
+            "Name": "micrometers per second",
+            "Abbreviation": "um/s",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "35",
+            "Name": "square miles",
+            "Abbreviation": "mi^2",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "36",
+            "Name": "inches",
+            "Abbreviation": "in",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "37",
+            "Name": "degrees F",
+            "Abbreviation": "deg F",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "38",
+            "Name": "thousand feet",
+            "Abbreviation": "1000 ft",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "39",
+            "Name": "feet per mi",
+            "Abbreviation": "ft/mi",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "40",
+            "Name": "miles",
+            "Abbreviation": "mi",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "41",
+            "Name": "feet",
+            "Abbreviation": "ft",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "42",
+            "Name": "inches per hour",
+            "Abbreviation": "in/hr",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "43",
+            "Name": "miles per mile",
+            "Abbreviation": "mi/mi",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "44",
+            "Name": "cubic feet per second",
+            "Abbreviation": "ft^3/s",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "45",
+            "Name": "foot per foot",
+            "Abbreviation": "ft/ft",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "46",
+            "Name": "1st-order streams per square mile",
+            "Abbreviation": "1-O str/mi^2",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "47",
+            "Name": "miles per square mile",
+            "Abbreviation": "mi/mi^2",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "48",
+            "Name": "persons per square mile",
+            "Abbreviation": "persons/mi^2",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "49",
+            "Name": "square mile per square mile",
+            "Abbreviation": "mi^2/mi^2",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "50",
+            "Name": "inch per inch",
+            "Abbreviation": "in/in",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "51",
+            "Name": "in per day",
+            "Abbreviation": "in/day",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "52",
+            "Name": "ft per day",
+            "Abbreviation": "ft/day",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "53",
+            "Name": "square mile per mile",
+            "Abbreviation": "mi^2/mi",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "54",
+            "Name": "per square mile",
+            "Abbreviation": "/mi^2",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "55",
+            "Name": "homes per acre",
+            "Abbreviation": "homes/acre",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "56",
+            "Name": "cubic feet per second per square mile",
+            "Abbreviation": "ft^3/s/mi^2",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "57",
+            "Name": "square feet",
+            "Abbreviation": "ft^2",
+            "UnitSystemTypeID": "2"
+        },
+        {
+            "ID": "58",
+            "Name": "degrees",
+            "Abbreviation": "°",
+            "UnitSystemTypeID": "3"
+        },
+        {
+            "ID": "59",
+            "Name": "square meters per day",
+            "Abbreviation": "m^2/day",
+            "UnitSystemTypeID": "1"
+        },
+        {
+            "ID": "60",
+            "Name": "square feet per day",
+            "Abbreviation": "ft^2/day",
+            "UnitSystemTypeID": "2"
+        }
+    ]

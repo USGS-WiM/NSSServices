@@ -1,190 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>    
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{800AA32C-C6F5-4661-B13A-FEAA25FFCE50}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NSSDB</RootNamespace>
-    <AssemblyName>NSSDB</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WiMHypermedia, Version=1.0.6218.25967, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WiMHypermedia.1.0.6218.25967\lib\net45\WiMHypermedia.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Compile Remove="Logger\LoggerProvider.cs" />
+    <Compile Remove="Resources\RegressionType.cs" />
+    <Compile Remove="Resources\StatisticGroupType.cs" />
+    <Compile Remove="Resources\UnitConversionFactor.cs" />
+    <Compile Remove="Resources\UnitSystemType.cs" />
+    <Compile Remove="Resources\UnitType.cs" />
+    <Compile Remove="Resources\VariableType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Citation.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Equation.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EquationError.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="EquationUnitType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ErrorType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Limitation.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="nssEntities.cs" />
-    <Compile Include="NSSEntityModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NSSEntityModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="NSSEntityModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="NSSEntityModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NSSEntityModel.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="nssEntityModelsHypermedia.cs" />
-    <Compile Include="PredictionInterval.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Region.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RegionRegressionRegion.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RegressionRegion.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RegressionRegionCoefficient.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RegressionType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RegressionTypeDisplayName.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="StatisticGroupType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="UnitConversionFactor.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="UnitSystemType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="UnitType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="UserType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Variable.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="VariableType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="VariableUnitType.cs">
-      <DependentUpon>NSSEntityModel.tt</DependentUpon>
-    </Compile>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
+    <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="1.15.5" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="2.2.4" />
+    <PackageReference Include="WiM.DBUtilities" Version="1.1.9" />
+    <PackageReference Include="WIM.Hypermedia" Version="1.1.3" />
+    <PackageReference Include="WIM.Resources" Version="1.2.2" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <EntityDeploy Include="NSSEntityModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>NSSEntityModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="NSSEntityModel.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>NSSEntityModel.edmx</DependentUpon>
-      <LastGenOutput>NSSEntityModel.Context.cs</LastGenOutput>
-    </None>
-    <None Include="NSSEntityModel.edmx.diagram">
-      <DependentUpon>NSSEntityModel.edmx</DependentUpon>
-    </None>
-    <None Include="NSSEntityModel.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>NSSEntityModel.edmx</DependentUpon>
-      <LastGenOutput>NSSEntityModel.cs</LastGenOutput>
-    </None>
-    <None Include="packages.config" />
+    <Folder Include="Logger\" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <ProjectReference Include="..\SharedDB\SharedDB.csproj" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

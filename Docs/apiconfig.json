@@ -1,0 +1,899 @@
+[
+  {
+    "name": "Citations",
+    "description": {
+      "string": "Represents a citations."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "citations",
+            "description": {
+              "string": "Returns a list of citations."
+            },
+            "name": "All Citations",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "String",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "required": false,
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+			  },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "required": false,
+                "description": "Comma separated list of statistic group ID's or code parameters to limit citation list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "required": false,
+                "description": "Comma separated list of regression type ID's or code parameters to limit citation list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+					}
+              }
+            ]
+          },
+          {
+            "uri": "regions/{region}/citations",
+            "description": {
+              "string": "Returns the specified regions list of citations."
+            },
+            "name": "Region Citations",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "required": false,
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "required": false,
+                "description": "Comma separated list of statistic group ID's or code parameters to limit citation list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+				}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "required": false,
+                "description": "Comma separated list of regression type ID's or code parameters to limit citation list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+				}
+              }
+            ]
+          },
+          {
+            "uri": "citations/{citationID}",
+            "description": {
+              "string": "Returns a citation based on specified identifier."
+            },
+            "name": "A Citation",
+            "parameters": [
+              {
+                "name": "citationID",
+                "type": "string",
+                "required": true,
+                "description": "Citation unique identifier"
+              }
+            ]
+          },
+          {
+            "uri": "citations",
+            "description": {
+              "string": "Returns the citations for a specified list of regression region identifiers or codes."
+            },
+            "name": "Regression region citations",
+            "parameters": [
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "required": true,
+                "description": "Comma separated list of regression region ID's or code parameters to limit citation list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+				}
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Error Type",
+    "description": {
+      "string": "Available error type resource provides error types used in NSS."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "errors",
+            "description": {
+              "string": "Returns a list of errors."
+            },
+            "name": "All Errors",
+            "parameters": []
+          },
+          {
+            "uri": "errors/{errortypeID}",
+            "description": {
+              "string": "Returns an error by specified identifier."
+            },
+            "name": "An Error",
+            "parameters": [
+              {
+                "name": "errortypeID",
+                "type": "string",
+                "required": true,
+                "description": "error type unique identifier"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Region",
+    "description": {
+      "string": "The region resource provides regions that are currently in use by NSS."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "regions",
+            "description": {
+              "string": "Returns a list of all regions in nss."
+            },
+            "name": "All Regions",
+            "parameters": []
+          },
+          {
+            "uri": "regions/{regionsID}",
+            "description": {
+              "string": "Returns a region by specified identifier."
+            },
+            "name": "A Region",
+            "parameters": [
+              {
+                "name": "regionsID",
+                "type": "string",
+                "required": true,
+                "description": "Region's unique identifier"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },{
+    "name": "Regression Regions",
+    "description": {
+      "string": "The regression region resource represents the region equations or rather the region in which the equation were created."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "regressionregions",
+            "description": {
+              "string": "Returns a list of all regression regions available in NSS."
+            },
+            "name": "All Regression Regions",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+					}
+              }
+            ]            
+          },
+          {
+            "uri": "regressionregions/{regressionregionID}",
+            "description": {
+              "string": "Returns a regression region by unique identifier or code."
+            },
+            "name": "Regression region",
+            "parameters": [
+              {
+                "name": "regressionregionID",
+                "type": "string",
+                "description": "regression region ID's or unique code."
+              }
+            ]            
+          },
+          {
+            "uri": "regions/{region}/regressionregions",
+            "description": {
+              "string": "Returns a list of a region's regression regions by region identifier or code."
+            },
+            "name": "Regions Regression Regions",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+					}
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },  
+  {
+    "name": "Regression Types",
+    "description": {
+      "string": "Represents the statistic variable to be computed, such as 2 year peak flood."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "regressiontypes",
+            "description": {
+              "string": "Returns a list of all available regression types in NSS."
+            },
+            "name": "All Regression Types",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "description": "Region 2 letter abbrev or ID of requesed region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit regression type list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit regression type list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              }
+            ]
+          },
+          {
+            "uri": "regions/{region}/regressiontypes",
+            "description": {
+              "string": "Returns a list of all regression types for a specified region."
+            },
+            "name": "Region Regression Types",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requesed region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit regression type list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit regression type list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              }
+            ]
+          },
+          {
+            "uri": "regressiontypes/{regressiontypeID}",
+            "description": {
+              "string": "Returns a specific regression type based on specific identifier."
+            },
+            "name": "A Regression Type",
+            "parameters": [
+              {
+                "name": "regressiontypeID",
+                "type": "string",
+                "description": "Regression type unique ID"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Statistic Groups",
+    "description": {
+      "string": "The Statistic group resource represents a grouping of similar statistics. Such as Low-flow, annual, and peak flow statistics etc."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "statisticgroups",
+            "description": {
+              "string": "Returns a list of statistic groups."
+            },
+            "name": "All Statistic Groups",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+					}
+              }
+            ]            
+          },
+          {
+            "uri": "regions/{region}/statisticgroups",
+            "description": {
+              "string": "Returns a list of statistic group for a specific region."
+            },
+            "name": "Region Statistic Groups",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit statistic group list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              }
+            ]
+          },
+          {
+            "uri": "statisticgroups/{statisticgroupID}",
+            "description": {
+              "string": "Returns a statistic group for a specific identifier."
+            },
+            "name": "A Statistic Groups",
+            "parameters": [
+              {
+                "name": "statisticgroupID",
+                "type": "number",
+                "required": true,
+                "description": "Statistic Group unique ID."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Scenario",
+    "description": {
+      "string": "The Scenario resource represents the available grouped regional statistics and metadata/parameters needed to compute for the region. Scenario resources are intended to be used as a template type object whereas regression region parameters can be populated and passed back to the services within the body of the execute request."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "scenarios",
+            "description": {
+              "string": "Returns a list of scenarios."
+            },
+            "name": "All Scenarios",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "unitsystems",
+                "type": "number",
+                "description": "ID representing the measuring unit system, 1=Metric, 2=US Customary, 3=Universal."
+              }
+            ]
+          },
+          {
+            "uri": "regions/{region}/scenarios",
+            "description": {
+              "string": "Returns a list of a region's scenarios."
+            },
+            "name": "Region Scenarios",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "unitsystems",
+                "type": "number",
+                "description": "ID representing the measuring unit system, 1=Metric, 2=US Customary, 3=Universal."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Unspecified",
+        "uriList": [
+          {
+            "uri": "scenarios/estimate",
+            "description": {
+              "string": "Returns a list of scenarios with computed results."
+            },
+            "name": "All Scenarios",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "unitsystems",
+                "type": "number",
+                "description": "ID representing the measuring unit system, 1=Metric, 2=US Customary, 3=Universal."
+              }
+            ],
+            "body":[
+              {
+                "name": "entities",
+                "type": "array(Scenario)",
+                "required": true,
+                "description": "List of scenarios to estimate (with valid parameters populated).",
+                "link":{
+                  "href":"All Scenarios",
+                  "rel":"Scenarios",
+                  "method":"GET"
+                }
+              }
+            ]
+          },
+          {
+            "uri": "regions/{region}/scenarios/execute",
+            "description": {
+              "string": "This service returns a list of a region's scenarios with computed results."
+            },
+            "name": "Region Scenarios",
+            "parameters": [
+              {
+                "name": "region",
+                "type": "string",
+                "required": true,
+                "description": "Region 2 letter abbrev or ID of requested region.",
+				"link":{
+					"href": "Region",
+					"rel": "All Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressionregions",
+                "type": "number",
+                "description": "Comma separated list of regression region ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Regression Regions",
+					"rel": "All Regression Regions",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "statisticgroups",
+                "type": "number",
+                "description": "Comma separated list of statistic group ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Statistic Groups",
+					"rel": "All Statistic Groups",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "regressiontypes",
+                "type": "string",
+                "description": "Comma separated list of regression type ID's or code parameters to limit scenario list.",
+				"link":{
+					"href": "Regression Types",
+					"rel": "All Regression Types",
+					"method": "GET"
+					}
+              },
+              {
+                "name": "unitsystems",
+                "type": "number",
+                "description": "ID representing the measuring unit system, 1=Metric, 2=US Customary, 3=Universal."
+              }
+            ],
+            "body":[
+              {
+                "name": "entities",
+                "type": "array(Scenario)",
+                "required": true,
+                "description": "List of scenarios to estimate (with valid parameters populated).",
+                "link":{
+                  "href":"All Scenarios",
+                  "rel":"Scenarios",
+                  "method":"GET"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Unit Type",
+    "description": {
+      "string": "Represents the unit type."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "units",
+            "description": {
+              "string": "Returns a list of all available units."
+            },
+            "name": "All Units",
+            "parameters": [
+              {
+                "name": "unitsystems",
+                "type": "number",
+                "description": "ID representing the measuring unit system, 1=Metric, 2=US Customary, 3=Universal."
+              }
+            ]
+          },
+          {
+            "uri": "units/{unitid}",
+            "description": {
+              "string": "Returns a unit."
+            },
+            "name": "A unit",
+            "parameters": [
+              {
+                "name": "unitid",
+                "type": "number",
+                "required": true,
+                "description": "unit identifier."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Variable Type",
+    "description": {
+      "string": "The variable types resource represents variable types used within NSS."
+    },
+    "methods": [
+      {
+        "type": "GET",
+        "uriList": [
+          {
+            "uri": "variabletypes",
+            "description": {
+              "string": "returns a list of all available variable types."
+            },
+            "name": "All Variable Types",
+            "parameters": []
+          },
+          {
+            "uri": "variabletypes/{id}",
+            "description": {
+              "string": "Returns a specified variable type by identifier."
+            },
+            "name": "A Variable Type",
+            "parameters": [
+              {
+                "name": "id",
+                "type": "number",
+                "required": true,
+                "description": "variable type identifier."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

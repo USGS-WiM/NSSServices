@@ -1,0 +1,1 @@
+The status resource represents the status of the permit.

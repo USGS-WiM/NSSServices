@@ -455,6 +455,14 @@ INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (643,11,'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (644,11,'Default unit');
 INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (645,11,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (650,1,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (653,1,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (654,1,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (655,1,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (652,40,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (657,40,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (658,40,'Default unit');
+INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES (659,40,'Default unit');
 
 /*update regions*/
 UPDATE "nss"."Regions" SET "Code" = 'MO_SL' WHERE "Code" = 'SL';

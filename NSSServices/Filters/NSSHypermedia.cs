@@ -37,6 +37,11 @@ namespace NSSServices.Filters
         protected override List<WIM.Resources.Link> GetEnumeratedHypermedia(IHypermedia entity)
         {
             List<WIM.Resources.Link> results = null;
+
+            // grab path base (nssservices or whatever is alias in IIS)
+            var request = UrlHelper.ActionContext.HttpContext.Request;
+            string pathBase = request.PathBase.ToUriComponent();
+
             switch (entity.GetType().Name.ToLower())
             {
                 //case "citation":
@@ -45,7 +50,7 @@ namespace NSSServices.Filters
                 //    break;
                 case "scenario":
                     results = new List<WIM.Resources.Link>();
-                    results.Add(Hyperlinks.Generate(BaseURI,"Citations",UrlHelper.RouteUrl("Region_Citations")+$"nssservices/citations?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}",WIM.Resources.refType.GET));
+                    results.Add(Hyperlinks.Generate(BaseURI + pathBase, "Citations",UrlHelper.RouteUrl("Region_Citations")+$"/citations?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}",WIM.Resources.refType.GET));
                     break;
                 default:
                     break;
@@ -58,6 +63,11 @@ namespace NSSServices.Filters
         protected override List<WIM.Resources.Link> GetReflectedHypermedia(IHypermedia entity)
         {
             List<WIM.Resources.Link> results = null;
+
+            // grab path base (nssservices or whatever is alias in IIS)
+            var request = UrlHelper.ActionContext.HttpContext.Request;
+            string pathBase = request.PathBase.ToUriComponent();
+
             switch (entity.GetType().Name.ToLower())
             {
                 case "citation":
@@ -67,7 +77,7 @@ namespace NSSServices.Filters
                     break;
                 case "scenario":
                     results = new List<WIM.Resources.Link>();
-                    results.Add(Hyperlinks.Generate(BaseURI, "Citations", UrlHelper.RouteUrl("Citations") + $"nssservices/citations?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}", WIM.Resources.refType.GET));
+                    results.Add(Hyperlinks.Generate(BaseURI + pathBase, "Citations", UrlHelper.RouteUrl("Citations") + $"/citations?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}", WIM.Resources.refType.GET));
                     break;
                 default:
                     break;

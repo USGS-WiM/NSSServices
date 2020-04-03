@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace NSSServices
 {
@@ -8,21 +10,24 @@ namespace NSSServices
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
-        }
-
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseKestrel(options => options.AddServerHeader = false)
+            var host = new HostBuilder()
+            .UseContentRoot(Directory.GetCurrentDirectory())
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseKestrel(serverOptions => serverOptions.AddServerHeader = false)
                 //.ConfigureLogging((context,logging)=> {
-                    //var env = context.HostingEnvironment;
-                    //var config = context.Configuration.GetSection("Logging");
-                    //logging.AddConfiguration(config);
-                    //logging.AddConsole();
-                    //logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
+                //var env = context.HostingEnvironment;
+                //var config = context.Configuration.GetSection("Logging");
+                //logging.AddConfiguration(config);
+                //logging.AddConsole();
+                //logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
                 //})
-                .UseStartup<Startup>()
-                .Build();
+                .UseStartup<Startup>();
+            })
+            .Build();
+
+            host.Run();
+        }
     }
 
 }

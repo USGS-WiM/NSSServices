@@ -52,7 +52,7 @@ namespace FU_NSSDB
         }
         #endregion        
         #region "Methods"
-        public List<T> GetItems<T>(SQLType type, params object[] args)
+        public IEnumerable<T> GetItems<T>(SQLType type, params object[] args)
         {
             string sql = string.Empty;
             try

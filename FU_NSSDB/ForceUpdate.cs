@@ -14,7 +14,7 @@
 //   purpose: Forces and update to Streamstats from an access SSDB
 //          
 //discussion: 
-//Access connection using odbc https://mrojas.ghost.io/msaccess-in-dotnetcore/
+// For 64bit MS Access connection using odbc https://mrojas.ghost.io/msaccess-in-dotnetcore/
 // must download and install https://www.microsoft.com/en-us/download/details.aspx?id=13255 for some reason, even if you have access installed.
 
 #region "Comments"
@@ -57,7 +57,8 @@ namespace FU_NSSDB
         #region Constructors
         public ForceUpdate(string dbusername, string dbpassword, string accessdb)
         {
-            SSDBConnectionstring = string.Format(@"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};dbq={0}", accessdb);
+            //for 64bit driver add (*.mdb, *.accdb) options
+            SSDBConnectionstring = string.Format(@"Driver={{Microsoft Access Driver (*.mdb)}};dbq={0}", accessdb);
             NSSDBConnectionstring = string.Format("Server=test.c69uuui2tzs0.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "StatsDB", dbusername, dbpassword);
 
             init();
@@ -88,6 +89,10 @@ namespace FU_NSSDB
             var diffVariable = ssdbDBVariableList.Except(DBVariableList).ToList();
             var diffSG = ssdbStatisticGroupList.Except(DBStatisticGroupList).ToList();
             var diffRegList = ssdbRegressionList.Except(DBregressionList).ToList();
+
+            if (diffVariable.Count > 0) createUpdateList("variabletype",diffVariable);
+            if (diffRegList.Count > 0) createUpdateList("RegressionType", diffRegList);
+            if (diffSG.Count > 0) createUpdateList("StatisticGroupType", diffSG);
 
             return diffUnits.Count < 2 && diffVariable.Count < 1 && diffSG.Count < 1 && diffRegList.Count < 1;
 
@@ -285,6 +290,16 @@ namespace FU_NSSDB
             System.Diagnostics.Debug.WriteLine(msg);
             Console.WriteLine(msg);
             this._message.Add(msg);
+        }
+        private void createUpdateList(string filename, List<string> diffList)
+        {
+            
+            using (TextWriter tw = new StreamWriter("..\\"+filename+".txt"))
+            {
+                foreach (var s in diffList)
+                    tw.WriteLine(s);
+            }
+           
         }
         #endregion
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,6 @@ using SharedDB;
 using NSSAgent;
 using NSSServices.Filters;
 using WIM.Security.Authentication.Basic;
-using Microsoft.AspNetCore.Mvc;
 using SharedAgent;
 using WIM.Services.Analytics;
 using WIM.Utilities.ServiceAgent;
@@ -32,13 +32,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WIM.Utilities.Resources;
 using NSSAgent.Resources;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NSSServices
 {
     public class Startup
     {
         private string _hostKey = "USGSWiM_HostName";
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -57,6 +58,8 @@ namespace NSSServices
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
+
             //Transient objects are always different; a new instance is provided to every controller and every service.
             //Singleton objects are the same for every object and every request.
             //Scoped objects are the same within a request, but different across different requests.
@@ -125,7 +128,7 @@ namespace NSSServices
                                                                  .AllowAnyMethod()
                                                                  .AllowAnyHeader()
                                                                  .WithExposedHeaders(new string[]{this._hostKey,X_MessagesDefault.msgheader})
-                                                                 .AllowCredentials());
+                                                                 );
             });
             
             services.AddMvc(options =>
@@ -141,18 +144,20 @@ namespace NSSServices
             })
                     //.AddXmlSerializerFormatters()
                     //.AddXmlDataContractSeria‌​lizerFormatters()
-                    .AddJsonOptions(options => loadJsonOptions(options));
+                    .AddNewtonsoftJson(options => loadJsonOptions(options));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             // global policy - assign here or on each controller
             app.UseX_Messages(option => { option.HostKey = this._hostKey;});
-            app.UseAuthentication();
+            app.UseRouting();
             app.UseCors("CorsPolicy");
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.Use_Analytics();
-            app.UseMvc();
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
 
         #region Helper Methods
@@ -168,7 +173,7 @@ namespace NSSServices
                 Policy.AdminOnly,
                 policy => policy.RequireRole(Role.Admin));
         }
-        private void loadJsonOptions(MvcJsonOptions options)
+        private void loadJsonOptions(MvcNewtonsoftJsonOptions options)
         {
             //options.SerializerSettings.TraceWriter = new memoryTraceWriter();
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;

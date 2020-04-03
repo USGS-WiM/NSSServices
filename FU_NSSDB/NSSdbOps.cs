@@ -194,21 +194,34 @@ namespace FU_NSSDB
                     break;
 
                 case SQLType.e_regressiontype:
-                    results = @"SELECT DISTINCT sl.StatLabel
+                    /*results = @"SELECT DISTINCT sl.StatLabel
                                 FROM (DepVars dv
-                                LEFT JOIN StatLabel sl on (dv.StatisticLabelID = sl.StatisticLabelID))";
+                                LEFT JOIN StatLabel sl on (dv.StatisticLabelID = sl.StatisticLabelID))";*/
+
+                    results = @"SELECT DISTINCT (0-1) as ID, sl.StatLabel as Code, sl.Definition as Description, sl.StatisticLabel as Name
+                                FROM (Statistic s
+                                LEFT JOIN StatLabel sl on (s.StatisticLabelID = sl.StatisticLabelID))
+                                LEFT JOIN StatType st on (sl.statisticTypeID = st.StatisticTypeID)
+                                WHERE st.DefType = 'FS';";
                     break;
                 case SQLType.e_unittype:
                     results = @"SELECT DISTINCT MetricAbbrev FROM Units UNION SELECT EnglishAbbrev FROM Units";
                     break;
                 case SQLType.e_variabletype:
                     //select all variables used in equations and report.
-                    results = @"SELECT DISTINCT sl.StatLabel 
+                    /*results = @"SELECT DISTINCT sl.StatLabel 
                                 FROM ([Parameters] p 
-                                LEFT JOIN StatLabel sl ON ( p.StatisticLabelID = sl.StatisticLabelID))";
+                                LEFT JOIN StatLabel sl ON ( p.StatisticLabelID = sl.StatisticLabelID))";*/
+                    results = @"SELECT DISTINCT (0-1) as ID, sl.StatLabel as Code, sl.Definition as Description, sl.StatisticLabel as Name
+                                FROM (Statistic s
+                                LEFT JOIN StatLabel sl on (s.StatisticLabelID = sl.StatisticLabelID))
+                                LEFT JOIN StatType st on (sl.statisticTypeID = st.StatisticTypeID)
+                                WHERE st.DefType = 'BC';";
                     break;
                 case SQLType.e_statisticgrouptype:
-                    results = @"SELECT DISTINCT st.StatisticTypeCode FROM StatType st WHERE st.DefType ='FS'";
+                    //results = @"SELECT DISTINCT st.StatisticTypeCode FROM StatType st WHERE st.DefType ='FS'";
+                    results = @"SELECT DISTINCT (0-1) as ID, st.StatisticTypeCode as Code, st.StatisticType as Name 
+                                FROM StatType st WHERE st.DefType ='FS'";
                     break;
                 default:
                     sm("invalid sqltype");

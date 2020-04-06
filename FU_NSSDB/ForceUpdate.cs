@@ -68,9 +68,9 @@ namespace FU_NSSDB
         public bool VerifyLists()
         {
             List<string> DBUnitAbbr = this.unittypeList.Select(k => k.Abbreviation.Trim()).ToList();
-            List<string> DBVariableList = this.variableTypeList.Select(vt => vt.Code.Trim()).ToList();
-            List<string> DBStatisticGroupList = this.statisticGroupTypeList.Select(vt => vt.Code.Trim()).ToList();
-            List<string> DBregressionList = this.regressionTypeList.Select(vt => vt.Code.Trim()).ToList();
+            List<string> DBVariableList = this.variableTypeList.Select(vt => vt.Code.Trim().ToUpper()).ToList();
+            List<string> DBStatisticGroupList = this.statisticGroupTypeList.Select(vt => vt.Code.Trim().ToUpper()).ToList();
+            List<string> DBregressionList = this.regressionTypeList.Select(vt => vt.Code.Trim().ToUpper()).ToList();
 
             List<string> ssdbUnitAbbr = null;
             List<NSSVariableType> ssdbDBVariableList = null;

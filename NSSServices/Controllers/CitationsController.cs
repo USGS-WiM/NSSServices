@@ -60,6 +60,11 @@ namespace NSSServices.Controllers
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypes);
 
+                if (RegionList.Count == 0 && regressionRegionList.Count == 0 && statisticgroupList.Count == 0 && regressiontypeList.Count == 0)
+                {
+                    throw new BadRequestException("No required parameters provided");
+                }
+
                 if (IsAuthenticated)
                 {
                     sm("Is authenticated, will only retrieve managed citations");

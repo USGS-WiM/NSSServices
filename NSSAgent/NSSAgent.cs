@@ -717,21 +717,11 @@ namespace NSSAgent
         }
         public Double RoundValue(double num)
         {
-            var x = num;
-            var precision = 0;
-            if ((x > 1000000) && (x < 10000000))
-                precision = 10000;
-            if ((x > 100000) && (x < 1000000))
-                precision = 1000;
-            if ((x > 10000) && (x < 100000))
-                precision = 100;
-            if ((x > 1000) && (x < 10000))
-                precision = 10;
-            if ((x > 100) && (x < 1000))
-                precision = 1;
-            if (x < 100)
-                return Double.Parse(x.ToString("N" + 3));
-            return Math.Round(x / precision, MidpointRounding.AwayFromZero) * precision;
+            if (num == 0)
+                return 0;
+
+            double scale = Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(num))) + 1);
+            return scale * Math.Round(num / scale, 3);
         }
         public async Task<IQueryable<Scenario>> Add(Scenario item)
         {

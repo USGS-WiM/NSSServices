@@ -731,7 +731,7 @@ namespace NSSAgent
                 precision = 1;
             if (x < 100)
                 return Double.Parse(x.ToString("N" + 3));
-            return ((x + (precision * .5)) / precision) * precision;
+            return Math.Round(x / precision, MidpointRounding.AwayFromZero) * precision;
         }
         public async Task<IQueryable<Scenario>> Add(Scenario item)
         {

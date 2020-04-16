@@ -113,6 +113,7 @@ namespace NSSAgent
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> GetScenarios(List<string> regionList=null, IGeometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
+        Double RoundValue(double num);
         Task<Scenario> Update(Scenario item, string existingStatisticGroup = null);
         Task<IQueryable<Scenario>> Add(Scenario item);
         Task DeleteScenario(int regressionregionID, int statisticgroupID, int regressiontypeID);
@@ -686,7 +687,7 @@ namespace NSSAgent
                                 Errors = paramsOutOfRange ? new List<Error>() : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType?.Name, Value = e.Value, Code = e.ErrorType?.Code }).ToList(),
                                 EquivalentYears = paramsOutOfRange ? null : equation.EquivalentYears,
                                 IntervalBounds = paramsOutOfRange ? null : evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value * unit.factor),
-                                Value = eOps.Value * unit.factor
+                                Value = RoundValue(eOps.Value * unit.factor)
                             });
                         }//next equation
                         regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion));
@@ -713,6 +714,24 @@ namespace NSSAgent
                 sm("Error Estimating Scenarios: " + ex.Message, WIM.Resources.MessageType.error);
                 throw;
             }
+        }
+        public Double RoundValue(double num)
+        {
+            var x = num;
+            var precision = 0;
+            if ((x > 1000000) && (x < 10000000))
+                precision = 10000;
+            if ((x > 100000) && (x < 1000000))
+                precision = 1000;
+            if ((x > 10000) && (x < 100000))
+                precision = 100;
+            if ((x > 1000) && (x < 10000))
+                precision = 10;
+            if ((x > 100) && (x < 1000))
+                precision = 1;
+            if (x < 100)
+                return Double.Parse(x.ToString("N" + 3));
+            return ((x + (precision * .5)) / precision) * precision;
         }
         public async Task<IQueryable<Scenario>> Add(Scenario item)
         {

@@ -49,7 +49,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.GetVariables());  
+                return Ok(agent.GetVariablesWithUnits());  
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace NSSServices.Controllers
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.GetVariable(id));
+                return Ok(agent.GetVariableWithUnits(id));
             }
             catch (Exception ex)
             {

@@ -1080,16 +1080,17 @@ namespace NSSAgent
         }
         public IQueryable<object> GetVariablesWithUnits()
         {
-            IQueryable<VariableUnitType> unitTypes = this.Select<VariableUnitType>();
-            var vars = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableID, (var, unit) => new
+            // group variables to get a distinct unit type for each variable type
+            var variables = this.Select<Variable>().GroupBy(v => v.VariableTypeID, v => v, (key, g) => new { groupkey = key, groupedparameters = g.Select(gp => gp.UnitTypeID).Distinct() });
+            var variableTypes = this.Select<VariableType>().Join(variables, vt => vt.ID, v => v.groupkey, (vt, v) => new
             {
-                ID = var.ID,
-                Description = var.Description,
-                Code = var.Code,
-                Name = var.Name,
-                UnitTypeID = unit.UnitTypeID
+                ID = vt.ID,
+                Description = vt.Description,
+                Code = vt.Code,
+                Name = vt.Name,
+                UnitTypeID = v.groupedparameters.FirstOrDefault()
             });
-            return vars;
+            return variableTypes;
         }
         public Task<VariableType> GetVariable(Int32 ID)
         {
@@ -1097,16 +1098,17 @@ namespace NSSAgent
         }
         public object GetVariableWithUnits(Int32 ID)
         {
-            IQueryable<VariableUnitType> unitTypes = this.Select<VariableUnitType>();
-            var obj = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableID, (var, unit) => new
+            // group variables to get a distinct unit type for each variable type
+            var variables = this.Select<Variable>().GroupBy(v => v.VariableTypeID, v => v, (key, g) => new { groupkey = key, groupedparameters = g.Select(gp => gp.UnitTypeID).Distinct() });
+            var variableType = this.Select<VariableType>().Join(variables, vt => vt.ID, v => v.groupkey, (vt, v) => new
             {
-                ID = var.ID,
-                Description = var.Description,
-                Code = var.Code,
-                Name = var.Name,
-                UnitTypeID = unit.UnitTypeID
+                ID = vt.ID,
+                Description = vt.Description,
+                Code = vt.Code,
+                Name = vt.Name,
+                UnitTypeID = v.groupedparameters.FirstOrDefault()
             }).FirstOrDefault(v => v.ID == ID);
-            return obj;
+            return variableType;
         }
         public VariableType GetVariableByCode(string code)
         {

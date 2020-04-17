@@ -720,8 +720,10 @@ namespace NSSAgent
             if (num == 0)
                 return 0;
 
-            double scale = Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(num))) + 1);
-            return scale * Math.Round(num / scale, 3);
+            decimal scale = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(num))) + 1);
+            double temp = (double)(scale * Math.Round((decimal)num / scale, 3));
+
+            return temp;
         }
         public async Task<IQueryable<Scenario>> Add(Scenario item)
         {
@@ -1409,7 +1411,10 @@ namespace NSSAgent
                 lowerBound = 1 / T * (Q / BCF);
                 upperBound = T * (Q / BCF);
 
-                return new IntervalBounds() { Lower = lowerBound, Upper = upperBound };
+                double lowerRounded = RoundValue(lowerBound);
+                double upperRounded = RoundValue(upperBound);
+
+                return new IntervalBounds() { Lower = lowerRounded, Upper = upperRounded };
             }
             catch (Exception ex)
             {

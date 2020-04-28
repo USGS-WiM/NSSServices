@@ -45,7 +45,7 @@ namespace NSSServices.Controllers
         [HttpGet(Name = "Citations")]
         [HttpGet("/Regions/{regions}/[controller]", Name = "Region Citations")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Get.md")]
-        public async Task<IActionResult> Get(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        public async Task<IActionResult> Get(string regions = "", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<Citation> entities = null;
             List<string> RegionList = null;

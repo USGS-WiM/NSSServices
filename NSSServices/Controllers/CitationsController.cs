@@ -45,7 +45,7 @@ namespace NSSServices.Controllers
         [HttpGet(Name = "Citations")]
         [HttpGet("/Regions/{regions}/[controller]", Name = "Region Citations")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Get.md")]
-        public async Task<IActionResult> Get(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        public async Task<IActionResult> Get(string regions = "", [FromQuery] string regressionRegions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<Citation> entities = null;
             List<string> RegionList = null;
@@ -59,11 +59,6 @@ namespace NSSServices.Controllers
                 regressionRegionList = parse(regressionRegions);
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypes);
-
-                if (RegionList.Count == 0 && regressionRegionList.Count == 0 && statisticgroupList.Count == 0 && regressiontypeList.Count == 0)
-                {
-                    throw new BadRequestException("No required parameters provided");
-                }
 
                 if (IsAuthenticated)
                 {

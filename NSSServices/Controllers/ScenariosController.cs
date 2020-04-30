@@ -148,7 +148,7 @@ namespace NSSServices.Controllers
                 if (agent.GetScenarios(null, null, regressionregionList.Select(s=>s.Code).ToList(),
                                             new List<string>() { entity.StatisticGroupID.ToString() },
                                             regressiontypeList, null,0).Any())
-                    return new BadRequestObjectResult("The scenario's statistic group and regression type already exists for the given regression region.");
+                    throw new BadRequestException("The scenario's statistic group and regression type already exists for the given regression region.");
 
 
                 //process and push to db

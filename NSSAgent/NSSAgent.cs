@@ -789,7 +789,6 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm($"Error adding scenario {ex.Message}", MessageType.error);
                 throw;
             }
         }
@@ -913,6 +912,8 @@ namespace NSSAgent
 
                     if (valid(equation, regression.Expected))
                         await this.Update<Equation>(equation.ID, equation);
+                    else
+                        throw new Exception("Scenario failed to update. See messages for more information.");
                     
 
                 }//next equation
@@ -925,7 +926,6 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm($"Error adding scenario {ex.Message}", MessageType.error);
                 throw;
             }
         }

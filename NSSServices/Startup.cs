@@ -152,8 +152,8 @@ namespace NSSServices
         {
             // global policy - assign here or on each controller
             app.UseX_Messages(option => { option.HostKey = this._hostKey;});
-            app.UseRouting();
             app.UseCors("CorsPolicy");
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.Use_Analytics();

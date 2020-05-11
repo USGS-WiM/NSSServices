@@ -72,6 +72,7 @@ namespace NSSAgent.Resources
 
     public static class GeometryExtensions
     {
+        // I somehow need to adapt this for NetTopologySuite.Geometries.Geometry
         static readonly IGeometryServices _geometryServices = NtsGeometryServices.Instance;
         static readonly ICoordinateSystemServices _coordinateSystemServices
             = new CoordinateSystemServices(

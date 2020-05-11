@@ -120,7 +120,8 @@ namespace NSSServices.Controllers
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
                 RegressionRegion entity = agent.GetRegressionRegion(id, getpolygon).FirstOrDefault();
-                entity.Location.Geometry = entity.Location.Geometry.ProjectTo(4326);
+                // the following line should work once the ProjectTo is adjusted for the correct geom
+                // entity.Location.Geometry = entity.Location.Geometry.ProjectTo(4326);
                 return Ok(entity);
             }
             catch (Exception ex)
@@ -151,12 +152,13 @@ namespace NSSServices.Controllers
                     RegressionRegion = entity
                 } };
 
-                if (entity.Location != null)
-                {
-                    IGeometry geom = entity.Location.Geometry;
-                    if (geom.SRID != 102008)
-                        entity.Location.Geometry = geom.ProjectTo(102008);
-                }
+                // the following should work once the ProjectTo is adjusted for the correct geom
+                //if (entity.Location != null)
+                //{
+                //    IGeometry geom = entity.Location.Geometry;
+                //    if (geom.SRID != 102008)
+                //        entity.Location.Geometry = geom.ProjectTo(102008);
+                //}
 
                 RegressionRegion Addeditem = await agent.Add(entity);
                 Addeditem.RegionRegressionRegions = null;
@@ -207,13 +209,14 @@ namespace NSSServices.Controllers
             {
 
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                
-                if (entity.Location != null)
-                {
-                    IGeometry geom = entity.Location.Geometry;
-                    if (geom.SRID != 102008)
-                        entity.Location.Geometry = geom.ProjectTo(102008);
-                }
+
+                // the following should work once the ProjectTo is adjusted for the correct geom
+                //if (entity.Location != null)
+                //{
+                //    IGeometry geom = entity.Location.Geometry;
+                //    if (geom.SRID != 102008)
+                //        entity.Location.Geometry = geom.ProjectTo(102008);
+                //}
 
                 RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();
                 if (rr == null) return BadRequest($"No regression region exists with {id} identifier.");

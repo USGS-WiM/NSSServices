@@ -44,7 +44,7 @@ namespace NSSServices.Controllers
         [HttpGet(Name ="Regression Regions")]
         [HttpGet("/Regions/{regions}/[controller]",Name ="Region Regression Regions")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Get.md")]
-        public async Task<IActionResult> Get(string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "", [FromQuery] bool bycitation = false)
+        public async Task<IActionResult> Get(string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<RegressionRegion> entities = null;
             List<string> RegionList = null;
@@ -64,10 +64,6 @@ namespace NSSServices.Controllers
                 else
                     entities = agent.GetRegressionRegions(RegionList,null, statisticgroupList,regressiontypeList);
 
-                if (bycitation)
-                {
-                    return Ok(agent.GroupRegressionRegionsByCitation(entities));
-                }
                 sm($"regression region count {entities.Count()}");
                 return Ok(entities);
             }

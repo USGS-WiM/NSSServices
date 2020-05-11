@@ -110,6 +110,7 @@ namespace NSSAgent
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
+        Double RoundValue(double num);
         Task<Scenario> Update(Scenario item, string existingStatisticGroup = null);
         Task<IQueryable<Scenario>> Add(Scenario item);
         Task DeleteScenario(int regressionregionID, int statisticgroupID, int regressiontypeID);
@@ -683,7 +684,7 @@ namespace NSSAgent
                                 Errors = paramsOutOfRange ? new List<Error>() : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType?.Name, Value = e.Value, Code = e.ErrorType?.Code }).ToList(),
                                 EquivalentYears = paramsOutOfRange ? null : equation.EquivalentYears,
                                 IntervalBounds = paramsOutOfRange ? null : evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value * unit.factor),
-                                Value = eOps.Value * unit.factor
+                                Value = RoundValue(eOps.Value * unit.factor)
                             });
                         }//next equation
                         regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion));
@@ -710,6 +711,16 @@ namespace NSSAgent
                 sm("Error Estimating Scenarios: " + ex.Message, WIM.Resources.MessageType.error);
                 throw;
             }
+        }
+        public Double RoundValue(double num)
+        {
+            if (num == 0)
+                return 0;
+
+            decimal scale = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(num))) + 1);
+            double temp = (double)(scale * Math.Round((decimal)num / scale, 3));
+
+            return temp;
         }
         public async Task<IQueryable<Scenario>> Add(Scenario item)
         {
@@ -775,7 +786,6 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm($"Error adding scenario {ex.Message}", MessageType.error);
                 throw;
             }
         }
@@ -899,6 +909,8 @@ namespace NSSAgent
 
                     if (valid(equation, regression.Expected))
                         await this.Update<Equation>(equation.ID, equation);
+                    else
+                        throw new Exception("Scenario failed to update. See messages for more information.");
                     
 
                 }//next equation
@@ -911,7 +923,6 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm($"Error adding scenario {ex.Message}", MessageType.error);
                 throw;
             }
         }
@@ -1397,7 +1408,10 @@ namespace NSSAgent
                 lowerBound = 1 / T * (Q / BCF);
                 upperBound = T * (Q / BCF);
 
-                return new IntervalBounds() { Lower = lowerBound, Upper = upperBound };
+                double lowerRounded = RoundValue(lowerBound);
+                double upperRounded = RoundValue(upperBound);
+
+                return new IntervalBounds() { Lower = lowerRounded, Upper = upperRounded };
             }
             catch (Exception ex)
             {

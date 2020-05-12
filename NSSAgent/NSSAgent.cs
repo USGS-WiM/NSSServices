@@ -723,12 +723,11 @@ namespace NSSAgent
                     // todo: get parameters if not null.
                     foreach (var regression in rregion.Regressions)
                     {
-                        var rr = Find<RegressionRegion>(rregion.ID);
-                        var sg = Find<StatisticGroupType>(item.StatisticGroupID);
-                        var unit = Find<UnitType>(regression.Unit.ID);
-                        var reg = Find<RegressionType>(regression.ID);
+                        var rr = await Find<RegressionRegion>(rregion.ID);
+                        var sg = await Find<StatisticGroupType>(item.StatisticGroupID);
+                        var unit = await Find<UnitType>(regression.Unit.ID);
+                        var reg = await Find<RegressionType>(regression.ID);
 
-                        await Task.WhenAll(rr, sg, reg, unit);
 
                         var eqErrors = this.Select<ErrorType>().Where(e => regression.Errors.Select(er => er.ID).Contains(e.ID)).ToList();                    
                         var variables = this.Select<VariableType>().Where(v => (rregion.Parameters.Any() ? rregion.Parameters : regression.Parameters).Select(p => p.Code.ToLower()).Contains(v.Code.ToLower())).ToList();
@@ -736,11 +735,11 @@ namespace NSSAgent
 
                         var neq = new Equation()
                         {
-                            RegressionRegionID = (await rr).ID,
-                            UnitTypeID = (await unit).ID,
+                            RegressionRegionID = rr.ID,
+                            UnitTypeID = unit.ID,
                             Expression = regression.Equation,
-                            RegressionTypeID = (await reg).ID,
-                            StatisticGroupTypeID = (await sg).ID,
+                            RegressionTypeID = reg.ID,
+                            StatisticGroupTypeID = sg.ID,
                             EquivalentYears = regression.EquivalentYears,
                             Variables = (rregion.Parameters.Any() ? rregion.Parameters : regression.Parameters).Select(p=> new Variable()
                             {

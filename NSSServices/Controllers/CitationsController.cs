@@ -26,11 +26,11 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using GeoAPI.Geometries;
 using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
 using System.ComponentModel;
 using WIM.Security.Authorization;
+using NetTopologySuite.Geometries;
 
 namespace NSSServices.Controllers
 {
@@ -81,7 +81,7 @@ namespace NSSServices.Controllers
         [HttpPost("[action]", Name = "Citations By Location")]
         [HttpPost("/Regions/{regions}/[controller]/[[action]]", Name = "Region Citations By Location")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Get.md")]
-        public async Task<IActionResult> ByLocation([FromBody] IGeometry geom, string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        public async Task<IActionResult> ByLocation([FromBody] Geometry geom, string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<Citation> entities = null;
             List<string> RegionList = null;

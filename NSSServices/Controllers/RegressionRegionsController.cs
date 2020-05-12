@@ -31,6 +31,7 @@ using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
 using NSSAgent.Resources;
+using NetTopologySuite.Geometries;
 
 namespace NSSServices.Controllers
 {
@@ -77,7 +78,7 @@ namespace NSSServices.Controllers
         [HttpPost("[action]", Name = "Regression Regions By Location")]
         [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Region Regression Regions By Location")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Get.md")]
-        public async Task<IActionResult> ByLocation(string regions = "", [FromBody] IGeometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        public async Task<IActionResult> ByLocation(string regions = "", [FromBody] Geometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<RegressionRegion> entities = null;
             List<string> RegionList = null;

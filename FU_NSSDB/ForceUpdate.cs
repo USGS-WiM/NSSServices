@@ -14,7 +14,7 @@
 //   purpose: Forces and update to Streamstats from an access SSDB
 //          
 //discussion: 
-//Access connection using odbc https://mrojas.ghost.io/msaccess-in-dotnetcore/
+// For 64bit MS Access connection using odbc https://mrojas.ghost.io/msaccess-in-dotnetcore/
 // must download and install https://www.microsoft.com/en-us/download/details.aspx?id=13255 for some reason, even if you have access installed.
 
 #region "Comments"
@@ -57,7 +57,8 @@ namespace FU_NSSDB
         #region Constructors
         public ForceUpdate(string dbusername, string dbpassword, string accessdb)
         {
-            SSDBConnectionstring = string.Format(@"Driver={{Microsoft Access Driver (*.mdb, *.accdb)}};dbq={0}", accessdb);
+            //for 64bit driver add (*.mdb, *.accdb) options
+            SSDBConnectionstring = string.Format(@"Driver={{Microsoft Access Driver (*.mdb)}};dbq={0}", accessdb);
             NSSDBConnectionstring = string.Format("Server=test.c69uuui2tzs0.us-east-1.rds.amazonaws.com; database={0}; UID={1}; password={2}", "StatsDB", dbusername, dbpassword);
 
             init();
@@ -67,27 +68,31 @@ namespace FU_NSSDB
         public bool VerifyLists()
         {
             List<string> DBUnitAbbr = this.unittypeList.Select(k => k.Abbreviation.Trim()).ToList();
-            List<string> DBVariableList = this.variableTypeList.Select(vt => vt.Code.Trim()).ToList();
-            List<string> DBStatisticGroupList = this.statisticGroupTypeList.Select(vt => vt.Code.Trim()).ToList();
-            List<string> DBregressionList = this.regressionTypeList.Select(vt => vt.Code.Trim()).ToList();
+            List<string> DBVariableList = this.variableTypeList.Select(vt => vt.Code.Trim().ToUpper()).ToList();
+            List<string> DBStatisticGroupList = this.statisticGroupTypeList.Select(vt => vt.Code.Trim().ToUpper()).ToList();
+            List<string> DBregressionList = this.regressionTypeList.Select(vt => vt.Code.Trim().ToUpper()).ToList();
 
             List<string> ssdbUnitAbbr = null;
-            List<string> ssdbDBVariableList = null;
-            List<string> ssdbStatisticGroupList = null;
-            List<string> ssdbRegressionList = null;
+            List<NSSVariableType> ssdbDBVariableList = null;
+            List<NSSStatisticGroupType> ssdbStatisticGroupList = null;
+            List<NSSRegressionType> ssdbRegressionList = null;
 
             using (var ssdb = new NSSDbOps(SSDBConnectionstring, NSSDbOps.ConnectionType.e_access))
             {
                 ssdbUnitAbbr = ssdb.GetItems<FUString>(NSSDbOps.SQLType.e_unittype).Select(f => f.Value.Trim()).ToList();
-                ssdbDBVariableList = ssdb.GetItems<FUString>(NSSDbOps.SQLType.e_variabletype).Select(f => f.Value.Trim()).ToList();
-                ssdbStatisticGroupList = ssdb.GetItems<FUString>(NSSDbOps.SQLType.e_statisticgrouptype).Select(f => f.Value.Trim()).ToList();
-                ssdbRegressionList = ssdb.GetItems<FUString>(NSSDbOps.SQLType.e_regressiontype).Select(f => f.Value.Trim()).ToList();
+                ssdbDBVariableList = ssdb.GetItems<NSSVariableType>(NSSDbOps.SQLType.e_variabletype).ToList();
+                ssdbStatisticGroupList = ssdb.GetItems<NSSStatisticGroupType>(NSSDbOps.SQLType.e_statisticgrouptype).ToList();
+                ssdbRegressionList = ssdb.GetItems<NSSRegressionType>(NSSDbOps.SQLType.e_regressiontype).ToList();
             }//end using
 
             var diffUnits = ssdbUnitAbbr.Except(DBUnitAbbr).ToList();
-            var diffVariable = ssdbDBVariableList.Except(DBVariableList).ToList();
-            var diffSG = ssdbStatisticGroupList.Except(DBStatisticGroupList).ToList();
-            var diffRegList = ssdbRegressionList.Except(DBregressionList).ToList();
+            var diffVariable = ssdbDBVariableList.Where(v => !DBVariableList.Contains(v.Code.Trim().ToUpper())).ToList();
+            var diffSG = ssdbStatisticGroupList.Where(sg => !DBStatisticGroupList.Contains(sg.Code.Trim().ToUpper())).ToList();
+            var diffRegList = ssdbRegressionList.Where(r => !DBregressionList.Contains(r.Code.Trim().ToUpper())).ToList();
+
+            if (diffVariable.Count > 0) createUpdateList(diffVariable);
+            if (diffRegList.Count > 0) createUpdateList(diffRegList);
+            if (diffSG.Count > 0) createUpdateList(diffSG);
 
             return diffUnits.Count < 2 && diffVariable.Count < 1 && diffSG.Count < 1 && diffRegList.Count < 1;
 
@@ -285,6 +290,46 @@ namespace FU_NSSDB
             System.Diagnostics.Debug.WriteLine(msg);
             Console.WriteLine(msg);
             this._message.Add(msg);
+        }
+        private void createUpdateList<T>(List<T> diffList)
+        {
+            string tableName = "";
+            List<string> updateList = new List<string>();
+            string insertStmnt = @"INSERT INTO {0} VALUES ({1});";
+
+            switch (typeof(T).Name)
+            {
+                case "NSSVariableType":
+                    tableName = @"""shared"".""VariableType""(""Name"",""Code"",""Description"")";
+                    updateList = diffList.Cast<NSSVariableType>()
+                        .Select(t =>
+                            String.Format(insertStmnt, tableName, String.Join(',', new List<string>() { $"'{t.Name}'", $"'{t.Code}'", $"'{t.Description}'" }))).ToList();
+                    break;
+                case "NSSStatisticGroupType":
+                    tableName = @"""shared"".""StatisticGroupType""(""Name"",""Code"")";
+                    updateList = diffList.Cast<NSSStatisticGroupType>()
+                        .Select(t =>
+                            String.Format(insertStmnt, tableName, String.Join(',', new List<string>() { $"'{t.Name}'", $"'{t.Code}'" }))).ToList();
+                    break;
+                case "NSSRegressionType":
+                    tableName = @"""shared"".""RegressionType""(""Name"",""Code"",""Description"")";
+                    updateList = diffList.Cast<NSSRegressionType>()
+                        .Select(t =>
+                            String.Format(insertStmnt, tableName, String.Join(',', new List<string>() { $"'{t.Name}'", $"'{t.Code}'", $"'{t.Description}'" }))).ToList();
+                    break;
+
+                default:
+                    return;
+            }
+
+
+            using (TextWriter tw = new StreamWriter("..\\"+typeof(T).Name + ".sql"))
+            {
+                foreach (var s in updateList)
+                    tw.WriteLine(s);
+            }
+
+
         }
         #endregion
 

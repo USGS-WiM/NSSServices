@@ -798,7 +798,7 @@ namespace NSSAgent
 
 
                 var equationsToUpdate = this.GetEquations(null, regressionregionList.Select(s => s.Code).ToList(), new List<string>() { sg.ID.ToString() }, regressiontypeList)
-                                        .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(p=>p.PredictionInterval).Include("EquationErrors.ErrorType");
+                                        .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(p=>p.PredictionInterval).Include("EquationErrors.ErrorType").ToList();
 
             
 
@@ -813,12 +813,14 @@ namespace NSSAgent
 
                     var variables = this.Select<VariableType>().Where(v => (regressionregion.Parameters.Any() ? regressionregion.Parameters : regression.Parameters).Select(p => p.Code.ToLower()).Contains(v.Code.ToLower())).ToList();
                     var eqErrors = this.Select<ErrorType>().Where(er => regression.Errors.Select(e => e.ID).Contains(er.ID)).ToList();
-                    
 
-                    var Units = this.Select<UnitType>().Where(ut => (regressionregion.Parameters.Any()? regressionregion.Parameters : regression.Parameters).Any(u => (u.UnitType.ID > 0 && ut.ID == u.UnitType.ID) || string.Equals(ut.Abbreviation, u.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase))).ToList();
+                    
+                    var Units = this.Select<UnitType>().ToList().Where(ut => associatedVariables.Any(u => (u.UnitType.ID > 0 && ut.ID == u.UnitType.ID) || string.Equals(ut.Abbreviation, u.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase))).ToList();
 
                     equation.RegressionRegionID = regressionregion.ID;
                     equation.UnitTypeID = unit.ID;
+                    // issues with context tracking, need to detach this entity
+                    context.Entry<UnitType>(unit).State = EntityState.Detached;
                     equation.Expression = regression.Equation;
                     //equation.RegressionTypeID = (await reg).ID;
                     equation.StatisticGroupTypeID = item.StatisticGroupID;
@@ -1139,6 +1141,7 @@ namespace NSSAgent
                 {
                     command.CommandText = sql;
                     context.Database.OpenConnection();
+                    
                     using (DbDataReader reader = command.ExecuteReader())
                     {
                         return reader.Select<ScenarioParameterView>(fromdr).ToList().AsQueryable();

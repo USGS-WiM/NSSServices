@@ -97,8 +97,6 @@ namespace NSSAgent
         Task<IEnumerable<RegressionRegion>> Add(List<NSSDB.Resources.RegressionRegion> items);
         Task<RegressionRegion> Update(Int32 pkId, NSSDB.Resources.RegressionRegion item);
         Task DeleteRegressionRegion(Int32 pkID);
-        IQueryable<object> GroupRegressionRegionsByCitation(IQueryable<RegressionRegion> regRegionList = null);
-
         //Coefficents
         IQueryable<Coefficient> GetRegressionRegionCoefficients(Int32 RegressionRegionID);
         Task<IEnumerable<Coefficient>> AddRegressionRegionCoefficients(Int32 RegressionRegionID, List<Coefficient> items);
@@ -167,7 +165,7 @@ namespace NSSAgent
         public IQueryable<Citation> GetCitations(List<String> regionList=null, IGeometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
         {
             if (!regionList.Any() && geom == null && !regressionRegionList.Any()&& !statisticgroupList.Any() && !regressiontypeList.Any())
-                return this.Select<Citation>();
+                return this.Select<Citation>().Include(c => c.RegressionRegions);
             if (statisticgroupList?.Any() != true && regressiontypeList?.Any() != true && !regressiontypeList.Any() != true && geom == null)
                 // for region only list
                 return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion).ThenInclude(rr=>rr.Citation)
@@ -448,15 +446,6 @@ namespace NSSAgent
 
             return query.Select(rrr => rrr.RegressionRegion).Distinct();
 
-        }
-        public IQueryable<object> GroupRegressionRegionsByCitation(IQueryable<RegressionRegion> regRegions = null)
-        {
-            var query = regRegions.GroupBy(rr => rr.CitationID).Select(g => new
-            {
-                citationID = g.Key,
-                regressionRegions = g.Select(c => c)
-            });
-            return query;
         }
         public IQueryable<RegressionRegion> GetRegressionRegion(int regregionID, bool getPolygon = false)
         {
@@ -789,7 +778,6 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm($"Error adding scenario {ex.Message}", MessageType.error);
                 throw;
             }
         }
@@ -913,6 +901,8 @@ namespace NSSAgent
 
                     if (valid(equation, regression.Expected))
                         await this.Update<Equation>(equation.ID, equation);
+                    else
+                        throw new Exception("Scenario failed to update. See messages for more information.");
                     
 
                 }//next equation
@@ -925,7 +915,6 @@ namespace NSSAgent
             }
             catch (Exception ex)
             {
-                sm($"Error adding scenario {ex.Message}", MessageType.error);
                 throw;
             }
         }

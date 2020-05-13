@@ -468,3 +468,6 @@ INSERT INTO "nss"."Variables"("VariableTypeID", "UnitTypeID", "Comments") VALUES
 /*update regions*/
 UPDATE "nss"."Regions" SET "Code" = 'MO_STL' WHERE "Code" = 'SL';
 UPDATE "nss"."Regions" SET "Code" = 'RRB' WHERE "Code" = 'RR';
+
+UPDATE "RegressionRegions" SET "LocationID" = l."ID"
+FROM "Locations" l WHERE "Code" = any(string_to_array(REPLACE(l."AssociatedCodes", ' ', ''), ','));

@@ -1,15 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>75ef085d-ef67-45d6-8f29-2d1190142ef4</UserSecretsId>
     <Version>2.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Resources\**" />
     <Compile Remove="wwwroot\**" />
+    <Content Remove="Resources\**" />
     <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Resources\**" />
     <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Resources\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
 
@@ -20,28 +24,23 @@
   <ItemGroup>
     <None Remove="Properties\PublishProfiles\FolderProfile1.pubxml" />
   </ItemGroup>
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.7.1" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
-    <PackageReference Include="WiM.Analytics" Version="1.2.7" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="WiM.Analytics" Version="1.3.0" />
     <PackageReference Include="WiM.Hypermedia" Version="1.1.3" />
-    <PackageReference Include="WiM.Services" Version="1.2.1" />
+    <PackageReference Include="WiM.Services" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NSSAgent\NSSAgent.csproj" />
     <ProjectReference Include="..\NSSDB\NSSDB.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

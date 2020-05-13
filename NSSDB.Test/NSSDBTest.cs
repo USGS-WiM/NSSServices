@@ -54,7 +54,7 @@ namespace NSSDB.Test
 
             }
         }
-        [TestMethod]
+        //[TestMethod]
         public void AddManagerTest()
         {
             using (NSSDBContext context = new NSSDBContext(new DbContextOptionsBuilder<NSSDBContext>().UseNpgsql(this.connectionstring, x => x.UseNetTopologySuite()).Options))

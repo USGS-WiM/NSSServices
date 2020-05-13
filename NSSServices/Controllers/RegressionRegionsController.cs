@@ -30,6 +30,7 @@ using GeoAPI.Geometries;
 using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
+using NetTopologySuite.Geometries;
 
 namespace NSSServices.Controllers
 {
@@ -44,7 +45,7 @@ namespace NSSServices.Controllers
         [HttpGet(Name ="Regression Regions")]
         [HttpGet("/Regions/{regions}/[controller]",Name ="Region Regression Regions")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Get.md")]
-        public async Task<IActionResult> Get(string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "", [FromQuery] bool bycitation = false)
+        public async Task<IActionResult> Get(string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<RegressionRegion> entities = null;
             List<string> RegionList = null;
@@ -64,10 +65,6 @@ namespace NSSServices.Controllers
                 else
                     entities = agent.GetRegressionRegions(RegionList,null, statisticgroupList,regressiontypeList);
 
-                if (bycitation)
-                {
-                    return Ok(agent.GroupRegressionRegionsByCitation(entities));
-                }
                 sm($"regression region count {entities.Count()}");
                 return Ok(entities);
             }
@@ -80,7 +77,7 @@ namespace NSSServices.Controllers
         [HttpPost("[action]", Name = "Regression Regions By Location")]
         [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Region Regression Regions By Location")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/Get.md")]
-        public async Task<IActionResult> ByLocation(string regions = "", [FromBody] IGeometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
+        public async Task<IActionResult> ByLocation(string regions = "", [FromBody] Geometry geom = null, [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<RegressionRegion> entities = null;
             List<string> RegionList = null;

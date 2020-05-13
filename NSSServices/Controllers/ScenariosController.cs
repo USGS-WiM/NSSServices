@@ -63,7 +63,7 @@ namespace NSSServices.Controllers
         [HttpPost("[action]", Name = "Scenarios By Location")]
         [HttpPost("/Regions/{regions}/[controller]/[action]", Name = "Region Scenarios By Location")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Get.md")]
-        public async Task<IActionResult> ByLocation([FromBody] IGeometry geom = null, string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
+        public async Task<IActionResult> ByLocation([FromBody] Geometry geom = null, string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "",
                                                             [FromQuery] Int32 unitsystem = 0, [FromQuery] string extensions = "")
         {
             try
@@ -148,7 +148,7 @@ namespace NSSServices.Controllers
                 if (agent.GetScenarios(null, null, regressionregionList.Select(s=>s.Code).ToList(),
                                             new List<string>() { entity.StatisticGroupID.ToString() },
                                             regressiontypeList, null,0).Any())
-                    return new BadRequestObjectResult("The scenario's statistic group and regression type already exists for the given regression region.");
+                    throw new BadRequestException("The scenario's statistic group and regression type already exists for the given regression region.");
 
 
                 //process and push to db
@@ -188,7 +188,7 @@ namespace NSSServices.Controllers
         #endregion
 
         #region HelperMethod
-        private IActionResult GetScenario(IGeometry geom = null, string regions = "", string regressionRegions = "", string statisticgroups = "", string regressiontypes = "",
+        private IActionResult GetScenario(Geometry geom = null, string regions = "", string regressionRegions = "", string statisticgroups = "", string regressiontypes = "",
                                                              Int32 unitsystem = 0, string extensions = "")
         {
             List<string> statisticgroupList = null;

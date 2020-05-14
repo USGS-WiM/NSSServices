@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="NetTopologySuite.CoordinateSystems" Version="1.15.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="ProjNet" Version="2.0.0" />
     <PackageReference Include="WIM.Exceptions" Version="1.3.0" />
     <PackageReference Include="WiM.Hypermedia" Version="1.1.3" />
     <PackageReference Include="WiM.Resource.TimeSeries" Version="1.1.1" />

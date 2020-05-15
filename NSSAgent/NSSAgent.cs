@@ -585,7 +585,7 @@ namespace NSSAgent
                                                                                                                                                                                             CovarianceMatrix = rg.PredictionInterval.CovarianceMatrix
                                                                                                                                                                                         } :null
                                                                                                     }).ToList() : null,
-                            Parameters = r.groupedparameters.SelectMany(gp=>gp.Variables).Select(p => new NSSAgent.Resources.Parameter()
+                            Parameters = r.groupedparameters.SelectMany(gp=>gp.Variables).Select(p => new Parameter()
                             {
                                 ID = p.ID,
                                 UnitType = getUnit(new UnitType() { ID = p.UnitTypeID, Name = p.UnitType.Name, Abbreviation = p.UnitType.Abbreviation, UnitSystemTypeID = p.UnitType.UnitSystemTypeID }, systemtypeID > 0 ? systemtypeID : p.UnitType.UnitSystemTypeID),
@@ -594,7 +594,7 @@ namespace NSSAgent
                                 Description = p.VariableType.Description,
                                 Name = p.VariableType.Name,
                                 Value = -999.99
-                            }).Union(limitations.Where(l => l.RegressionRegionID == r.groupkey).SelectMany(l => l.Variables).Select(v => new NSSAgent.Resources.Parameter()
+                            }).Union(limitations.Where(l => l.RegressionRegionID == r.groupkey).SelectMany(l => l.Variables).Select(v => new Parameter()
                             {
                                 ID = v.VariableType.ID,
                                 UnitType = getUnit(v.UnitType, systemtypeID > 0 ? systemtypeID : v.UnitType.UnitSystemTypeID),
@@ -602,7 +602,7 @@ namespace NSSAgent
                                 Description = v.VariableType.Description,
                                 Name = v.VariableType.Name,
                                 Value = -999.99
-                            })).Union(flowCoefficents.Where(l => l.RegressionRegionID == r.groupkey).SelectMany(l => l.Variables).Select(v => new NSSAgent.Resources.Parameter()
+                            })).Union(flowCoefficents.Where(l => l.RegressionRegionID == r.groupkey).SelectMany(l => l.Variables).Select(v => new Parameter()
                             {
                                 ID = v.VariableType.ID,
                                 UnitType = this.getUnit(v.UnitType, systemtypeID > 0 ? systemtypeID : v.UnitType.UnitSystemTypeID),
@@ -1686,6 +1686,6 @@ namespace NSSAgent
             managerCitations,
             regionbygeom
         }
-    }
 
+    }
 }

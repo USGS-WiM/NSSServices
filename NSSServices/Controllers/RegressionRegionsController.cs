@@ -117,7 +117,8 @@ namespace NSSServices.Controllers
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
                 RegressionRegion entity = agent.GetRegressionRegion(id, getpolygon).FirstOrDefault();
-                // the following line should work once the ProjectTo is adjusted for the correct geom
+
+                // reproject for web clients
                 if (entity.Location != null && entity.Location.Geometry.SRID != 4326)
                 {
                     entity.Location.Geometry = entity.Location.Geometry.ProjectGeometry(4326);

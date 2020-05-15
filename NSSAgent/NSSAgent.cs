@@ -44,9 +44,6 @@ using System.Text;
 using WIM.Security;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
-using ProjNet;
-using ProjNet.CoordinateSystems;
-using ProjNet.CoordinateSystems.Transformations;
 
 namespace NSSAgent
 {
@@ -131,8 +128,6 @@ namespace NSSAgent
         Task<UnitSystemType> GetUnitSystem(Int32 ID);
         IQueryable<VariableType> GetVariables();
         Task<VariableType> GetVariable(Int32 ID);
-        // geometry 
-        Geometry ProjectGeometry(Geometry geom, int srid);
     }
     public class NSSServiceAgent : DBAgentBase, INSSAgent
     {
@@ -1690,74 +1685,6 @@ namespace NSSAgent
             ScenarioParameterView,
             managerCitations,
             regionbygeom
-        }
-
-        public Geometry ProjectGeometry(Geometry geom, int srid)
-        {
-            var FromWKT = getWellKnownText(geom.SRID);
-            var ToWKT = getWellKnownText(srid);
-            var SourceCoordSystem = new CoordinateSystemFactory().CreateFromWkt(FromWKT);
-            var TargetCoordSystem = new CoordinateSystemFactory().CreateFromWkt(ToWKT);
-
-            var trans = new CoordinateTransformationFactory().CreateFromCoordinateSystems(SourceCoordSystem, TargetCoordSystem);
-
-            var projGeom = Transform(geom, trans.MathTransform);
-            projGeom.SRID = srid;
-
-            return projGeom;
-        }
-
-        static string getWellKnownText(int wkid)
-        {
-            switch (wkid)
-            {
-                case 4269:
-                    return @"
-                        GEOGCS[""NAD83"",DATUM[""North_American_Datum_1983"",SPHEROID[""GRS 1980"",6378137,298.257222101,AUTHORITY[""EPSG"",""7019""]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY[""EPSG"",""6269""]],PRIMEM[""Greenwich"",0,AUTHORITY[""EPSG"",""8901""]],UNIT[""degree"",0.0174532925199433,AUTHORITY[""EPSG"",""9122""]],AUTHORITY[""EPSG"",""4269""]]
-                    ";
-                case 4326:
-                    return @"
-                        GEOGCS[""WGS 84"", DATUM[""WGS_1984"", SPHEROID[""WGS 84"", 6378137, 298.257223563, AUTHORITY[""EPSG"", ""7030""]], AUTHORITY[""EPSG"", ""6326""]], PRIMEM[""Greenwich"", 0, AUTHORITY[""EPSG"", ""8901""]],UNIT[""degree"", 0.01745329251994328,AUTHORITY[""EPSG"", ""9122""]],AUTHORITY[""EPSG"", ""4326""]]
-                    ";
-                case 3857:
-                    return @"
-                        PROJCS[""WGS 84 / Pseudo - Mercator"",GEOGCS[""Popular Visualisation CRS"",DATUM[""Popular_Visualisation_Datum"", SPHEROID[""Popular Visualisation Sphere"", 6378137, 0, AUTHORITY[""EPSG"", ""7059""]], TOWGS84[0, 0, 0, 0, 0, 0, 0], AUTHORITY[""EPSG"", ""6055""]],
-                        PRIMEM[""Greenwich"", 0, AUTHORITY[""EPSG"", ""8901""]],UNIT[""degree"", 0.01745329251994328, AUTHORITY[""EPSG"", ""9122""]], AUTHORITY[""EPSG"", ""4055""]], UNIT[""metre"", 1, AUTHORITY[""EPSG"", ""9001""]], PROJECTION[""Mercator_1SP""], PARAMETER[""central_meridian"", 0],
-                        PARAMETER[""scale_factor"", 1], PARAMETER[""false_easting"", 0], PARAMETER[""false_northing"", 0], AUTHORITY[""EPSG"", ""3785""], AXIS[""X"", EAST], AXIS[""Y"", NORTH]]
-                    ";
-                default:
-                    //1020008
-                    return @"
-                        PROJCS[""North_America_Albers_Equal_Area_Conic"",GEOGCS[""GCS_North_American_1983"",DATUM[""North_American_Datum_1983"",SPHEROID[""GRS_1980"",6378137,298.257222101]],PRIMEM[""Greenwich"",0],UNIT[""Degree"",0.017453292519943295]],PROJECTION[""Albers_Conic_Equal_Area""],PARAMETER[""False_Easting"",0],PARAMETER[""False_Northing"",0],PARAMETER[""longitude_of_center"",-96],PARAMETER[""Standard_Parallel_1"",20],PARAMETER[""Standard_Parallel_2"",60],PARAMETER[""latitude_of_center"",40],UNIT[""Meter"",1],AUTHORITY[""EPSG"",""102008""]]
-                    ";
-            }
-        }
-
-        static NetTopologySuite.Geometries.Geometry Transform(NetTopologySuite.Geometries.Geometry geom, MathTransform transform)
-        {
-            geom = geom.Copy();
-            geom.Apply(new MTF(transform));
-            return geom;
-        }
-
-        sealed class MTF : NetTopologySuite.Geometries.ICoordinateSequenceFilter
-        {
-            private readonly MathTransform _mathTransform;
-
-            public MTF(MathTransform mathTransform) => _mathTransform = mathTransform;
-
-            public bool Done => false;
-            public bool GeometryChanged => true;
-            public void Filter(NetTopologySuite.Geometries.CoordinateSequence seq, int i)
-            {
-                double x = seq.GetX(i);
-                double y = seq.GetY(i);
-                double z = seq.GetZ(i);
-                _mathTransform.Transform(ref x, ref y, ref z);
-                seq.SetX(i, x);
-                seq.SetY(i, y);
-                seq.SetZ(i, z);
-            }
         }
     }
 

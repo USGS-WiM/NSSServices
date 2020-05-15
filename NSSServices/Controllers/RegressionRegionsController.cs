@@ -120,7 +120,7 @@ namespace NSSServices.Controllers
                 // the following line should work once the ProjectTo is adjusted for the correct geom
                 if (entity.Location != null && entity.Location.Geometry.SRID != 4326)
                 {
-                    entity.Location.Geometry = agent.ProjectGeometry(entity.Location.Geometry, 4326);
+                    entity.Location.Geometry = entity.Location.Geometry.ProjectGeometry(4326);
                 }
                 return Ok(entity);
             }
@@ -152,11 +152,9 @@ namespace NSSServices.Controllers
                     RegressionRegion = entity
                 } };
                 
-                if (entity.Location != null)
+                if (entity.Location != null && entity.Location.Geometry.SRID != 102008)
                 {
-                    Geometry geom = entity.Location.Geometry;
-                    if (geom.SRID != 102008)
-                        entity.Location.Geometry = agent.ProjectGeometry(geom, 102008);
+                    entity.Location.Geometry = entity.Location.Geometry.ProjectGeometry(102008);
                 }
 
                 RegressionRegion Addeditem = await agent.Add(entity);
@@ -209,11 +207,9 @@ namespace NSSServices.Controllers
 
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                if (entity.Location != null)
+                if (entity.Location != null && entity.Location.Geometry.SRID != 102008)
                 {
-                    Geometry geom = entity.Location.Geometry;
-                    if (geom.SRID != 102008)
-                        entity.Location.Geometry = agent.ProjectGeometry(geom, 102008);
+                    entity.Location.Geometry = entity.Location.Geometry.ProjectGeometry(102008);
                 }
 
                 RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();

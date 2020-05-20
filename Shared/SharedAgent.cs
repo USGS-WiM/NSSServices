@@ -8,6 +8,8 @@ using WIM.Utilities;
 using SharedDB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Shared.Resources;
+using NSSDB.Resources;
 
 namespace SharedAgent
 {
@@ -44,7 +46,7 @@ namespace SharedAgent
         Task DeleteUnit(Int32 pkID);
 
         //Variables
-        Task<VariableType> Add(VariableType item);
+        Task<VariableType> Add(VariableWithUnit item);
         Task<IEnumerable<VariableType>> Add(List<VariableType> items);
         Task<VariableType> Update(Int32 pkId, VariableType item);
         Task DeleteVariable(Int32 pkID);
@@ -156,9 +158,22 @@ namespace SharedAgent
         }
         #endregion
         #region VariableTypes
-        public Task<VariableType> Add(VariableType item)
+        public Task<VariableType> Add(VariableWithUnit item)
         {
-            return this.Add<VariableType>(item);
+            VariableType tempVT = new VariableType();
+            VariableUnitType tempVUT = new VariableUnitType();
+
+            tempVUT.VariableID = item.ID;
+            tempVUT.UnitTypeID = item.UnitTypeID;
+
+            tempVT.ID = item.ID;
+            tempVT.Name = item.Name;
+            tempVT.Code = item.Code;
+            tempVT.Description = item.Description;
+
+            
+            this.Add<VariableUnitType>(tempVUT);
+            return this.Add<VariableType>(tempVT);
         }
         public Task<IEnumerable<VariableType>> Add(List<VariableType> items)
         {

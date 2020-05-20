@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using SharedAgent;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
+using Shared.Resources;
 
 namespace Shared.Controllers
 {
@@ -44,7 +45,7 @@ namespace Shared.Controllers
         
         [HttpPost(Name ="Add Variable")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Add.md")]
-        public async Task<IActionResult> Post([FromBody]VariableType entity)
+        public async Task<IActionResult> Post([FromBody] VariableWithUnit entity)
         {
             try
             {

@@ -100,6 +100,7 @@ namespace NSSAgent
         IEnumerable<Coefficient> RemoveRegressionRegionCoefficients(int RegressionRegionID, List<Coefficient> items);
         Task<Coefficient> Update(Int32 pkId, Coefficient item);
         Task DeleteCoefficient(Int32 pkID);
+        IEnumerable<NSSDB.Resources.Location> ReprojectGeometry(Geometry geom, Int32 srid);
 
         //Roles
         IQueryable<string> GetRoles();
@@ -504,6 +505,12 @@ namespace NSSAgent
         public Task DeleteCoefficient(Int32 pkID)
         {
             return this.Delete<Coefficient>(pkID);
+        }
+
+        public IEnumerable<NSSDB.Resources.Location> ReprojectGeometry(Geometry geom, Int32 srid)
+        {
+            var args = new Object[] { geom.AsText(), geom.SRID, srid };
+            return this.getTable<NSSDB.Resources.Location>(sqltypeenum.reprojectGeom, args);
         }
         #endregion
         #region Roles
@@ -1210,7 +1217,13 @@ namespace NSSAgent
                                     LEFT JOIN nss.""Locations"" AS l ON r.""LocationID"" = l.""ID""
                                     WHERE r.""LocationID"" IS NOT NULL
                                     AND(ST_Intersects(l.""Geometry"", f.geom) = TRUE)) t";
-
+                case sqltypeenum.reprojectGeom:
+                    return @"SELECT
+                                (ST_Transform(
+                                    ST_SetSRID(
+                                        ST_GeomFromGeoJSON('{0}'),
+                                    {1}),
+                                 {2})) as Geometry;";
                 default:
                     throw new Exception("No sql for table " + type);
             }//end switch;
@@ -1684,7 +1697,8 @@ namespace NSSAgent
         {
             ScenarioParameterView,
             managerCitations,
-            regionbygeom
+            regionbygeom,
+            reprojectGeom
         }
 
     }

@@ -121,7 +121,8 @@ namespace NSSServices.Controllers
                 // reproject for web clients
                 if (entity.Location != null && entity.Location.Geometry.SRID != 4326)
                 {
-                    entity.Location.Geometry = entity.Location.Geometry.ProjectGeometry(4326);
+                    NSSDB.Resources.Location loc = agent.ReprojectGeometry(entity.Location.Geometry, 4326).First();
+                    entity.Location.Geometry = loc.Geometry;
                 }
                 return Ok(entity);
             }
@@ -155,7 +156,8 @@ namespace NSSServices.Controllers
                 
                 if (entity.Location != null && entity.Location.Geometry.SRID != 102008)
                 {
-                    entity.Location.Geometry = entity.Location.Geometry.ProjectGeometry(102008);
+                    NSSDB.Resources.Location loc = agent.ReprojectGeometry(entity.Location.Geometry, 102008).First();
+                    entity.Location.Geometry = loc.Geometry;
                 }
 
                 RegressionRegion Addeditem = await agent.Add(entity);
@@ -188,6 +190,7 @@ namespace NSSServices.Controllers
                     rr.RegionRegressionRegions = new List<RegionRegressionRegion>() { new RegionRegressionRegion { RegionID = regionEntity.ID, RegressionRegion = rr } };
                     rr.StatusID = (rr.CitationID != null || rr.Citation != null)?(int?)2:(int?)1;
                 });
+                // need to add reprojection
 
                 var results = await agent.Add(entities);
 
@@ -210,7 +213,8 @@ namespace NSSServices.Controllers
 
                 if (entity.Location != null && entity.Location.Geometry.SRID != 102008)
                 {
-                    entity.Location.Geometry = entity.Location.Geometry.ProjectGeometry(102008);
+                    NSSDB.Resources.Location loc = agent.ReprojectGeometry(entity.Location.Geometry, 102008).First();
+                    entity.Location.Geometry = loc.Geometry;
                 }
 
                 RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();

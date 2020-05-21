@@ -509,7 +509,7 @@ namespace NSSAgent
 
         public IEnumerable<NSSDB.Resources.Location> ReprojectGeometry(Geometry geom, Int32 srid)
         {
-            var args = new Object[] { geom.AsText(), geom.SRID, srid };
+            var args = new Object[] { geom, geom.SRID, srid };
             return this.getTable<NSSDB.Resources.Location>(sqltypeenum.reprojectGeom, args);
         }
         #endregion
@@ -1218,12 +1218,13 @@ namespace NSSAgent
                                     WHERE r.""LocationID"" IS NOT NULL
                                     AND(ST_Intersects(l.""Geometry"", f.geom) = TRUE)) t";
                 case sqltypeenum.reprojectGeom:
-                    return @"SELECT
-                                (ST_Transform(
-                                    ST_SetSRID(
-                                        ST_GeomFromGeoJSON('{0}'),
-                                    {1}),
-                                 {2})) as Geometry;";
+                    return @"SELECT -1 as ID, '' as AssociatedCodes,
+                                (SELECT 
+                                    (ST_Transform(
+                                        ST_SetSRID(
+                                            ST_GeomFromText('{0}'),
+                                        {1}),
+                                     {2}))) as Geometry;";
                 default:
                     throw new Exception("No sql for table " + type);
             }//end switch;

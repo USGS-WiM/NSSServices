@@ -77,7 +77,7 @@ namespace Shared.Controllers
 
         [HttpPut("{id}", Name ="Edit Variable")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Edit.md")]
-        public async Task<IActionResult> Put(int id, [FromBody]VariableType entity)
+        public async Task<IActionResult> Put(int id, [FromBody] VariableWithUnit entity)
         {
             try
             {

@@ -48,7 +48,7 @@ namespace SharedAgent
         //Variables
         Task<VariableType> Add(VariableWithUnit item);
         Task<IEnumerable<VariableType>> Add(List<VariableWithUnit> items);
-        Task<VariableType> Update(Int32 pkId, VariableType item);
+        Task<VariableType> Update(Int32 pkId, VariableWithUnit item);
         Task DeleteVariable(Int32 pkID);
     }
     public class SharedAgent: DBAgentBase, ISharedAgent
@@ -160,49 +160,72 @@ namespace SharedAgent
         #region VariableTypes
         public Task<VariableType> Add(VariableWithUnit item)
         {
-            VariableType tempVT = new VariableType();
-            VariableUnitType tempVUT = new VariableUnitType();
+            Variable tempV = new Variable
+            {
+                VariableTypeID = item.ID,
+                UnitTypeID = item.UnitTypeID,
+                Comments = "Default unit"
+            };
 
-            tempVUT.VariableID = item.ID;
-            tempVUT.UnitTypeID = item.UnitTypeID;
+            VariableType tempVT = new VariableType
+            {
+                ID = item.ID,
+                Name = item.Name,
+                Code = item.Code,
+                Description = item.Description
+            };
 
-            tempVT.ID = item.ID;
-            tempVT.Name = item.Name;
-            tempVT.Code = item.Code;
-            tempVT.Description = item.Description;
-
-            
-            this.Add<VariableUnitType>(tempVUT);
+            this.Add<Variable>(tempV);
             return this.Add<VariableType>(tempVT);
         }
         public Task<IEnumerable<VariableType>> Add(List<VariableWithUnit> items)
         {
             List<VariableType> tempVTList = new List<VariableType>();
-            List<VariableUnitType> tempVUTList = new List<VariableUnitType>();
+            List<Variable> tempVList = new List<Variable>();
 
             foreach(var item in items)
             {
-                VariableType tempVT = new VariableType();
-                VariableUnitType tempVUT = new VariableUnitType();
+                Variable tempV = new Variable
+                {
+                    VariableTypeID = item.ID,
+                    UnitTypeID = item.UnitTypeID,
+                    Comments = "Default unit"
+                };
 
-                tempVUT.VariableID = item.ID;
-                tempVUT.UnitTypeID = item.UnitTypeID;
-
-                tempVT.ID = item.ID;
-                tempVT.Name = item.Name;
-                tempVT.Code = item.Code;
-                tempVT.Description = item.Description;
+                VariableType tempVT = new VariableType
+                {
+                    ID = item.ID,
+                    Name = item.Name,
+                    Code = item.Code,
+                    Description = item.Description
+                };
 
                 tempVTList.Add(tempVT);
-                tempVUTList.Add(tempVUT);
+                tempVList.Add(tempV);
             }
 
-            this.Add<VariableUnitType>(tempVUTList);
+            this.Add<Variable>(tempVList);
             return this.Add<VariableType>(tempVTList);
         }
-        public Task<VariableType> Update(Int32 pkId, VariableType item)
+        public Task<VariableType> Update(Int32 pkId, VariableWithUnit item)
         {
-            return this.Update<VariableType>(pkId, item);
+            Variable tempV = new Variable
+            {
+                VariableTypeID = item.ID,
+                UnitTypeID = item.UnitTypeID,
+                Comments = "Default unit"
+            };
+
+            VariableType tempVT = new VariableType
+            {
+                ID = item.ID,
+                Name = item.Name,
+                Code = item.Code,
+                Description = item.Description
+            };
+
+            this.Update<Variable>(pkId, tempV);
+            return this.Update<VariableType>(pkId, tempVT);
         }
         public Task DeleteVariable(Int32 pkID)
         {

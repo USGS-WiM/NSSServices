@@ -47,7 +47,7 @@ namespace SharedAgent
 
         //Variables
         Task<VariableType> Add(VariableWithUnit item);
-        Task<IEnumerable<VariableType>> Add(List<VariableType> items);
+        Task<IEnumerable<VariableType>> Add(List<VariableWithUnit> items);
         Task<VariableType> Update(Int32 pkId, VariableType item);
         Task DeleteVariable(Int32 pkID);
     }
@@ -175,9 +175,30 @@ namespace SharedAgent
             this.Add<VariableUnitType>(tempVUT);
             return this.Add<VariableType>(tempVT);
         }
-        public Task<IEnumerable<VariableType>> Add(List<VariableType> items)
+        public Task<IEnumerable<VariableType>> Add(List<VariableWithUnit> items)
         {
-            return this.Add<VariableType>(items);
+            List<VariableType> tempVTList = new List<VariableType>();
+            List<VariableUnitType> tempVUTList = new List<VariableUnitType>();
+
+            foreach(var item in items)
+            {
+                VariableType tempVT = new VariableType();
+                VariableUnitType tempVUT = new VariableUnitType();
+
+                tempVUT.VariableID = item.ID;
+                tempVUT.UnitTypeID = item.UnitTypeID;
+
+                tempVT.ID = item.ID;
+                tempVT.Name = item.Name;
+                tempVT.Code = item.Code;
+                tempVT.Description = item.Description;
+
+                tempVTList.Add(tempVT);
+                tempVUTList.Add(tempVUT);
+            }
+
+            this.Add<VariableUnitType>(tempVUTList);
+            return this.Add<VariableType>(tempVTList);
         }
         public Task<VariableType> Update(Int32 pkId, VariableType item)
         {

@@ -60,7 +60,7 @@ namespace Shared.Controllers
 
         [HttpPost("[action]", Name ="Variable Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Batch.md")]
-        public async Task<IActionResult> Batch([FromBody]List<VariableType> entities)
+        public async Task<IActionResult> Batch([FromBody]List<VariableWithUnit> entities)
         {
             try
             {

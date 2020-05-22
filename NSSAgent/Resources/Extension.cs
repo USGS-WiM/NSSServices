@@ -69,22 +69,15 @@ namespace NSSAgent.Resources
             return string.Join("", str.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
         }
 
-        //public static Geometry ProjectGeometry(this Geometry geom, int srid)
-        //{
-        //    //var FromWKT = getWellKnownText(geom.SRID);
-        //    //var ToWKT = getWellKnownText(srid);
-        //    //var SourceCoordSystem = new CoordinateSystemFactory().CreateFromWkt(FromWKT);
-        //    //var TargetCoordSystem = new CoordinateSystemFactory().CreateFromWkt(ToWKT);
+        public static double Round(this double num)
+        {
+            if (num == 0)
+                return 0;
 
-        //    //var trans = new CoordinateTransformationFactory().CreateFromCoordinateSystems(SourceCoordSystem, TargetCoordSystem);
+            decimal scale = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(num))) + 1);
+            double temp = (double)(scale * Math.Round((decimal)num / scale, 3));
 
-        //    //var projGeom = Transform(geom, trans.MathTransform);
-        //    //projGeom.SRID = srid;
-
-        //    //return projGeom;
-
-        //    String.Format(getSQLStatement(agent.sqltypeenum.regionbygeom), geom.AsText());
-        //}
-
+            return temp;
+        }
     }
 }

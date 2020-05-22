@@ -105,7 +105,6 @@ namespace NSSAgent
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
-        Double RoundValue(double num);
         Task<Scenario> Update(Scenario item, string existingStatisticGroup = null);
         Task<IQueryable<Scenario>> Add(Scenario item);
         Task DeleteScenario(int regressionregionID, int statisticgroupID, int regressiontypeID);
@@ -677,8 +676,8 @@ namespace NSSAgent
                                 Unit = unit,
                                 Errors = paramsOutOfRange ? new List<Error>() : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType?.Name, Value = e.Value, Code = e.ErrorType?.Code }).ToList(),
                                 EquivalentYears = paramsOutOfRange ? null : equation.EquivalentYears,
-                                IntervalBounds = paramsOutOfRange ? null : evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value * unit.factor),
-                                Value = RoundValue(eOps.Value * unit.factor)
+                                IntervalBounds = paramsOutOfRange ? null : evaluateUncertainty(equation.PredictionInterval, variables, (eOps.Value * unit.factor).Round()),
+                                Value = (eOps.Value * unit.factor).Round()
                             });
                         }//next equation
                         regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion));
@@ -705,16 +704,6 @@ namespace NSSAgent
                 sm("Error Estimating Scenarios: " + ex.Message, WIM.Resources.MessageType.error);
                 throw;
             }
-        }
-        public Double RoundValue(double num)
-        {
-            if (num == 0)
-                return 0;
-
-            decimal scale = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(num))) + 1);
-            double temp = (double)(scale * Math.Round((decimal)num / scale, 3));
-
-            return temp;
         }
         public async Task<IQueryable<Scenario>> Add(Scenario item)
         {
@@ -1324,15 +1313,20 @@ namespace NSSAgent
                 var variables = expected.Parameters.ToDictionary(k => k.Key, v => (double?)v.Value);
                 eOps = new ExpressionOps(equation.Expression, variables);
 
+                var eopsValueRounded = eOps.Value.Round();
+                var expectedValueRounded = expected.Value.Round();
+
                 if (!eOps.IsValid) { sm($"Scenario expression failed to execute. {equation.Expression} is invalid"); return false; }
-                if (eOps.Value != expected.Value) { sm($"Expected value {expected.Value} does not match computed {eOps.Value}"); return false; }
+                if (eopsValueRounded != expectedValueRounded) { sm($"Expected value {expectedValueRounded} does not match computed {eopsValueRounded}"); return false; }
 
                 if (equation.PredictionInterval != null)
                 {
                     IntervalBounds computedBound = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
-                    if (computedBound?.Upper != expected.IntervalBounds?.Upper || computedBound?.Lower != expected.IntervalBounds?.Lower)
+                    var expectedUpperRounded = computedBound != null ? expected.IntervalBounds.Upper.Round() : 0;
+                    var expectedLowerRounded = computedBound != null ? expected.IntervalBounds.Lower.Round() : 0;
+                    if (computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded)
                     {
-                        sm($"Expected interval bound values; Upper: {expected.IntervalBounds.Upper}, Lower: {expected.IntervalBounds.Lower} do not match computed; Upper: {computedBound?.Upper}, Lower: {computedBound?.Lower}");
+                        sm($"Expected interval bound values; Upper: {expectedUpperRounded}, Lower: {expectedLowerRounded} do not match computed; Upper: {computedBound?.Upper}, Lower: {computedBound?.Lower}");
                         return false;
                     }
                 }
@@ -1411,8 +1405,8 @@ namespace NSSAgent
                 lowerBound = 1 / T * (Q / BCF);
                 upperBound = T * (Q / BCF);
 
-                double lowerRounded = RoundValue(lowerBound);
-                double upperRounded = RoundValue(upperBound);
+                double lowerRounded = lowerBound.Round();
+                double upperRounded = upperBound.Round();
 
                 return new IntervalBounds() { Lower = lowerRounded, Upper = upperRounded };
             }

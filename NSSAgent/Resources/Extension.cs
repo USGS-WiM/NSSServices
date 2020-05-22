@@ -59,5 +59,16 @@ namespace NSSAgent.Resources
         {
             return string.Join("", str.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries));
         }
+
+        public static double Round(this double num)
+        {
+            if (num == 0)
+                return 0;
+
+            decimal scale = (decimal)Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(num))) + 1);
+            double temp = (double)(scale * Math.Round((decimal)num / scale, 3));
+
+            return temp;
+        }
     }
 }

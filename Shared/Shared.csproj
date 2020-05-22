@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NSSAgent\NSSAgent.csproj" />
     <ProjectReference Include="..\NSSDB\NSSDB.csproj" />
     <ProjectReference Include="..\SharedDB\SharedDB.csproj" />
   </ItemGroup>

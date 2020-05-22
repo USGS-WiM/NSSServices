@@ -113,6 +113,12 @@ namespace NSSAgent
         Task<IQueryable<Scenario>> Add(Scenario item);
         Task DeleteScenario(int regressionregionID, int statisticgroupID, int regressiontypeID);
 
+        //Variables
+        Task<Variable> Add(Variable item);
+        Task<IEnumerable<Variable>> Add(List<Variable> items);
+        Task<Variable> Update(Int32 pkId, Variable item);
+        Variable GetVar(Int32 varTypeID);
+
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
         Task<ErrorType> GetError(Int32 ID);
@@ -937,6 +943,29 @@ namespace NSSAgent
             }
         }
         #endregion
+
+        #region Variables
+
+        public Task<Variable> Add(Variable item)
+        {
+            return this.Add<Variable>(item);
+        }
+        public Task<IEnumerable<Variable>> Add(List<Variable> items)
+        {
+            return this.Add<Variable>(items);
+        }
+        public Task<Variable> Update(Int32 pkId, Variable item)
+        {
+            return this.Update<Variable>(pkId, item);
+        }
+        public Variable GetVar(Int32 varTypeID)
+        {
+            var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID);
+            return result;
+        }
+
+        #endregion
+
         #region ReadOnly
         public IQueryable<ErrorType> GetErrors()
         {
@@ -1078,16 +1107,17 @@ namespace NSSAgent
         }
         public IQueryable<object> GetVariablesWithUnits()
         {
-            IQueryable<VariableUnitType> unitTypes = this.Select<VariableUnitType>();
-            var vars = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableID, (var, unit) => new
+            IQueryable<Variable> unitTypes = this.Select<Variable>().Where(x => x.Comments == "Default unit");
+            var obj = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableTypeID, (var, unit) => new
             {
                 ID = var.ID,
                 Description = var.Description,
                 Code = var.Code,
                 Name = var.Name,
                 UnitTypeID = unit.UnitTypeID
-            });
-            return vars;
+            }).Distinct().OrderBy(x => x.ID);
+
+            return obj;
         }
         public Task<VariableType> GetVariable(Int32 ID)
         {
@@ -1095,8 +1125,8 @@ namespace NSSAgent
         }
         public object GetVariableWithUnits(Int32 ID)
         {
-            IQueryable<VariableUnitType> unitTypes = this.Select<VariableUnitType>();
-            var obj = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableID, (var, unit) => new
+            IQueryable<Variable> unitTypes = this.Select<Variable>();
+            var obj = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableTypeID, (var, unit) => new
             {
                 ID = var.ID,
                 Description = var.Description,

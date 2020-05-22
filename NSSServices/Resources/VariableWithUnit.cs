@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shared.Resources
+namespace NSSServices.Resources
 {
     public class VariableWithUnit
     {

@@ -29,6 +29,9 @@ using System.Collections.Generic;
 using SharedAgent;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
+using System.Linq;
+using NSSServices.Resources;
+using NSSDB.Resources;
 
 namespace NSSServices.Controllers
 {
@@ -37,9 +40,11 @@ namespace NSSServices.Controllers
     public class VariablesController : VariablesControllerBase
     {
         protected INSSAgent agent;
+        protected ISharedAgent shared;
         public VariablesController(INSSAgent sa, ISharedAgent shared_sa) : base(shared_sa)
         {
             this.agent = sa;
+            this.shared = shared_agent;
         }
 
         #region METHOD
@@ -49,7 +54,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.GetVariablesWithUnits());  
+                return Ok(agent.GetVariablesWithUnits().ToList());  
             }
             catch (Exception ex)
             {
@@ -71,7 +76,129 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }
         }
-        
+
+        [HttpPost(Name = "Add Variable")]
+        [Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Add.md")]
+        public async Task<IActionResult> Post([FromBody] VariableWithUnit entity)
+        {
+            try
+            {
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
+                Variable tempV = new Variable
+                {
+                    UnitTypeID = entity.UnitTypeID,
+                    Comments = "Default unit"
+                };
+
+                VariableType tempVT = new VariableType
+                {
+                    Name = entity.Name,
+                    Code = entity.Code,
+                    Description = entity.Description
+                };
+
+                var temp = await shared.Add(tempVT);
+                tempV.VariableTypeID = temp.ID;
+                await agent.Add(tempV);
+
+                return Ok(temp);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPost("[action]", Name = "Variable Batch Upload")]
+        [Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Batch.md")]
+        public async Task<IActionResult> Batch([FromBody] List<VariableWithUnit> entities)
+        {
+            try
+            {
+                entities.ForEach(e => e.ID = 0);
+                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+
+                List<VariableType> tempVTList = new List<VariableType>();
+                List<Variable> tempVList = new List<Variable>();
+
+                foreach (var item in entities)
+                {
+                    Variable tempV = new Variable
+                    {
+                        UnitTypeID = item.UnitTypeID,
+                        Comments = "Default unit"
+                    };
+
+                    VariableType tempVT = new VariableType
+                    {
+                        ID = item.ID,
+                        Name = item.Name,
+                        Code = item.Code,
+                        Description = item.Description
+                    };
+
+                    tempVTList.Add(tempVT);
+                    tempVList.Add(tempV);
+                }
+
+                var temp = await shared.Add(tempVTList);
+                var tempList = temp.ToList();
+
+                for (int i = 0; i < tempList.Count(); i++)
+                {
+                    tempVList[i].VariableTypeID = tempList[i].ID;
+                }
+
+                await agent.Add(tempVList);
+
+                return Ok(temp);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPut("{id}", Name = "Edit Variable")]
+        [Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Edit.md")]
+        public async Task<IActionResult> Put(int id, [FromBody] VariableWithUnit entity)
+        {
+            try
+            {
+                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
+                Variable tempV = new Variable
+                {
+                    VariableTypeID = id,
+                    UnitTypeID = entity.UnitTypeID,
+                    Comments = "Default unit"
+                };
+
+                VariableType tempVT = new VariableType
+                {
+                    ID = id,
+                    Name = entity.Name,
+                    Code = entity.Code,
+                    Description = entity.Description
+                };
+
+                var temp = await shared.Update(id, tempVT);
+                var varID = agent.GetVar(id);
+                await agent.Update(varID.ID, tempV);
+
+                return Ok(temp);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+
+        }
+
 
         #endregion
     }

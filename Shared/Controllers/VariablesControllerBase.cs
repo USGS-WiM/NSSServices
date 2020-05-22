@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using SharedAgent;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
-using Shared.Resources;
 
 namespace Shared.Controllers
 {
@@ -42,54 +41,6 @@ namespace Shared.Controllers
         #region METHOD
         public abstract Task<IActionResult> Get();
         public abstract Task<IActionResult> Get(int id);
-        
-        [HttpPost(Name ="Add Variable")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Add.md")]
-        public async Task<IActionResult> Post([FromBody] VariableWithUnit entity)
-        {
-            try
-            {
-                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Add(entity));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }            
-        }
-
-        [HttpPost("[action]", Name ="Variable Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Batch.md")]
-        public async Task<IActionResult> Batch([FromBody]List<VariableWithUnit> entities)
-        {
-            try
-            {
-                entities.ForEach(e => e.ID = 0);
-                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
-
-                return Ok(await shared_agent.Add(entities));
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
-
-        [HttpPut("{id}", Name ="Edit Variable")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Edit.md")]
-        public async Task<IActionResult> Put(int id, [FromBody] VariableWithUnit entity)
-        {
-            try
-            {
-                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await shared_agent.Update(id,entity));                
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-
-        }        
 
         [HttpDelete("{id}", Name ="Delete Variable")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Delete.md")]

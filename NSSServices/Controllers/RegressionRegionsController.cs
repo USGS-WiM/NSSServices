@@ -185,8 +185,8 @@ namespace NSSServices.Controllers
                     rr.ID = 0;
                     rr.RegionRegressionRegions = new List<RegionRegressionRegion>() { new RegionRegressionRegion { RegionID = regionEntity.ID, RegressionRegion = rr } };
                     rr.StatusID = (rr.CitationID != null || rr.Citation != null)?(int?)2:(int?)1;
+                    rr.Location = (rr.Location == null || rr.Location.Geometry.SRID == 102008) ? rr.Location : new NSSDB.Resources.Location { Geometry = agent.ReprojectGeometry(rr.Location.Geometry, 102008), AssociatedCodes = rr.Location.AssociatedCodes };
                 });
-                // need to add reprojection
 
                 var results = await agent.Add(entities);
 

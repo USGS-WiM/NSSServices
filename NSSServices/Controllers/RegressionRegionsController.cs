@@ -26,11 +26,9 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using GeoAPI.Geometries;
 using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
-using NSSAgent.Resources;
 using NetTopologySuite.Geometries;
 
 namespace NSSServices.Controllers
@@ -121,8 +119,7 @@ namespace NSSServices.Controllers
                 // reproject for web clients
                 if (entity.Location != null && entity.Location.Geometry.SRID != 4326)
                 {
-                    NSSDB.Resources.Location loc = agent.ReprojectGeometry(entity.Location.Geometry, 4326).First();
-                    entity.Location.Geometry = loc.Geometry;
+                    entity.Location.Geometry = agent.ReprojectGeometry(entity.Location.Geometry, 4326);
                 }
                 return Ok(entity);
             }
@@ -156,8 +153,7 @@ namespace NSSServices.Controllers
                 
                 if (entity.Location != null && entity.Location.Geometry.SRID != 102008)
                 {
-                    NSSDB.Resources.Location loc = agent.ReprojectGeometry(entity.Location.Geometry, 102008).First();
-                    entity.Location.Geometry = loc.Geometry;
+                    entity.Location.Geometry = agent.ReprojectGeometry(entity.Location.Geometry, 102008);
                 }
 
                 RegressionRegion Addeditem = await agent.Add(entity);
@@ -213,8 +209,7 @@ namespace NSSServices.Controllers
 
                 if (entity.Location != null && entity.Location.Geometry.SRID != 102008)
                 {
-                    NSSDB.Resources.Location loc = agent.ReprojectGeometry(entity.Location.Geometry, 102008).First();
-                    entity.Location.Geometry = loc.Geometry;
+                    entity.Location.Geometry = agent.ReprojectGeometry(entity.Location.Geometry, 102008);
                 }
 
                 RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();

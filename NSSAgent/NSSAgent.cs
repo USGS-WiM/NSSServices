@@ -36,12 +36,8 @@ using WIM.Resources;
 using System.Data;
 using System.Data.Common;
 using NetTopologySuite.Geometries;
-using System.Reflection;
 using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.DependencyInjection;
-using System.Text;
-using WIM.Security;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
 
@@ -100,7 +96,7 @@ namespace NSSAgent
         IEnumerable<Coefficient> RemoveRegressionRegionCoefficients(int RegressionRegionID, List<Coefficient> items);
         Task<Coefficient> Update(Int32 pkId, Coefficient item);
         Task DeleteCoefficient(Int32 pkID);
-        IEnumerable<NSSDB.Resources.Location> ReprojectGeometry(Geometry geom, Int32 srid);
+        Geometry ReprojectGeometry(Geometry geom, Int32 srid);
 
         //Roles
         IQueryable<string> GetRoles();
@@ -507,10 +503,12 @@ namespace NSSAgent
             return this.Delete<Coefficient>(pkID);
         }
 
-        public IEnumerable<NSSDB.Resources.Location> ReprojectGeometry(Geometry geom, Int32 srid)
+        public Geometry ReprojectGeometry(Geometry geom, Int32 srid)
         {
             var args = new Object[] { geom, geom.SRID, srid };
-            return this.getTable<NSSDB.Resources.Location>(sqltypeenum.reprojectGeom, args);
+            // can't use Geometry with getTable, using fake Location in sql with re-projected geometry
+            var loc = this.getTable<NSSDB.Resources.Location>(sqltypeenum.reprojectGeom, args);
+            return loc.First().Geometry;
         }
         #endregion
         #region Roles
@@ -1218,13 +1216,13 @@ namespace NSSAgent
                                     WHERE r.""LocationID"" IS NOT NULL
                                     AND(ST_Intersects(l.""Geometry"", f.geom) = TRUE)) t";
                 case sqltypeenum.reprojectGeom:
-                    return @"SELECT -1 as ID, '' as AssociatedCodes,
+                    return @"SELECT -1 as ""ID"", '' as ""AssociatedCodes"",
                                 (SELECT 
                                     (ST_Transform(
                                         ST_SetSRID(
                                             ST_GeomFromText('{0}'),
                                         {1}),
-                                     {2}))) as Geometry;";
+                                     {2}))) as ""Geometry""";
                 default:
                     throw new Exception("No sql for table " + type);
             }//end switch;

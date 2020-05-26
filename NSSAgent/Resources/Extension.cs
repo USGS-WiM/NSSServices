@@ -1,12 +1,6 @@
-﻿using GeoAPI;
-using GeoAPI.Geometries;
-using NetTopologySuite;
-using NetTopologySuite.CoordinateSystems.Transformations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Web;
 
 namespace NSSAgent.Resources
 {

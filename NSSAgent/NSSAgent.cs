@@ -36,12 +36,8 @@ using WIM.Resources;
 using System.Data;
 using System.Data.Common;
 using NetTopologySuite.Geometries;
-using System.Reflection;
 using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.DependencyInjection;
-using System.Text;
-using WIM.Security;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
 
@@ -88,7 +84,7 @@ namespace NSSAgent
         //RegressionRegions
         IQueryable<RegressionRegion> GetRegressionRegions(List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
         IQueryable<RegressionRegion> GetManagedRegressionRegions(Manager manager, List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
-        IQueryable<RegressionRegion> GetRegressionRegion(Int32 ID, bool getPolygon = false);
+        IQueryable<RegressionRegion> GetRegressionRegion(Int32 ID, bool includeGeometry = false);
         IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID);
         Task<RegressionRegion> Add(RegressionRegion item);
         Task<IEnumerable<RegressionRegion>> Add(List<NSSDB.Resources.RegressionRegion> items);
@@ -100,6 +96,7 @@ namespace NSSAgent
         IEnumerable<Coefficient> RemoveRegressionRegionCoefficients(int RegressionRegionID, List<Coefficient> items);
         Task<Coefficient> Update(Int32 pkId, Coefficient item);
         Task DeleteCoefficient(Int32 pkID);
+        Geometry ReprojectGeometry(Geometry geom, Int32 srid);
 
         //Roles
         IQueryable<string> GetRoles();
@@ -443,9 +440,9 @@ namespace NSSAgent
             return query.Select(rrr => rrr.RegressionRegion).Distinct();
 
         }
-        public IQueryable<RegressionRegion> GetRegressionRegion(int regregionID, bool getPolygon = false)
+        public IQueryable<RegressionRegion> GetRegressionRegion(int regregionID, bool includeGeometry = false)
         {
-            if (getPolygon)
+            if (includeGeometry)
             {
                 return this.Select<NSSDB.Resources.RegressionRegion>().Where(rr => rr.ID == regregionID).Include("Location");
             } else
@@ -503,6 +500,14 @@ namespace NSSAgent
         public Task DeleteCoefficient(Int32 pkID)
         {
             return this.Delete<Coefficient>(pkID);
+        }
+
+        public Geometry ReprojectGeometry(Geometry geom, Int32 srid)
+        {
+            var args = new Object[] { geom, geom.SRID, srid };
+            // can't use Geometry with getTable, using fake Location in sql with re-projected geometry
+            var loc = this.getTable<NSSDB.Resources.Location>(sqltypeenum.reprojectGeom, args);
+            return loc.First().Geometry;
         }
         #endregion
         #region Roles
@@ -781,36 +786,33 @@ namespace NSSAgent
                 regressionregionList = item.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList();
                 regressiontypeList = item.RegressionRegions.SelectMany(s => s.Regressions?.Select(x => x.code.ToLower())).ToList();
 
-                var AvailableScenarios = GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),new List<string>() { sg.ID.ToString() }, regressiontypeList, null, 0);
+                var AvailableScenarios = GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),new List<string>() { sg.ID.ToString() }, regressiontypeList, null, 0).ToList();
                 if (AvailableScenarios.Count() != 1) throw new BadRequestException("More or less than 1 scenario returned, cannot complete update.");
 
 
                 var equationsToUpdate = this.GetEquations(null, regressionregionList.Select(s => s.Code).ToList(), new List<string>() { sg.ID.ToString() }, regressiontypeList)
                                         .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(p=>p.PredictionInterval).Include("EquationErrors.ErrorType").ToList();
 
-            
+
 
                 foreach (var equation in equationsToUpdate)
                 {
-                    var regressionregion = item.RegressionRegions.FirstOrDefault(rr=> rr.ID == equation.RegressionRegionID);     
-                    
+                    var regressionregion = item.RegressionRegions.FirstOrDefault(rr => rr.ID == equation.RegressionRegionID);
+
                     var regression = regressionregion.Regressions.FirstOrDefault(r => r.ID == equation.RegressionTypeID);
                     var associatedVariables = regressionregion.Parameters != null ? regressionregion.Parameters : regression.Parameters;
                     var errors = regression.Errors;
-                    var unit = regression.Unit.ID > 0 ? await Find<UnitType>(regression.Unit.ID) : Select<UnitType>().FirstOrDefault(u => string.Equals(u.Abbreviation, regression.Unit.Abbr,StringComparison.CurrentCultureIgnoreCase));
+                    var unit = regression.Unit.ID > 0 ? await Find<UnitType>(regression.Unit.ID) : Select<UnitType>().FirstOrDefault(u => string.Equals(u.Abbreviation, regression.Unit.Abbr, StringComparison.CurrentCultureIgnoreCase));
 
                     var variables = this.Select<VariableType>().Where(v => (regressionregion.Parameters.Any() ? regressionregion.Parameters : regression.Parameters).Select(p => p.Code.ToLower()).Contains(v.Code.ToLower())).ToList();
                     var eqErrors = this.Select<ErrorType>().Where(er => regression.Errors.Select(e => e.ID).Contains(er.ID)).ToList();
 
-                    
+
                     var Units = this.Select<UnitType>().ToList().Where(ut => associatedVariables.Any(u => (u.UnitType.ID > 0 && ut.ID == u.UnitType.ID) || string.Equals(ut.Abbreviation, u.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase))).ToList();
 
                     equation.RegressionRegionID = regressionregion.ID;
                     equation.UnitTypeID = unit.ID;
-                    // issues with context tracking, need to detach this entity
-                    context.Entry<UnitType>(unit).State = EntityState.Detached;
                     equation.Expression = regression.Equation;
-                    //equation.RegressionTypeID = (await reg).ID;
                     equation.StatisticGroupTypeID = item.StatisticGroupID;
                     equation.EquivalentYears = regression.EquivalentYears;
 
@@ -842,28 +844,28 @@ namespace NSSAgent
                     {
                         equation.PredictionInterval = null;
                     }
-                        
+
                     //variables
                     var varList = associatedVariables?.Where(v => regression.Equation == null || regression.Equation.Contains(v.Code)).ToList();
                     var variablesToRemove = equation.Variables?.Where(x => !varList.Any(y => y.Code == x.VariableType.Code)).ToList();
-                    var variablesToAdd = varList?.Where(y => equation.Variables == null || !equation.Variables.Any(x => y.Code == x.VariableType.Code)).Select(v=> new Variable()
+                    var variablesToAdd = varList?.Where(y => equation.Variables == null || !equation.Variables.Any(x => y.Code == x.VariableType.Code)).Select(v => new Variable()
                     {
                         VariableTypeID = variables.FirstOrDefault(e => e.Code.ToLower() == v.Code.ToLower()).ID,
                         MinValue = v.Limits.Min,
                         MaxValue = v.Limits.Max,
-                        UnitTypeID = Units.FirstOrDefault(u => u.ID == v.UnitType.ID || string.Equals(u.Abbreviation,v.UnitType.Abbr,StringComparison.CurrentCultureIgnoreCase)).ID
+                        UnitTypeID = Units.FirstOrDefault(u => u.ID == v.UnitType.ID || string.Equals(u.Abbreviation, v.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase)).ID
                     }).ToList();
                     var variablesToKeep = equation.Variables.Where(x => varList.Any(y => y.Code == x.VariableType.Code)).ToList();
 
 
-                    variablesToRemove?.ForEach(v=> Delete<Variable>(v));
+                    variablesToRemove?.ForEach(v => Delete<Variable>(v));
                     variablesToAdd?.ForEach(v => { if (equation.Variables == null) equation.Variables = new List<Variable>(); equation.Variables.Add(v); });
                     foreach (var variable in variablesToKeep)
                     {
                         var editvariable = varList.FirstOrDefault(v => v.Code == variable.VariableType.Code);
                         variable.MinValue = editvariable.Limits.Min;
                         variable.MaxValue = editvariable.Limits.Max;
-                        variable.UnitTypeID = Units.FirstOrDefault(u => u.ID == editvariable.UnitType.ID || string.Equals(u.Abbreviation, editvariable.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase)).ID;                        
+                        variable.UnitTypeID = Units.FirstOrDefault(u => u.ID == editvariable.UnitType.ID || string.Equals(u.Abbreviation, editvariable.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase)).ID;
                     }//next variable
 
                     //EquationErrors
@@ -882,9 +884,14 @@ namespace NSSAgent
                         foreach (var error in EquationErrorToKeep)
                         {
                             var editError = errors.FirstOrDefault(v => v.ID == error.ErrorTypeID);
-                            error.Value = editError.Value;                            
+                            error.Value = editError.Value;
                         }//next error
                     }
+
+                    equation.Variables.ToList().ForEach(v =>
+                    {
+                        v.UnitType = null;
+                    });
 
                     if (valid(equation, regression.Expected))
                         await this.Update<Equation>(equation.ID, equation);
@@ -1199,7 +1206,14 @@ namespace NSSAgent
                                     LEFT JOIN nss.""Locations"" AS l ON r.""LocationID"" = l.""ID""
                                     WHERE r.""LocationID"" IS NOT NULL
                                     AND(ST_Intersects(l.""Geometry"", f.geom) = TRUE)) t";
-
+                case sqltypeenum.reprojectGeom:
+                    return @"SELECT -1 as ""ID"", '' as ""AssociatedCodes"",
+                                (SELECT 
+                                    (ST_Transform(
+                                        ST_SetSRID(
+                                            ST_GeomFromText('{0}'),
+                                        {1}),
+                                     {2}))) as ""Geometry""";
                 default:
                     throw new Exception("No sql for table " + type);
             }//end switch;
@@ -1678,7 +1692,8 @@ namespace NSSAgent
         {
             ScenarioParameterView,
             managerCitations,
-            regionbygeom
+            regionbygeom,
+            reprojectGeom
         }
 
     }

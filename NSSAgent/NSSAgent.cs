@@ -793,21 +793,21 @@ namespace NSSAgent
                 var equationsToUpdate = this.GetEquations(null, regressionregionList.Select(s => s.Code).ToList(), new List<string>() { sg.ID.ToString() }, regressiontypeList)
                                         .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(p=>p.PredictionInterval).Include("EquationErrors.ErrorType").ToList();
 
-            
+
 
                 foreach (var equation in equationsToUpdate)
                 {
-                    var regressionregion = item.RegressionRegions.FirstOrDefault(rr=> rr.ID == equation.RegressionRegionID);     
-                    
+                    var regressionregion = item.RegressionRegions.FirstOrDefault(rr => rr.ID == equation.RegressionRegionID);
+
                     var regression = regressionregion.Regressions.FirstOrDefault(r => r.ID == equation.RegressionTypeID);
                     var associatedVariables = regressionregion.Parameters != null ? regressionregion.Parameters : regression.Parameters;
                     var errors = regression.Errors;
-                    var unit = regression.Unit.ID > 0 ? await Find<UnitType>(regression.Unit.ID) : Select<UnitType>().FirstOrDefault(u => string.Equals(u.Abbreviation, regression.Unit.Abbr,StringComparison.CurrentCultureIgnoreCase));
+                    var unit = regression.Unit.ID > 0 ? await Find<UnitType>(regression.Unit.ID) : Select<UnitType>().FirstOrDefault(u => string.Equals(u.Abbreviation, regression.Unit.Abbr, StringComparison.CurrentCultureIgnoreCase));
 
                     var variables = this.Select<VariableType>().Where(v => (regressionregion.Parameters.Any() ? regressionregion.Parameters : regression.Parameters).Select(p => p.Code.ToLower()).Contains(v.Code.ToLower())).ToList();
                     var eqErrors = this.Select<ErrorType>().Where(er => regression.Errors.Select(e => e.ID).Contains(er.ID)).ToList();
 
-                    
+
                     var Units = this.Select<UnitType>().ToList().Where(ut => associatedVariables.Any(u => (u.UnitType.ID > 0 && ut.ID == u.UnitType.ID) || string.Equals(ut.Abbreviation, u.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase))).ToList();
 
                     equation.RegressionRegionID = regressionregion.ID;
@@ -844,21 +844,21 @@ namespace NSSAgent
                     {
                         equation.PredictionInterval = null;
                     }
-                        
+
                     //variables
                     var varList = associatedVariables?.Where(v => regression.Equation == null || regression.Equation.Contains(v.Code)).ToList();
                     var variablesToRemove = equation.Variables?.Where(x => !varList.Any(y => y.Code == x.VariableType.Code)).ToList();
-                    var variablesToAdd = varList?.Where(y => equation.Variables == null || !equation.Variables.Any(x => y.Code == x.VariableType.Code)).Select(v=> new Variable()
+                    var variablesToAdd = varList?.Where(y => equation.Variables == null || !equation.Variables.Any(x => y.Code == x.VariableType.Code)).Select(v => new Variable()
                     {
                         VariableTypeID = variables.FirstOrDefault(e => e.Code.ToLower() == v.Code.ToLower()).ID,
                         MinValue = v.Limits.Min,
                         MaxValue = v.Limits.Max,
-                        UnitTypeID = Units.FirstOrDefault(u => u.ID == v.UnitType.ID || string.Equals(u.Abbreviation,v.UnitType.Abbr,StringComparison.CurrentCultureIgnoreCase)).ID
+                        UnitTypeID = Units.FirstOrDefault(u => u.ID == v.UnitType.ID || string.Equals(u.Abbreviation, v.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase)).ID
                     }).ToList();
                     var variablesToKeep = equation.Variables.Where(x => varList.Any(y => y.Code == x.VariableType.Code)).ToList();
 
 
-                    variablesToRemove?.ForEach(v=> Delete<Variable>(v));
+                    variablesToRemove?.ForEach(v => Delete<Variable>(v));
                     variablesToAdd?.ForEach(v => { if (equation.Variables == null) equation.Variables = new List<Variable>(); equation.Variables.Add(v); });
                     foreach (var variable in variablesToKeep)
                     {
@@ -884,14 +884,14 @@ namespace NSSAgent
                         foreach (var error in EquationErrorToKeep)
                         {
                             var editError = errors.FirstOrDefault(v => v.ID == error.ErrorTypeID);
-                            error.Value = editError.Value;                            
+                            error.Value = editError.Value;
                         }//next error
                     }
 
-                    // detach unchanged entries before updating
-                    var unchangedEntriesCopy = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Unchanged).ToList();
-                    foreach (var entry in unchangedEntriesCopy)
-                        entry.State = EntityState.Detached;
+                    equation.Variables.ToList().ForEach(v =>
+                    {
+                        v.UnitType = null;
+                    });
 
                     if (valid(equation, regression.Expected))
                         await this.Update<Equation>(equation.ID, equation);

@@ -889,8 +889,8 @@ namespace NSSAgent
                     }
 
                     // detach unchanged entries before updating
-                    var changedEntriesCopy = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Unchanged).ToList();
-                    foreach (var entry in changedEntriesCopy)
+                    var unchangedEntriesCopy = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Unchanged).ToList();
+                    foreach (var entry in unchangedEntriesCopy)
                         entry.State = EntityState.Detached;
 
                     if (valid(equation, regression.Expected))

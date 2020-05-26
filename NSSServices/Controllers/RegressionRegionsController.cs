@@ -109,12 +109,12 @@ namespace NSSServices.Controllers
 
         [HttpGet("{id}", Name ="Regression Region")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/GetDistinct.md")]
-        public async Task<IActionResult> Get(int id, [FromQuery] bool getpolygon = false)
+        public async Task<IActionResult> Get(int id, [FromQuery] bool includeGeometry = false)
         {
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
-                RegressionRegion entity = agent.GetRegressionRegion(id, getpolygon).FirstOrDefault();
+                RegressionRegion entity = agent.GetRegressionRegion(id, includeGeometry).FirstOrDefault();
 
                 // reproject for web clients
                 if (entity.Location != null && entity.Location.Geometry.SRID != 4326)
@@ -150,11 +150,6 @@ namespace NSSServices.Controllers
                     RegionID = regionEntity.ID,
                     RegressionRegion = entity
                 } };
-                
-                if (entity.Location != null && entity.Location.Geometry.SRID != 102008)
-                {
-                    entity.Location.Geometry = agent.ReprojectGeometry(entity.Location.Geometry, 102008);
-                }
 
                 RegressionRegion Addeditem = await agent.Add(entity);
                 Addeditem.RegionRegressionRegions = null;
@@ -185,7 +180,6 @@ namespace NSSServices.Controllers
                     rr.ID = 0;
                     rr.RegionRegressionRegions = new List<RegionRegressionRegion>() { new RegionRegressionRegion { RegionID = regionEntity.ID, RegressionRegion = rr } };
                     rr.StatusID = (rr.CitationID != null || rr.Citation != null)?(int?)2:(int?)1;
-                    rr.Location = (rr.Location == null || rr.Location.Geometry.SRID == 102008) ? rr.Location : new NSSDB.Resources.Location { Geometry = agent.ReprojectGeometry(rr.Location.Geometry, 102008), AssociatedCodes = rr.Location.AssociatedCodes };
                 });
 
                 var results = await agent.Add(entities);
@@ -206,11 +200,6 @@ namespace NSSServices.Controllers
             {
 
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-
-                if (entity.Location != null && entity.Location.Geometry.SRID != 102008)
-                {
-                    entity.Location.Geometry = agent.ReprojectGeometry(entity.Location.Geometry, 102008);
-                }
 
                 RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();
                 if (rr == null) return BadRequest($"No regression region exists with {id} identifier.");

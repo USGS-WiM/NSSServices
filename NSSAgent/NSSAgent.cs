@@ -84,7 +84,7 @@ namespace NSSAgent
         //RegressionRegions
         IQueryable<RegressionRegion> GetRegressionRegions(List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
         IQueryable<RegressionRegion> GetManagedRegressionRegions(Manager manager, List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
-        IQueryable<RegressionRegion> GetRegressionRegion(Int32 ID, bool getPolygon = false);
+        IQueryable<RegressionRegion> GetRegressionRegion(Int32 ID, bool includeGeometry = false);
         IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID);
         Task<RegressionRegion> Add(RegressionRegion item);
         Task<IEnumerable<RegressionRegion>> Add(List<NSSDB.Resources.RegressionRegion> items);
@@ -440,9 +440,9 @@ namespace NSSAgent
             return query.Select(rrr => rrr.RegressionRegion).Distinct();
 
         }
-        public IQueryable<RegressionRegion> GetRegressionRegion(int regregionID, bool getPolygon = false)
+        public IQueryable<RegressionRegion> GetRegressionRegion(int regregionID, bool includeGeometry = false)
         {
-            if (getPolygon)
+            if (includeGeometry)
             {
                 return this.Select<NSSDB.Resources.RegressionRegion>().Where(rr => rr.ID == regregionID).Include("Location");
             } else
@@ -786,7 +786,7 @@ namespace NSSAgent
                 regressionregionList = item.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList();
                 regressiontypeList = item.RegressionRegions.SelectMany(s => s.Regressions?.Select(x => x.code.ToLower())).ToList();
 
-                var AvailableScenarios = GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),new List<string>() { sg.ID.ToString() }, regressiontypeList, null, 0);
+                var AvailableScenarios = GetScenarios(null, null, regressionregionList.Select(s => s.Code).ToList(),new List<string>() { sg.ID.ToString() }, regressiontypeList, null, 0).ToList();
                 if (AvailableScenarios.Count() != 1) throw new BadRequestException("More or less than 1 scenario returned, cannot complete update.");
 
 
@@ -812,10 +812,7 @@ namespace NSSAgent
 
                     equation.RegressionRegionID = regressionregion.ID;
                     equation.UnitTypeID = unit.ID;
-                    // issues with context tracking, need to detach this entity
-                    context.Entry<UnitType>(unit).State = EntityState.Detached;
                     equation.Expression = regression.Equation;
-                    //equation.RegressionTypeID = (await reg).ID;
                     equation.StatisticGroupTypeID = item.StatisticGroupID;
                     equation.EquivalentYears = regression.EquivalentYears;
 
@@ -868,7 +865,7 @@ namespace NSSAgent
                         var editvariable = varList.FirstOrDefault(v => v.Code == variable.VariableType.Code);
                         variable.MinValue = editvariable.Limits.Min;
                         variable.MaxValue = editvariable.Limits.Max;
-                        variable.UnitTypeID = Units.FirstOrDefault(u => u.ID == editvariable.UnitType.ID || string.Equals(u.Abbreviation, editvariable.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase)).ID;                        
+                        variable.UnitTypeID = Units.FirstOrDefault(u => u.ID == editvariable.UnitType.ID || string.Equals(u.Abbreviation, editvariable.UnitType.Abbr, StringComparison.CurrentCultureIgnoreCase)).ID;
                     }//next variable
 
                     //EquationErrors
@@ -890,6 +887,11 @@ namespace NSSAgent
                             error.Value = editError.Value;                            
                         }//next error
                     }
+
+                    // detach unchanged entries before updating
+                    var changedEntriesCopy = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Unchanged).ToList();
+                    foreach (var entry in changedEntriesCopy)
+                        entry.State = EntityState.Detached;
 
                     if (valid(equation, regression.Expected))
                         await this.Update<Equation>(equation.ID, equation);

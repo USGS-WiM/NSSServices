@@ -26,7 +26,6 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using GeoAPI.Geometries;
 using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
@@ -110,13 +109,19 @@ namespace NSSServices.Controllers
 
         [HttpGet("{id}", Name ="Regression Region")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/RegressionRegions/GetDistinct.md")]
-        public async Task<IActionResult> Get(int id, [FromQuery] bool getpolygon = false)
+        public async Task<IActionResult> Get(int id, [FromQuery] bool includeGeometry = false)
         {
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
+                RegressionRegion entity = agent.GetRegressionRegion(id, includeGeometry).FirstOrDefault();
 
-                return Ok(agent.GetRegressionRegion(id, getpolygon).FirstOrDefault());
+                // reproject for web clients
+                if (entity.Location != null && entity.Location.Geometry.SRID != 4326)
+                {
+                    entity.Location.Geometry = agent.ReprojectGeometry(entity.Location.Geometry, 4326);
+                }
+                return Ok(entity);
             }
             catch (Exception ex)
             {

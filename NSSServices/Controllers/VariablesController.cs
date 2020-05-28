@@ -69,7 +69,7 @@ namespace NSSServices.Controllers
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(agent.GetVariableWithUnits(id));
+                return Ok(agent.GetVariableWithUnit(id));
             }
             catch (Exception ex)
             {
@@ -86,24 +86,33 @@ namespace NSSServices.Controllers
             {
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                Variable tempV = new Variable
+                Variable newVariable = new Variable
                 {
                     UnitTypeID = entity.UnitTypeID,
                     Comments = "Default unit"
                 };
 
-                VariableType tempVT = new VariableType
+                VariableType newVariableType = new VariableType
                 {
                     Name = entity.Name,
                     Code = entity.Code,
                     Description = entity.Description
                 };
 
-                var temp = await shared.Add(tempVT);
-                tempV.VariableTypeID = temp.ID;
-                await agent.Add(tempV);
+                var newVarTypeToGrabID = await shared.Add(newVariableType);
+                newVariable.VariableTypeID = newVarTypeToGrabID.ID;
+                await agent.Add(newVariable);
 
-                return Ok(temp);
+                VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                {
+                    ID = newVarTypeToGrabID.ID,
+                    Name = newVariableType.Name,
+                    Code = newVariableType.Code,
+                    Description = newVariableType.Description,
+                    UnitTypeID = newVariable.UnitTypeID
+                };
+
+                return Ok(returnVariableWithUnit);
             }
             catch (Exception ex)
             {
@@ -121,18 +130,18 @@ namespace NSSServices.Controllers
                 entities.ForEach(e => e.ID = 0);
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
-                List<VariableType> tempVTList = new List<VariableType>();
-                List<Variable> tempVList = new List<Variable>();
+                List<VariableType> newVariableTypeList = new List<VariableType>();
+                List<Variable> newVariableList = new List<Variable>();
 
                 foreach (var item in entities)
                 {
-                    Variable tempV = new Variable
+                    Variable newVariable = new Variable
                     {
                         UnitTypeID = item.UnitTypeID,
                         Comments = "Default unit"
                     };
 
-                    VariableType tempVT = new VariableType
+                    VariableType newVariableType = new VariableType
                     {
                         ID = item.ID,
                         Name = item.Name,
@@ -140,21 +149,21 @@ namespace NSSServices.Controllers
                         Description = item.Description
                     };
 
-                    tempVTList.Add(tempVT);
-                    tempVList.Add(tempV);
+                    newVariableTypeList.Add(newVariableType);
+                    newVariableList.Add(newVariable);
                 }
 
-                var temp = await shared.Add(tempVTList);
-                var tempList = temp.ToList();
+                var newVarTypeToGrabIDIEnum = await shared.Add(newVariableTypeList);
+                var newVarTypeToGrabIDList = newVarTypeToGrabIDIEnum.ToList();
 
-                for (int i = 0; i < tempList.Count(); i++)
+                for (int i = 0; i < newVarTypeToGrabIDList.Count(); i++)
                 {
-                    tempVList[i].VariableTypeID = tempList[i].ID;
+                    newVariableList[i].VariableTypeID = newVarTypeToGrabIDList[i].ID;
                 }
 
-                await agent.Add(tempVList);
+                await agent.Add(newVariableList);
 
-                return Ok(temp);
+                return Ok(newVarTypeToGrabIDIEnum);
             }
             catch (Exception ex)
             {
@@ -171,14 +180,14 @@ namespace NSSServices.Controllers
             {
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                Variable tempV = new Variable
+                Variable newVariable = new Variable
                 {
                     VariableTypeID = id,
                     UnitTypeID = entity.UnitTypeID,
                     Comments = "Default unit"
                 };
 
-                VariableType tempVT = new VariableType
+                VariableType newVariableType = new VariableType
                 {
                     ID = id,
                     Name = entity.Name,
@@ -186,11 +195,20 @@ namespace NSSServices.Controllers
                     Description = entity.Description
                 };
 
-                var temp = await shared.Update(id, tempVT);
-                var varID = agent.GetVar(id);
-                await agent.Update(varID.ID, tempV);
+                var newVarTypeToGrabID = await shared.Update(id, newVariableType);
+                var varID = agent.GetVariable(id);
+                await agent.Update(varID.ID, newVariable);
 
-                return Ok(temp);
+                VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                {
+                    ID = newVarTypeToGrabID.ID,
+                    Name = newVariableType.Name,
+                    Code = newVariableType.Code,
+                    Description = newVariableType.Description,
+                    UnitTypeID = newVariable.UnitTypeID
+                };
+
+                return Ok(returnVariableWithUnit);
             }
             catch (Exception ex)
             {

@@ -963,7 +963,7 @@ namespace NSSAgent
         }
         public Variable GetVariable(Int32 varTypeID)
         {
-            var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID);
+            var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
             return result;
         }
 

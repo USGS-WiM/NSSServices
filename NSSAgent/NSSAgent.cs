@@ -1103,9 +1103,6 @@ namespace NSSAgent
         }
         public IQueryable<VariableType> GetVariableTypes()
         {
-            // IQueryable<VariableUnitType> unitTypes = this.Select<VariableUnitType>();
-            // return this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableID,
-            // (var, unit) => new VariableType { ID = var.ID, Code = var.Code, Description = var.Description, UnitTypeID = unit.UnitTypeID });
             return this.Select<VariableType>();
         }
         public IQueryable<object> GetVariablesWithUnits()

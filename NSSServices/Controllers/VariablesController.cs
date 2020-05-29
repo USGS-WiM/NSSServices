@@ -132,6 +132,7 @@ namespace NSSServices.Controllers
 
                 List<VariableType> newVariableTypeList = new List<VariableType>();
                 List<Variable> newVariableList = new List<Variable>();
+                List<VariableWithUnit> returnVariableWithUnitList = new List<VariableWithUnit>();
 
                 foreach (var item in entities)
                 {
@@ -149,8 +150,17 @@ namespace NSSServices.Controllers
                         Description = item.Description
                     };
 
+                    VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                    {
+                        Name = item.Name,
+                        Code = item.Code,
+                        Description = item.Description,
+                        UnitTypeID = item.UnitTypeID
+                    };
+
                     newVariableTypeList.Add(newVariableType);
                     newVariableList.Add(newVariable);
+                    returnVariableWithUnitList.Add(returnVariableWithUnit);
                 }
 
                 var newVarTypeToGrabIDIEnum = await shared.Add(newVariableTypeList);
@@ -159,11 +169,13 @@ namespace NSSServices.Controllers
                 for (int i = 0; i < newVarTypeToGrabIDList.Count(); i++)
                 {
                     newVariableList[i].VariableTypeID = newVarTypeToGrabIDList[i].ID;
+
+                    returnVariableWithUnitList[i].ID = newVarTypeToGrabIDList[i].ID;
                 }
 
                 await agent.Add(newVariableList);
 
-                return Ok(newVarTypeToGrabIDIEnum);
+                return Ok(returnVariableWithUnitList);
             }
             catch (Exception ex)
             {

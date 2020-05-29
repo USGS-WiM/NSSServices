@@ -101,7 +101,7 @@ namespace NSSServices.Controllers
 
                 var newVarTypeToGrabID = await shared.Add(newVariableType);
                 newVariable.VariableTypeID = newVarTypeToGrabID.ID;
-                await agent.Add(newVariable);
+                agent.Add(newVariable).Wait();
 
                 VariableWithUnit returnVariableWithUnit = new VariableWithUnit
                 {
@@ -173,7 +173,7 @@ namespace NSSServices.Controllers
                     returnVariableWithUnitList[i].ID = newVarTypeToGrabIDList[i].ID;
                 }
 
-                await agent.Add(newVariableList);
+                agent.Add(newVariableList).Wait();
 
                 return Ok(returnVariableWithUnitList);
             }

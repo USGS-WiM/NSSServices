@@ -113,7 +113,7 @@ namespace NSSAgent
         Task<Variable> Add(Variable item);
         Task<IEnumerable<Variable>> Add(List<Variable> items);
         Task<Variable> Update(Int32 pkId, Variable item);
-        Variable GetVar(Int32 varTypeID);
+        Variable GetVariable(Int32 varTypeID);
 
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
@@ -128,10 +128,13 @@ namespace NSSAgent
         Task<UnitType> GetUnit(Int32 ID);
         IQueryable<UnitSystemType> GetUnitSystems();
         Task<UnitSystemType> GetUnitSystem(Int32 ID);
-        IQueryable<VariableType> GetVariables();
+
+        // Variables and object that stores VariableType + UnitTypeID
+        IQueryable<VariableType> GetVariableTypes();
         IQueryable<object> GetVariablesWithUnits();
-        Task<VariableType> GetVariable(Int32 ID);
-        object GetVariableWithUnits(Int32 ID);
+        Task<VariableType> GetVariableType(Int32 ID);
+        object GetVariableWithUnit(Int32 ID);
+
     }
     public class NSSServiceAgent : DBAgentBase, INSSAgent
     {
@@ -954,9 +957,9 @@ namespace NSSAgent
         {
             return this.Update<Variable>(pkId, item);
         }
-        public Variable GetVar(Int32 varTypeID)
+        public Variable GetVariable(Int32 varTypeID)
         {
-            var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID);
+            var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
             return result;
         }
 
@@ -1094,11 +1097,8 @@ namespace NSSAgent
         {
             return this.Find<UnitSystemType>(ID);
         }
-        public IQueryable<VariableType> GetVariables()
+        public IQueryable<VariableType> GetVariableTypes()
         {
-            // IQueryable<VariableUnitType> unitTypes = this.Select<VariableUnitType>();
-            // return this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableID,
-            // (var, unit) => new VariableType { ID = var.ID, Code = var.Code, Description = var.Description, UnitTypeID = unit.UnitTypeID });
             return this.Select<VariableType>();
         }
         public IQueryable<object> GetVariablesWithUnits()
@@ -1115,13 +1115,13 @@ namespace NSSAgent
 
             return obj;
         }
-        public Task<VariableType> GetVariable(Int32 ID)
+        public Task<VariableType> GetVariableType(Int32 ID)
         {
             return this.Find<VariableType>(ID);
         }
-        public object GetVariableWithUnits(Int32 ID)
+        public object GetVariableWithUnit(Int32 ID)
         {
-            IQueryable<Variable> unitTypes = this.Select<Variable>();
+            IQueryable<Variable> unitTypes = this.Select<Variable>().Where(x => x.Comments == "Default unit");
             var obj = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableTypeID, (var, unit) => new
             {
                 ID = var.ID,

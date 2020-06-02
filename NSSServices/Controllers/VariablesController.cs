@@ -238,7 +238,7 @@ namespace NSSServices.Controllers
             {
                 if (id < 1) return new BadRequestResult();
 
-                shared.DeleteVariable(id).Wait();
+                agent.DeleteVariable(id).Wait();
                 shared.DeleteVariableType(id).Wait();
                 return Ok();
             }

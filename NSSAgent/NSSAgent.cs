@@ -969,10 +969,16 @@ namespace NSSAgent
         }
         public Task DeleteVariable(Int32 ID)
         {
-            var selectedVariable = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
-            int varID = selectedVariable.FirstOrDefault().ID;
+            var selectedVariable = this.Select<Variable>().Where(x => x.VariableTypeID == ID).FirstOrDefault();
 
-            return this.Delete<Variable>(varID);
+            if(selectedVariable.EquationID is null && selectedVariable.LimitationID is null && selectedVariable.CoefficientID is null)
+            {
+                return this.Delete<Variable>(selectedVariable.ID);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         #endregion

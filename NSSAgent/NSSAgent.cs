@@ -118,6 +118,7 @@ namespace NSSAgent
         Task<IEnumerable<Variable>> Add(List<Variable> items);
         Task<Variable> Update(Int32 pkId, Variable item);
         Variable GetVariable(Int32 varTypeID);
+        Task DeleteVariable(Int32 ID);
 
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
@@ -965,6 +966,13 @@ namespace NSSAgent
         {
             var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
             return result;
+        }
+        public Task DeleteVariable(Int32 ID)
+        {
+            var selectedVariable = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
+            int varID = selectedVariable.FirstOrDefault().ID;
+
+            return this.Delete<Variable>(varID);
         }
 
         #endregion

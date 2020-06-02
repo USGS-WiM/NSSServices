@@ -229,6 +229,25 @@ namespace NSSServices.Controllers
 
         }
 
+        [HttpDelete("{id}", Name = "Delete Variable")]
+        [Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Delete.md")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (id < 1) return new BadRequestResult();
+
+                shared.DeleteVariable(id).Wait();
+                shared.DeleteVariableType(id).Wait();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
 
         #endregion
     }

@@ -238,9 +238,13 @@ namespace NSSServices.Controllers
             {
                 if (id < 1) return new BadRequestResult();
 
-                agent.DeleteVariable(id).Wait();
-                shared.DeleteVariableType(id).Wait();
-                return Ok();
+                var returnVar = agent.DeleteVariable(id);
+                if (returnVar != null)
+                {
+                    shared.DeleteVariableType(id).Wait();
+                    return Ok("Deleted ID: " + id);
+                }
+                return Ok("Variable and VariableType not deleted because of Foreign Key Constraint");
             }
             catch (Exception ex)
             {

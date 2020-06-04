@@ -50,7 +50,7 @@ namespace NSSServices.Filters
                 //    break;
                 case "scenario":
                     results = new List<WIM.Resources.Link>();
-                    results.Add(Hyperlinks.Generate(BaseURI + pathBase,"Citations",$"/citations?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}",WIM.Resources.refType.GET));
+                    results.Add(Hyperlinks.Generate("https://" + BaseURI + pathBase,"Citations",$"/citations?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}",WIM.Resources.refType.GET));
                     break;
                 default:
                     break;
@@ -77,7 +77,7 @@ namespace NSSServices.Filters
                     break;
                 case "scenario":
                     results = new List<WIM.Resources.Link>();
-                    results.Add(Hyperlinks.Generate(BaseURI + pathBase, "Citations", $"/citations?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}", WIM.Resources.refType.GET));
+                    results.Add(Hyperlinks.Generate("https://" + BaseURI + pathBase, "Citations", $"/citations?regressionregions={String.Join(",", ((Scenario)entity).RegressionRegions.Select(r => r.ID))}", WIM.Resources.refType.GET));
                     break;
                 default:
                     break;

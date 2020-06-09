@@ -41,22 +41,6 @@ namespace Shared.Controllers
         #region METHOD
         public abstract Task<IActionResult> Get();
         public abstract Task<IActionResult> Get(int id);
-
-        [HttpDelete("{id}", Name ="Delete Variable")][Authorize(Policy = Policy.AdminOnly)]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Delete.md")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            try
-            {
-                if (id < 1) return new BadRequestResult();
-                await shared_agent.DeleteVariable(id);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return await HandleExceptionAsync(ex);
-            }
-        }
         #endregion
     }
 }

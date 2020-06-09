@@ -101,7 +101,7 @@ namespace NSSServices.Controllers
 
                 var newVarTypeToGrabID = await shared.Add(newVariableType);
                 newVariable.VariableTypeID = newVarTypeToGrabID.ID;
-                await agent.Add(newVariable);
+                agent.Add(newVariable).Wait();
 
                 VariableWithUnit returnVariableWithUnit = new VariableWithUnit
                 {
@@ -132,6 +132,7 @@ namespace NSSServices.Controllers
 
                 List<VariableType> newVariableTypeList = new List<VariableType>();
                 List<Variable> newVariableList = new List<Variable>();
+                List<VariableWithUnit> returnVariableWithUnitList = new List<VariableWithUnit>();
 
                 foreach (var item in entities)
                 {
@@ -149,8 +150,17 @@ namespace NSSServices.Controllers
                         Description = item.Description
                     };
 
+                    VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                    {
+                        Name = item.Name,
+                        Code = item.Code,
+                        Description = item.Description,
+                        UnitTypeID = item.UnitTypeID
+                    };
+
                     newVariableTypeList.Add(newVariableType);
                     newVariableList.Add(newVariable);
+                    returnVariableWithUnitList.Add(returnVariableWithUnit);
                 }
 
                 var newVarTypeToGrabIDIEnum = await shared.Add(newVariableTypeList);
@@ -159,11 +169,13 @@ namespace NSSServices.Controllers
                 for (int i = 0; i < newVarTypeToGrabIDList.Count(); i++)
                 {
                     newVariableList[i].VariableTypeID = newVarTypeToGrabIDList[i].ID;
+
+                    returnVariableWithUnitList[i].ID = newVarTypeToGrabIDList[i].ID;
                 }
 
-                await agent.Add(newVariableList);
+                agent.Add(newVariableList).Wait();
 
-                return Ok(newVarTypeToGrabIDIEnum);
+                return Ok(returnVariableWithUnitList);
             }
             catch (Exception ex)
             {
@@ -215,6 +227,29 @@ namespace NSSServices.Controllers
                 return await HandleExceptionAsync(ex);
             }
 
+        }
+
+        [HttpDelete("{id}", Name = "Delete Variable")]
+        [Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Delete.md")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (id < 1) return new BadRequestResult();
+
+                var returnVar = agent.DeleteVariable(id);
+                if (returnVar != null)
+                {
+                    shared.DeleteVariableType(id).Wait();
+                    return Ok("Deleted ID: " + id);
+                }
+                return Ok("Variable and VariableType not deleted because of Foreign Key Constraint");
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
         }
 
 

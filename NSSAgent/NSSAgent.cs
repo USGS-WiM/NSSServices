@@ -302,11 +302,6 @@ namespace NSSAgent
         {
             return this.Update<Manager>(pkId, item);
         }
-        //public Task<RegionManager> UpdateRegionManagers(int regionID, List<RegionManager> regionManagers)
-        //{
-
-        //    return this.Update<RegionManager>(regionID, regionManagers);
-        //}
         public Task DeleteManager(int pkID)
         {
             return this.Delete<Manager>(pkID);

@@ -78,7 +78,7 @@ namespace NSSServices.Controllers
             {
                 if (id < 0) return new BadRequestResult(); // This returns HTTP 404
 
-                var x = await agent.GetManager(id);
+                var x = agent.GetManager(id);
                 //remove info not relevant
                 x.Salt = null;
                 x.Password = null;
@@ -132,7 +132,7 @@ namespace NSSServices.Controllers
                     string.IsNullOrEmpty(entity.Email)) return new BadRequestObjectResult(new Error(errorEnum.e_badRequest)); // This returns HTTP 404
 
                 //fetch object, assuming it exists
-                ObjectToBeUpdated = await agent.GetManager(id);
+                ObjectToBeUpdated = agent.GetManager(id);
                 if (ObjectToBeUpdated == null) return new NotFoundObjectResult(entity);
 
                 // managers cannot edit other managers, just themselves

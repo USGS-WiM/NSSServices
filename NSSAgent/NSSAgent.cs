@@ -64,7 +64,7 @@ namespace NSSAgent
 
         //Managers
         IQueryable<Manager> GetManagers();
-        Task<Manager> GetManager(Int32 ID);
+        Manager GetManager(Int32 ID);
         Task<Manager> Add(Manager item);
         Task<IEnumerable<Manager>> Add(List<Manager> items);
         Task<Manager> Update(Int32 pkId, Manager item);
@@ -205,7 +205,7 @@ namespace NSSAgent
         }
         public IQueryable<Citation> GetManagerCitations(int managerID)
         {
-            return this.getTable<Citation>(sqltypeenum.managerCitations, new Object[managerID]);
+            return this.getTable<Citation>(sqltypeenum.managerCitations, new Object[] { managerID });
         }
         public Task<Citation> Update(int pkId, Citation item)
         {
@@ -286,10 +286,10 @@ namespace NSSAgent
         {
             return this.Select<Manager>();
         }
-        public Task<Manager> GetManager(int ID)
+        public Manager GetManager(int ID)
         {
-            return this.Find<Manager>(ID);
-        }       
+            return this.GetManagers().Include(m => m.RegionManagers).FirstOrDefault(m => m.ID == ID);
+        }
         public Task<Manager> Add(Manager item)
         {
             return this.Add<Manager>(item);
@@ -332,7 +332,7 @@ namespace NSSAgent
         public IQueryable<Region> GetManagedRegions(Manager manager)
         {
             if (manager.Role.Equals(Role.Admin))//administrator
-                return GetRegions();
+                return GetRegions().Include(r => r.RegionManagers);
 
             return this.Select<RegionRegressionRegion>().Include(rrr => rrr.Region)
                 .Where(rrr => rrr.Region.RegionManagers.Any(rm => rm.ManagerID == manager.ID)).Select(rrr => rrr.Region).Distinct();
@@ -452,9 +452,8 @@ namespace NSSAgent
         }
         public IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID)
         {
-            return Select<RegionManager>().Where(rm => rm.ManagerID == managerID)
-                                .Include("Region.RegionRegressionRegions.RegressionRegion")
-                                .SelectMany(e => e.Region.RegionRegressionRegions.Select(s => s.RegressionRegion));
+            return this.Select<RegionRegressionRegion>().Include(rrr => rrr.RegressionRegion).Include(rrr => rrr.Region)
+                .Where(rrr => rrr.Region.RegionManagers.Any(rm => rm.ManagerID == managerID)).Select(rrr => rrr.RegressionRegion).Distinct();
         }
         public Task<RegressionRegion> Add(NSSDB.Resources.RegressionRegion item)
         {
@@ -1185,10 +1184,10 @@ namespace NSSAgent
 
                 case sqltypeenum.managerCitations:
                     return @"SELECT DISTINCT c.* FROM ""RegionManager"" rm
-                                JOIN ""RegionRegressionRegions"" rrr ON(rrr.""RegionID"" = rm.""RegionID"")
-                                JOIN ""RegressionRegions"" rr ON(rrr.""RegressionRegionID"" = rr.""ID"") 
-                                JOIN ""Citations"" c ON(c.""ID"" = rr.""CitationID"")
-                                Where rm.""ManagerID"" = {0}; ";
+                                JOIN ""RegionRegressionRegions"" rrr ON (rrr.""RegionID"" = rm.""RegionID"")
+                                JOIN ""RegressionRegions"" rr ON (rrr.""RegressionRegionID"" = rr.""ID"") 
+                                JOIN ""Citations"" c ON (c.""ID"" = rr.""CitationID"")
+                                Where rm.""ManagerID"" = {0}";
                 case sqltypeenum.regionbygeom:
                     return @"WITH Feature(geom) as (
 	                            SELECT (st_dump(st_makevalid(ST_Transform(

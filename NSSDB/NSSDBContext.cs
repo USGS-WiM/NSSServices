@@ -43,7 +43,8 @@ namespace NSSDB
         public virtual DbSet<PredictionInterval> PredictionIntervals { get; set; }        
         public virtual DbSet<RegionRegressionRegion> RegionRegressionRegions { get; set; }
         public virtual DbSet<Region> Regions { get; set; }        
-        public virtual DbSet<RegressionRegion> RegressionRegions { get; set; } 
+        public virtual DbSet<RegressionRegion> RegressionRegions { get; set; }
+        public virtual DbSet<RegionManager> RegionManager { get; set; }
         public virtual DbSet<Variable> Variables { get; set; }       
         public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }     
         public virtual DbSet<Location> Locations { get; set; }

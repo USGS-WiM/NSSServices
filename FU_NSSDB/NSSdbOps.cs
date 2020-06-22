@@ -197,9 +197,8 @@ namespace FU_NSSDB
                     /*results = @"SELECT DISTINCT sl.StatLabel
                                 FROM (DepVars dv
                                 LEFT JOIN StatLabel sl on (dv.StatisticLabelID = sl.StatisticLabelID))";*/
-
                     results = @"SELECT DISTINCT (0-1) as ID, sl.StatLabel as Code, sl.Definition as Description, sl.StatisticLabel as Name
-                                FROM (Statistic s
+                                FROM (DepVars s
                                 LEFT JOIN StatLabel sl on (s.StatisticLabelID = sl.StatisticLabelID))
                                 LEFT JOIN StatType st on (sl.statisticTypeID = st.StatisticTypeID)
                                 WHERE st.DefType = 'FS';";
@@ -213,7 +212,7 @@ namespace FU_NSSDB
                                 FROM ([Parameters] p 
                                 LEFT JOIN StatLabel sl ON ( p.StatisticLabelID = sl.StatisticLabelID))";*/
                     results = @"SELECT DISTINCT (0-1) as ID, sl.StatLabel as Code, sl.Definition as Description, sl.StatisticLabel as Name
-                                FROM (Statistic s
+                                FROM (DepVars s
                                 LEFT JOIN StatLabel sl on (s.StatisticLabelID = sl.StatisticLabelID))
                                 LEFT JOIN StatType st on (sl.statisticTypeID = st.StatisticTypeID)
                                 WHERE st.DefType = 'BC';";
@@ -282,6 +281,9 @@ namespace FU_NSSDB
                 case SQLType.e_getregressiontypes:
                     results= @"SELECT * FROM ""nss"".""RegressionType_view""";
                     break;
+                case SQLType.e_getregressionregions:
+                    results = @"SELECT * FROM ""nss"".""RegressionRegions""";
+                    break;
                 default:
                     break;
             }
@@ -319,6 +321,7 @@ namespace FU_NSSDB
             e_getvariabletypes,
             e_getunittypes,
             e_getregressiontypes,
+            e_getregressionregions,
             e_postcitation,
             e_regionregressionregion,
             e_predictioninterval,

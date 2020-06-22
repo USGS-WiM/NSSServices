@@ -150,6 +150,19 @@ namespace FU_NSSDB.Resources
             };
         }
     }
+    public class NSSRegressionRegion : RegressionRegion
+    {
+        public static NSSRegressionRegion FromDataReader(System.Data.IDataReader r)
+        {
+            return new NSSRegressionRegion()
+            {
+                ID = Convert.ToInt32(r["ID"]),
+                Code = r["Code"].ToString(),
+                Name = r["Name"].ToString(),
+                Description = r["Description"].ToString()
+            };
+        }
+    }
     public class FUEquation : Equation
     {
         public int oldID { get; set; }

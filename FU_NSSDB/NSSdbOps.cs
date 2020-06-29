@@ -238,7 +238,7 @@ namespace FU_NSSDB
                     results = @"INSERT INTO ""nss"".""Regions""(""Name"",""Code"") VALUES('{0}','{1}')";
                     break;
                 case SQLType.e_regressionregion:
-                    results = @"INSERT INTO ""nss"".""RegressionRegions""(""Name"",""Code"",""Description"",""CitationID"") VALUES('{0}', '{1}', '{2}',{3})";
+                    results = @"INSERT INTO ""nss"".""RegressionRegions""(""Name"",""Code"",""Description"",""CitationID"",""StatusID"") VALUES('{0}', '{1}', '{2}',{3}, 4)";
                     break;
                 case SQLType.e_equation:
                     results = @"INSERT INTO ""nss"".""Equations""(""RegressionRegionID"",""PredictionIntervalID"",""UnitTypeID"",""Expression"",""DA_Exponent"",""OrderIndex"",""RegressionTypeID"",""StatisticGroupTypeID"",""EquivalentYears"") 

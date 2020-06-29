@@ -1,0 +1,1 @@
+The statuses resource represents the approval status of each regression region.

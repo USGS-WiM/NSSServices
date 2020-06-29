@@ -18,5 +18,11 @@
     "ID": "4",
     "Name": "SS Approved",
     "Description": "Approved and enabled for public StreamStats users"
+  },
+  {
+    "ID": "5",
+    "Name": "Deprecated",
+    "Description": "Deprecated and disabled from SS and NSS",
+    "AllowedURLs": null
   }
 ]

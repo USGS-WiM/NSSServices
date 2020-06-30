@@ -530,30 +530,26 @@ namespace NSSAgent
         {
             var query = this.Select<Status>();
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var SSProd = new List<string> { "SS Approved" };
-            var SSTest = new List<string> { "SS Approved", "Review" };
-            var NSSTest = new List<string> { "Review", "Approved", "SS Approved" };
-            var NSSProd = new List<string> { "Approved", "SS Approved" };
-            if (manager?.Username != null)
-            {
-                // if logged in, allow all statuses
-                return query;
-            }
+
+            // set applicable statuses for each environment
+            var SSProdStatuses = new List<string> { "SS Approved" };
+            var SSTestStatuses = new List<string> { "SS Approved", "Review" };
+            var NSSTestStatuses = new List<string> { "Review", "Approved", "SS Approved" };
+            var NSSProdStatuses = new List<string> { "Approved", "SS Approved" };
+
+            // if logged in, allow all statuses
+            if (manager?.Username != null) return query;
+
             if (isStreamStats)
             {
-                if (env.ToUpper() == "PRODUCTION")
-                {
-                    return query.Where(s => SSProd.Any(stat => stat == s.Name));
-                } else if (env.ToUpper() == "STAGING")
-                {
-                    return query.Where(s => SSTest.Any(stat => stat == s.Name));
-                }
+                if (env.ToUpper() == "PRODUCTION") return query.Where(s => SSProdStatuses.Any(stat => stat == s.Name));
+                else if (env.ToUpper() == "STAGING")  return query.Where(s => SSTestStatuses.Any(stat => stat == s.Name));
             }
-            if (env.ToUpper() == "STAGING")
-            {
-                return query.Where(s => NSSTest.Any(stat => stat == s.Name));
-            }
-            return query.Where(s => NSSProd.Any(stat => stat == s.Name)); // default is return all SS/NSS approved
+
+            if (env.ToUpper() == "STAGING") return query.Where(s => NSSTestStatuses.Any(stat => stat == s.Name));
+
+            // default is return all SS/NSS approved
+            return query.Where(s => NSSProdStatuses.Any(stat => stat == s.Name));
         }
         #endregion        
         #region Scenarios

@@ -7,22 +7,22 @@
   {
     "ID": "2",
     "Name": "Review",
-    "Description": "Reviewing and disabled for all public users"
+    "Description": "Reviewing and disabled for all public users, enabled in staging environment"
   },
   {
     "ID": "3",
     "Name": "Approved",
-    "Description": "Approved and enabled for public NSS users"
+    "Description": "Approved and enabled for public NSS users, disabled for StreamStats users"
   },
   {
     "ID": "4",
     "Name": "SS Approved",
-    "Description": "Approved and enabled for public StreamStats users"
+    "Description": "Approved and enabled for all public NSS and StreamStats users"
   },
   {
     "ID": "5",
     "Name": "Deprecated",
-    "Description": "Deprecated and disabled from SS and NSS",
+    "Description": "Deprecated and disabled for all public users",
     "AllowedURLs": null
   }
 ]

@@ -204,10 +204,8 @@ namespace NSSServices.Controllers
                 regressiontypeList = parse(regressiontypes);
                 extensionList = parse(extensions);
                 var isStreamStats = false;
-                if (Request.Headers.FirstOrDefault(h => h.Key.ToUpper() == "X-IS-STREAMSTATS").Value.FirstOrDefault() == "true")
-                {
-                    isStreamStats = true;
-                }
+                // check for SS header
+                if (Request.Headers.FirstOrDefault(h => h.Key.ToUpper() == "X-IS-STREAMSTATS").Value.FirstOrDefault() == "true") isStreamStats = true;
 
                 if (geom != null)
                 {

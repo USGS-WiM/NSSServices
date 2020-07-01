@@ -103,6 +103,7 @@ namespace NSSAgent
 
         //Statuses
         IQueryable<Status> GetStatuses();
+        Task<Status> GetStatus(Int32 ID);
         IQueryable<Status> GetApplicableStatuses(Manager manager = null, bool isStreamStats = false);
 
         //Scenarios
@@ -526,6 +527,10 @@ namespace NSSAgent
         {
             return this.Select<Status>();
         }
+        public Task<Status> GetStatus(Int32 ID)
+        {
+            return this.Find<Status>(ID);
+        }
         public IQueryable<Status> GetApplicableStatuses(Manager manager = null, bool isStreamStats = false)
         {
             var query = this.Select<Status>();
@@ -533,8 +538,8 @@ namespace NSSAgent
 
             // set applicable statuses for each environment
             var SSProdStatuses = new List<string> { "SS Approved" };
-            var SSTestStatuses = new List<string> { "SS Approved", "Review" };
-            var NSSTestStatuses = new List<string> { "Review", "Approved", "SS Approved" };
+            var SSStagingStatuses = new List<string> { "SS Approved", "Review" };
+            var NSSStagingStatuses = new List<string> { "Review", "Approved", "SS Approved" };
             var NSSProdStatuses = new List<string> { "Approved", "SS Approved" };
 
             // if logged in, allow all statuses
@@ -543,10 +548,10 @@ namespace NSSAgent
             if (isStreamStats)
             {
                 if (env.ToUpper() == "PRODUCTION") return query.Where(s => SSProdStatuses.Any(stat => stat == s.Name));
-                else if (env.ToUpper() == "STAGING")  return query.Where(s => SSTestStatuses.Any(stat => stat == s.Name));
+                else if (env.ToUpper() == "STAGING")  return query.Where(s => SSStagingStatuses.Any(stat => stat == s.Name));
             }
 
-            if (env.ToUpper() == "STAGING") return query.Where(s => NSSTestStatuses.Any(stat => stat == s.Name));
+            if (env.ToUpper() == "STAGING") return query.Where(s => NSSStagingStatuses.Any(stat => stat == s.Name));
 
             // default is return all SS/NSS approved
             return query.Where(s => NSSProdStatuses.Any(stat => stat == s.Name));

@@ -49,7 +49,21 @@ namespace NSSServices.Controllers
             }
         }
 
+        [HttpGet("{id}", Name = "Status")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Statuses/GetDistinct.md")]
+        public async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                if (id < 0) return new BadRequestResult(); // This returns HTTP 404
 
+                return Ok(await agent.GetStatus(id));
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
 
         #endregion
     }

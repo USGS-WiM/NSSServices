@@ -114,7 +114,7 @@ namespace NSSAgent
         Task<IEnumerable<Variable>> Add(List<Variable> items);
         Task<Variable> Update(Int32 pkId, Variable item);
         Variable GetVariable(Int32 varTypeID);
-        Task DeleteVariable(Int32 ID);
+        Variable DeleteVariable(Int32 ID);
 
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
@@ -963,13 +963,30 @@ namespace NSSAgent
             var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
             return result;
         }
-        public Task DeleteVariable(Int32 ID)
+        public Variable DeleteVariable(Int32 ID)
         {
-            var selectedVariable = this.Select<Variable>().Where(x => x.VariableTypeID == ID).FirstOrDefault();
+            var selectedVariables = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
+            bool canDelete = false;
 
-            if(selectedVariable.EquationID is null && selectedVariable.LimitationID is null && selectedVariable.CoefficientID is null)
+            foreach (var selVar in selectedVariables)
             {
-                return this.Delete<Variable>(selectedVariable.ID);
+                if (selVar.EquationID is null && selVar.LimitationID is null && selVar.CoefficientID is null)
+                {
+                    canDelete = true;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            if (canDelete)
+            {
+                foreach (var selVar in selectedVariables)
+                {
+                    this.Delete<Variable>(selVar.ID);
+                }
+                return selectedVariables.FirstOrDefault();
             }
             else
             {

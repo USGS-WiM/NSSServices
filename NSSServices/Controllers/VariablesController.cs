@@ -244,7 +244,10 @@ namespace NSSServices.Controllers
                     shared.DeleteVariableType(id).Wait();
                     return Ok("Deleted ID: " + id);
                 }
-                return Ok("Variable and VariableType not deleted because of Foreign Key Constraint");
+                else
+                {
+                    throw new ArgumentException("Variable and VariableType not deleted because of Foreign Key Constraint");
+                }
             }
             catch (Exception ex)
             {

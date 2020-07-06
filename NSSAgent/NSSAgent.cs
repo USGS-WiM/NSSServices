@@ -964,7 +964,7 @@ namespace NSSAgent
         }
         public Variable GetVariable(Int32 varTypeID)
         {
-            var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
+            var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID);
             return result;
         }
         public Variable DeleteVariable(Int32 ID)
@@ -1138,7 +1138,7 @@ namespace NSSAgent
         }
         public IQueryable<object> GetVariablesWithUnits()
         {
-            IQueryable<Variable> unitTypes = this.Select<Variable>().Where(x => x.Comments == "Default unit");
+            IQueryable<Variable> unitTypes = this.Select<Variable>();
             var obj = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableTypeID, (var, unit) => new
             {
                 ID = var.ID,
@@ -1156,7 +1156,7 @@ namespace NSSAgent
         }
         public object GetVariableWithUnit(Int32 ID)
         {
-            IQueryable<Variable> unitTypes = this.Select<Variable>().Where(x => x.Comments == "Default unit");
+            IQueryable<Variable> unitTypes = this.Select<Variable>();
             var obj = this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableTypeID, (var, unit) => new
             {
                 ID = var.ID,

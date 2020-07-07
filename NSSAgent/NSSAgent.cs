@@ -44,6 +44,7 @@ using System.Text;
 using WIM.Security;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
+using NSSServices.Resources;
 
 namespace NSSAgent
 {
@@ -136,7 +137,7 @@ namespace NSSAgent
 
         // Variables and object that stores VariableType + UnitTypeID
         IQueryable<VariableType> GetVariableTypes();
-        List<object> GetVariablesWithUnits();
+        IQueryable<object> GetVariablesWithUnits();
         Task<VariableType> GetVariableType(Int32 ID);
         object GetVariableWithUnit(Int32 ID);
 
@@ -1136,38 +1137,27 @@ namespace NSSAgent
         {
             return this.Select<VariableType>();
         }
-        public List<object> GetVariablesWithUnits()
+        public IQueryable<object> GetVariablesWithUnits()
         {
             IQueryable<Variable> unitTypes = this.Select<Variable>().Where(x => x.Comments == "Default unit");
-            IQueryable<VariableType> varTypes = this.Select<VariableType>();
 
-            var qry = varTypes.GroupJoin(
+            IQueryable<VariableWithUnit> obj = this.Select<VariableType>().GroupJoin(
               unitTypes,
               var => var.ID,
               unit => unit.VariableTypeID,
               (x, y) => new { Variable = x, VariableType = y })
            .SelectMany(
                unit => unit.VariableType.DefaultIfEmpty(),
-                (x, y) => new { Variable = x.Variable, VariableType = y }).Distinct().OrderBy(x => x.Variable.ID);
+               (var, unit) => new VariableWithUnit
+               {
+                   ID = var.Variable.ID,
+                   Description = var.Variable.Description,
+                   Code = var.Variable.Code,
+                   Name = var.Variable.Name,
+                   UnitTypeID = unit.UnitTypeID
+               }).Distinct().OrderBy(x => x.ID);
 
-            List<object> returnVariableWithUnits = new List<object>();
-            foreach (var item in qry)
-            {
-                var variable = item.Variable;
-                var variableType = item.VariableType;
-
-                var tempVariableWithUnit = new {
-                    ID = variable.ID,
-                    Description = variable.Description,
-                    Code = variable.Code,
-                    Name = variable.Name,
-                    UnitTypeID = variableType == null ? -1 : variableType.UnitTypeID
-                };
-
-                returnVariableWithUnits.Add(tempVariableWithUnit);
-            }
-
-            return returnVariableWithUnits;
+            return obj;
         }
         public Task<VariableType> GetVariableType(Int32 ID)
         {
@@ -1176,30 +1166,24 @@ namespace NSSAgent
         public object GetVariableWithUnit(Int32 ID)
         {
             IQueryable<Variable> unitTypes = this.Select<Variable>().Where(x => x.Comments == "Default unit");
-            IQueryable<VariableType> varTypes = this.Select<VariableType>();
 
-            var qry = varTypes.GroupJoin(
+            VariableWithUnit obj = this.Select<VariableType>().GroupJoin(
               unitTypes,
               var => var.ID,
               unit => unit.VariableTypeID,
               (x, y) => new { Variable = x, VariableType = y })
            .SelectMany(
                unit => unit.VariableType.DefaultIfEmpty(),
-                (x, y) => new { Variable = x.Variable, VariableType = y }).Distinct().OrderBy(x => x.Variable.ID).First(v => v.Variable.ID == ID);
+               (var, unit) => new VariableWithUnit
+               {
+                   ID = var.Variable.ID,
+                   Description = var.Variable.Description,
+                   Code = var.Variable.Code,
+                   Name = var.Variable.Name,
+                   UnitTypeID = unit.UnitTypeID
+               }).Distinct().OrderBy(x => x.ID).First(v => v.ID == ID);
 
-            var variable = qry.Variable;
-            var variableType = qry.VariableType;
-
-            var returnVariableWithUnit = new
-            {
-                ID = variable.ID,
-                Description = variable.Description,
-                Code = variable.Code,
-                Name = variable.Name,
-                UnitTypeID = variableType == null ? -1 : variableType.UnitTypeID
-            };
-
-            return returnVariableWithUnit;
+            return obj;
         }
         public VariableType GetVariableByCode(string code)
         {

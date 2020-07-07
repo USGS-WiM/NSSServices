@@ -54,7 +54,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.GetVariablesWithUnits().ToList());  
+                return Ok(agent.GetVariablesWithUnits());  
             }
             catch (Exception ex)
             {

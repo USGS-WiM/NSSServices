@@ -1155,16 +1155,17 @@ namespace NSSAgent
               var => var.ID,
               unit => unit.VariableTypeID,
               (x, y) => new { Variable = x, VariableType = y })
-           .SelectMany(
-               unit => unit.VariableType.DefaultIfEmpty(),
+           .SelectMany(/*
+               unit => unit.VariableType,
                (var, unit) => new {
                    ID = var.Variable.ID,
                    Description = var.Variable.Description,
                    Code = var.Variable.Code,
                    Name = var.Variable.Name,
                    UnitTypeID = unit.UnitTypeID
-               }).Distinct().OrderBy(x => x.ID);
-
+               }).Distinct().OrderBy(x => x.ID);*/
+               unit => unit.VariableType.DefaultIfEmpty(),
+                (x, y) => new { Variable = x.Variable, VariableType = y }).Distinct().OrderBy(x => x.Variable.ID);
 
             return qry;
         }

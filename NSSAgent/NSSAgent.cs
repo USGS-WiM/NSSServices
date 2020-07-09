@@ -970,13 +970,19 @@ namespace NSSAgent
         }
         public Boolean DeleteVariable(Int32 ID)
         {
-            var selectedVariablesWithOutConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID
-                && x.EquationID == null && x.LimitationID == null && x.CoefficientID == null);
+            var selectedVariablesWithConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID
+                && x.EquationID == null && x.LimitationID == null && x.CoefficientID == null && x.Comments == "Default unit");
             var selectedVariablesTotal = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
 
+            var selectedVariablesWithOutConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID && (x.EquationID != null || x.LimitationID != null || x.CoefficientID != null));
             if (selectedVariablesWithOutConditions.Count() > 0)
             {
-                this.Delete<Variable>(selectedVariablesWithOutConditions.First().ID);
+                return false;
+            }
+
+            if (selectedVariablesWithConditions.Count() > 0)
+            {
+                this.Delete<Variable>(selectedVariablesWithConditions.First().ID);
                 return true;
             }
             else

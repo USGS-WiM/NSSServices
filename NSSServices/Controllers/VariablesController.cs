@@ -89,7 +89,7 @@ namespace NSSServices.Controllers
 
                 Variable newVariable = new Variable
                 {
-                    UnitTypeID = entity.UnitTypeID.GetValueOrDefault(),
+                    UnitTypeID = entity.UnitTypeID ?? -1,
                     Comments = "Default unit"
                 };
 
@@ -102,18 +102,27 @@ namespace NSSServices.Controllers
 
                 var newVarTypeToGrabID = await shared.Add(newVariableType);
                 newVariable.VariableTypeID = newVarTypeToGrabID.ID;
-                agent.Add(newVariable).Wait();
 
-                VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                // check if there was a value for new variable
+                if(newVariable.UnitTypeID == -1)
                 {
-                    ID = newVarTypeToGrabID.ID,
-                    Name = newVariableType.Name,
-                    Code = newVariableType.Code,
-                    Description = newVariableType.Description,
-                    UnitTypeID = newVariable.UnitTypeID
-                };
+                    return Ok(newVariableType);
+                }
+                else
+                {
+                    agent.Add(newVariable).Wait();
 
-                return Ok(returnVariableWithUnit);
+                    VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                    {
+                        ID = newVarTypeToGrabID.ID,
+                        Name = newVariableType.Name,
+                        Code = newVariableType.Code,
+                        Description = newVariableType.Description,
+                        UnitTypeID = newVariable.UnitTypeID
+                    };
+
+                    return Ok(returnVariableWithUnit);
+                }
             }
             catch (Exception ex)
             {
@@ -139,7 +148,7 @@ namespace NSSServices.Controllers
                 {
                     Variable newVariable = new Variable
                     {
-                        UnitTypeID = item.UnitTypeID.GetValueOrDefault(),
+                        UnitTypeID = item.UnitTypeID ?? -1,
                         Comments = "Default unit"
                     };
 
@@ -156,7 +165,7 @@ namespace NSSServices.Controllers
                         Name = item.Name,
                         Code = item.Code,
                         Description = item.Description,
-                        UnitTypeID = item.UnitTypeID.GetValueOrDefault()
+                        UnitTypeID = item.UnitTypeID ?? -1
                     };
 
                     newVariableTypeList.Add(newVariableType);
@@ -172,6 +181,15 @@ namespace NSSServices.Controllers
                     newVariableList[i].VariableTypeID = newVarTypeToGrabIDList[i].ID;
 
                     returnVariableWithUnitList[i].ID = newVarTypeToGrabIDList[i].ID;
+                }
+
+                for(int x = 0; x < newVariableList.Count(); x++)
+                {
+                    if(newVariableList[x].UnitTypeID == -1)
+                    {
+                        newVariableList.RemoveAt(x);
+                        x--;
+                    }
                 }
 
                 agent.Add(newVariableList).Wait();
@@ -196,7 +214,7 @@ namespace NSSServices.Controllers
                 Variable newVariable = new Variable
                 {
                     VariableTypeID = id,
-                    UnitTypeID = entity.UnitTypeID.GetValueOrDefault(),
+                    UnitTypeID = entity.UnitTypeID ?? -1,
                     Comments = "Default unit"
                 };
 
@@ -210,18 +228,25 @@ namespace NSSServices.Controllers
 
                 var newVarTypeToGrabID = await shared.Update(id, newVariableType);
                 var varID = agent.GetVariable(id);
-                await agent.Update(varID.ID, newVariable);
-
-                VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                if (newVariable.UnitTypeID == -1)
                 {
-                    ID = newVarTypeToGrabID.ID,
-                    Name = newVariableType.Name,
-                    Code = newVariableType.Code,
-                    Description = newVariableType.Description,
-                    UnitTypeID = newVariable.UnitTypeID
-                };
+                    return Ok(newVariableType);
+                }
+                else
+                {
+                    await agent.Update(varID.ID, newVariable);
 
-                return Ok(returnVariableWithUnit);
+                    VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                    {
+                        ID = newVarTypeToGrabID.ID,
+                        Name = newVariableType.Name,
+                        Code = newVariableType.Code,
+                        Description = newVariableType.Description,
+                        UnitTypeID = newVariable.UnitTypeID
+                    };
+
+                    return Ok(returnVariableWithUnit);
+                }
             }
             catch (Exception ex)
             {
@@ -239,8 +264,8 @@ namespace NSSServices.Controllers
             {
                 if (id < 1) return new BadRequestResult();
 
-                var returnVar = agent.DeleteVariable(id);
-                if (returnVar != null)
+                var returnBool = agent.DeleteVariable(id);
+                if (returnBool)
                 {
                     shared.DeleteVariableType(id).Wait();
                     return Ok("Deleted ID: " + id);

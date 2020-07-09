@@ -971,7 +971,7 @@ namespace NSSAgent
         public Boolean DeleteVariable(Int32 ID)
         {
             var selectedVariablesWithOutConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID
-                && x.EquationID == null && x.LimitationID == null && x.CoefficientID == null);
+                && (x.EquationID == null || x.LimitationID == null || x.CoefficientID == null));
             var selectedVariablesTotal = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
 
             if (selectedVariablesWithOutConditions.Count() > 0)

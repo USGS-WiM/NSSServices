@@ -30,8 +30,9 @@ using SharedAgent;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
 using System.Linq;
-using NSSServices.Resources;
+using NSSAgent.Resources;
 using NSSDB.Resources;
+using NSSServices.Resources;
 
 namespace NSSServices.Controllers
 {
@@ -54,7 +55,7 @@ namespace NSSServices.Controllers
         {
             try
             {
-                return Ok(agent.GetVariablesWithUnits().ToList());  
+                return Ok(agent.GetVariablesWithUnits());
             }
             catch (Exception ex)
             {
@@ -88,7 +89,7 @@ namespace NSSServices.Controllers
 
                 Variable newVariable = new Variable
                 {
-                    UnitTypeID = entity.UnitTypeID,
+                    UnitTypeID = entity.UnitTypeID.GetValueOrDefault(),
                     Comments = "Default unit"
                 };
 
@@ -138,7 +139,7 @@ namespace NSSServices.Controllers
                 {
                     Variable newVariable = new Variable
                     {
-                        UnitTypeID = item.UnitTypeID,
+                        UnitTypeID = item.UnitTypeID.GetValueOrDefault(),
                         Comments = "Default unit"
                     };
 
@@ -155,7 +156,7 @@ namespace NSSServices.Controllers
                         Name = item.Name,
                         Code = item.Code,
                         Description = item.Description,
-                        UnitTypeID = item.UnitTypeID
+                        UnitTypeID = item.UnitTypeID.GetValueOrDefault()
                     };
 
                     newVariableTypeList.Add(newVariableType);
@@ -195,7 +196,7 @@ namespace NSSServices.Controllers
                 Variable newVariable = new Variable
                 {
                     VariableTypeID = id,
-                    UnitTypeID = entity.UnitTypeID,
+                    UnitTypeID = entity.UnitTypeID.GetValueOrDefault(),
                     Comments = "Default unit"
                 };
 

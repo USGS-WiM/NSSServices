@@ -70,6 +70,35 @@ namespace NSSServices.Controllers
             };
         }
 
+        public IQueryable<Status> GetApplicableStatus()
+        {
+            var query = agent.GetStatus();
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var manager = LoggedInUser();
+            bool isStreamStats = false;
+            if (Request.Headers.FirstOrDefault(h => h.Key.ToUpper() == "X-IS-STREAMSTATS").Value.FirstOrDefault() == "true") isStreamStats = true;
+
+            // set applicable Status for each environment
+            var SSProdStatus = new List<string> { "SS Approved" };
+            var SSStagingStatus = new List<string> { "SS Approved", "Review" };
+            var NSSStagingStatus = new List<string> { "Review", "Approved", "SS Approved" };
+            var NSSProdStatus = new List<string> { "Approved", "SS Approved" };
+
+            // if logged in, allow all Status
+            if (manager?.Username != null) return query;
+
+            if (isStreamStats)
+            {
+                if (env.ToUpper() == "PRODUCTION") return query.Where(s => SSProdStatus.Any(stat => stat == s.Name));
+                else if (env.ToUpper() == "STAGING") return query.Where(s => SSStagingStatus.Any(stat => stat == s.Name));
+            }
+
+            if (env.ToUpper() == "STAGING") return query.Where(s => NSSStagingStatus.Any(stat => stat == s.Name));
+
+            // default is return all SS/NSS approved
+            return query.Where(s => NSSProdStatus.Any(stat => stat == s.Name));
+        }
+
         protected override IActionResult HandleException(Exception ex)
         {
             if (ex is DbUpdateException)

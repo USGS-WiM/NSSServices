@@ -101,14 +101,13 @@ namespace NSSAgent
         //Roles
         IQueryable<string> GetRoles();
 
-        //Statuses
-        IQueryable<Status> GetStatuses();
-        Task<Status> GetStatus(Int32 ID);
-        IQueryable<Status> GetApplicableStatuses(Manager manager = null, bool isStreamStats = false);
+        //Status
+        IQueryable<Status> GetStatus();
+        Task<Status> GetDistinctStatus(Int32 ID);
 
         //Scenarios
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
-        IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, bool isStreamStats = false);
+        IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
         Task<Scenario> Update(Scenario item, string existingStatisticGroup = null);
         Task<IQueryable<Scenario>> Add(Scenario item);
@@ -522,47 +521,21 @@ namespace NSSAgent
 
         #endregion
 
-        #region Statuses
-        public IQueryable<Status> GetStatuses()
+        #region Status
+        public IQueryable<Status> GetStatus()
         {
             return this.Select<Status>();
         }
-        public Task<Status> GetStatus(Int32 ID)
+        public Task<Status> GetDistinctStatus(Int32 ID)
         {
             return this.Find<Status>(ID);
         }
-        public IQueryable<Status> GetApplicableStatuses(Manager manager = null, bool isStreamStats = false)
-        {
-            var query = this.Select<Status>();
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-            // set applicable statuses for each environment
-            var SSProdStatuses = new List<string> { "SS Approved" };
-            var SSStagingStatuses = new List<string> { "SS Approved", "Review" };
-            var NSSStagingStatuses = new List<string> { "Review", "Approved", "SS Approved" };
-            var NSSProdStatuses = new List<string> { "Approved", "SS Approved" };
-
-            // if logged in, allow all statuses
-            if (manager?.Username != null) return query;
-
-            if (isStreamStats)
-            {
-                if (env.ToUpper() == "PRODUCTION") return query.Where(s => SSProdStatuses.Any(stat => stat == s.Name));
-                else if (env.ToUpper() == "STAGING")  return query.Where(s => SSStagingStatuses.Any(stat => stat == s.Name));
-            }
-
-            if (env.ToUpper() == "STAGING") return query.Where(s => NSSStagingStatuses.Any(stat => stat == s.Name));
-
-            // default is return all SS/NSS approved
-            return query.Where(s => NSSProdStatuses.Any(stat => stat == s.Name));
-        }
         #endregion        
         #region Scenarios
-        public IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, bool isStreamStats = false)
+        public IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null)
         {
             Dictionary<Int32, RegressionRegion> regressionRegions = null;
             List<Coefficient> flowCoefficents = new List<Coefficient>();
-            var applicableStatuses = this.GetApplicableStatuses(manager, isStreamStats);
 
             try
             {
@@ -588,7 +561,7 @@ namespace NSSAgent
 
                 var equ = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList)
                     .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(e => e.RegressionRegion)
-                    .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType).Where(e => applicableStatuses.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
+                    .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType).Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
 
 
                 return equ.AsEnumerable().GroupBy(e => e.StatisticGroupTypeID, e => e, (key, g) => new { groupkey = key, groupedparameters = g })

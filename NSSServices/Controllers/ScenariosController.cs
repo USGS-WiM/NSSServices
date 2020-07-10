@@ -203,19 +203,16 @@ namespace NSSServices.Controllers
                 statisticgroupList = parse(statisticgroups);
                 regressiontypeList = parse(regressiontypes);
                 extensionList = parse(extensions);
-                var isStreamStats = false;
-                // check for SS header
-                if (Request.Headers.FirstOrDefault(h => h.Key.ToUpper() == "X-IS-STREAMSTATS").Value.FirstOrDefault() == "true") isStreamStats = true;
 
                 if (geom != null)
                 {
                     if (!agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
-                    entities = agent.GetScenarios(RegionList, geom, null, statisticgroupList, regressiontypeList, extensionList, unitsystem, LoggedInUser(), isStreamStats).ToList();
+                    entities = agent.GetScenarios(RegionList, geom, null, statisticgroupList, regressiontypeList, extensionList, unitsystem, LoggedInUser(), GetApplicableStatus()).ToList();
                 }
                 else
                 {
                     regressionregionList = parse(regressionRegions);
-                    entities = agent.GetScenarios(RegionList, null, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem, LoggedInUser(), isStreamStats).ToList();
+                    entities = agent.GetScenarios(RegionList, null, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem, LoggedInUser(), GetApplicableStatus()).ToList();
                 }
                 sm("Count: " + entities.Count());
                 return Ok(entities);

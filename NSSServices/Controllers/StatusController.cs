@@ -29,19 +29,19 @@ using WIM.Services.Attributes;
 namespace NSSServices.Controllers
 {
     [Route("[controller]")]
-    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Statuses/summary.md")]
-    public class StatusesController : NSSControllerBase
+    [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Status/summary.md")]
+    public class StatusController : NSSControllerBase
     {
-        public StatusesController(INSSAgent sa) : base(sa)
+        public StatusController(INSSAgent sa) : base(sa)
         { }
         #region METHODS
-        [HttpGet(Name = "Statuses")]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Statuses/Get.md")]
+        [HttpGet(Name = "Status")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Status/Get.md")]
         public async Task<IActionResult> Get()
         {
             try
             {
-                return Ok(agent.GetStatuses());
+                return Ok(agent.GetStatus());
             }
             catch (Exception ex)
             {
@@ -49,15 +49,15 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("{id}", Name = "Status")]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Statuses/GetDistinct.md")]
+        [HttpGet("{id}", Name = "Distinct Status")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Status/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
             {
                 if (id < 0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok(await agent.GetStatus(id));
+                return Ok(await agent.GetDistinctStatus(id));
             }
             catch (Exception ex)
             {

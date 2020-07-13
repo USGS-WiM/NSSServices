@@ -22,7 +22,6 @@
   {
     "ID": "5",
     "Name": "Deprecated",
-    "Description": "Deprecated and disabled for all public users",
-    "AllowedURLs": null
+    "Description": "Deprecated and disabled for all public users"
   }
 ]

@@ -100,10 +100,14 @@ namespace NSSAgent
 
         //Roles
         IQueryable<string> GetRoles();
-        
+
+        //Status
+        IQueryable<Status> GetStatus();
+        Task<Status> GetDistinctStatus(Int32 ID);
+
         //Scenarios
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
-        IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null);
+        IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
         Task<Scenario> Update(Scenario item, string existingStatisticGroup = null);
         Task<IQueryable<Scenario>> Add(Scenario item);
@@ -515,9 +519,20 @@ namespace NSSAgent
             return Role.ToList().AsQueryable();
         }
 
+        #endregion
+
+        #region Status
+        public IQueryable<Status> GetStatus()
+        {
+            return this.Select<Status>();
+        }
+        public Task<Status> GetDistinctStatus(Int32 ID)
+        {
+            return this.Find<Status>(ID);
+        }
         #endregion        
         #region Scenarios
-        public IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null)
+        public IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null)
         {
             Dictionary<Int32, RegressionRegion> regressionRegions = null;
             List<Coefficient> flowCoefficents = new List<Coefficient>();
@@ -525,7 +540,7 @@ namespace NSSAgent
             try
             {
                 flowCoefficents = Select<Coefficient>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
-
+                
                 if (geom != null)
                 {
                     regressionRegions = getRegressionRegionsByGeometry(geom).ToDictionary(k => k.ID);
@@ -546,9 +561,9 @@ namespace NSSAgent
 
                 var equ = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList)
                     .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(e => e.RegressionRegion)
-                    .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType);
+                    .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType).Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
 
-               
+
                 return equ.AsEnumerable().GroupBy(e => e.StatisticGroupTypeID, e => e, (key, g) => new { groupkey = key, groupedparameters = g })
                     .Select(s => new Scenario()
                     {
@@ -561,6 +576,8 @@ namespace NSSAgent
                             ID = r.groupkey,
                             Name = r.groupedparameters.First().RegressionRegion.Name,
                             Code = r.groupedparameters.First().RegressionRegion.Code,
+                            Description = r.groupedparameters.First().RegressionRegion.Description,
+                            StatusID = r.groupedparameters.First().RegressionRegion.StatusID,
                             PercentWeight = (regressionRegions!=null && regressionRegions.ContainsKey(r.groupkey))?regressionRegions[r.groupkey].PercentWeight:null,
                             AreaSqMile = (regressionRegions != null && regressionRegions.ContainsKey(r.groupkey)) ? regressionRegions[r.groupkey].Area : null,
                             Regressions = (manager?.Username != null) ? r.groupedparameters.Select(rg=>new Regression()

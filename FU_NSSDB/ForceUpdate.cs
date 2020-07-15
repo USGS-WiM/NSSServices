@@ -218,7 +218,7 @@ namespace FU_NSSDB
                     regRegion.ID = regRegionList.FirstOrDefault().ID;
                     return true;
                 }
-                regRegion.ID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID });
+                regRegion.ID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID, 4 });
                 //RegionRegressionRegion
                 NSSDBOps.AddItem(NSSDbOps.SQLType.e_regionregressionregion, new object[] { regionID, regRegion.ID });
                 if (regRegion.CitationID < 1 || regRegion.ID < 1) throw new Exception("Error posting Regression region; Citation " + regRegion.CitationID + " Regression region " + regRegion.ID);

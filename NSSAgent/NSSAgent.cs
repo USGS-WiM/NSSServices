@@ -56,6 +56,7 @@ namespace NSSAgent
         Task DeleteCitation(Int32 id);
 
         //Limitations
+        Task<Limitation> GetLimitation(Int32 ID);
         IQueryable<Limitation> GetRegressionRegionLimitations(Int32 RegressionRegionID);
         Task<IEnumerable<Limitation>> AddRegressionRegionLimitations(Int32 RegressionRegionID, List<Limitation> items);
         IEnumerable<Limitation> RemoveRegressionRegionLimitations(Int32 RegressionRegionID, List<Limitation> items);
@@ -128,6 +129,7 @@ namespace NSSAgent
         Task<UnitSystemType> GetUnitSystem(Int32 ID);
         IQueryable<VariableType> GetVariables();
         Task<VariableType> GetVariable(Int32 ID);
+        Task DeleteVariable(Int32 ID);
     }
     public class NSSServiceAgent : DBAgentBase, INSSAgent
     {
@@ -221,6 +223,13 @@ namespace NSSAgent
         }
         #endregion
         #region Limitations
+        public Task<Limitation> GetLimitation(int ID)
+        {
+            // need to include Variables, which means need to change to iQueryable?
+            // then test delete method...
+            // also don't forget new limitations require variables, should probably have checks when adding new limitation to make sure the variable types match the criteria??
+            return this.Find<Limitation>(ID);
+        }
         public IQueryable<Limitation> GetRegressionRegionLimitations(Int32 RegressionRegionID)
         {
             return this.Select<Limitation>().Where(l => l.RegressionRegionID == RegressionRegionID);
@@ -1081,9 +1090,6 @@ namespace NSSAgent
         }
         public IQueryable<VariableType> GetVariables()
         {
-            // IQueryable<VariableUnitType> unitTypes = this.Select<VariableUnitType>();
-            // return this.Select<VariableType>().Join(unitTypes, var => var.ID, unit => unit.VariableID,
-            // (var, unit) => new VariableType { ID = var.ID, Code = var.Code, Description = var.Description, UnitTypeID = unit.UnitTypeID });
             return this.Select<VariableType>();
         }
         public Task<VariableType> GetVariable(Int32 ID)
@@ -1093,6 +1099,10 @@ namespace NSSAgent
         public VariableType GetVariableByCode(string code)
         {
             return this.Select<VariableType>().FirstOrDefault(v => v.Code == code);
+        }
+        public Task DeleteVariable(Int32 ID)
+        {
+            return this.Delete<Variable>(ID);
         }
         #endregion
         #endregion

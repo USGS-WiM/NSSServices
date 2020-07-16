@@ -64,6 +64,8 @@ namespace NSSServices.Controllers
                 else
                     entities = agent.GetRegressionRegions(RegionList,null, statisticgroupList,regressiontypeList);
 
+                var applicableStatus = GetApplicableStatus();
+                entities = entities.Where(e => applicableStatus.Any(s => s.ID == e.StatusID));
                 sm($"regression region count {entities.Count()}");
                 return Ok(entities);
             }
@@ -98,6 +100,8 @@ namespace NSSServices.Controllers
                 else
                     entities = agent.GetRegressionRegions(RegionList, geom, statisticgroupList, regressiontypeList);
 
+                var applicableStatus = GetApplicableStatus();
+                entities = entities.Where(e => applicableStatus.Any(s => s.ID == e.StatusID));
                 sm($"regression region count {entities.Count()}");
                 return Ok(entities);
             }

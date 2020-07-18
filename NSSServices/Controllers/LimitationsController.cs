@@ -70,6 +70,7 @@ namespace NSSServices.Controllers
         {
             try
             {
+                // try to see if just attaching a Limitations object to the regression region workS!
                 if (!isValid(entities)) return BadRequest(); // This returns HTTP 404
                 var AddedItems = await agent.AddRegressionRegionLimitations(rr, entities);
 
@@ -93,7 +94,7 @@ namespace NSSServices.Controllers
 
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                Limitation l = await agent.GetLimitation(id);
+                Limitation l = agent.GetLimitation(id).FirstOrDefault();
                 if (l == null) return BadRequest($"No limitation exists with {id} identifier.");
                 RegressionRegion rr = agent.GetRegressionRegion(l.RegressionRegionID).FirstOrDefault();
                 if (!IsAuthorizedToEdit(rr)) return Unauthorized();
@@ -114,7 +115,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (id < 1) return new BadRequestResult();
-                Limitation l = await agent.GetLimitation(id);
+                Limitation l = agent.GetLimitation(id).FirstOrDefault();
                 if (l == null) return BadRequest($"No limitation exists with {id} identifier.");
                 RegressionRegion rr = agent.GetRegressionRegion(l.RegressionRegionID).FirstOrDefault();
                 if (!IsAuthorizedToEdit(rr)) return Unauthorized();

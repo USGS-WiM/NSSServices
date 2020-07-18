@@ -56,7 +56,7 @@ namespace NSSAgent
         Task DeleteCitation(Int32 id);
 
         //Limitations
-        Task<Limitation> GetLimitation(Int32 ID);
+        IQueryable<Limitation> GetLimitation(Int32 ID);
         IQueryable<Limitation> GetRegressionRegionLimitations(Int32 RegressionRegionID);
         Task<IEnumerable<Limitation>> AddRegressionRegionLimitations(Int32 RegressionRegionID, List<Limitation> items);
         IEnumerable<Limitation> RemoveRegressionRegionLimitations(Int32 RegressionRegionID, List<Limitation> items);
@@ -223,16 +223,13 @@ namespace NSSAgent
         }
         #endregion
         #region Limitations
-        public Task<Limitation> GetLimitation(int ID)
+        public IQueryable<Limitation> GetLimitation(int ID)
         {
-            // need to include Variables, which means need to change to iQueryable?
-            // then test delete method...
-            // also don't forget new limitations require variables, should probably have checks when adding new limitation to make sure the variable types match the criteria??
-            return this.Find<Limitation>(ID);
+            return this.Select<Limitation>().Where(l => l.ID == ID).Include(l => l.Variables);
         }
         public IQueryable<Limitation> GetRegressionRegionLimitations(Int32 RegressionRegionID)
         {
-            return this.Select<Limitation>().Where(l => l.RegressionRegionID == RegressionRegionID);
+            return this.Select<Limitation>().Where(l => l.RegressionRegionID == RegressionRegionID).Include(l => l.Variables);
         }
         public Task<IEnumerable<Limitation>> AddRegressionRegionLimitations(Int32 RegressionRegionID,List<Limitation> items)
         {

@@ -100,6 +100,16 @@ namespace NSSServices.Controllers
                     Description = entity.Description
                 };
 
+                var tempToConvert = agent.GetVariablesWithUnits();
+                IQueryable<VariableWithUnit> varsToCheck = (IQueryable<VariableWithUnit>)tempToConvert;
+                var varsWithName = varsToCheck.Where(x => x.Name == entity.Name);
+                var varsWithCode = varsToCheck.Where(x => x.Name == entity.Code);
+
+                if(varsWithName.Count() > 0 || varsWithCode.Count() > 0)
+                {
+                    throw new Exception("Name or Code aready exists");
+                }
+
                 var newVarTypeToGrabID = await shared.Add(newVariableType);
                 newVariable.VariableTypeID = newVarTypeToGrabID.ID;
 

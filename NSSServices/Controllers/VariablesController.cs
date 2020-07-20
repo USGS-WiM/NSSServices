@@ -178,9 +178,17 @@ namespace NSSServices.Controllers
                         UnitTypeID = item.UnitTypeID ?? -1
                     };
 
-                    newVariableTypeList.Add(newVariableType);
-                    newVariableList.Add(newVariable);
-                    returnVariableWithUnitList.Add(returnVariableWithUnit);
+                    var tempToConvert = agent.GetVariablesWithUnits();
+                    IQueryable<VariableWithUnit> varsToCheck = (IQueryable<VariableWithUnit>)tempToConvert;
+                    var varsWithName = varsToCheck.Where(x => x.Name == item.Name);
+                    var varsWithCode = varsToCheck.Where(x => x.Name == item.Code);
+
+                    if (varsWithName.Count() == 0 && varsWithCode.Count() == 0)
+                    {
+                        newVariableTypeList.Add(newVariableType);
+                        newVariableList.Add(newVariable);
+                        returnVariableWithUnitList.Add(returnVariableWithUnit);
+                    }
                 }
 
                 var newVarTypeToGrabIDIEnum = await shared.Add(newVariableTypeList);

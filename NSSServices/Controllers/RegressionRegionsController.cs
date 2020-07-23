@@ -204,6 +204,25 @@ namespace NSSServices.Controllers
                 RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();
                 if (rr == null) return BadRequest($"No regression region exists with {id} identifier.");
                 if (!IsAuthorizedToEdit(rr)) return Unauthorized();
+                if (entity.Limitations != null)
+                {
+                    // delete removed lims
+                    List<Limitation> unusedLimitations = agent.GetRegressionRegionLimitations(id).ToList();
+                    foreach (var lim in entity.Limitations)
+                    {
+                        // make sure regression region ID is set
+                        lim.RegressionRegionID = id;
+                        if (lim.ID > 0)
+                        {
+                            var findLim = unusedLimitations.FirstOrDefault(l => l.ID == lim.ID);
+                            if (findLim != null) unusedLimitations.Remove(findLim);
+                        }
+                    }
+                    //var missingLimitation = agent.GetRegressionRegionLimitations(id).Except(entity.Limitations);
+                    // trying this: https://entityframeworkcore.com/knowledge-base/51331850/entity-framework-core--deleting-items-from-nested-collection
+
+                    if (unusedLimitations.Count > 0) agent.RemoveRegressionRegionLimitations(id, unusedLimitations); // this is not working yet, foreign key constraint in here for some reason
+                }
 
                 return Ok(await agent.Update(id,entity));
             }

@@ -240,6 +240,7 @@ namespace NSSAgent
         public IEnumerable<Limitation> RemoveRegressionRegionLimitations(int RegressionRegionID, List<Limitation> items)
         {
             //find limitations
+            // tried changing delete to DeleteLimitation, still get FK constraint on vars in here, tried removing from includes on getregregion and tried including here, not working.
             this.Select<Limitation>()
                 .Where(l => l.RegressionRegionID == RegressionRegionID)
                 .Where(l => items.Contains(l)).ToList().ForEach(item=> this.Delete(item));
@@ -454,10 +455,10 @@ namespace NSSAgent
         {
             if (includeGeometry)
             {
-                return this.Select<NSSDB.Resources.RegressionRegion>().Where(rr => rr.ID == regregionID).Include("Location");
+                return this.Select<NSSDB.Resources.RegressionRegion>().Where(rr => rr.ID == regregionID).Include("Location").Include(rr => rr.Limitations).ThenInclude(l => l.Variables);
             } else
             {
-                return this.Select<NSSDB.Resources.RegressionRegion>().Where(rr => rr.ID == regregionID);
+                return this.Select<NSSDB.Resources.RegressionRegion>().Where(rr => rr.ID == regregionID).Include(rr => rr.Limitations).ThenInclude(l => l.Variables);
             }
         }
         public IQueryable<RegressionRegion> GetManagerRegressionRegions(int managerID)

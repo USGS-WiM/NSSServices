@@ -561,7 +561,9 @@ namespace NSSAgent
 
                 var equ = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList)
                     .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(e => e.RegressionRegion)
-                    .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType).Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
+                    .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType);
+
+                if (applicableStatus != null) equ.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
 
 
                 return equ.AsEnumerable().GroupBy(e => e.StatisticGroupTypeID, e => e, (key, g) => new { groupkey = key, groupedparameters = g })

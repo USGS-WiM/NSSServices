@@ -1,3 +1,2 @@
-## Delete Source Resource
 <span style="color:red">Requires Authentication</span>  
-Deletes a source from the repository.
+Deletes a regression type from the repository.

@@ -1,2 +1,2 @@
 <span style="color:red">Requires Authentication</span>  
-Edits a regression type.
+Returns a manager based on the specified identifier.

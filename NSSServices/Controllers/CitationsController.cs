@@ -80,7 +80,7 @@ namespace NSSServices.Controllers
 
         [HttpPost("[action]", Name = "Citations By Location")]
         [HttpPost("/Regions/{regions}/[controller]/[[action]]", Name = "Region Citations By Location")]
-        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Get.md")]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/AddByLocation.md")]
         public async Task<IActionResult> ByLocation([FromBody] Geometry geom, string regions = "", [FromQuery] string statisticgroups = "", [FromQuery] string regressiontypes = "")
         {
             IQueryable<Citation> entities = null;

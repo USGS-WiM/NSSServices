@@ -1,3 +1,2 @@
-## Add Source Resource
 <span style="color:red">Requires Authentication</span>  
-Adds a Source resource to the repository.
+Adds a regression type resource to the repository.

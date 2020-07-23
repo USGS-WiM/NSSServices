@@ -1,2 +1,2 @@
-Returns a list of all available error types
+Returns a list of all available error types.
 

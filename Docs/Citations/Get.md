@@ -1,2 +1,2 @@
-Returns a list of all available citations
+Returns a list of all available citations.
 

@@ -1,3 +1,2 @@
-## Delete a Manager
 <span style="color:red">Requires Administrators Authentication</span> 
-Deletes a manager
+Deletes a manager from the repository.

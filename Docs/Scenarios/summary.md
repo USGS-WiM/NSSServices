@@ -1,1 +1,1 @@
-The source type resource represents the type of water use the source is associated with. Such as Groundwater or Surface-water type.
+A scenario represents an object that contains an equation, grouped by regression region and statistic group, with additional data such as parameters used in the equation, and other info.

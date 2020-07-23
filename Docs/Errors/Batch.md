@@ -1,3 +1,4 @@
+## Error type batch upload
 <span style="color:red">Requires Administrators Authentication</span>    
 Provides the ability to batch upload error type resources.
 
@@ -12,15 +13,15 @@ content-type: application/json;charset=UTF-8
 content-length: 276
 
 [
-	{"name":"testRegion",
-	"shortName":"AB",
-	"description":"testRegion",
-	"fipsCode":"55"
+	{
+        "name":"test error",
+	    "shortName":"TE",
+	    "description":"test error"
 	},
-	{"name":"testRegion2",
-	"shortName":"CD",
-	"description":"testRegion2",
-	"fipsCode":"56"
+	{
+        "name":"test error 2",
+	    "shortName":"TE2",
+	    "description":"test error 2"
 	}
 ]
 ```
@@ -29,18 +30,16 @@ content-length: 276
 HTTP/1.1 200 OK
 [
 	{
-	"id":1,
-	"name":"testRegion",
-	"shortName":"AB",
-	"description":"testRegion",
-	"fipsCode":"55"
+        "id": 1,
+        "name":"test error",
+	    "shortName":"TE",
+	    "description":"test error"
 	},
 	{
-	"id":2,
-	"name":"testRegion2",
-	"shortName":"CD",
-	"description":"testRegion2",
-	"fipsCode":"56"
+        "id": 2,
+        "name":"test error 2",
+	    "shortName":"TE2",
+	    "description":"test error 2"
 	}
 ]
 ```

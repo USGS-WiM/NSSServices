@@ -1,3 +1,2 @@
-## Delete Source Type Resource
 <span style="color:red">Requires Administrators Authentication</span>  
-Deletes a source type from the repository.
+Deletes a scenario from the repository.

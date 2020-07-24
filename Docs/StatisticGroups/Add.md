@@ -1,3 +1,2 @@
-## Add Status Resource
-<span style="color:red">Requires Administrators Authentication</span>  
-Adds a status resource to the repository.
+<span style="color:red">Requires Administrator Authentication</span>  
+Adds a new statistic group resource to the repository  if it doesn't already exist.

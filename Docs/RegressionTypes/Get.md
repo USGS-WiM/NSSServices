@@ -1,3 +1,2 @@
-<span style="color:red">Requires Authentication</span>  
-Returns an array of available regression types currently available in the services.
-
+<span style="color:red">Requires Administrator Authentication</span>  
+Returns an array of all available regression type resources currently provided by the services.

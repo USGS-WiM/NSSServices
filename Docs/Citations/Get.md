@@ -1,2 +1,1 @@
-Returns a list of all available citations.
-
+Returns an array of all available citations currently provided by the services.

@@ -1,3 +1,2 @@
-<span style="color:red">Requires Administrators Authentication</span>
-
-Edits a error type.
+<span style="color:red">Requires Administrator Authentication</span> <br>
+Edits an error type.

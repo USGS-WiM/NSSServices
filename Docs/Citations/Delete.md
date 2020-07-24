@@ -1,2 +1,2 @@
-<span style="color:red">Requires Administrators Authentication</span>   
+<span style="color:red">Requires Administrator Authentication</span>   
 Deletes a citation.

@@ -1,2 +1,1 @@
-Returns a list of all available error types.
-
+Returns an array of all available error types currently provided by the services.

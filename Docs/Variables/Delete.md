@@ -1,3 +1,2 @@
-## Delete Time Series Resource
-<span style="color:red">Requires Authentication</span>  
-Deletes a time series from repository.
+<span style="color:red">Requires Administrator Authentication</span>  
+Deletes a variable type from the repository.

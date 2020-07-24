@@ -1,1 +1,1 @@
-A citation represents the publication in which a set of equations is published.
+A citation represents the publication in which a statistic or characteristic is published.

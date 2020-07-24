@@ -1,1 +1,1 @@
-An error type represents the type of error known to affect a statistic or equation.
+An error type represents the type of error known to affect a statistic or characteristic value.

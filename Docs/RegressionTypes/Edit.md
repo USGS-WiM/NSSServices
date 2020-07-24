@@ -1,2 +1,2 @@
-<span style="color:red">Requires Authentication</span>  
+<span style="color:red">Requires Administrator Authentication</span>  
 Edits a regression type.

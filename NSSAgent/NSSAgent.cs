@@ -387,11 +387,11 @@ namespace NSSAgent
         {
             Dictionary<Int32, RegressionRegion> regressionRegionList = null;
             if (!regionList.Any() && geom== null&& !statisticgroupList.Any() && !regressiontypeList.Any())
-                return this.Select<RegressionRegion>();
+                return this.Select<RegressionRegion>().Include(rr => rr.StatusID);
 
             if (statisticgroupList?.Any() != true && regressiontypeList?.Any() != true && geom == null)
                 // for region only list
-                return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion)
+                return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion).Include(rrr => rrr.RegressionRegion.Status)
                     .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
                     || regionList.Contains(rer.RegionID.ToString())).Select(r=>r.RegressionRegion).AsQueryable();
 
@@ -413,6 +413,7 @@ namespace NSSAgent
                     Description = regressionRegionList != null ? regressionRegionList[rr.ID].Description : rr.Description,
                     Area = regressionRegionList != null ? regressionRegionList[rr.ID].Area:null,
                     PercentWeight = regressionRegionList != null ? regressionRegionList[rr.ID].PercentWeight : null,
+                    StatusID = rr.StatusID
                 }).OrderBy(e => e.ID);
         }
         public IQueryable<RegressionRegion> GetManagedRegressionRegions(Manager manager, List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
@@ -421,7 +422,7 @@ namespace NSSAgent
                 return GetRegressionRegions(regionList, geom, statisticgroupList, regressiontypeList);
 
             //return only managed citations
-            var query = this.Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include("RegressionRegion")
+            var query = this.Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include("RegressionRegion").Include("RegressionRegion.StatusID")
                 .Where(rrr => rrr.Region.RegionManagers.Any(rm => rm.ManagerID == manager.ID));
 
 

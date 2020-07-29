@@ -64,8 +64,8 @@ namespace NSSServices.Controllers
                 else
                     entities = agent.GetRegressionRegions(RegionList,null, statisticgroupList,regressiontypeList);
 
-                var applicableStatus = GetApplicableStatus();
-                entities = entities.Where(e => applicableStatus.Any(s => s.ID == e.StatusID));
+                IQueryable<Status> applicableStatus = GetApplicableStatus();
+                if (applicableStatus != null) entities = entities.Where(e => e.StatusID != null && applicableStatus.Any(s => s.ID == e.StatusID));
                 sm($"regression region count {entities.Count()}");
                 return Ok(entities);
             }

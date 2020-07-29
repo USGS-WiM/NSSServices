@@ -422,7 +422,7 @@ namespace NSSAgent
                 return GetRegressionRegions(regionList, geom, statisticgroupList, regressiontypeList);
 
             //return only managed citations
-            var query = this.Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include("RegressionRegion").Include("RegressionRegion.StatusID")
+            var query = this.Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include("RegressionRegion")
                 .Where(rrr => rrr.Region.RegionManagers.Any(rm => rm.ManagerID == manager.ID));
 
 

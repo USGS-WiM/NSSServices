@@ -1,5 +1,5 @@
 ## Region batch upload
-<span style="color:red">Requires Administrators Authentication</span>    
+<span style="color:red">Requires Administrator Authentication</span>    
 Provides the ability to batch upload region resources.
 
 #### Request Example

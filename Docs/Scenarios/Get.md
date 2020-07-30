@@ -1,2 +1,2 @@
-Returns an array of available scenarios currently provided by the services
+Returns an array of available scenarios currently provided by the services.
 

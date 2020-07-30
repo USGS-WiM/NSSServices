@@ -1,1 +1,1 @@
-Returns a regression region based on a specified identifier
+Returns a regression region based on a specified identifier.

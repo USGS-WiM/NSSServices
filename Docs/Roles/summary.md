@@ -1,2 +1,2 @@
-The roles resource represents the role that is applied to each manager.<br>
+The roles resource represents the role that is applied to each manager, which determines what functions a user is allowed to perform (such as adding, editing or deleting resources).<br>
 <span style="color:red">**All Methods require Authentication.**</span> 

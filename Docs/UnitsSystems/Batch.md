@@ -7,7 +7,7 @@ Provides the ability to batch upload unit system resources.
 The REST URL section below displays the example url and the body/payload of the request used to simulate a response.
 
 ```
-POST /gagestatsservices/unitssystems/batch HTTP/1.1
+POST /nssservices/unitssystems/batch HTTP/1.1
 Host: streamstats.usgs.gov
 Accept: application/json
 content-type: application/json;charset=UTF-8

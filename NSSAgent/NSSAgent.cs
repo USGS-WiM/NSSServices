@@ -393,11 +393,11 @@ namespace NSSAgent
         {
             Dictionary<Int32, RegressionRegion> regressionRegionList = null;
             if (!regionList.Any() && geom== null&& !statisticgroupList.Any() && !regressiontypeList.Any())
-                return this.Select<RegressionRegion>();
+                return this.Select<RegressionRegion>().Include(rr => rr.StatusID);
 
             if (statisticgroupList?.Any() != true && regressiontypeList?.Any() != true && geom == null)
                 // for region only list
-                return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion)
+                return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion).Include(rrr => rrr.RegressionRegion.Status)
                     .Where(rer => regionList.Contains(rer.Region.Code.ToLower().Trim())
                     || regionList.Contains(rer.RegionID.ToString())).Select(r=>r.RegressionRegion).AsQueryable();
 
@@ -419,6 +419,7 @@ namespace NSSAgent
                     Description = regressionRegionList != null ? regressionRegionList[rr.ID].Description : rr.Description,
                     Area = regressionRegionList != null ? regressionRegionList[rr.ID].Area:null,
                     PercentWeight = regressionRegionList != null ? regressionRegionList[rr.ID].PercentWeight : null,
+                    StatusID = rr.StatusID
                 }).OrderBy(e => e.ID);
         }
         public IQueryable<RegressionRegion> GetManagedRegressionRegions(Manager manager, List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
@@ -567,7 +568,9 @@ namespace NSSAgent
 
                 var equ = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList)
                     .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(e => e.RegressionRegion)
-                    .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType).Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
+                    .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType);
+
+                if (applicableStatus != null) equ.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
 
 
                 return equ.AsEnumerable().GroupBy(e => e.StatisticGroupTypeID, e => e, (key, g) => new { groupkey = key, groupedparameters = g })
@@ -1624,7 +1627,8 @@ namespace NSSAgent
                                     Code = reader["Code"].ToString() ,
                                     Area = Convert.ToDouble(reader["Area"]),
                                     PercentWeight = Math.Round(Convert.ToDouble(reader["PercentWeight"]), 2, MidpointRounding.AwayFromZero),
-                                    Description = reader.HasColumn("MaskArea")? $"Regression region Percent Area computed with a Mask Area of {Convert.ToDouble(reader["MaskArea"])} sqr. miles and overlay Area of {Convert.ToDouble(reader["Area"])} sqr miles": string.Empty
+                                    Description = reader.HasColumn("MaskArea")? $"Regression region Percent Area computed with a Mask Area of {Convert.ToDouble(reader["MaskArea"])} sqr. miles and overlay Area of {Convert.ToDouble(reader["Area"])} sqr miles": string.Empty,
+                                    StatusID = Convert.ToInt32(reader["StatusID"])
                                 });
                         }
                     }//end using  

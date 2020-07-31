@@ -70,13 +70,16 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("{id}",Name ="Manager")][Authorize(Policy = Policy.AdminOnly)]
+        [HttpGet("{id}",Name ="Manager")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
             {
                 if (id < 0) return new BadRequestResult(); // This returns HTTP 404
+                // managers cannot view other managers, just themselves
+                if (!User.IsInRole("Administrator") && Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid)?.Value) != id)
+                    return new UnauthorizedResult();// return HTTP 401
 
                 var x = agent.GetManager(id);
                 //remove info not relevant

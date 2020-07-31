@@ -70,7 +70,6 @@ namespace NSSServices.Controllers
         {
             try
             {
-                // try to see if just attaching a Limitations object to the regression region workS!
                 if (!isValid(entities)) return BadRequest(); // This returns HTTP 404
                 var AddedItems = await agent.AddRegressionRegionLimitations(rr, entities);
 

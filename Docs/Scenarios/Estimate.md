@@ -1,0 +1,1 @@
+Returns an array of available scenarios with an attached "Results" object containing calculated values based on the scenarios sent through in the body of the request.

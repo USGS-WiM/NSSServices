@@ -1,2 +1,1 @@
-The permit resource provides water use permit objects:  
-<span style="color:red">**All Methods require Authentication**</span> 
+The regression region resource represents regression regions, or hydrologic regions used to define a geographical area with similar statistics.

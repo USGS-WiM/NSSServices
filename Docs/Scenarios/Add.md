@@ -1,3 +1,2 @@
-## Add Source Type Resource
-<span style="color:red">Requires Administrators Authentication</span>  
-Adds a source type resource to the repository.
+<span style="color:red">Requires Administrator Authentication</span>  
+Adds a scenario resource to the repository.

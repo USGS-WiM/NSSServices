@@ -1,1 +1,1 @@
-The time series resource represents the month, value, unit of measure of source water use.
+The variable resource represents the variable type, also called the parameter or stat label, of a characteristic, such as Drainage Area (DRNAREA).

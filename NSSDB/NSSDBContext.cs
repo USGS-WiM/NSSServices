@@ -49,6 +49,7 @@ namespace NSSDB
         public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }     
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<Status> Status { get; set; }
+        public virtual DbSet<Method> Methods { get; set; }
 
         //Shared views
         public virtual DbSet<ErrorType> ErrorTypes { get; set; }
@@ -102,7 +103,7 @@ namespace NSSDB
                                          typeof(RegionManager).FullName,typeof(RegionRegressionRegion).FullName,
                                          typeof(VariableUnitType).FullName,typeof(ErrorType).FullName,typeof(RegressionType).FullName,
                                          typeof(StatisticGroupType).FullName,typeof(UnitConversionFactor).FullName,typeof(UnitSystemType).FullName,
-                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName}
+                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName,typeof(Method).FullName}
                 .Contains(entitytype.Name))
                 { continue; }                 
                 modelBuilder.Entity(entitytype.Name).Property<DateTime>("LastModified");
@@ -137,6 +138,11 @@ namespace NSSDB
                 b.HasOne(typeof(Location).ToString(), "Location")
                     .WithMany()
                     .HasForeignKey("LocationID")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(typeof(Method).ToString(), "Method")
+                    .WithMany()
+                    .HasForeignKey("MethodID")
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

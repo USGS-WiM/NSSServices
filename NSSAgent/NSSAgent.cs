@@ -105,6 +105,10 @@ namespace NSSAgent
         IQueryable<Status> GetStatus();
         Task<Status> GetDistinctStatus(Int32 ID);
 
+        //Method
+        IQueryable<Method> GetMethods();
+        Task<Method> GetMethod(Int32 ID);
+
         //Scenarios
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null);
@@ -531,6 +535,16 @@ namespace NSSAgent
         {
             return this.Find<Status>(ID);
         }
+        #endregion
+        #region Method
+        public IQueryable<Method> GetMethods()
+        {
+            return this.Select<Method>();
+        }
+        public Task<Method> GetMethod(Int32 ID)
+        {
+            return this.Find<Method>(ID);
+        }
         #endregion        
         #region Scenarios
         public IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null)
@@ -581,6 +595,7 @@ namespace NSSAgent
                             Code = r.groupedparameters.First().RegressionRegion.Code,
                             Description = r.groupedparameters.First().RegressionRegion.Description,
                             StatusID = r.groupedparameters.First().RegressionRegion.StatusID,
+                            MethodID = r.groupedparameters.First().RegressionRegion.MethodID,
                             PercentWeight = (regressionRegions!=null && regressionRegions.ContainsKey(r.groupkey))?regressionRegions[r.groupkey].PercentWeight:null,
                             AreaSqMile = (regressionRegions != null && regressionRegions.ContainsKey(r.groupkey)) ? regressionRegions[r.groupkey].Area : null,
                             Regressions = (manager?.Username != null) ? r.groupedparameters.Select(rg=>new Regression()
@@ -1621,7 +1636,8 @@ namespace NSSAgent
                                     Area = Convert.ToDouble(reader["Area"]),
                                     PercentWeight = Math.Round(Convert.ToDouble(reader["PercentWeight"]), 2, MidpointRounding.AwayFromZero),
                                     Description = reader.HasColumn("MaskArea")? $"Regression region Percent Area computed with a Mask Area of {Convert.ToDouble(reader["MaskArea"])} sqr. miles and overlay Area of {Convert.ToDouble(reader["Area"])} sqr miles": string.Empty,
-                                    StatusID = Convert.ToInt32(reader["StatusID"])
+                                    StatusID = Convert.ToInt32(reader["StatusID"]),
+                                    MethodID = Convert.ToInt32(reader["MethodID"])
                                 });
                         }
                     }//end using  

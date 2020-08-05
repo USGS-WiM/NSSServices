@@ -1,0 +1,1 @@
+The method resource represents the type of method used for estimating the regressions within each regression region.

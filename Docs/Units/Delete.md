@@ -1,3 +1,2 @@
-## Delete Unit Resource
-<span style="color:red">Requires Administrators Authentication</span>  
-Deletes a unit from repository.
+<span style="color:red">Requires Administrator Authentication</span>  
+Deletes a unit from the repository.

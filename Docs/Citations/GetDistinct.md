@@ -1,2 +1,1 @@
-Returns a citation based on specified identifier.
-
+Returns a citation based on a specified identifier.

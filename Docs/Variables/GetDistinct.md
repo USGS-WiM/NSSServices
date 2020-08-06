@@ -1,0 +1,1 @@
+Returns a variable type based on a specified identifier.

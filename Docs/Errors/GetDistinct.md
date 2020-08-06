@@ -1,2 +1,1 @@
-Returns an error type based on specified identifier.
-
+Returns an error type based on a specified identifier.

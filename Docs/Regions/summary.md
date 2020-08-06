@@ -1,1 +1,1 @@
-The region resource provides water use regions that are currently tracked in the database
+Represents a region, such as a state or river basin.

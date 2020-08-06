@@ -1,3 +1,2 @@
-## Edits a Unit Resource
-<span style="color:red">Requires Administrators Authentication</span>  
+<span style="color:red">Requires Administrator Authentication</span>  
 Edits a unit.

@@ -1,3 +1,2 @@
-## Delete Category Resource
-<span style="color:red">Requires Administrators Authentication</span>   
-Deletes a category
+<span style="color:red">Requires Administrator Authentication</span>   
+Deletes a citation.

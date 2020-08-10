@@ -1,0 +1,1 @@
+Returns an array of all available citations currently provided by the services.

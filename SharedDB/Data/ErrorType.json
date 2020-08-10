@@ -1,0 +1,18 @@
+
+    [
+        {
+            "ID": "1",
+            "Name": "Average standard error (of either estimate or prediction)",
+            "Code": "SE"
+        },
+        {
+            "ID": "3",
+            "Name": "Average standard error of prediction",
+            "Code": "SEp"
+        },
+        {
+            "ID": "4",
+            "Name": "Percent Correct",
+            "Code": "PC"
+        }
+    ]

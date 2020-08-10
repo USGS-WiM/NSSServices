@@ -1,0 +1,34 @@
+[
+        {
+            "ID": "1",
+            "RegressionRegionID": "574",
+            "Criteria": "(2875<ELEV) AND (ELEV <3125) AND ((ORREG2=10001) OR (ORREG2=10003))",
+            "Description": "OR, Ensures a smooth transition between Flood Regions 2A (GC730) and 2B (GC731), peak discharges for watersheds with mean elevations near 3,000 feet are estimated by a weighted average of peak discharges estimated by prediction equations for both regions.",
+            "Value": "(ELEV-2875)/250",
+            "LastModified": "25/10/2018 19:09:07.280648"
+        },
+        {
+            "ID": "2",
+            "RegressionRegionID": "575",
+            "Criteria": "(2875<ELEV) AND (ELEV <3125) AND ((ORREG2=10001) OR (ORREG2=10003))",
+            "Description": "OR, Ensures a smooth transition between Flood Regions 2A (GC730) and 2B (GC731), peak discharges for watersheds with mean elevations near 3,000 feet are estimated by a weighted average of peak discharges estimated by prediction equations for both regions.",
+            "Value": "(3125-ELEV)/250",
+            "LastModified": "25/10/2018 19:09:07.280648"
+        },
+        {
+            "ID": "3",
+            "RegressionRegionID": "397",
+            "Criteria": "PERENNIAL=0",
+            "Description": "NM, Low flow statewide (GC 660)",
+            "Value": "0",
+            "LastModified": "25/10/2018 19:09:07.280648"
+        },
+        {
+            "ID": "4",
+            "RegressionRegionID": "396",
+            "Criteria": "PERENNIAL=0",
+            "Description": "NM, Low flow mountain (GC 661)",
+            "Value": "0",
+            "LastModified": "25/10/2018 19:09:07.280648"
+        }
+    ]

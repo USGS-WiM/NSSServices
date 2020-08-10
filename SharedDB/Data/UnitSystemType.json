@@ -1,0 +1,15 @@
+
+    [
+        {
+            "ID": "1",
+            "UnitSystem": "Metric"
+        },
+        {
+            "ID": "2",
+            "UnitSystem": "US Customary"
+        },
+        {
+            "ID": "3",
+            "UnitSystem": "Universal"
+        }
+    ]

@@ -1,0 +1,2 @@
+The manager resource represents a user with the ability to perform certain database functions based on its role (see Roles resource).
+<span style="color:red">**All Methods require Authentication**</span> 

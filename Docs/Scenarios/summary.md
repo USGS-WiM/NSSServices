@@ -1,0 +1,1 @@
+A scenario represents an object that contains an equation, grouped by regression region and statistic group, with additional data such as parameters used in the equation and other info.

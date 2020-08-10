@@ -1,0 +1,1 @@
+Returns a statistic group based on a specified identifier.

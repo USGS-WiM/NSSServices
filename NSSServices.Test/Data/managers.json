@@ -1,0 +1,30 @@
+[
+        {
+            "ID": "1",
+            "FirstName": "Test",
+            "LastName": "Manager",
+            "Username": "testManager",
+            "Email": "test@usgs.gov",
+            "PrimaryPhone": "",
+            "SecondaryPhone": "",
+            "RoleID": "2",
+            "OtherInfo": "",
+            "Password": "35c6ab80910363950ec6ecf32eb6f11b975c8cab3e7b6b7abf431f6448f21bf3",
+            "Salt": "CZuBPMghUoRCOSnuf3TbmZIF0aLdbh7p",
+            "LastModified": "13/11/2018 19:58:19.874801"
+        },
+        {
+            "ID": "2",
+            "FirstName": "Test",
+            "LastName": "Admin",
+            "Username": "testAdmin",
+            "Email": "testAdmin@usgs.gov",
+            "PrimaryPhone": "",
+            "SecondaryPhone": "",
+            "RoleID": "1",
+            "OtherInfo": "",
+            "Password": "d954fc458f5702faffa240181dc64e62c1bc68bac72d7d72574c0cd12dab5180",
+            "Salt": "862d3xxTdSXRAZik7wJ2lvte9llxX7sE",
+            "LastModified": "15/11/2018 17:39:13.789388"
+        }
+    ]

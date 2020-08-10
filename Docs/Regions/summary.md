@@ -1,0 +1,1 @@
+Represents a region, such as a state or river basin.

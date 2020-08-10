@@ -1,0 +1,1 @@
+The regression region resource represents regression regions, or hydrologic regions used to define a geographical area with similar statistics.

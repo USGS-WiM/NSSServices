@@ -1,0 +1,1 @@
+The unit resource represents the standard measure of value, such as Million Gallons per Day (MGD).

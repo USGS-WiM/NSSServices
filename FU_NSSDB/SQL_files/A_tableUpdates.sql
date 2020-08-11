@@ -471,3 +471,10 @@ UPDATE "nss"."Regions" SET "Code" = 'RRB' WHERE "Code" = 'RR';
 
 UPDATE "RegressionRegions" SET "LocationID" = l."ID"
 FROM "Locations" l WHERE "Code" = any(string_to_array(REPLACE(l."AssociatedCodes", ' ', ''), ','));
+
+/* need to reset limitations seq, need to figure out how to auto reset it. For now run the following:
+SELECT MAX("ID") FROM "Limitations";  
+Then run the next line, using the result as max ID (cannot use variables/expressions):
+ALTER SEQUENCE "RegressionType_ID_seq" RESTART WITH {max ID + 1};
+You can check the last sequence val with:
+SELECT last_value from "Limitations_ID_seq";*/

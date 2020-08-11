@@ -331,7 +331,7 @@ namespace FU_NSSDB
                     return;
             }
 
-
+            // these output to FU_NSSDB.Test\bin\Debug
             using (TextWriter tw = new StreamWriter("..\\"+typeof(T).Name + ".sql"))
             {
                 foreach (var s in updateList)

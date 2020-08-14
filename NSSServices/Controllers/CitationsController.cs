@@ -129,7 +129,22 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost(Name = "Add Citation")][Authorize(Policy = Policy.Managed)]
+        [HttpPost(Name = "Add Citation")][Authorize(Policy = Policy.AdminOnly)]
+        public async Task<IActionResult> Post([FromBody]Citation entity)
+        {
+            try
+            {
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
+                var result = await agent.Add(entity);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
         [HttpPost("/RegressionRegions/{regressionRegionID}/[controller]", Name = "Add RegressionRegion Citation")]        
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Add.md")]
         public async Task<IActionResult> Post([FromBody]Citation entity, Int32 regressionRegionID = -1)
@@ -152,7 +167,6 @@ namespace NSSServices.Controllers
             }
         }
 
-       
         [HttpPut("{id}", Name = "Edit Citation")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Citations/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody]Citation entity)

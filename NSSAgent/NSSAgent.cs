@@ -115,7 +115,7 @@ namespace NSSAgent
         Task<IEnumerable<Variable>> Add(List<Variable> items);
         Task<Variable> Update(Int32 pkId, Variable item);
         Variable GetVariable(Int32 varTypeID);
-        Variable DeleteVariable(Int32 ID);
+        Boolean DeleteVariable(Int32 ID);
 
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
@@ -964,34 +964,26 @@ namespace NSSAgent
             var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
             return result;
         }
-        public Variable DeleteVariable(Int32 ID)
+        public Boolean DeleteVariable(Int32 ID)
         {
-            var selectedVariables = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
-            bool canDelete = false;
+            var selectedVariablesWithConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID
+                && x.EquationID == null && x.LimitationID == null && x.CoefficientID == null && x.Comments == "Default unit");
+            var selectedVariablesTotal = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
 
-            foreach (var selVar in selectedVariables)
+            var selectedVariablesWithOutConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID && (x.EquationID != null || x.LimitationID != null || x.CoefficientID != null));
+            if (selectedVariablesWithOutConditions.Count() > 0)
             {
-                if (selVar.EquationID is null && selVar.LimitationID is null && selVar.CoefficientID is null)
-                {
-                    canDelete = true;
-                }
-                else
-                {
-                    return null;
-                }
+                return false;
             }
 
-            if (canDelete)
+            if (selectedVariablesWithConditions.Count() > 0)
             {
-                foreach (var selVar in selectedVariables)
-                {
-                    this.Delete<Variable>(selVar.ID);
-                }
-                return selectedVariables.FirstOrDefault();
+                this.Delete<Variable>(selectedVariablesWithConditions.First().ID);
+                return true;
             }
             else
             {
-                return null;
+                return selectedVariablesTotal.Count() == 0;
             }
         }
 

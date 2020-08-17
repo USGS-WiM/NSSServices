@@ -87,52 +87,40 @@ namespace NSSServices.Controllers
             {
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                Variable newVariable = new Variable
-                {
-                    UnitTypeID = entity.UnitTypeID ?? -1,
-                    Comments = "Default unit"
-                };
-
-                VariableType newVariableType = new VariableType
-                {
-                    Name = entity.Name,
-                    Code = entity.Code,
-                    Description = entity.Description
-                };
-
-                var tempToConvert = agent.GetVariablesWithUnits();
-                IQueryable<VariableWithUnit> varsToCheck = (IQueryable<VariableWithUnit>)tempToConvert;
-                var varsWithName = varsToCheck.Where(x => x.Name == entity.Name);
-                var varsWithCode = varsToCheck.Where(x => x.Name == entity.Code);
-
-                if(varsWithName.Count() > 0 || varsWithCode.Count() > 0)
+                var existingVars = agent.GetVariablesWithUnits();
+                if (existingVars.Any(x => x.Name == entity.Name) || existingVars.Any(x => x.Code == entity.Code))
                 {
                     throw new Exception("Name or Code aready exists");
                 }
 
-                var newVarTypeToGrabID = await shared.Add(newVariableType);
-                newVariable.VariableTypeID = newVarTypeToGrabID.ID;
-
-                // check if there was a value for new variable
-                if(newVariable.UnitTypeID == -1)
+                var addedVarType = await shared.Add(new VariableType
                 {
-                    return Ok(newVariableType);
-                }
-                else
-                {
-                    agent.Add(newVariable).Wait();
+                    Name = entity.Name,
+                    Code = entity.Code,
+                    Description = entity.Description
+                });
 
-                    VariableWithUnit returnVariableWithUnit = new VariableWithUnit
+                var newVarWithUnit = new VariableWithUnit
+                {
+                    ID = addedVarType.ID,
+                    Name = addedVarType.Name,
+                    Code = addedVarType.Code,
+                    Description = addedVarType.Description
+                };
+
+                if (entity.UnitTypeID != null)
+                {
+                    await agent.Add(new Variable
                     {
-                        ID = newVarTypeToGrabID.ID,
-                        Name = newVariableType.Name,
-                        Code = newVariableType.Code,
-                        Description = newVariableType.Description,
-                        UnitTypeID = newVariable.UnitTypeID
-                    };
-
-                    return Ok(returnVariableWithUnit);
+                        VariableTypeID = addedVarType.ID,
+                        UnitTypeID = entity.UnitTypeID ?? -1,
+                        Comments = "Default unit"
+                    });
+                    newVarWithUnit.UnitTypeID = entity.UnitTypeID;
                 }
+
+                return Ok(newVarWithUnit);
+
             }
             catch (Exception ex)
             {
@@ -147,70 +135,46 @@ namespace NSSServices.Controllers
         {
             try
             {
-                entities.ForEach(e => e.ID = 0);
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
                 List<VariableType> newVariableTypeList = new List<VariableType>();
                 List<Variable> newVariableList = new List<Variable>();
                 List<VariableWithUnit> returnVariableWithUnitList = new List<VariableWithUnit>();
+                var existingVars = agent.GetVariablesWithUnits();
 
                 foreach (var item in entities)
                 {
-                    Variable newVariable = new Variable
+                    if (!existingVars.Any(v => v.Code == item.Code) && !existingVars.Any(v => v.Name == item.Name))
                     {
-                        UnitTypeID = item.UnitTypeID ?? -1,
-                        Comments = "Default unit"
-                    };
+                        var newVar = await shared.Add(new VariableType
+                        {
+                            Name = item.Name,
+                            Code = item.Code,
+                            Description = item.Description
+                        });
 
-                    VariableType newVariableType = new VariableType
-                    {
-                        ID = item.ID,
-                        Name = item.Name,
-                        Code = item.Code,
-                        Description = item.Description
-                    };
+                        var newVarWithUnit = new VariableWithUnit
+                        {
+                            ID = newVar.ID,
+                            Name = item.Name,
+                            Code = item.Code,
+                            Description = item.Description
+                        };
 
-                    VariableWithUnit returnVariableWithUnit = new VariableWithUnit
-                    {
-                        Name = item.Name,
-                        Code = item.Code,
-                        Description = item.Description,
-                        UnitTypeID = item.UnitTypeID ?? -1
-                    };
+                        if (item.UnitTypeID != null)
+                        {
+                            await agent.Add(new Variable
+                            {
+                                VariableTypeID = newVar.ID,
+                                UnitTypeID = item.UnitTypeID ?? -1,
+                                Comments = "Default unit"
+                            });
+                            newVarWithUnit.UnitTypeID = item.UnitTypeID;
+                        }
 
-                    var tempToConvert = agent.GetVariablesWithUnits();
-                    IQueryable<VariableWithUnit> varsToCheck = (IQueryable<VariableWithUnit>)tempToConvert;
-                    var varsWithName = varsToCheck.Where(x => x.Name == item.Name);
-                    var varsWithCode = varsToCheck.Where(x => x.Name == item.Code);
-
-                    if (varsWithName.Count() == 0 && varsWithCode.Count() == 0)
-                    {
-                        newVariableTypeList.Add(newVariableType);
-                        newVariableList.Add(newVariable);
-                        returnVariableWithUnitList.Add(returnVariableWithUnit);
+                        returnVariableWithUnitList.Add(newVarWithUnit);
                     }
                 }
-
-                var newVarTypeToGrabIDIEnum = await shared.Add(newVariableTypeList);
-                var newVarTypeToGrabIDList = newVarTypeToGrabIDIEnum.ToList();
-
-                for (int i = 0; i < newVarTypeToGrabIDList.Count(); i++)
-                {
-                    newVariableList[i].VariableTypeID = newVarTypeToGrabIDList[i].ID;
-
-                    returnVariableWithUnitList[i].ID = newVarTypeToGrabIDList[i].ID;
-                }
-
-                for(int x = 0; x < newVariableList.Count(); x++)
-                {
-                    if(newVariableList[x].UnitTypeID == -1)
-                    {
-                        newVariableList.RemoveAt(x);
-                        x--;
-                    }
-                }
-
-                agent.Add(newVariableList).Wait();
 
                 return Ok(returnVariableWithUnitList);
             }
@@ -229,38 +193,37 @@ namespace NSSServices.Controllers
             {
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                Variable newVariable = new Variable
-                {
-                    VariableTypeID = id,
-                    UnitTypeID = entity.UnitTypeID ?? -1,
-                    Comments = "Default unit"
-                };
-
-                VariableType newVariableType = new VariableType
+                var updatedVarType = await shared.Update(id, new VariableType
                 {
                     ID = id,
                     Name = entity.Name,
                     Code = entity.Code,
                     Description = entity.Description
-                };
-
-                var newVarTypeToGrabID = await shared.Update(id, newVariableType);
-                var varID = agent.GetVariable(id);
-                if (newVariable.UnitTypeID == -1)
+                });
+                var defaultUnit = agent.GetDefaultUnitVariable(id);
+                if (entity.UnitTypeID == -1)
                 {
-                    return Ok(newVariableType);
+                    return Ok(updatedVarType);
                 }
                 else
                 {
-                    await agent.Update(varID.ID, newVariable);
+                    var newDefaultVar = new Variable
+                    {
+                        VariableTypeID = updatedVarType.ID,
+                        UnitTypeID = entity.UnitTypeID ?? -1,
+                        Comments = "Default unit"
+                    };
+
+                    if (defaultUnit != null) await agent.Update(defaultUnit.ID, newDefaultVar);
+                    else await agent.Add(newDefaultVar);
 
                     VariableWithUnit returnVariableWithUnit = new VariableWithUnit
                     {
-                        ID = newVarTypeToGrabID.ID,
-                        Name = newVariableType.Name,
-                        Code = newVariableType.Code,
-                        Description = newVariableType.Description,
-                        UnitTypeID = newVariable.UnitTypeID
+                        ID = updatedVarType.ID,
+                        Name = updatedVarType.Name,
+                        Code = updatedVarType.Code,
+                        Description = updatedVarType.Description,
+                        UnitTypeID = newDefaultVar.UnitTypeID
                     };
 
                     return Ok(returnVariableWithUnit);

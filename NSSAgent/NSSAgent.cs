@@ -114,7 +114,7 @@ namespace NSSAgent
         Task<Variable> Add(Variable item);
         Task<IEnumerable<Variable>> Add(List<Variable> items);
         Task<Variable> Update(Int32 pkId, Variable item);
-        Variable GetVariable(Int32 varTypeID);
+        Variable GetDefaultUnitVariable(Int32 varTypeID);
         Boolean DeleteVariable(Int32 ID);
 
         //Readonly (Shared Views) methods
@@ -133,9 +133,9 @@ namespace NSSAgent
 
         // Variables and object that stores VariableType + UnitTypeID
         IQueryable<VariableType> GetVariableTypes();
-        IQueryable<object> GetVariablesWithUnits();
+        IQueryable<VariableWithUnit> GetVariablesWithUnits();
         Task<VariableType> GetVariableType(Int32 ID);
-        object GetVariableWithUnit(Int32 ID);
+        VariableWithUnit GetVariableWithUnit(Int32 ID);
 
     }
     public class NSSServiceAgent : DBAgentBase, INSSAgent
@@ -959,13 +959,13 @@ namespace NSSAgent
         {
             return this.Update<Variable>(pkId, item);
         }
-        public Variable GetVariable(Int32 varTypeID)
+        public Variable GetDefaultUnitVariable(Int32 varTypeID)
         {
-            var result = this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
-            return result;
+            return this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
         }
         public Boolean DeleteVariable(Int32 ID)
         {
+            // clean this up, just need to check for (a) the default unit and (b) anything else using the variable type
             var selectedVariablesWithConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID
                 && x.EquationID == null && x.LimitationID == null && x.CoefficientID == null && x.Comments == "Default unit");
             var selectedVariablesTotal = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
@@ -1125,53 +1125,43 @@ namespace NSSAgent
         {
             return this.Select<VariableType>();
         }
-        public IQueryable<object> GetVariablesWithUnits()
+        public IQueryable<VariableWithUnit> GetVariablesWithUnits()
         {
-            IQueryable<Variable> unitTypes = this.Select<Variable>().Where(x => x.Comments == "Default unit");
+            IQueryable<Variable> defaultUnits = this.Select<Variable>().Where(x => x.Comments == "Default unit");
 
-            IQueryable<VariableWithUnit> obj = this.Select<VariableType>().GroupJoin(
-              unitTypes,
+            return this.Select<VariableType>().GroupJoin(
+              defaultUnits,
               var => var.ID,
               unit => unit.VariableTypeID,
-              (x, y) => new { Variable = x, VariableType = y })
+              (x, y) => new { VariableType = x, UnitType = y }) // I think this should be UnitType instead of VariableType and VariableType instead of Variable
            .SelectMany(
-               unit => unit.VariableType.DefaultIfEmpty(),
+               unit => unit.UnitType.DefaultIfEmpty(),
                (var, unit) => new VariableWithUnit
                {
-                   ID = var.Variable.ID,
-                   Description = var.Variable.Description,
-                   Code = var.Variable.Code,
-                   Name = var.Variable.Name,
+                   ID = var.VariableType.ID,
+                   Description = var.VariableType.Description,
+                   Code = var.VariableType.Code,
+                   Name = var.VariableType.Name,
                    UnitTypeID = unit.UnitTypeID
                }).Distinct().OrderBy(x => x.ID);
-
-            return obj;
         }
         public Task<VariableType> GetVariableType(Int32 ID)
         {
             return this.Find<VariableType>(ID);
         }
-        public object GetVariableWithUnit(Int32 ID)
+        public VariableWithUnit GetVariableWithUnit(Int32 ID)
         {
-            IQueryable<Variable> unitTypes = this.Select<Variable>().Where(x => x.Comments == "Default unit");
+            var defaultUnit = this.GetDefaultUnitVariable(ID);
+            var variable = this.Select<VariableType>().Where(v => v.ID == ID).Select(v => new VariableWithUnit
+            {
+                ID = ID,
+                Code = v.Code,
+                Name = v.Name,
+                Description = v.Description
+            }).FirstOrDefault();
 
-            VariableWithUnit obj = this.Select<VariableType>().GroupJoin(
-              unitTypes,
-              var => var.ID,
-              unit => unit.VariableTypeID,
-              (x, y) => new { Variable = x, VariableType = y })
-           .SelectMany(
-               unit => unit.VariableType.DefaultIfEmpty(),
-               (var, unit) => new VariableWithUnit
-               {
-                   ID = var.Variable.ID,
-                   Description = var.Variable.Description,
-                   Code = var.Variable.Code,
-                   Name = var.Variable.Name,
-                   UnitTypeID = unit.UnitTypeID
-               }).Distinct().OrderBy(x => x.ID).First(v => v.ID == ID);
-
-            return obj;
+           if (defaultUnit != null) { variable.UnitTypeID = defaultUnit.UnitTypeID; }
+           return variable;
         }
         public VariableType GetVariableByCode(string code)
         {

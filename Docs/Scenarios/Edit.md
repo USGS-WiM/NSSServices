@@ -1,3 +1,2 @@
-## Edits a Source Type Resource
-<span style="color:red">Requires Administrators Authentication</span>  
-Edits a source type.
+<span style="color:red">Requires Administrator Authentication</span>  
+Edits a scenario.

@@ -207,12 +207,12 @@ namespace NSSServices.Controllers
                 if (geom != null)
                 {
                     if (!agent.allowableGeometries.Contains(geom.GeometryType)) throw new BadRequestException("Geometry is not of type: " + String.Join(',', agent.allowableGeometries));
-                    entities = agent.GetScenarios(RegionList, geom, null, statisticgroupList, regressiontypeList, extensionList, unitsystem, LoggedInUser()).ToList();
+                    entities = agent.GetScenarios(RegionList, geom, null, statisticgroupList, regressiontypeList, extensionList, unitsystem, LoggedInUser(), GetApplicableStatus()).ToList();
                 }
                 else
                 {
                     regressionregionList = parse(regressionRegions);
-                    entities = agent.GetScenarios(RegionList, null, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem, LoggedInUser()).ToList();
+                    entities = agent.GetScenarios(RegionList, null, regressionregionList, statisticgroupList, regressiontypeList, extensionList, unitsystem, LoggedInUser(), GetApplicableStatus()).ToList();
                 }
                 sm("Count: " + entities.Count());
                 return Ok(entities);

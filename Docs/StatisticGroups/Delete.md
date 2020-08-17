@@ -1,3 +1,2 @@
-## Delete Status Resource
-<span style="color:red">Requires Administrators Authentication</span>  
-Deletes a status from repository
+<span style="color:red">Requires Administrator Authentication</span>  
+Deletes a statistic group from the repository.

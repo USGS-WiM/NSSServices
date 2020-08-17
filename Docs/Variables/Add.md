@@ -1,3 +1,2 @@
-## Add Time Series Resource
-<span style="color:red">Requires Authentication</span>  
-Adds a time series resource to the repository.
+<span style="color:red">Requires Administrator Authentication</span>  
+Adds a new variable type resource to the repository if it doesn't already exist.

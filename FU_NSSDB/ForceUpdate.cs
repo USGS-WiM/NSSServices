@@ -208,8 +208,17 @@ namespace FU_NSSDB
                     regRegion.CitationID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_postcitation, new object[] { regRegion.Citation.Title.Trim(), regRegion.Citation.Author.Trim(), regRegion.Citation.CitationURL.Trim() });
                 else
                     regRegion.CitationID = citationlist.FirstOrDefault().ID;
-                //regressionregion
-                regRegion.ID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID });
+
+                // check if regression region exists before continuing (useful if you need to redo equations)
+                var regRegionList = NSSDBOps.GetItems<NSSRegressionRegion>(NSSDbOps.SQLType.e_getregressionregions).Where(r => string.Equals(r.Code.Trim(), regRegion.Code.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                                                                                                        string.Equals(r.Name.Trim(), regRegion.Name.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                                                                                                        string.Equals(r.Description.Trim(), regRegion.Description.Trim(), StringComparison.OrdinalIgnoreCase)).ToList();
+                if (regRegionList.Count == 1)
+                {
+                    regRegion.ID = regRegionList.FirstOrDefault().ID;
+                    return true;
+                }
+                regRegion.ID = NSSDBOps.AddItem(NSSDbOps.SQLType.e_regressionregion, new object[] { regRegion.Name.Trim(), regRegion.Code.Trim(), regRegion.Description.Trim(), regRegion.CitationID, 4 });
                 //RegionRegressionRegion
                 NSSDBOps.AddItem(NSSDbOps.SQLType.e_regionregressionregion, new object[] { regionID, regRegion.ID });
                 if (regRegion.CitationID < 1 || regRegion.ID < 1) throw new Exception("Error posting Regression region; Citation " + regRegion.CitationID + " Regression region " + regRegion.ID);
@@ -322,7 +331,7 @@ namespace FU_NSSDB
                     return;
             }
 
-
+            // these output to FU_NSSDB.Test\bin\Debug
             using (TextWriter tw = new StreamWriter("..\\"+typeof(T).Name + ".sql"))
             {
                 foreach (var s in updateList)

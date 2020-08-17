@@ -1,3 +1,2 @@
-## Delete Region Resource
-<span style="color:red">Requires Administrators Authentication</span>  
-Deletes a region
+<span style="color:red">Requires Administrator Authentication</span>  
+Deletes a region.

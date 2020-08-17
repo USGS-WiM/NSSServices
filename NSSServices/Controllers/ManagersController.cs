@@ -70,15 +70,18 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpGet("{id}",Name ="Manager")][Authorize(Policy = Policy.AdminOnly)]
+        [HttpGet("{id}",Name ="Manager")][Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Managers/GetDistinct.md")]
         public async Task<IActionResult> Get(int id)
         {
             try
             {
                 if (id < 0) return new BadRequestResult(); // This returns HTTP 404
+                // managers cannot view other managers, just themselves
+                if (!User.IsInRole("Administrator") && Convert.ToInt32(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.PrimarySid)?.Value) != id)
+                    return new UnauthorizedResult();// return HTTP 401
 
-                var x = await agent.GetManager(id);
+                var x = agent.GetManager(id);
                 //remove info not relevant
                 x.Salt = null;
                 x.Password = null;
@@ -132,7 +135,7 @@ namespace NSSServices.Controllers
                     string.IsNullOrEmpty(entity.Email)) return new BadRequestObjectResult(new Error(errorEnum.e_badRequest)); // This returns HTTP 404
 
                 //fetch object, assuming it exists
-                ObjectToBeUpdated = await agent.GetManager(id);
+                ObjectToBeUpdated = agent.GetManager(id);
                 if (ObjectToBeUpdated == null) return new NotFoundObjectResult(entity);
 
                 // managers cannot edit other managers, just themselves

@@ -64,6 +64,8 @@ namespace NSSServices.Controllers
                 else
                     entities = agent.GetRegressionRegions(RegionList,null, statisticgroupList,regressiontypeList);
 
+                IQueryable<Status> applicableStatus = GetApplicableStatus();
+                if (applicableStatus != null) entities = entities.Where(e => e.StatusID != null && applicableStatus.Any(s => s.ID == e.StatusID));
                 sm($"regression region count {entities.Count()}");
                 return Ok(entities);
             }
@@ -98,6 +100,8 @@ namespace NSSServices.Controllers
                 else
                     entities = agent.GetRegressionRegions(RegionList, geom, statisticgroupList, regressiontypeList);
 
+                var applicableStatus = GetApplicableStatus();
+                entities = entities.Where(e => applicableStatus.Any(s => s.ID == e.StatusID));
                 sm($"regression region count {entities.Count()}");
                 return Ok(entities);
             }
@@ -143,7 +147,12 @@ namespace NSSServices.Controllers
                 if (regionEntity == null) return BadRequest($"No region exists with {region} identifier.");
                 if (!IsAuthorizedToEdit(regionEntity)) return Unauthorized();
 
-                entity.StatusID = (entity.CitationID != null || entity.Citation != null) ? (int?)2 : (int?)1;
+                if (entity.StatusID == null || ((entity.StatusID == 3 || entity.StatusID == 4) && entity.CitationID == null && entity.Citation == null))
+                {
+                    // if no status ID given, or if no citation attached and user selcted a public status ID, set to 2
+                    entity.StatusID = (int?)2;
+                    sm("Status set to Review, disabled for public users due to a missing citation or status");
+                }
 
                 entity.RegionRegressionRegions = new List<RegionRegressionRegion>(){new RegionRegressionRegion
                 {
@@ -179,7 +188,13 @@ namespace NSSServices.Controllers
                 {
                     rr.ID = 0;
                     rr.RegionRegressionRegions = new List<RegionRegressionRegion>() { new RegionRegressionRegion { RegionID = regionEntity.ID, RegressionRegion = rr } };
-                    rr.StatusID = (rr.CitationID != null || rr.Citation != null)?(int?)2:(int?)1;
+
+                    if (rr.StatusID == null || ((rr.StatusID == 3 || rr.StatusID == 4) && rr.CitationID == null && rr.Citation == null))
+                    {
+                        // if no status ID given, or if no citation attached and user selcted a public status ID, set to 2
+                        rr.StatusID = (int?)2;
+                        sm(rr.Name + " status set to Review, disabled for public users due to a missing citation or status");
+                    }
                 });
 
                 var results = await agent.Add(entities);
@@ -204,6 +219,13 @@ namespace NSSServices.Controllers
                 RegressionRegion rr = agent.GetRegressionRegion(id).FirstOrDefault();
                 if (rr == null) return BadRequest($"No regression region exists with {id} identifier.");
                 if (!IsAuthorizedToEdit(rr)) return Unauthorized();
+
+                if (entity.StatusID == null || ((entity.StatusID == 3 || entity.StatusID == 4) && entity.CitationID == null && entity.Citation == null))
+                {
+                    // if no status ID given, or if no citation attached and user selcted a public status ID, set to 2
+                    entity.StatusID = (int?)2;
+                    sm("Status set to Review, disabled for public users due to a missing citation or status");
+                }
 
                 return Ok(await agent.Update(id,entity));
             }

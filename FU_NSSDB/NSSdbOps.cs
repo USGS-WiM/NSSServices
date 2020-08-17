@@ -197,9 +197,8 @@ namespace FU_NSSDB
                     /*results = @"SELECT DISTINCT sl.StatLabel
                                 FROM (DepVars dv
                                 LEFT JOIN StatLabel sl on (dv.StatisticLabelID = sl.StatisticLabelID))";*/
-
                     results = @"SELECT DISTINCT (0-1) as ID, sl.StatLabel as Code, sl.Definition as Description, sl.StatisticLabel as Name
-                                FROM (Statistic s
+                                FROM (DepVars s
                                 LEFT JOIN StatLabel sl on (s.StatisticLabelID = sl.StatisticLabelID))
                                 LEFT JOIN StatType st on (sl.statisticTypeID = st.StatisticTypeID)
                                 WHERE st.DefType = 'FS';";
@@ -213,7 +212,7 @@ namespace FU_NSSDB
                                 FROM ([Parameters] p 
                                 LEFT JOIN StatLabel sl ON ( p.StatisticLabelID = sl.StatisticLabelID))";*/
                     results = @"SELECT DISTINCT (0-1) as ID, sl.StatLabel as Code, sl.Definition as Description, sl.StatisticLabel as Name
-                                FROM (Statistic s
+                                FROM (DepVars s
                                 LEFT JOIN StatLabel sl on (s.StatisticLabelID = sl.StatisticLabelID))
                                 LEFT JOIN StatType st on (sl.statisticTypeID = st.StatisticTypeID)
                                 WHERE st.DefType = 'BC';";
@@ -239,7 +238,7 @@ namespace FU_NSSDB
                     results = @"INSERT INTO ""nss"".""Regions""(""Name"",""Code"") VALUES('{0}','{1}')";
                     break;
                 case SQLType.e_regressionregion:
-                    results = @"INSERT INTO ""nss"".""RegressionRegions""(""Name"",""Code"",""Description"",""CitationID"") VALUES('{0}', '{1}', '{2}',{3})";
+                    results = @"INSERT INTO ""nss"".""RegressionRegions""(""Name"",""Code"",""Description"",""CitationID"",""StatusID"") VALUES('{0}', '{1}', '{2}',{3}, {4})";
                     break;
                 case SQLType.e_equation:
                     results = @"INSERT INTO ""nss"".""Equations""(""RegressionRegionID"",""PredictionIntervalID"",""UnitTypeID"",""Expression"",""DA_Exponent"",""OrderIndex"",""RegressionTypeID"",""StatisticGroupTypeID"",""EquivalentYears"") 
@@ -282,6 +281,9 @@ namespace FU_NSSDB
                 case SQLType.e_getregressiontypes:
                     results= @"SELECT * FROM ""nss"".""RegressionType_view""";
                     break;
+                case SQLType.e_getregressionregions:
+                    results = @"SELECT * FROM ""nss"".""RegressionRegions""";
+                    break;
                 default:
                     break;
             }
@@ -319,6 +321,7 @@ namespace FU_NSSDB
             e_getvariabletypes,
             e_getunittypes,
             e_getregressiontypes,
+            e_getregressionregions,
             e_postcitation,
             e_regionregressionregion,
             e_predictioninterval,

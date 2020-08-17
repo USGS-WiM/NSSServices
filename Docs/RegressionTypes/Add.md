@@ -1,3 +1,2 @@
-## Add Source Resource
-<span style="color:red">Requires Authentication</span>  
-Adds a Source resource to the repository.
+<span style="color:red">Requires Administrator Authentication</span>  
+Adds a new regression type resource to the repository if it doesn't already exist.

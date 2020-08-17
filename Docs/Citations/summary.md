@@ -1,1 +1,1 @@
-Citations summary
+A citation represents the publication in which a statistic or characteristic is published.

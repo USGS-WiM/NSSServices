@@ -78,8 +78,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost(Name = "Add Variable")]
-        [Authorize(Policy = Policy.AdminOnly)]
+        [HttpPost(Name = "Add Variable")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Add.md")]
         public async Task<IActionResult> Post([FromBody] VariableWithUnit entity)
         {
@@ -87,7 +86,7 @@ namespace NSSServices.Controllers
             {
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                var existingVars = agent.GetVariablesWithUnits();
+                var existingVars = agent.GetVariableTypes();
                 if (existingVars.Any(x => x.Name == entity.Name) || existingVars.Any(x => x.Code == entity.Code))
                 {
                     throw new Exception("Name or Code aready exists");
@@ -100,13 +99,7 @@ namespace NSSServices.Controllers
                     Description = entity.Description
                 });
 
-                var newVarWithUnit = new VariableWithUnit
-                {
-                    ID = addedVarType.ID,
-                    Name = addedVarType.Name,
-                    Code = addedVarType.Code,
-                    Description = addedVarType.Description
-                };
+                entity.ID = addedVarType.ID;
 
                 if (entity.UnitTypeID != null)
                 {
@@ -116,10 +109,9 @@ namespace NSSServices.Controllers
                         UnitTypeID = entity.UnitTypeID ?? -1,
                         Comments = "Default unit"
                     });
-                    newVarWithUnit.UnitTypeID = entity.UnitTypeID;
                 }
 
-                return Ok(newVarWithUnit);
+                return Ok(entity);
 
             }
             catch (Exception ex)
@@ -128,8 +120,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost("[action]", Name = "Variable Batch Upload")]
-        [Authorize(Policy = Policy.AdminOnly)]
+        [HttpPost("[action]", Name = "Variable Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Batch.md")]
         public async Task<IActionResult> Batch([FromBody] List<VariableWithUnit> entities)
         {
@@ -137,11 +128,7 @@ namespace NSSServices.Controllers
             {
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
-                List<VariableType> newVariableTypeList = new List<VariableType>();
-                List<Variable> newVariableList = new List<Variable>();
-                List<VariableWithUnit> returnVariableWithUnitList = new List<VariableWithUnit>();
                 var existingVars = agent.GetVariablesWithUnits();
-
                 foreach (var item in entities)
                 {
                     if (!existingVars.Any(v => v.Code == item.Code) && !existingVars.Any(v => v.Name == item.Name))
@@ -152,14 +139,7 @@ namespace NSSServices.Controllers
                             Code = item.Code,
                             Description = item.Description
                         });
-
-                        var newVarWithUnit = new VariableWithUnit
-                        {
-                            ID = newVar.ID,
-                            Name = item.Name,
-                            Code = item.Code,
-                            Description = item.Description
-                        };
+                        item.ID = newVar.ID;
 
                         if (item.UnitTypeID != null)
                         {
@@ -169,14 +149,11 @@ namespace NSSServices.Controllers
                                 UnitTypeID = item.UnitTypeID ?? -1,
                                 Comments = "Default unit"
                             });
-                            newVarWithUnit.UnitTypeID = item.UnitTypeID;
                         }
-
-                        returnVariableWithUnitList.Add(newVarWithUnit);
                     }
                 }
 
-                return Ok(returnVariableWithUnitList);
+                return Ok(entities);
             }
             catch (Exception ex)
             {
@@ -184,8 +161,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPut("{id}", Name = "Edit Variable")]
-        [Authorize(Policy = Policy.AdminOnly)]
+        [HttpPut("{id}", Name = "Edit Variable")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Edit.md")]
         public async Task<IActionResult> Put(int id, [FromBody] VariableWithUnit entity)
         {
@@ -201,11 +177,7 @@ namespace NSSServices.Controllers
                     Description = entity.Description
                 });
                 var defaultUnit = agent.GetDefaultUnitVariable(id);
-                if (entity.UnitTypeID == -1)
-                {
-                    return Ok(updatedVarType);
-                }
-                else
+                if (entity.UnitTypeID != null)
                 {
                     var newDefaultVar = new Variable
                     {
@@ -217,17 +189,9 @@ namespace NSSServices.Controllers
                     if (defaultUnit != null) await agent.Update(defaultUnit.ID, newDefaultVar);
                     else await agent.Add(newDefaultVar);
 
-                    VariableWithUnit returnVariableWithUnit = new VariableWithUnit
-                    {
-                        ID = updatedVarType.ID,
-                        Name = updatedVarType.Name,
-                        Code = updatedVarType.Code,
-                        Description = updatedVarType.Description,
-                        UnitTypeID = newDefaultVar.UnitTypeID
-                    };
-
-                    return Ok(returnVariableWithUnit);
                 }
+                else if (defaultUnit != null) entity.UnitTypeID = defaultUnit.UnitTypeID; // send old unittypeid in return if none sent through
+                return Ok(entity);
             }
             catch (Exception ex)
             {
@@ -236,8 +200,7 @@ namespace NSSServices.Controllers
 
         }
 
-        [HttpDelete("{id}", Name = "Delete Variable")]
-        [Authorize(Policy = Policy.AdminOnly)]
+        [HttpDelete("{id}", Name = "Delete Variable")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Delete.md")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -245,11 +208,10 @@ namespace NSSServices.Controllers
             {
                 if (id < 1) return new BadRequestResult();
 
-                var returnBool = agent.DeleteDefaultVariable(id);
-                if (returnBool)
+                if (agent.CanDeleteVariable(id))
                 {
                     shared.DeleteVariableType(id).Wait();
-                    return Ok("Deleted ID: " + id);
+                    return Ok();
                 }
                 else
                 {

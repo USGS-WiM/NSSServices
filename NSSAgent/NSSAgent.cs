@@ -124,7 +124,14 @@ namespace NSSAgent
         Task<IEnumerable<Variable>> Add(List<Variable> items);
         Task<Variable> Update(Int32 pkId, Variable item);
         Variable GetDefaultUnitVariable(Int32 varTypeID);
-        Boolean DeleteDefaultVariable(Int32 ID);
+        Boolean CanDeleteVariable(Int32 ID);
+        Task DeleteVariable(Int32 ID);
+
+        // Variable types and object that stores VariableType + UnitTypeID (VariableWithUnit)
+        IQueryable<VariableType> GetVariableTypes();
+        IQueryable<VariableWithUnit> GetVariablesWithUnits();
+        Task<VariableType> GetVariableType(Int32 ID);
+        VariableWithUnit GetVariableWithUnit(Int32 ID);
 
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
@@ -139,16 +146,6 @@ namespace NSSAgent
         Task<UnitType> GetUnit(Int32 ID);
         IQueryable<UnitSystemType> GetUnitSystems();
         Task<UnitSystemType> GetUnitSystem(Int32 ID);
-
-        // Variables and object that stores VariableType + UnitTypeID
-        IQueryable<VariableType> GetVariableTypes();
-        IQueryable<VariableWithUnit> GetVariablesWithUnits();
-        Task<VariableType> GetVariableType(Int32 ID);
-        VariableWithUnit GetVariableWithUnit(Int32 ID);
-
-        IQueryable<VariableType> GetVariables();
-        Task<VariableType> GetVariable(Int32 ID);
-        Task DeleteVariable(Int32 ID);
     }
     public class NSSServiceAgent : DBAgentBase, INSSAgent
     {
@@ -277,7 +274,6 @@ namespace NSSAgent
         {
             try
             {
-
                 return Select<Manager>().AsEnumerable().FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));                    
             }
             catch (Exception ex)
@@ -988,7 +984,6 @@ namespace NSSAgent
         #endregion
 
         #region Variables
-
         public Task<Variable> Add(Variable item)
         {
             return this.Add<Variable>(item);
@@ -1005,30 +1000,27 @@ namespace NSSAgent
         {
             return this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
         }
-        public Boolean DeleteDefaultVariable(Int32 ID)
+        public Boolean CanDeleteVariable(Int32 ID)
         {
-            // clean this up, just need to check for (a) the default unit and (b) anything else using the variable type
-            var selectedVariablesWithConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID
-                && x.EquationID == null && x.LimitationID == null && x.CoefficientID == null && x.Comments == "Default unit");
-            var selectedVariablesTotal = this.Select<Variable>().Where(x => x.VariableTypeID == ID);
+            var defaultVariable = this.GetDefaultUnitVariable(ID);
+            var allVariables = this.Select<Variable>().Where(v => v.VariableTypeID == ID && v.Comments != "Default unit");
 
-            var selectedVariablesWithOutConditions = this.Select<Variable>().Where(x => x.VariableTypeID == ID && (x.EquationID != null || x.LimitationID != null || x.CoefficientID != null));
-            if (selectedVariablesWithOutConditions.Count() > 0)
+            if (allVariables.Count() > 0)
             {
                 return false;
             }
 
-            if (selectedVariablesWithConditions.Count() > 0)
+            if (defaultVariable != null)
             {
-                this.Delete<Variable>(selectedVariablesWithConditions.First().ID);
+                this.Delete<Variable>(defaultVariable.ID);
                 return true;
             }
-            else
-            {
-                return selectedVariablesTotal.Count() == 0;
-            }
+            return allVariables.Count() == 0;
         }
-
+        public Task DeleteVariable(Int32 ID)
+        {
+            return this.Delete<Variable>(ID);
+        }
         #endregion
 
         #region ReadOnly
@@ -1175,7 +1167,7 @@ namespace NSSAgent
               defaultUnits,
               var => var.ID,
               unit => unit.VariableTypeID,
-              (x, y) => new { VariableType = x, UnitType = y }) // I think this should be UnitType instead of VariableType and VariableType instead of Variable
+              (x, y) => new { VariableType = x, UnitType = y })
            .SelectMany(
                unit => unit.UnitType.DefaultIfEmpty(),
                (var, unit) => new VariableWithUnit
@@ -1202,16 +1194,12 @@ namespace NSSAgent
                 Description = v.Description
             }).FirstOrDefault();
 
-           if (defaultUnit != null) { variable.UnitTypeID = defaultUnit.UnitTypeID; }
-           return variable;
+            if (defaultUnit != null) { variable.UnitTypeID = defaultUnit.UnitTypeID; }
+            return variable;
         }
         public VariableType GetVariableByCode(string code)
         {
             return this.Select<VariableType>().FirstOrDefault(v => v.Code == code);
-        }
-        public Task DeleteVariable(Int32 ID)
-        {
-            return this.Delete<Variable>(ID);
         }
         #endregion
         #endregion

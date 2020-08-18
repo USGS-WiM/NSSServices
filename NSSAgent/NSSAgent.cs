@@ -40,6 +40,7 @@ using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
+using NSSServices.Resources;
 
 namespace NSSAgent
 {
@@ -118,6 +119,20 @@ namespace NSSAgent
         Task<IQueryable<Scenario>> Add(Scenario item);
         Task DeleteScenario(int regressionregionID, int statisticgroupID, int regressiontypeID);
 
+        //Variables
+        Task<Variable> Add(Variable item);
+        Task<IEnumerable<Variable>> Add(List<Variable> items);
+        Task<Variable> Update(Int32 pkId, Variable item);
+        Variable GetDefaultUnitVariable(Int32 varTypeID);
+        Boolean CanDeleteVariable(Int32 ID);
+        Task DeleteVariable(Int32 ID);
+
+        // Variable types and object that stores VariableType + UnitTypeID (VariableWithUnit)
+        IQueryable<VariableType> GetVariableTypes();
+        IQueryable<VariableWithUnit> GetVariablesWithUnits();
+        Task<VariableType> GetVariableType(Int32 ID);
+        VariableWithUnit GetVariableWithUnit(Int32 ID);
+
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
         Task<ErrorType> GetError(Int32 ID);
@@ -131,9 +146,6 @@ namespace NSSAgent
         Task<UnitType> GetUnit(Int32 ID);
         IQueryable<UnitSystemType> GetUnitSystems();
         Task<UnitSystemType> GetUnitSystem(Int32 ID);
-        IQueryable<VariableType> GetVariables();
-        Task<VariableType> GetVariable(Int32 ID);
-        Task DeleteVariable(Int32 ID);
     }
     public class NSSServiceAgent : DBAgentBase, INSSAgent
     {
@@ -262,7 +274,6 @@ namespace NSSAgent
         {
             try
             {
-
                 return Select<Manager>().AsEnumerable().FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));                    
             }
             catch (Exception ex)
@@ -971,6 +982,47 @@ namespace NSSAgent
             }
         }
         #endregion
+
+        #region Variables
+        public Task<Variable> Add(Variable item)
+        {
+            return this.Add<Variable>(item);
+        }
+        public Task<IEnumerable<Variable>> Add(List<Variable> items)
+        {
+            return this.Add<Variable>(items);
+        }
+        public Task<Variable> Update(Int32 pkId, Variable item)
+        {
+            return this.Update<Variable>(pkId, item);
+        }
+        public Variable GetDefaultUnitVariable(Int32 varTypeID)
+        {
+            return this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
+        }
+        public Boolean CanDeleteVariable(Int32 ID)
+        {
+            var defaultVariable = this.GetDefaultUnitVariable(ID);
+            var allVariables = this.Select<Variable>().Where(v => v.VariableTypeID == ID && v.Comments != "Default unit");
+
+            if (allVariables.Count() > 0)
+            {
+                return false;
+            }
+
+            if (defaultVariable != null)
+            {
+                this.Delete<Variable>(defaultVariable.ID);
+                return true;
+            }
+            return allVariables.Count() == 0;
+        }
+        public Task DeleteVariable(Int32 ID)
+        {
+            return this.Delete<Variable>(ID);
+        }
+        #endregion
+
         #region ReadOnly
         public IQueryable<ErrorType> GetErrors()
         {
@@ -1103,21 +1155,51 @@ namespace NSSAgent
         {
             return this.Find<UnitSystemType>(ID);
         }
-        public IQueryable<VariableType> GetVariables()
+        public IQueryable<VariableType> GetVariableTypes()
         {
             return this.Select<VariableType>();
         }
-        public Task<VariableType> GetVariable(Int32 ID)
+        public IQueryable<VariableWithUnit> GetVariablesWithUnits()
+        {
+            IQueryable<Variable> defaultUnits = this.Select<Variable>().Where(x => x.Comments == "Default unit");
+
+            return this.Select<VariableType>().GroupJoin(
+              defaultUnits,
+              var => var.ID,
+              unit => unit.VariableTypeID,
+              (x, y) => new { VariableType = x, UnitType = y })
+           .SelectMany(
+               unit => unit.UnitType.DefaultIfEmpty(),
+               (var, unit) => new VariableWithUnit
+               {
+                   ID = var.VariableType.ID,
+                   Description = var.VariableType.Description,
+                   Code = var.VariableType.Code,
+                   Name = var.VariableType.Name,
+                   UnitTypeID = unit.UnitTypeID
+               }).Distinct().OrderBy(x => x.ID);
+        }
+        public Task<VariableType> GetVariableType(Int32 ID)
         {
             return this.Find<VariableType>(ID);
+        }
+        public VariableWithUnit GetVariableWithUnit(Int32 ID)
+        {
+            var defaultUnit = this.GetDefaultUnitVariable(ID);
+            var variable = this.Select<VariableType>().Where(v => v.ID == ID).Select(v => new VariableWithUnit
+            {
+                ID = ID,
+                Code = v.Code,
+                Name = v.Name,
+                Description = v.Description
+            }).FirstOrDefault();
+
+            if (defaultUnit != null) { variable.UnitTypeID = defaultUnit.UnitTypeID; }
+            return variable;
         }
         public VariableType GetVariableByCode(string code)
         {
             return this.Select<VariableType>().FirstOrDefault(v => v.Code == code);
-        }
-        public Task DeleteVariable(Int32 ID)
-        {
-            return this.Delete<Variable>(ID);
         }
         #endregion
         #endregion

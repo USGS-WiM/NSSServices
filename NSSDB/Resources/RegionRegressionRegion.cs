@@ -20,6 +20,7 @@
 //   
 
 using System.ComponentModel.DataAnnotations;
+using SharedDB.Resources;
 namespace NSSDB.Resources
 {
     public partial class RegionRegressionRegion

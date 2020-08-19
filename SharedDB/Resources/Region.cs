@@ -22,20 +22,20 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NSSDB.Resources
+namespace SharedDB.Resources
 {
-    public partial class PredictionInterval
+    public partial class Region
     {
+
         [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public double? BiasCorrectionFactor { get; set; }
-        public double? Student_T_Statistic { get; set; }
-        public double? Variance { get; set; }
-        public string XIRowVector { get; set; }
-        public string CovarianceMatrix { get; set; }
-        public double? DegreesOfFreedom { get; set; } // default should be 1000
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string Code { get; set; }
+        public string Description { get; set; }
 
-        public virtual ICollection<Equation> Equation { get; set; }
+        public ICollection<RegionManager> RegionManagers { get; set; }
 
     }
 }

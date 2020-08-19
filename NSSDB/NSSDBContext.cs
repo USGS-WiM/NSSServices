@@ -77,7 +77,10 @@ namespace NSSDB
             modelBuilder.Entity<UnitConversionFactor>().ToTable("UnitConversionFactor_view");
             modelBuilder.Entity<UnitSystemType>().ToTable("UnitSystemType_view");
             modelBuilder.Entity<UnitType>().ToTable("UnitType_view");
-            modelBuilder.Entity<VariableType>().ToTable("VariableType_view");          
+            modelBuilder.Entity<VariableType>().ToTable("VariableType_view");
+            modelBuilder.Entity<Region>().ToTable("Regions_view");
+            modelBuilder.Entity<Manager>().ToTable("Managers_view");
+            modelBuilder.Entity<RegionManager>().ToTable("RegionManager_view");
 
             //unique key based on combination of both keys (many to many tables)
             modelBuilder.Entity<RegionManager>().HasKey(k => new { k.ManagerID, k.RegionID });
@@ -89,8 +92,6 @@ namespace NSSDB
             //EF Core currently does not support changing the value of alternate keys. We do have #4073 tracking removing this restriction though.
             //BTW it only needs to be an alternate key if you want it to be used as the target key of a relationship.If you just want a unique index, 
             //then use the HasIndex() method, rather than AlternateKey().Unique index values can be changed.
-            modelBuilder.Entity<Manager>().HasIndex(k => k.Username);
-            modelBuilder.Entity<Region>().HasIndex(k => k.Code);
             modelBuilder.Entity<RegressionRegion>().HasIndex(k => k.Code);
 
             //add shadowstate  

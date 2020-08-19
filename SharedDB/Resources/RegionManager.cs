@@ -14,29 +14,21 @@
 //   purpose:   Simple Plain Old Class Object (POCO) 
 //
 //discussion:   POCO's arn't derived from special base classed nor do they return any special types for their properties.
-//              
+//              see https://blog.oneunicorn.com/2017/09/25/many-to-many-relationships-in-ef-core-2-0-part-4-a-more-general-abstraction/        
 //
 //   
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace NSSDB.Resources
+namespace SharedDB.Resources
 {
-    public partial class Region
+    public partial class RegionManager
     {
-
-        [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
         [Required]
-        public string Name { get; set; }
+        public int RegionID { get; set; }
         [Required]
-        public string Code { get; set; }
-        public string Description { get; set; }
+        public int ManagerID { get; set; }
 
-        public ICollection<RegionRegressionRegion> RegionRegressionRegions { get; set; }        
-        public ICollection<RegionManager> RegionManagers { get; set; }
-
+        public Region Region { get; set; }
+        public Manager Manager { get; set; }
     }
 }

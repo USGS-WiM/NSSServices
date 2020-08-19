@@ -21,21 +21,35 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WIM.Resources;
 
-namespace NSSDB.Resources
+namespace SharedDB.Resources
 {
-    public partial class PredictionInterval
+    public partial class Manager:IUser
     {
         [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public double? BiasCorrectionFactor { get; set; }
-        public double? Student_T_Statistic { get; set; }
-        public double? Variance { get; set; }
-        public string XIRowVector { get; set; }
-        public string CovarianceMatrix { get; set; }
-        public double? DegreesOfFreedom { get; set; } // default should be 1000
-
-        public virtual ICollection<Equation> Equation { get; set; }
-
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+        [Required]
+        public string Username { get; set; }
+        [Required][EmailAddress]
+        public string Email { get; set; }
+        [Phone]
+        public string PrimaryPhone { get; set; }
+        [Phone]
+        public string SecondaryPhone { get; set; }
+        [Required]
+        public string Role { get; set; }
+        public string OtherInfo { get; set; }
+        [Required]
+        public string Password { get; set; }
+        [Required]
+        public string Salt { get; set; }
+        
+        public ICollection<RegionManager> RegionManagers { get; set; }
+        
     }
 }

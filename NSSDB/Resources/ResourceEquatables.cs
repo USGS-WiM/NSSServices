@@ -149,27 +149,27 @@ namespace NSSDB.Resources
             return (this.Criteria + this.RegressionRegionID).GetHashCode();
         }
     }
-    public partial class Manager : IEquatable<Manager>
-    {
-        public bool Equals(Manager other)
-        {
-            return String.Equals(this.Username.ToLower(), other.Username.ToLower()) || (String.Equals(this.FirstName.ToLower(), other.FirstName.ToLower()) &&
-                String.Equals(this.LastName.ToLower(), other.LastName.ToLower()) &&
-                String.Equals(this.Email.ToLower(), other.Email.ToLower()));
+    //public partial class Manager : IEquatable<Manager>
+    //{
+    //    public bool Equals(Manager other)
+    //    {
+    //        return String.Equals(this.Username.ToLower(), other.Username.ToLower()) || (String.Equals(this.FirstName.ToLower(), other.FirstName.ToLower()) &&
+    //            String.Equals(this.LastName.ToLower(), other.LastName.ToLower()) &&
+    //            String.Equals(this.Email.ToLower(), other.Email.ToLower()));
 
-        }
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals(obj as Manager);
-        }
-        public override int GetHashCode()
-        {
-            return (this.Username + this.FirstName + this.LastName + Email).GetHashCode();
-        }
-    }//end 
+    //    }
+    //    public override bool Equals(object obj)
+    //    {
+    //        if (ReferenceEquals(null, obj)) return false;
+    //        if (ReferenceEquals(this, obj)) return true;
+    //        if (obj.GetType() != GetType()) return false;
+    //        return Equals(obj as Manager);
+    //    }
+    //    public override int GetHashCode()
+    //    {
+    //        return (this.Username + this.FirstName + this.LastName + Email).GetHashCode();
+    //    }
+    //}//end 
     public partial class PredictionInterval : IEquatable<PredictionInterval>
     {
         public bool Equals(PredictionInterval other)
@@ -194,43 +194,43 @@ namespace NSSDB.Resources
             return base.GetHashCode();
         }
     }
-    public partial class Region : IEquatable<Region>
-    {
-        public bool Equals(Region other)
-        {
-            return string.Equals(this.Name.ToLower(), other.Name.ToLower()) &&
-            String.Equals(this.Code.ToLower(), other.Code.ToLower());
-        }
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals(obj as Region);
-        }
-        public override int GetHashCode()
-        {
-            return (this.Name + this.Code).GetHashCode();
-        }
-    }//end 
-    public partial class RegionManager : IEquatable<RegionManager>
-    {
-        public bool Equals(RegionManager other)
-        {
-            return this.RegionID == other.RegionID && this.ManagerID == other.ManagerID;
-        }
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals(obj as RegionManager);
-        }
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-    }//end   
+    //public partial class Region : IEquatable<Region>
+    //{
+    //    public bool Equals(Region other)
+    //    {
+    //        return string.Equals(this.Name.ToLower(), other.Name.ToLower()) &&
+    //        String.Equals(this.Code.ToLower(), other.Code.ToLower());
+    //    }
+    //    public override bool Equals(object obj)
+    //    {
+    //        if (ReferenceEquals(null, obj)) return false;
+    //        if (ReferenceEquals(this, obj)) return true;
+    //        if (obj.GetType() != GetType()) return false;
+    //        return Equals(obj as Region);
+    //    }
+    //    public override int GetHashCode()
+    //    {
+    //        return (this.Name + this.Code).GetHashCode();
+    //    }
+    //}//end 
+    //public partial class RegionManager : IEquatable<RegionManager>
+    //{
+    //    public bool Equals(RegionManager other)
+    //    {
+    //        return this.RegionID == other.RegionID && this.ManagerID == other.ManagerID;
+    //    }
+    //    public override bool Equals(object obj)
+    //    {
+    //        if (ReferenceEquals(null, obj)) return false;
+    //        if (ReferenceEquals(this, obj)) return true;
+    //        if (obj.GetType() != GetType()) return false;
+    //        return Equals(obj as RegionManager);
+    //    }
+    //    public override int GetHashCode()
+    //    {
+    //        return base.GetHashCode();
+    //    }
+    //}//end   
     public partial class RegionRegressionRegion : IEquatable<RegionRegressionRegion>
     {
         public bool Equals(RegionRegressionRegion other)

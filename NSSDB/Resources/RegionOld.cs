@@ -21,35 +21,23 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WIM.Resources;
+using SharedDB.Resources;
 
 namespace NSSDB.Resources
 {
-    public partial class Manager:IUser
+    public partial class RegionOld
     {
+
         [Required][DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         [Required]
-        public string FirstName { get; set; }
+        public string Name { get; set; }
         [Required]
-        public string LastName { get; set; }
-        [Required]
-        public string Username { get; set; }
-        [Required][EmailAddress]
-        public string Email { get; set; }
-        [Phone]
-        public string PrimaryPhone { get; set; }
-        [Phone]
-        public string SecondaryPhone { get; set; }
-        [Required]
-        public string Role { get; set; }
-        public string OtherInfo { get; set; }
-        [Required]
-        public string Password { get; set; }
-        [Required]
-        public string Salt { get; set; }
-        
+        public string Code { get; set; }
+        public string Description { get; set; }
+
+        public ICollection<RegionRegressionRegion> RegionRegressionRegions { get; set; }        
         public ICollection<RegionManager> RegionManagers { get; set; }
-        
+
     }
 }

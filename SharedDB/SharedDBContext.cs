@@ -57,6 +57,12 @@ namespace SharedDB
             modelBuilder.Entity<UnitSystemType>().ToTable("UnitSystemType", "shared");
             modelBuilder.Entity<UnitType>().ToTable("UnitType", "shared");
             modelBuilder.Entity<VariableType>().ToTable("VariableType", "shared");
+            modelBuilder.Entity<Region>().ToTable("Regions", "shared");
+            modelBuilder.Entity<Manager>().ToTable("Managers", "shared");
+            modelBuilder.Entity<RegionManager>().ToTable("RegionManager", "shared");
+
+            //unique key based on combination of both keys (many to many tables)
+            modelBuilder.Entity<RegionManager>().HasKey(k => new { k.ManagerID, k.RegionID });
 
             //Specify other unique constraints
             //EF Core currently does not support changing the value of alternate keys. We do have #4073 tracking removing this restriction though.
@@ -69,6 +75,8 @@ namespace SharedDB
             modelBuilder.Entity<UnitType>().HasIndex(k => k.Abbreviation).IsUnique();
             modelBuilder.Entity<UnitSystemType>().HasIndex(k => k.UnitSystem).IsUnique();
             modelBuilder.Entity<VariableType>().HasIndex(k => k.Code).IsUnique();
+            modelBuilder.Entity<Region>().HasIndex(k => k.Code).IsUnique();
+            modelBuilder.Entity<Manager>().HasIndex(k => k.Username).IsUnique();
 
             //cascade delete is default, rewrite behavior
             modelBuilder.Entity(typeof(UnitConversionFactor).ToString(), b =>

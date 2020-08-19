@@ -34,6 +34,7 @@ using WIM.Resources;
 using WIM.Services.Security.Authentication.JWTBearer;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
+using SharedDB.Resources;
 
 namespace NSSServices.Controllers
 {

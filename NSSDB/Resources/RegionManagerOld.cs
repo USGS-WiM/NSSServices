@@ -19,9 +19,10 @@
 //   
 
 using System.ComponentModel.DataAnnotations;
+using SharedDB.Resources;
 namespace NSSDB.Resources
 {
-    public partial class RegionManager
+    public partial class RegionManagerOld
     {
         [Required]
         public int RegionID { get; set; }

@@ -28,6 +28,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
+using SharedDB.Resources;
 
 namespace NSSServices.Controllers
 {

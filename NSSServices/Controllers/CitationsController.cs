@@ -129,7 +129,7 @@ namespace NSSServices.Controllers
             }
         }
 
-        [HttpPost(Name = "Add Citation")][Authorize(Policy = Policy.AdminOnly)]
+        [HttpPost(Name = "Add Citation")][Authorize(Policy = Policy.Managed)]
         public async Task<IActionResult> Post([FromBody]Citation entity)
         {
             try

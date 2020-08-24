@@ -3049,6 +3049,8 @@
       },
       "Shared/1.0.0": {
         "dependencies": {
+          "NSSAgent": "1.0.0",
+          "NSSDB": "1.0.0",
           "SharedDB": "1.0.0",
           "WIM.Resources": "1.2.2",
           "WIM.Services": "2.1.0"

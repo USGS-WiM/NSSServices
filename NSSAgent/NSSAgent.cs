@@ -55,6 +55,7 @@ namespace NSSAgent
         IQueryable<Citation> GetManagerCitations(int managerID);
         Task<Citation> Update(Int32 pkId, Citation item);
         Task DeleteCitation(Int32 id);
+        Task<Citation> Add(Citation item);
 
         //Limitations
         IQueryable<Limitation> GetLimitation(Int32 ID);
@@ -236,6 +237,10 @@ namespace NSSAgent
         public Task DeleteCitation(Int32 pkID)
         {
             return this.Delete<Citation>(pkID);
+        }
+        public Task<Citation> Add(Citation item)
+        {
+            return this.Add<Citation>(item);
         }
         #endregion
         #region Limitations

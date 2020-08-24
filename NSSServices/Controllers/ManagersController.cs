@@ -101,6 +101,7 @@ namespace NSSServices.Controllers
         {
             try
             {
+                // issue here with region managers when creating a region, still when editing as well
                 if(string.IsNullOrEmpty(entity.FirstName)|| string.IsNullOrEmpty(entity.LastName) || 
                     string.IsNullOrEmpty(entity.Username)|| string.IsNullOrEmpty(entity.Email) ||
                     string.IsNullOrEmpty(entity.Role)) return new BadRequestObjectResult(new Error( errorEnum.e_badRequest, "You are missing one or more required parameter.")); // This returns HTTP 404

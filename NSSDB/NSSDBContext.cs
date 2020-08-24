@@ -39,12 +39,9 @@ namespace NSSDB
         public virtual DbSet<Equation> Equations { get; set; }        
         public virtual DbSet<EquationUnitType> EquationUnitTypes { get; set; }        
         public virtual DbSet<Limitation> Limitations { get; set; }
-        public virtual DbSet<Manager> Managers { get; set; }
         public virtual DbSet<PredictionInterval> PredictionIntervals { get; set; }        
         public virtual DbSet<RegionRegressionRegion> RegionRegressionRegions { get; set; }
-        public virtual DbSet<Region> Regions { get; set; }        
         public virtual DbSet<RegressionRegion> RegressionRegions { get; set; }
-        public virtual DbSet<RegionManager> RegionManager { get; set; }
         public virtual DbSet<Variable> Variables { get; set; }       
         public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }     
         public virtual DbSet<Location> Locations { get; set; }
@@ -59,6 +56,9 @@ namespace NSSDB
         public virtual DbSet<UnitSystemType> UnitSystemTypes { get; set; }
         public virtual DbSet<UnitType> UnitTypes { get; set; }
         public virtual DbSet<VariableType> VariableTypes { get; set; }
+        public virtual DbSet<Manager> Managers { get; set; }
+        public virtual DbSet<Region> Regions { get; set; }
+        public virtual DbSet<RegionManager> RegionManager { get; set; }
 
         public NSSDBContext() : base()
         {
@@ -166,6 +166,9 @@ namespace NSSDB
             //modelBuilder.Ignore(typeof(UnitSystemType));
             //modelBuilder.Ignore(typeof(UnitType));
             //modelBuilder.Ignore(typeof(VariableType));
+            //modelBuilder.Ignore(typeof(Manager));
+            //modelBuilder.Ignore(typeof(Region));
+            //modelBuilder.Ignore(typeof(RegionManager));
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

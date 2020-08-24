@@ -39,6 +39,12 @@ namespace SharedDB
         public virtual DbSet<UnitSystemType> UnitSystemTypes { get; set; }
         public virtual DbSet<UnitType> UnitTypes { get; set; }
         public virtual DbSet<VariableType> VariableTypes { get; set; }
+        public virtual DbSet<Manager> Managers { get; set; }
+        public virtual DbSet<Region> Regions { get; set; }
+        public virtual DbSet<RegionManager> RegionManager { get; set; }
+       
+       
+       
        
         public SharedDBContext() : base()
         {

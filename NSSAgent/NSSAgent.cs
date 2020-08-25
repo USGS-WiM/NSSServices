@@ -68,10 +68,6 @@ namespace NSSAgent
         //Managers
         IQueryable<Manager> GetManagers();
         Manager GetManager(Int32 ID);
-        Task<Manager> Add(Manager item);
-        Task<IEnumerable<Manager>> Add(List<Manager> items);
-        Task<Manager> Update(Int32 pkId, Manager item);
-        Task DeleteManager(Int32 pkID);
 
         //Regions
         IQueryable<Region> GetRegions();
@@ -79,10 +75,6 @@ namespace NSSAgent
         Task<Region> GetRegion(Int32 ID);
         Region GetRegionByIDOrCode(string identifier);
         IQueryable<Region> GetManagerRegions(int managerID);
-        Task<Region> Add(Region item);
-        Task<IEnumerable<Region>> Add(List<Region> items);
-        Task<Region> Update(Int32 pkId, Region item);
-        Task DeleteRegion(Int32 pkID);
 
         //RegressionRegions
         IQueryable<RegressionRegion> GetRegressionRegions(List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);

@@ -104,7 +104,8 @@ namespace NSSDB
                                          typeof(RegionManager).FullName,typeof(RegionRegressionRegion).FullName,
                                          typeof(VariableUnitType).FullName,typeof(ErrorType).FullName,typeof(RegressionType).FullName,
                                          typeof(StatisticGroupType).FullName,typeof(UnitConversionFactor).FullName,typeof(UnitSystemType).FullName,
-                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName,typeof(Method).FullName}
+                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName,
+                                         typeof(Method).FullName,typeof(Region).FullName,typeof(Manager).FullName}
                 .Contains(entitytype.Name))
                 { continue; }                 
                 modelBuilder.Entity(entitytype.Name).Property<DateTime>("LastModified");

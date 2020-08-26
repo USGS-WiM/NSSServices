@@ -28,7 +28,7 @@ using SharedAgent;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
 
-namespace NSSServices.Controllers
+namespace Shared.Controllers
 {
     public abstract class UnitsControllerBase : WIM.Services.Controllers.ControllerBase
     {

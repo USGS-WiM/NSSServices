@@ -312,22 +312,6 @@ namespace NSSAgent
         {
             return this.GetManagers().Include(m => m.RegionManagers).FirstOrDefault(m => m.ID == ID);
         }
-        public Task<Manager> Add(Manager item)
-        {
-            return this.Add<Manager>(item);
-        }
-        public Task<IEnumerable<Manager>> Add(List<Manager> items)
-        {
-            return this.Add<Manager>(items);
-        }
-        public Task<Manager> Update(int pkId, Manager item)
-        {
-            return this.Update<Manager>(pkId, item);
-        }
-        public Task DeleteManager(int pkID)
-        {
-            return this.Delete<Manager>(pkID);
-        }
         #endregion        
         #region Region
         public Region GetRegionByIDOrCode(string identifier)
@@ -368,22 +352,6 @@ namespace NSSAgent
         {
             return Select<RegionManager>().Where(rm => rm.ManagerID == managerID)
                                 .Include("Region").Select(rm => rm.Region);
-        }
-        public Task<Region> Add(Region item)
-        {
-            return this.Add<Region>(item);
-        }
-        public Task<IEnumerable<Region>> Add(List<Region> items)
-        {
-            return this.Add<Region>(items);
-        }
-        public Task<Region> Update(int pkId, Region item)
-        {
-            return this.Update<Region>(pkId, item);
-        }
-        public Task DeleteRegion(int pkID)
-        {
-            return this.Delete<Region>(pkID);
         }
         #endregion
         #region RegressionRegion

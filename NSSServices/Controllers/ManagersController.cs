@@ -173,10 +173,13 @@ namespace NSSServices.Controllers
                 var x = await shared.Update(id, ObjectToBeUpdated);
 
                 // add new region managers to DB
-                var existingRMs = agent.GetManager(id).RegionManagers;
-                foreach(var rm in ObjectToBeUpdated.RegionManagers)
+                if (ObjectToBeUpdated.RegionManagers != null)
                 {
-                    if (!existingRMs.Any(r => r.ManagerID == rm.ManagerID && r.RegionID == rm.RegionID)) await shared.Add(rm);
+                    var existingRMs = agent.GetManager(id).RegionManagers;
+                    foreach (var rm in ObjectToBeUpdated.RegionManagers)
+                    {
+                        if (!existingRMs.Any(r => r.ManagerID == rm.ManagerID && r.RegionID == rm.RegionID)) await shared.Add(rm);
+                    }
                 }
 
                 //remove info not relevant

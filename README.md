@@ -51,6 +51,8 @@ Advance the version when adding features, fixing bugs or making minor enhancemen
 
 To push tags to remote origin: `git push origin --tags`
 
+**Make sure to update the version in the appsettings.json for the version header.**
+
 *Note that your alias for the remote origin may differ.
 
 ## Authors

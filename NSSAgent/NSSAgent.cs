@@ -41,6 +41,7 @@ using System.ComponentModel.DataAnnotations;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
 using NSSServices.Resources;
+using System.Text.RegularExpressions;
 
 namespace NSSAgent
 {
@@ -1750,7 +1751,8 @@ namespace NSSAgent
                 {
                     case "QPPQ":
                     case "FDCTM":
-                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k => Convert.ToDouble(k.Name.Replace("Percent Duration", "").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k => 
+                            Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
                         break;
                 }//end switch
 
@@ -1761,6 +1763,13 @@ namespace NSSAgent
             {
                 this.sm($"Error evaluating extension: {ex.Message}", WIM.Resources.MessageType.error);
             }
+        }
+        private string getPercentDuration(string code)
+        {
+            var regex = new Regex(@"[0-9](.*)[0-9]");
+            var regex2 = new Regex(@"[0-9]");
+            if (regex.Match(code).Value != "") return regex.Match(code).Value;
+            else return regex2.Match(code).Value;
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

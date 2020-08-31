@@ -154,7 +154,7 @@ namespace NSSServices
             app.UseX_Messages(option => { option.HostKey = this._hostKey;});
             app.Use(async (context, next) =>
             {
-                context.Response.Headers.Add("X-NSSServices-Version", Configuration.GetSection("Version").Value);
+                context.Response.Headers.Add("X-Version", Configuration.GetSection("Version").Value);
                 await next.Invoke();
             });
             app.UseCors("CorsPolicy");

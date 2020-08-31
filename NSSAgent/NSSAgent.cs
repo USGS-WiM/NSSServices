@@ -41,6 +41,7 @@ using System.ComponentModel.DataAnnotations;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
 using NSSServices.Resources;
+using System.Text.RegularExpressions;
 
 namespace NSSAgent
 {
@@ -68,10 +69,6 @@ namespace NSSAgent
         //Managers
         IQueryable<Manager> GetManagers();
         Manager GetManager(Int32 ID);
-        Task<Manager> Add(Manager item);
-        Task<IEnumerable<Manager>> Add(List<Manager> items);
-        Task<Manager> Update(Int32 pkId, Manager item);
-        Task DeleteManager(Int32 pkID);
 
         //Regions
         IQueryable<Region> GetRegions();
@@ -79,10 +76,6 @@ namespace NSSAgent
         Task<Region> GetRegion(Int32 ID);
         Region GetRegionByIDOrCode(string identifier);
         IQueryable<Region> GetManagerRegions(int managerID);
-        Task<Region> Add(Region item);
-        Task<IEnumerable<Region>> Add(List<Region> items);
-        Task<Region> Update(Int32 pkId, Region item);
-        Task DeleteRegion(Int32 pkID);
 
         //RegressionRegions
         IQueryable<RegressionRegion> GetRegressionRegions(List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
@@ -320,22 +313,6 @@ namespace NSSAgent
         {
             return this.GetManagers().Include(m => m.RegionManagers).FirstOrDefault(m => m.ID == ID);
         }
-        public Task<Manager> Add(Manager item)
-        {
-            return this.Add<Manager>(item);
-        }
-        public Task<IEnumerable<Manager>> Add(List<Manager> items)
-        {
-            return this.Add<Manager>(items);
-        }
-        public Task<Manager> Update(int pkId, Manager item)
-        {
-            return this.Update<Manager>(pkId, item);
-        }
-        public Task DeleteManager(int pkID)
-        {
-            return this.Delete<Manager>(pkID);
-        }
         #endregion        
         #region Region
         public Region GetRegionByIDOrCode(string identifier)
@@ -376,22 +353,6 @@ namespace NSSAgent
         {
             return Select<RegionManager>().Where(rm => rm.ManagerID == managerID)
                                 .Include("Region").Select(rm => rm.Region);
-        }
-        public Task<Region> Add(Region item)
-        {
-            return this.Add<Region>(item);
-        }
-        public Task<IEnumerable<Region>> Add(List<Region> items)
-        {
-            return this.Add<Region>(items);
-        }
-        public Task<Region> Update(int pkId, Region item)
-        {
-            return this.Update<Region>(pkId, item);
-        }
-        public Task DeleteRegion(int pkID)
-        {
-            return this.Delete<Region>(pkID);
         }
         #endregion
         #region RegressionRegion
@@ -1730,8 +1691,7 @@ namespace NSSAgent
                                     Area = Convert.ToDouble(reader["Area"]),
                                     PercentWeight = Math.Round(Convert.ToDouble(reader["PercentWeight"]), 2, MidpointRounding.AwayFromZero),
                                     Description = reader.HasColumn("MaskArea")? $"Regression region Percent Area computed with a Mask Area of {Convert.ToDouble(reader["MaskArea"])} sqr. miles and overlay Area of {Convert.ToDouble(reader["Area"])} sqr miles": string.Empty,
-                                    StatusID = Convert.ToInt32(reader["StatusID"]),
-                                    MethodID = Convert.ToInt32(reader["MethodID"])
+                                    StatusID = Convert.ToInt32(reader["StatusID"])
                                 });
                         }
                     }//end using  
@@ -1791,7 +1751,8 @@ namespace NSSAgent
                 {
                     case "QPPQ":
                     case "FDCTM":
-                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k => Convert.ToDouble(k.Name.Replace("Percent Duration", "").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k => 
+                            Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
                         break;
                 }//end switch
 
@@ -1802,6 +1763,13 @@ namespace NSSAgent
             {
                 this.sm($"Error evaluating extension: {ex.Message}", WIM.Resources.MessageType.error);
             }
+        }
+        private string getPercentDuration(string code)
+        {
+            var regex = new Regex(@"[0-9](.*)[0-9]");
+            var regex2 = new Regex(@"[0-9]");
+            if (regex.Match(code).Value != "") return regex.Match(code).Value;
+            else return regex2.Match(code).Value;
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

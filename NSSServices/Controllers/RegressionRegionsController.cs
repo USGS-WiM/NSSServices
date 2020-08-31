@@ -30,6 +30,7 @@ using WIM.Exceptions.Services;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
 using NetTopologySuite.Geometries;
+using SharedDB.Resources;
 
 namespace NSSServices.Controllers
 {

@@ -28,6 +28,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
+using SharedDB.Resources;
+using SharedAgent;
 
 namespace NSSServices.Controllers
 {
@@ -35,8 +37,13 @@ namespace NSSServices.Controllers
     [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/summary.md")]
     public class RegionsController : NSSControllerBase
     {
-        public RegionsController(INSSAgent sa) : base(sa)
-        { }
+        protected INSSAgent agent;
+        protected ISharedAgent shared;
+        public RegionsController(INSSAgent sa, ISharedAgent shared_sa) : base(sa)
+        {
+            this.agent = sa;
+            this.shared = shared_sa;
+        }
         #region METHODS
         [HttpGet(Name ="Regions")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Regions/Get.md")]
@@ -85,7 +92,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (!isValid(entity)) return new BadRequestResult();
-                return Ok(await agent.Add(entity));
+                return Ok(await shared.Add(entity));
             }
             catch (Exception ex)
             {
@@ -102,7 +109,7 @@ namespace NSSServices.Controllers
                 entities.ForEach(e => e.ID = 0);
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
-                return Ok(await agent.Add(entities));
+                return Ok(await shared.Add(entities));
             }
             catch (Exception ex)
             {
@@ -117,7 +124,7 @@ namespace NSSServices.Controllers
             try
             {
                 if (id < 1 || !isValid(entity)) return new BadRequestResult();
-                return Ok(await agent.Update(id, entity));
+                return Ok(await shared.Update(id, entity));
             }
             catch (Exception ex)
             {
@@ -134,7 +141,7 @@ namespace NSSServices.Controllers
             {
 
                 if (id < 1) return new BadRequestResult();
-                await agent.DeleteRegion(id);
+                await shared.DeleteRegion(id);
 
                 return Ok();
             }

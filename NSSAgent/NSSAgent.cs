@@ -1730,8 +1730,7 @@ namespace NSSAgent
                                     Area = Convert.ToDouble(reader["Area"]),
                                     PercentWeight = Math.Round(Convert.ToDouble(reader["PercentWeight"]), 2, MidpointRounding.AwayFromZero),
                                     Description = reader.HasColumn("MaskArea")? $"Regression region Percent Area computed with a Mask Area of {Convert.ToDouble(reader["MaskArea"])} sqr. miles and overlay Area of {Convert.ToDouble(reader["Area"])} sqr miles": string.Empty,
-                                    StatusID = Convert.ToInt32(reader["StatusID"]),
-                                    MethodID = Convert.ToInt32(reader["MethodID"])
+                                    StatusID = Convert.ToInt32(reader["StatusID"])
                                 });
                         }
                     }//end using  

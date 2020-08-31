@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using WIM.Services.Controllers;
 using WIM.Resources;
 using NSSAgent;
-
+using SharedDB.Resources;
 
 namespace NSSServices.Controllers
 {

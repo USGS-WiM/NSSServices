@@ -33,6 +33,7 @@ namespace NSSDB.Resources
         public double? Variance { get; set; }
         public string XIRowVector { get; set; }
         public string CovarianceMatrix { get; set; }
+        public double? DegreesOfFreedom { get; set; } // default should be 1000
 
         public virtual ICollection<Equation> Equation { get; set; }
 

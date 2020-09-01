@@ -36,9 +36,11 @@ namespace NSSDB.Resources
         public string Description { get; set; }
         public int? CitationID { get; set; }
         public int? StatusID { get; set; }
+        public int? MethodID { get; set; }
         public int? LocationID { get; set; }
 
         public virtual Status Status { get; set; }
+        public virtual Method Method { get; set; }
         public virtual Location Location { get; set; }
         public virtual Citation Citation { get; set; }
         public virtual ICollection<Equation> Equations { get; set; }

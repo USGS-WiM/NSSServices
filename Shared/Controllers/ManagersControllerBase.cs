@@ -30,10 +30,10 @@ using WIM.Security.Authorization;
 
 namespace Shared.Controllers
 {
-    public abstract class VariablesControllerBase : WIM.Services.Controllers.ControllerBase
+    public abstract class ManagersControllerBase : WIM.Services.Controllers.ControllerBase
     {
         protected ISharedAgent shared_agent;
-        public VariablesControllerBase(ISharedAgent shared_sa) : base()
+        public ManagersControllerBase(ISharedAgent shared_sa) : base()
         {
             this.shared_agent = shared_sa;
         }

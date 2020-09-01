@@ -30,17 +30,15 @@ using WIM.Security.Authorization;
 
 namespace Shared.Controllers
 {
-    public abstract class VariablesControllerBase : WIM.Services.Controllers.ControllerBase
+    public abstract class RegionsControllerBase : WIM.Services.Controllers.ControllerBase
     {
         protected ISharedAgent shared_agent;
-        public VariablesControllerBase(ISharedAgent shared_sa) : base()
+        public RegionsControllerBase(ISharedAgent shared_sa) : base()
         {
             this.shared_agent = shared_sa;
         }
 
         #region METHOD
-        public abstract Task<IActionResult> Get();
-        public abstract Task<IActionResult> Get(int id);
         #endregion
     }
 }

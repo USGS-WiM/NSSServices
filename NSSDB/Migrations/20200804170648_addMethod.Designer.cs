@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NSSDB;
 using NetTopologySuite.Geometries;
@@ -10,9 +11,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NSSDB.Migrations
 {
     [DbContext(typeof(NSSDBContext))]
-    partial class NSSDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200804170648_addMethod")]
+    partial class addMethod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,6 +211,60 @@ namespace NSSDB.Migrations
                     b.ToTable("Locations");
                 });
 
+            modelBuilder.Entity("NSSDB.Resources.Manager", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastModified")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OtherInfo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryPhone")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondaryPhone")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Username");
+
+                    b.ToTable("Managers");
+                });
+
             modelBuilder.Entity("NSSDB.Resources.Method", b =>
                 {
                     b.Property<int>("ID")
@@ -217,7 +273,6 @@ namespace NSSDB.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Code")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -226,7 +281,7 @@ namespace NSSDB.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Methods");
+                    b.ToTable("Method");
                 });
 
             modelBuilder.Entity("NSSDB.Resources.PredictionInterval", b =>
@@ -241,9 +296,6 @@ namespace NSSDB.Migrations
 
                     b.Property<string>("CovarianceMatrix")
                         .HasColumnType("text");
-
-                    b.Property<double?>("DegreesOfFreedom")
-                        .HasColumnType("double precision");
 
                     b.Property<DateTime>("LastModified")
                         .HasColumnType("timestamp without time zone");
@@ -260,6 +312,49 @@ namespace NSSDB.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("PredictionIntervals");
+                });
+
+            modelBuilder.Entity("NSSDB.Resources.Region", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastModified")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Code");
+
+                    b.ToTable("Regions");
+                });
+
+            modelBuilder.Entity("NSSDB.Resources.RegionManager", b =>
+                {
+                    b.Property<int>("ManagerID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RegionID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ManagerID", "RegionID");
+
+                    b.HasIndex("RegionID");
+
+                    b.ToTable("RegionManager");
                 });
 
             modelBuilder.Entity("NSSDB.Resources.RegionRegressionRegion", b =>
@@ -454,8 +549,29 @@ namespace NSSDB.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("NSSDB.Resources.RegionManager", b =>
+                {
+                    b.HasOne("NSSDB.Resources.Manager", "Manager")
+                        .WithMany("RegionManagers")
+                        .HasForeignKey("ManagerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NSSDB.Resources.Region", "Region")
+                        .WithMany("RegionManagers")
+                        .HasForeignKey("RegionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("NSSDB.Resources.RegionRegressionRegion", b =>
                 {
+                    b.HasOne("NSSDB.Resources.Region", "Region")
+                        .WithMany("RegionRegressionRegions")
+                        .HasForeignKey("RegionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("NSSDB.Resources.RegressionRegion", "RegressionRegion")
                         .WithMany("RegionRegressionRegions")
                         .HasForeignKey("RegressionRegionID")

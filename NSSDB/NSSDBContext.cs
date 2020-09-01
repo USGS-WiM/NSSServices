@@ -39,16 +39,14 @@ namespace NSSDB
         public virtual DbSet<Equation> Equations { get; set; }        
         public virtual DbSet<EquationUnitType> EquationUnitTypes { get; set; }        
         public virtual DbSet<Limitation> Limitations { get; set; }
-        public virtual DbSet<Manager> Managers { get; set; }
         public virtual DbSet<PredictionInterval> PredictionIntervals { get; set; }        
         public virtual DbSet<RegionRegressionRegion> RegionRegressionRegions { get; set; }
-        public virtual DbSet<Region> Regions { get; set; }        
         public virtual DbSet<RegressionRegion> RegressionRegions { get; set; }
-        public virtual DbSet<RegionManager> RegionManager { get; set; }
         public virtual DbSet<Variable> Variables { get; set; }       
         public virtual DbSet<VariableUnitType> VariableUnitTypes { get; set; }     
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<Status> Status { get; set; }
+        public virtual DbSet<Method> Methods { get; set; }
 
         //Shared views
         public virtual DbSet<ErrorType> ErrorTypes { get; set; }
@@ -58,6 +56,9 @@ namespace NSSDB
         public virtual DbSet<UnitSystemType> UnitSystemTypes { get; set; }
         public virtual DbSet<UnitType> UnitTypes { get; set; }
         public virtual DbSet<VariableType> VariableTypes { get; set; }
+        public virtual DbSet<Manager> Managers { get; set; }
+        public virtual DbSet<Region> Regions { get; set; }
+        public virtual DbSet<RegionManager> RegionManager { get; set; }
 
         public NSSDBContext() : base()
         {
@@ -76,7 +77,10 @@ namespace NSSDB
             modelBuilder.Entity<UnitConversionFactor>().ToTable("UnitConversionFactor_view");
             modelBuilder.Entity<UnitSystemType>().ToTable("UnitSystemType_view");
             modelBuilder.Entity<UnitType>().ToTable("UnitType_view");
-            modelBuilder.Entity<VariableType>().ToTable("VariableType_view");          
+            modelBuilder.Entity<VariableType>().ToTable("VariableType_view");
+            modelBuilder.Entity<Region>().ToTable("Regions_view");
+            modelBuilder.Entity<Manager>().ToTable("Managers_view");
+            modelBuilder.Entity<RegionManager>().ToTable("RegionManager_view");
 
             //unique key based on combination of both keys (many to many tables)
             modelBuilder.Entity<RegionManager>().HasKey(k => new { k.ManagerID, k.RegionID });
@@ -88,8 +92,6 @@ namespace NSSDB
             //EF Core currently does not support changing the value of alternate keys. We do have #4073 tracking removing this restriction though.
             //BTW it only needs to be an alternate key if you want it to be used as the target key of a relationship.If you just want a unique index, 
             //then use the HasIndex() method, rather than AlternateKey().Unique index values can be changed.
-            modelBuilder.Entity<Manager>().HasIndex(k => k.Username);
-            modelBuilder.Entity<Region>().HasIndex(k => k.Code);
             modelBuilder.Entity<RegressionRegion>().HasIndex(k => k.Code);
 
             //add shadowstate  
@@ -102,7 +104,8 @@ namespace NSSDB
                                          typeof(RegionManager).FullName,typeof(RegionRegressionRegion).FullName,
                                          typeof(VariableUnitType).FullName,typeof(ErrorType).FullName,typeof(RegressionType).FullName,
                                          typeof(StatisticGroupType).FullName,typeof(UnitConversionFactor).FullName,typeof(UnitSystemType).FullName,
-                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName}
+                                         typeof(UnitType).FullName,typeof(VariableType).FullName,typeof(Status).FullName,typeof(Location).FullName,
+                                         typeof(Method).FullName,typeof(Region).FullName,typeof(Manager).FullName}
                 .Contains(entitytype.Name))
                 { continue; }                 
                 modelBuilder.Entity(entitytype.Name).Property<DateTime>("LastModified");
@@ -138,6 +141,11 @@ namespace NSSDB
                     .WithMany()
                     .HasForeignKey("LocationID")
                     .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(typeof(Method).ToString(), "Method")
+                    .WithMany()
+                    .HasForeignKey("MethodID")
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Variable>()
@@ -159,6 +167,9 @@ namespace NSSDB
             //modelBuilder.Ignore(typeof(UnitSystemType));
             //modelBuilder.Ignore(typeof(UnitType));
             //modelBuilder.Ignore(typeof(VariableType));
+            //modelBuilder.Ignore(typeof(Manager));
+            //modelBuilder.Ignore(typeof(Region));
+            //modelBuilder.Ignore(typeof(RegionManager));
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

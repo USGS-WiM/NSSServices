@@ -8,6 +8,8 @@ using WIM.Utilities;
 using SharedDB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using NSSDB.Resources;
+using NSSAgent;
 
 namespace SharedAgent
 {
@@ -43,11 +45,28 @@ namespace SharedAgent
         Task<UnitType> Update(Int32 pkId, UnitType item);
         Task DeleteUnit(Int32 pkID);
 
-        //Variables
+        //VariableTypes
         Task<VariableType> Add(VariableType item);
         Task<IEnumerable<VariableType>> Add(List<VariableType> items);
         Task<VariableType> Update(Int32 pkId, VariableType item);
-        Task DeleteVariable(Int32 pkID);
+        Task DeleteVariableType(Int32 pkID);
+
+        //Regions
+        Task<Region> Add(Region item);
+        Task<IEnumerable<Region>> Add(List<Region> items);
+        Task<Region> Update(Int32 pkId, Region item);
+        Task DeleteRegion(Int32 pkID);
+
+        //Managers
+        Task<Manager> Add(Manager item);
+        Task<IEnumerable<Manager>> Add(List<Manager> items);
+        Task<Manager> Update(Int32 pkId, Manager item);
+        Task DeleteManager(Int32 pkID);
+
+        //RegionManagers
+        Task<RegionManager> Add(RegionManager item);
+        Task<IEnumerable<RegionManager>> Add(List<RegionManager> items);
+
     }
     public class SharedAgent: DBAgentBase, ISharedAgent
     {
@@ -63,7 +82,7 @@ namespace SharedAgent
         }
         #endregion
         #region METHODS
-        #region DamageTypes
+        #region ErrorTypes
         public Task<ErrorType> Add(ErrorType item)
         {
             return this.Add<ErrorType>(item);
@@ -168,9 +187,55 @@ namespace SharedAgent
         {
             return this.Update<VariableType>(pkId, item);
         }
-        public Task DeleteVariable(Int32 pkID)
+        public Task DeleteVariableType(Int32 pkID)
         {
             return this.Delete<VariableType>(pkID);
+        }
+        #endregion
+        #region Regions
+        public Task<Region> Add(Region item)
+        {
+            return this.Add<Region>(item);
+        }
+        public Task<IEnumerable<Region>> Add(List<Region> items)
+        {
+            return this.Add<Region>(items);
+        }
+        public Task<Region> Update(Int32 pkId, Region item)
+        {
+            return this.Update<Region>(pkId, item);
+        }
+        public Task DeleteRegion(Int32 pkID)
+        {
+            return this.Delete<Region>(pkID);
+        }
+        #endregion
+        #region Managers
+        public Task<Manager> Add(Manager item)
+        {
+            return this.Add<Manager>(item);
+        }
+        public Task<IEnumerable<Manager>> Add(List<Manager> items)
+        {
+            return this.Add<Manager>(items);
+        }
+        public Task<Manager> Update(Int32 pkId, Manager item)
+        {
+            return this.Update<Manager>(pkId, item);
+        }
+        public Task DeleteManager(Int32 pkID)
+        {
+            return this.Delete<Manager>(pkID);
+        }
+        #endregion
+        #region RegionManagers
+        public Task<RegionManager> Add(RegionManager item)
+        {
+            return this.Add<RegionManager>(item);
+        }
+        public Task<IEnumerable<RegionManager>> Add(List<RegionManager> items)
+        {
+            return this.Add<RegionManager>(items);
         }
         #endregion
         #endregion

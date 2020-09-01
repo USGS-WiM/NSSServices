@@ -34,10 +34,10 @@ namespace NSSServices.Controllers
 {
     [Route("[controller]")]
     [APIDescription(type = DescriptionType.e_link, Description = "/Docs/UnitSystems/summary.md")]
-    public class UnitsSystemsController : UnitsSystemsControllerBase
+    public class UnitSystemsController : UnitSystemsControllerBase
     {
         protected INSSAgent agent;
-        public UnitsSystemsController(INSSAgent sa, ISharedAgent shared_sa) : base(shared_sa)
+        public UnitSystemsController(INSSAgent sa, ISharedAgent shared_sa) : base(shared_sa)
         {
             this.agent = sa;
         }

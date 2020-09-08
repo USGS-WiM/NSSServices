@@ -1,1 +1,1 @@
-The variable resource represents the variable type, also called the parameter or stat label, of a characteristic, such as Drainage Area (DRNAREA).
+The variable resource represents the variable type, also called the parameter or stat label, of a characteristic, such as Drainage Area (DRNAREA). Many variables also contain a "unitTypeID", defining the default unit type for each variable.

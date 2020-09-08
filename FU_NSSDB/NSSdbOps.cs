@@ -105,7 +105,7 @@ namespace FU_NSSDB
             string sql = string.Empty;
             try
             {
-                sql += @"TRUNCATE TABLE ""Regions"" RESTART IDENTITY CASCADE;
+                sql += @"TRUNCATE TABLE ""shared"".""Regions"" RESTART IDENTITY CASCADE;
                          TRUNCATE TABLE ""RegionRegressionRegions"" RESTART IDENTITY CASCADE;";
                 sql += @"TRUNCATE TABLE ""RegressionRegions"" RESTART IDENTITY CASCADE;
                          TRUNCATE TABLE ""Citations"" RESTART IDENTITY CASCADE;";
@@ -235,7 +235,7 @@ namespace FU_NSSDB
             switch (type)
             {
                 case SQLType.e_region:
-                    results = @"INSERT INTO ""nss"".""Regions""(""Name"",""Code"") VALUES('{0}','{1}')";
+                    results = @"INSERT INTO ""shared"".""Regions""(""Name"",""Code"") VALUES('{0}','{1}')";
                     break;
                 case SQLType.e_regressionregion:
                     results = @"INSERT INTO ""nss"".""RegressionRegions""(""Name"",""Code"",""Description"",""CitationID"",""StatusID"") VALUES('{0}', '{1}', '{2}',{3}, {4})";

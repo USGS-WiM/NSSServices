@@ -494,3 +494,6 @@ VALUES (4, 'U', 'Undefined');
 INSERT INTO nss."_EFMigrationsHistory" ("MigrationId", "ProductVersion")
 VALUES ('20200825141040_moveManagersToShared', '3.1.3');
 
+ALTER TABLE nss."RegionRegressionRegions" DROP CONSTRAINT "FK_RegionRegressionRegions_Regions_RegionID";
+
+ALTER TABLE nss."RegionRegressionRegions" ADD CONSTRAINT "FK_RegionRegressionRegions_Regions_RegionID" FOREIGN KEY ("RegionID") REFERENCES shared."Regions" ("ID") ON DELETE CASCADE;

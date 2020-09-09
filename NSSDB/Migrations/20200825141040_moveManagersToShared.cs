@@ -100,6 +100,20 @@ namespace NSSDB.Migrations
                 schema: "shared",
                 table: "Regions",
                 column: "Code");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_RegionRegressionRegions_Regions_RegionID",
+                schema: "nss",
+                table: "RegionRegressionRegions");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_RegionRegressionRegions_Regions_RegionID",
+                schema: "nss",
+                table: "RegionRegressionRegions",
+                column: "RegionID",
+                principalTable: "Regions",
+                principalSchema: "shared",
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -111,15 +125,29 @@ namespace NSSDB.Migrations
 
             migrationBuilder.DropTable(
                 name: "Regions",
-                schema: "nss");
+                schema: "shared");
 
             migrationBuilder.DropTable(
                 name: "Managers",
-                schema: "nss");
+                schema: "shared");
 
             migrationBuilder.DropTable(
                 name: "RegionManager",
-                schema: "nss");
+                schema: "shared");
+
+            migrationBuilder.DropForeignKey(
+               name: "FK_RegionRegressionRegions_Regions_RegionID",
+               schema: "nss",
+               table: "RegionRegressionRegions");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_RegionRegressionRegions_Regions_RegionID",
+                schema: "nss",
+                table: "RegionRegressionRegions",
+                column: "RegionID",
+                principalTable: "Regions",
+                principalSchema: "nss",
+                onDelete: ReferentialAction.Cascade);
         }
     }
 }

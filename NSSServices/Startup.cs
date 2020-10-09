@@ -127,7 +127,7 @@ namespace NSSServices
                 options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin()
                                                                  .AllowAnyMethod()
                                                                  .AllowAnyHeader()
-                                                                 .WithExposedHeaders(new string[]{this._hostKey,X_MessagesDefault.msgheader})
+                                                                 .WithExposedHeaders(new string[]{this._hostKey,X_MessagesDefault.msgheader, "X-Version"})
                                                                  );
             });
             

@@ -17,7 +17,7 @@
     "NSSServices": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "apiconfig",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

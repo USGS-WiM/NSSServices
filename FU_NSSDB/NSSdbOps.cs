@@ -211,16 +211,19 @@ namespace FU_NSSDB
                     /*results = @"SELECT DISTINCT sl.StatLabel 
                                 FROM ([Parameters] p 
                                 LEFT JOIN StatLabel sl ON ( p.StatisticLabelID = sl.StatisticLabelID))";*/
-                    results = @"SELECT DISTINCT (0-1) as ID, sl.StatLabel as Code, sl.Definition as Description, sl.StatisticLabel as Name
+                    results = @"SELECT DISTINCT (0-1) as ID, sl.StatLabel as Code, sl.Definition as Description, sl.StatisticLabel as Name, sl
                                 FROM (DepVars s
                                 LEFT JOIN StatLabel sl on (s.StatisticLabelID = sl.StatisticLabelID))
                                 LEFT JOIN StatType st on (sl.statisticTypeID = st.StatisticTypeID)
+                                LEFT JOIN UnitType ut on (sl.UnitID = ut.UnitID)
                                 WHERE st.DefType = 'BC';";
                     break;
                 case SQLType.e_statisticgrouptype:
                     //results = @"SELECT DISTINCT st.StatisticTypeCode FROM StatType st WHERE st.DefType ='FS'";
-                    results = @"SELECT DISTINCT (0-1) as ID, st.StatisticTypeCode as Code, st.StatisticType as Name 
-                                FROM StatType st WHERE st.DefType ='FS'";
+                    //results = @"SELECT DISTINCT (0-1) as ID, st.StatisticTypeCode as Code, st.StatisticType as Name 
+                    //            FROM StatType st WHERE st.DefType ='FS'";
+                    results = @"SELECT DISTINCT (0-1) as ID, st.StatisticTypeCode as Code, st.StatisticType as Name, st.DefType as DefType
+                                FROM StatType st";
                     break;
                 default:
                     sm("invalid sqltype");

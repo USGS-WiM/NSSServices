@@ -32,6 +32,7 @@ namespace SharedDB.Resources
         public string Name { get; set; }
         [Required]
         public string Code { get; set; }
+        //public string DefType { get; set; }
 
     }
 }

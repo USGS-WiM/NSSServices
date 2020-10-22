@@ -105,6 +105,7 @@ namespace FU_NSSDB.Resources
                 ID = Convert.ToInt32(r["ID"]),
                 Code = r["Code"].ToString(),
                 Name= r["Name"].ToString(),
+                DefType = r["Name"].ToString(),
             };
 
         }

@@ -109,8 +109,8 @@ namespace NSSAgent
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
-        Task<Scenario> Update(Scenario item, string existingStatisticGroup = null);
-        Task<IQueryable<Scenario>> Add(Scenario item);
+        Task<Scenario> Update(Scenario item, string existingStatisticGroup = null, bool skipCheck = false);
+        Task<IQueryable<Scenario>> Add(Scenario item, bool skipCheck = false);
         Task DeleteScenario(int regressionregionID, int statisticgroupID, int regressiontypeID);
 
         //Variables
@@ -722,7 +722,7 @@ namespace NSSAgent
                 throw;
             }
         }
-        public async Task<IQueryable<Scenario>> Add(Scenario item)
+        public async Task<IQueryable<Scenario>> Add(Scenario item, bool skipCheck = false)
         {
             
             List<Equation> newEquations = new List<Equation>();
@@ -769,7 +769,7 @@ namespace NSSAgent
                         };
 
                         //check if valid before uploading
-                        if (valid(neq,regression.Expected))
+                        if (valid(neq,regression.Expected, skipCheck))
                             newEquations.Add(neq);
 
                     }//next regression
@@ -788,7 +788,7 @@ namespace NSSAgent
                 throw;
             }
         }
-        public async Task<Scenario> Update(Scenario item, string existingStatisticGroup = null)
+        public async Task<Scenario> Update(Scenario item, string existingStatisticGroup = null, bool skipCheck = false)
         {
             List<string> regressiontypeList = null;
             List<RegressionRegion> regressionregionList = null;
@@ -910,7 +910,7 @@ namespace NSSAgent
                         v.UnitType = null;
                     });
 
-                    if (valid(equation, regression.Expected))
+                    if (valid(equation, regression.Expected, skipCheck))
                         await this.Update<Equation>(equation.ID, equation);
                     else
                         throw new Exception("Scenario failed to update. See messages for more information.");
@@ -1383,7 +1383,7 @@ namespace NSSAgent
                 return false;
             }
         }
-        private bool valid (Equation equation,ExpectedValue expected)
+        private bool valid (Equation equation,ExpectedValue expected, bool skipCheck = false)
         {
             ExpressionOps eOps = null;
             try
@@ -1408,14 +1408,14 @@ namespace NSSAgent
                 var expectedValueRounded = expected.Value.Round();
 
                 if (!eOps.IsValid) { sm($"Scenario expression failed to execute. {equation.Expression} is invalid"); return false; }
-                if (eopsValueRounded != expectedValueRounded) { sm($"Expected value {expectedValueRounded} does not match computed {eopsValueRounded}"); return false; }
+                if (eopsValueRounded != expectedValueRounded && !skipCheck) { sm($"Expected value {expectedValueRounded} does not match computed {eopsValueRounded}"); return false; }
 
                 if (equation.PredictionInterval != null)
                 {
                     IntervalBounds computedBound = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
                     var expectedUpperRounded = computedBound != null ? expected.IntervalBounds.Upper.Round() : 0;
                     var expectedLowerRounded = computedBound != null ? expected.IntervalBounds.Lower.Round() : 0;
-                    if (computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded)
+                    if ((computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded) && !skipCheck)
                     {
                         sm($"Expected interval bound values; Upper: {expectedUpperRounded}, Lower: {expectedLowerRounded} do not match computed; Upper: {computedBound?.Upper}, Lower: {computedBound?.Lower}");
                         return false;

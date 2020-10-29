@@ -109,7 +109,7 @@ namespace NSSServices.Controllers
         [HttpPut(Name = "Edit Scenario")]
         [Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Edit.md")]
-        public async Task<IActionResult> Put([FromBody]Scenario entity, [FromQuery]string existingstatisticgroup ="")
+        public async Task<IActionResult> Put([FromBody]Scenario entity, [FromQuery]string existingstatisticgroup ="", bool skipCheck = false)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace NSSServices.Controllers
                 if (!entity.RegressionRegions.Select(rr => new RegressionRegion() { ID = rr.ID, Code = rr.Code.ToLower() }).Distinct().ToList()
                     .All(rr => IsAuthorizedToEdit(rr))) return new UnauthorizedResult();
 
-                return Ok(await agent.Update(entity,existingstatisticgroup));
+                return Ok(await agent.Update(entity,existingstatisticgroup, skipCheck));
 
             }
             catch (Exception ex)
@@ -130,7 +130,7 @@ namespace NSSServices.Controllers
         [HttpPost(Name ="Add Scenario")]
         [Authorize(Policy = Policy.Managed)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Scenarios/Add.md")]
-        public async Task<IActionResult> Post([FromBody]Scenario entity, string statisticgroupIDorCode)
+        public async Task<IActionResult> Post([FromBody]Scenario entity, string statisticgroupIDorCode, bool skipCheck = false)
         {
             List<string> regressiontypeList = null;
             List<RegressionRegion> regressionregionList = null;
@@ -152,7 +152,7 @@ namespace NSSServices.Controllers
 
 
                 //process and push to db
-                return Ok(await agent.Add(entity));
+                return Ok(await agent.Add(entity, skipCheck));
                 
             }
             catch (Exception ex)

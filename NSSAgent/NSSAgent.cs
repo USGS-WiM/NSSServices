@@ -40,7 +40,6 @@ using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
-using NSSServices.Resources;
 using System.Text.RegularExpressions;
 
 namespace NSSAgent
@@ -104,6 +103,9 @@ namespace NSSAgent
         //Method
         IQueryable<Method> GetMethods();
         Task<Method> GetMethod(Int32 ID);
+        Task<Method> Update(Int32 pkId, Method item);
+        Task DeleteMethod(Int32 id);
+        Task<Method> Add(Method item);
 
         //Scenarios
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
@@ -121,11 +123,9 @@ namespace NSSAgent
         Boolean CanDeleteVariable(Int32 ID);
         Task DeleteVariable(Int32 ID);
 
-        // Variable types and object that stores VariableType + UnitTypeID (VariableWithUnit)
-        IQueryable<VariableType> GetVariableTypes();
-        IQueryable<VariableWithUnit> GetVariablesWithUnits();
-        Task<VariableType> GetVariableType(Int32 ID);
-        VariableWithUnit GetVariableWithUnit(Int32 ID);
+        // Variable types
+        IQueryable<VariableType> GetVariableTypes(List<string> statisticGroupList = null);
+        VariableType GetVariableType(Int32 ID);
 
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
@@ -133,8 +133,8 @@ namespace NSSAgent
         IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null);
         IQueryable<RegressionType> GetManagedRegressions(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null);
         Task<RegressionType> GetRegression(Int32 ID);
-        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null);
-        IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null);
+        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null, List<string> defTypeList = null);
+        IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null, List<string> defTypeList = null);
         Task<StatisticGroupType> GetStatisticGroup(Int32 ID);
         IQueryable<UnitType> GetUnits();
         Task<UnitType> GetUnit(Int32 ID);
@@ -528,6 +528,18 @@ namespace NSSAgent
         {
             return this.Find<Method>(ID);
         }
+        public Task<Method> Update(int pkId, Method item)
+        {
+            return this.Update<Method>(pkId, item);
+        }
+        public Task DeleteMethod(Int32 pkID)
+        {
+            return this.Delete<Method>(pkID);
+        }
+        public Task<Method> Add(Method item)
+        {
+            return this.Add<Method>(item);
+        }
         #endregion        
         #region Scenarios
         public IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null)
@@ -579,6 +591,7 @@ namespace NSSAgent
                             Description = r.groupedparameters.First().RegressionRegion.Description,
                             StatusID = r.groupedparameters.First().RegressionRegion.StatusID,
                             MethodID = r.groupedparameters.First().RegressionRegion.MethodID,
+                            CitationID = r.groupedparameters.First().RegressionRegion.CitationID,
                             PercentWeight = (regressionRegions!=null && regressionRegions.ContainsKey(r.groupkey))?regressionRegions[r.groupkey].PercentWeight:null,
                             AreaSqMile = (regressionRegions != null && regressionRegions.ContainsKey(r.groupkey)) ? regressionRegions[r.groupkey].Area : null,
                             Regressions = (manager?.Username != null) ? r.groupedparameters.Select(rg=>new Regression()
@@ -1054,10 +1067,17 @@ namespace NSSAgent
         {
             return this.Select<StatisticGroupType>().FirstOrDefault(s => s.Code == code);
         }
-        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null)
+        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null, List<string> defTypeList = null)
         {
             if (regionList?.Any() != true && geom == null && regressionRegionList?.Any() != true && regressionsList?.Any() != true)
-                return this.Select<StatisticGroupType>();
+            {
+                var query = this.Select<StatisticGroupType>();
+                if (defTypeList != null && defTypeList.Count > 0)
+                {
+                    query = query.Where(sg => defTypeList.Contains(sg.DefType.ToLower())).OrderBy(st => st.ID);
+                }
+                return query.OrderBy(sg => sg.ID);
+            }
 
             var equations = this.GetEquations(regionList, regressionRegionList, null, regressionsList);
 
@@ -1067,10 +1087,10 @@ namespace NSSAgent
             return equations.Select(e => e.StatisticGroupType).Distinct().OrderBy(e => e.ID);
 
         }
-        public IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null)
+        public IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null, List<string> defTypeList = null)
         {
             if (manager.Role.Equals(Role.Admin))
-                return GetStatisticGroups(regionList, geom, regressionRegionList, regressionsList);
+                return GetStatisticGroups(regionList, geom, regressionRegionList, regressionsList, defTypeList);
 
             //return only managed citations
             var query = this.Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include("RegressionRegion.Equations.StatisticGroupType")
@@ -1121,47 +1141,18 @@ namespace NSSAgent
         {
             return this.Find<UnitSystemType>(ID);
         }
-        public IQueryable<VariableType> GetVariableTypes()
+        public IQueryable<VariableType> GetVariableTypes(List<string> statisticGroupList = null)
         {
-            return this.Select<VariableType>();
-        }
-        public IQueryable<VariableWithUnit> GetVariablesWithUnits()
-        {
-            IQueryable<Variable> defaultUnits = this.Select<Variable>().Where(x => x.Comments == "Default unit");
-
-            return this.Select<VariableType>().GroupJoin(
-              defaultUnits,
-              var => var.ID,
-              unit => unit.VariableTypeID,
-              (x, y) => new { VariableType = x, UnitType = y })
-           .SelectMany(
-               unit => unit.UnitType.DefaultIfEmpty(),
-               (var, unit) => new VariableWithUnit
-               {
-                   ID = var.VariableType.ID,
-                   Description = var.VariableType.Description,
-                   Code = var.VariableType.Code,
-                   Name = var.VariableType.Name,
-                   UnitTypeID = unit.UnitTypeID
-               }).Distinct().OrderBy(x => x.ID);
-        }
-        public Task<VariableType> GetVariableType(Int32 ID)
-        {
-            return this.Find<VariableType>(ID);
-        }
-        public VariableWithUnit GetVariableWithUnit(Int32 ID)
-        {
-            var defaultUnit = this.GetDefaultUnitVariable(ID);
-            var variable = this.Select<VariableType>().Where(v => v.ID == ID).Select(v => new VariableWithUnit
+            IQueryable<VariableType> query = this.Select<VariableType>().Include(vt => vt.MetricUnitType).Include(vt => vt.EnglishUnitType).Include(vt => vt.StatisticGroupType);
+            if (statisticGroupList != null && statisticGroupList.Count > 0)
             {
-                ID = ID,
-                Code = v.Code,
-                Name = v.Name,
-                Description = v.Description
-            }).FirstOrDefault();
-
-            if (defaultUnit != null) { variable.UnitTypeID = defaultUnit.UnitTypeID; }
-            return variable;
+                query = query.Where(vt => statisticGroupList.Contains(vt.StatisticGroupTypeID.ToString().Trim()) || statisticGroupList.Contains(vt.StatisticGroupType.Code.ToLower()));
+            }
+            return query.OrderBy(vt => vt.ID);
+        }
+        public VariableType GetVariableType(Int32 ID)
+        {
+            return this.GetVariableTypes().FirstOrDefault(vt => vt.ID == ID);
         }
         public VariableType GetVariableByCode(string code)
         {

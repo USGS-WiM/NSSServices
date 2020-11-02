@@ -105,13 +105,16 @@ namespace FU_NSSDB.Resources
                 ID = Convert.ToInt32(r["ID"]),
                 Code = r["Code"].ToString(),
                 Name= r["Name"].ToString(),
-                DefType = r["Name"].ToString(),
+                DefType = r["DefType"].ToString(),
             };
 
         }
     }
     public class NSSVariableType : VariableType
     {
+        public string MetricAbbrev { get; set; }
+        public string EnglishAbbrev { get; set; }
+        public string StatType { get; set; }
         public static NSSVariableType FromDataReader(System.Data.IDataReader r)
         {
             return new NSSVariableType()
@@ -119,7 +122,10 @@ namespace FU_NSSDB.Resources
                 ID = Convert.ToInt32(r["ID"]),
                 Code = r["Code"].ToString(),
                 Name = r["Name"].ToString(),
-                Description = r["Description"].ToString()
+                Description = r["Description"].ToString(),
+                MetricAbbrev = r.HasColumn("MetricAbbrev") ? r["MetricAbbrev"].ToString() : null,
+                EnglishAbbrev = r.HasColumn("EnglishAbbrev") ? r["EnglishAbbrev"].ToString() : null,
+                StatType = r.HasColumn("StatType") ? r["StatType"].ToString() : null
             };
 
         }

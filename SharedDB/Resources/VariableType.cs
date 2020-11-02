@@ -33,11 +33,11 @@ namespace SharedDB.Resources
         [Required]
         public string Code { get; set; }
         public string Description { get; set; }
-        //public int MetricUnitTypeID { get; set; }
-        //public int EnglishUnitTypeID { get; set; }
-        //public int StatisticGroupTypeID { get; set; }
-        //public UnitType MetricUnitType { get; set; }
-        //public UnitType EnglishUnitType { get; set; }
-        //public StatisticGroupType StatisticGroupType { get; set; }
+        public int? MetricUnitTypeID { get; set; }
+        public int? EnglishUnitTypeID { get; set; }
+        public int? StatisticGroupTypeID { get; set; }
+        public virtual UnitType MetricUnitType { get; set; }
+        public virtual UnitType EnglishUnitType { get; set; }
+        public virtual StatisticGroupType StatisticGroupType { get; set; }
     }
 }

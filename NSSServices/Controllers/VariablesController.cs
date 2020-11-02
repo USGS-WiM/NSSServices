@@ -32,7 +32,6 @@ using WIM.Security.Authorization;
 using System.Linq;
 using NSSAgent.Resources;
 using NSSDB.Resources;
-using NSSServices.Resources;
 
 namespace NSSServices.Controllers
 {
@@ -51,11 +50,13 @@ namespace NSSServices.Controllers
         #region METHOD
         [HttpGet(Name ="Variables")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Get.md")]
-        public override async Task<IActionResult> Get()
+        public async Task<IActionResult> GetVariables([FromQuery] string statisticgroups = "")
         {
+            List<string> statisticgroupList = null;
             try
             {
-                return Ok(agent.GetVariablesWithUnits());
+                statisticgroupList = parse(statisticgroups);
+                return Ok(agent.GetVariableTypes(statisticgroupList));
             }
             catch (Exception ex)
             {
@@ -70,7 +71,7 @@ namespace NSSServices.Controllers
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(agent.GetVariableWithUnit(id));
+                return Ok(agent.GetVariableType(id));
             }
             catch (Exception ex)
             {
@@ -80,38 +81,13 @@ namespace NSSServices.Controllers
 
         [HttpPost(Name = "Add Variable")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Add.md")]
-        public async Task<IActionResult> Post([FromBody] VariableWithUnit entity)
+        public async Task<IActionResult> Post([FromBody] VariableType entity)
         {
             try
             {
                 if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
 
-                var existingVars = agent.GetVariableTypes();
-                if (existingVars.Any(x => x.Name == entity.Name) || existingVars.Any(x => x.Code == entity.Code))
-                {
-                    throw new Exception("Name or Code aready exists");
-                }
-
-                var addedVarType = await shared.Add(new VariableType
-                {
-                    Name = entity.Name,
-                    Code = entity.Code,
-                    Description = entity.Description
-                });
-
-                entity.ID = addedVarType.ID;
-
-                if (entity.UnitTypeID != null)
-                {
-                    await agent.Add(new Variable
-                    {
-                        VariableTypeID = addedVarType.ID,
-                        UnitTypeID = entity.UnitTypeID ?? -1,
-                        Comments = "Default unit"
-                    });
-                }
-
-                return Ok(entity);
+                return Ok(await shared.Add(entity));
 
             }
             catch (Exception ex)
@@ -122,38 +98,14 @@ namespace NSSServices.Controllers
 
         [HttpPost("[action]", Name = "Variable Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Batch.md")]
-        public async Task<IActionResult> Batch([FromBody] List<VariableWithUnit> entities)
+        public async Task<IActionResult> Batch([FromBody] List<VariableType> entities)
         {
             try
             {
+                entities.ForEach(e => e.ID = 0);
                 if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
 
-                var existingVars = agent.GetVariablesWithUnits();
-                foreach (var item in entities)
-                {
-                    if (!existingVars.Any(v => v.Code == item.Code) && !existingVars.Any(v => v.Name == item.Name))
-                    {
-                        var newVar = await shared.Add(new VariableType
-                        {
-                            Name = item.Name,
-                            Code = item.Code,
-                            Description = item.Description
-                        });
-                        item.ID = newVar.ID;
-
-                        if (item.UnitTypeID != null)
-                        {
-                            await agent.Add(new Variable
-                            {
-                                VariableTypeID = newVar.ID,
-                                UnitTypeID = item.UnitTypeID ?? -1,
-                                Comments = "Default unit"
-                            });
-                        }
-                    }
-                }
-
-                return Ok(entities);
+                return Ok(await shared.Add(entities));
             }
             catch (Exception ex)
             {
@@ -163,35 +115,12 @@ namespace NSSServices.Controllers
 
         [HttpPut("{id}", Name = "Edit Variable")][Authorize(Policy = Policy.AdminOnly)]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Edit.md")]
-        public async Task<IActionResult> Put(int id, [FromBody] VariableWithUnit entity)
+        public async Task<IActionResult> Put(int id, [FromBody] VariableType entity)
         {
             try
             {
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
-
-                var updatedVarType = await shared.Update(id, new VariableType
-                {
-                    ID = id,
-                    Name = entity.Name,
-                    Code = entity.Code,
-                    Description = entity.Description
-                });
-                var defaultUnit = agent.GetDefaultUnitVariable(id);
-                if (entity.UnitTypeID != null)
-                {
-                    var newDefaultVar = new Variable
-                    {
-                        VariableTypeID = updatedVarType.ID,
-                        UnitTypeID = entity.UnitTypeID ?? -1,
-                        Comments = "Default unit"
-                    };
-
-                    if (defaultUnit != null) await agent.Update(defaultUnit.ID, newDefaultVar);
-                    else await agent.Add(newDefaultVar);
-
-                }
-                else if (defaultUnit != null) entity.UnitTypeID = defaultUnit.UnitTypeID; // send old unittypeid in return if none sent through
-                return Ok(entity);
+                return Ok(await shared.Update(id, entity));
             }
             catch (Exception ex)
             {
@@ -208,15 +137,8 @@ namespace NSSServices.Controllers
             {
                 if (id < 1) return new BadRequestResult();
 
-                if (agent.CanDeleteVariable(id))
-                {
-                    shared.DeleteVariableType(id).Wait();
-                    return Ok();
-                }
-                else
-                {
-                    throw new ArgumentException("Variable and VariableType not deleted because of Foreign Key Constraint");
-                }
+                shared.DeleteVariableType(id).Wait();
+                return Ok();
             }
             catch (Exception ex)
             {

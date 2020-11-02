@@ -39,7 +39,6 @@ namespace Shared.Controllers
         }
 
         #region METHOD
-        public abstract Task<IActionResult> Get();
         public abstract Task<IActionResult> Get(int id);
         #endregion
     }

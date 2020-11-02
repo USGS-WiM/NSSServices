@@ -102,6 +102,25 @@ namespace SharedDB
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            modelBuilder.Entity(typeof(VariableType).ToString(), b =>
+            {
+                b.HasOne(typeof(UnitType).ToString(), "MetricUnitType")
+                    .WithMany()
+                    .HasForeignKey("MetricUnitTypeID")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
+                b.HasOne(typeof(UnitType).ToString(), "EnglishUnitType")
+                    .WithMany()
+                    .HasForeignKey("EnglishUnitTypeID")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
+                b.HasOne(typeof(StatisticGroupType).ToString(), "StatisticGroupType")
+                    .WithMany()
+                    .HasForeignKey("StatisticGroupTypeID")
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
+            });
+
             //seed the db
             //var path = Path.Combine(Environment.CurrentDirectory, "Data");
             //modelBuilder.Entity<ErrorType>().HasData(JsonConvert.DeserializeObject<ErrorType[]>(File.ReadAllText(Path.Combine(path, "ErrorType.json"))));
@@ -119,7 +138,7 @@ namespace SharedDB
         {
 #warning Add connectionstring for migrations
             //var connectionstring = "User ID=;Password=;Host=;Port=5432;Database=StatsDB;Pooling=true;";
-            //optionsBuilder.UseNpgsql(connectionstring,x=>x.MigrationsHistoryTable("_EFMigrationsHistory","shared"));
+            //optionsBuilder.UseNpgsql(connectionstring, x => x.MigrationsHistoryTable("_EFMigrationsHistory", "shared"));
         }
     }
 }

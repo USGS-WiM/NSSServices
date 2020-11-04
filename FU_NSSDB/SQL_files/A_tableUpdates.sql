@@ -480,3 +480,6 @@ FROM "Locations" l WHERE "Code" = any(string_to_array(REPLACE(l."AssociatedCodes
 
 /*reset limitations sequence*/
 SELECT setval('nss."Limitations_ID_seq"', COALESCE((SELECT MAX("ID")+1 FROM "nss"."Limitations"), 1), false);
+
+/*reset methods sequence*/
+SELECT setval('nss."Methods_ID_seq"', COALESCE((SELECT MAX("ID")+1 FROM "nss"."Methods"), 1), false);

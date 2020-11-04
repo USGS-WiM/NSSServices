@@ -25,6 +25,7 @@ using NSSAgent;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using WIM.Services.Attributes;
+using WIM.Security.Authorization;
 
 namespace NSSServices.Controllers
 {
@@ -34,7 +35,7 @@ namespace NSSServices.Controllers
     {
         public MethodsController(INSSAgent sa) : base(sa)
         { }
-        #region MethodsS
+        #region Methods
         [HttpGet(Name = "Methods")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Methods/Get.md")]
         public async Task<IActionResult> Get()
@@ -58,6 +59,60 @@ namespace NSSServices.Controllers
                 if (id < 0) return new BadRequestResult(); // This returns HTTP 404
 
                 return Ok(await agent.GetMethod(id));
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPost(Name = "Add Method")]
+        [Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Methods/Add.md")]
+        public async Task<IActionResult> Post([FromBody] Method entity)
+        {
+            try
+            {
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
+                var result = await agent.Add(entity);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPut("{id}", Name = "Edit Method")]
+        [Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Methods/Edit.md")]
+        public async Task<IActionResult> Put(int id, [FromBody] Method entity)
+        {
+            try
+            {
+                if (!IsAuthorizedToEdit(await agent.GetMethod(id))) return new UnauthorizedResult();
+
+                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
+                return Ok(await agent.Update(id, entity));
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpDelete("{id}", Name = "Delete Method")]
+        [Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Methods/Delete.md")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (!IsAuthorizedToEdit(await agent.GetMethod(id))) return new UnauthorizedResult();
+                await agent.DeleteMethod(id);
+                return Ok();
             }
             catch (Exception ex)
             {

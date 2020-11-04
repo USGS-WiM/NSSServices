@@ -16,13 +16,17 @@ content-length: 576
     "name":"Example Variable Type 1",
     "code":"EXVARTYPE1"
     "description": "First variable type example",
-    "unitTypeID": "1"
+    "metricUnitTypeID": "1",
+    "englishUnitTypeID": "1",
+    "statisticGroupTypeID": "1"
 },
 {
     "name":"Example Variable Type 2",
     "code":"EXVARTYPE2"
     "description": "Second variable type example",
-    "unitTypeID": "1"
+    "metricUnitTypeID": "1",
+    "englishUnitTypeID": "1",
+    "statisticGroupTypeID": "1"
 }]
 ```
 
@@ -33,13 +37,19 @@ HTTP/1.1 200 OK
 	"name":"Example Variable Type 1",
     "code":"EXVARTYPE1"
     "description": "First variable type example",
-    "unitTypeID": "1"
+    "unitTypeID": "1",
+    "metricUnitTypeID": "1",
+    "englishUnitTypeID": "1",
+    "statisticGroupTypeID": "1"
 },
 {
 	"id": 26,
 	"name":"Example Variable Type 2",
     "code":"EXVARTYPE2"
     "description": "Second variable type example",
-    "unitTypeID": "1"
+    "unitTypeID": "1",
+    "metricUnitTypeID": "1",
+    "englishUnitTypeID": "1",
+    "statisticGroupTypeID": "1"
 }]
 ```

@@ -24,7 +24,7 @@ namespace FU_NSSDB.Test
                 var username = Configuration["dbuser"];
                 var password = Configuration["dbpassword"];
 
-                var x = new ForceUpdate(username, password, @"C:\Users\kjacobsen\Downloads\StreamStatsDB_2020-09-17.mdb");
+                var x = new ForceUpdate(username, password, @"C:\Users\kjacobsen\Downloads\StreamStatsDB_2020-11-03.mdb");
                 if (x.VerifyLists())
                 {
                     x.Load();

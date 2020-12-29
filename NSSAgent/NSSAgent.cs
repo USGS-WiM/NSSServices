@@ -146,6 +146,7 @@ namespace NSSAgent
         #region "Properties"
         private readonly IDictionary<Object,Object> _messages;
         private readonly Resource nwisResource = null;
+        private readonly Resource gagestatsResource = null;
         string[] INSSAgent.allowableGeometries => new String[] { "Polygon", "MultiPolygon" };        
         #endregion
         #region "Collections & Dictionaries"
@@ -155,8 +156,9 @@ namespace NSSAgent
         
         #endregion
         #region Constructors
-        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor, Resource NWISResource) : base(context) {
+        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor, Resource NWISResource, Resource GageStatsResource) : base(context) {
             nwisResource = NWISResource;
+            gagestatsResource = GageStatsResource;
             _messages = httpContextAccessor.HttpContext.Items;
             
             //optimize query for disconnected databases.
@@ -1725,7 +1727,8 @@ namespace NSSAgent
                         Name = "Flow Duration Curve Transfer Method",
                         Parameters = new List<ExtensionParameter>{new ExtensionParameter() { Code = "sid", Name="NWIS Station ID", Description="USGS NWIS Station Identifier", Value="01234567" },
                                      new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  DateTime.MinValue },
-                                     new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today }
+                                     new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today },
+                                     new ExtensionParameter() { Code = "usePublishedFlows", Name = "Published Flow Indicator", Description="boolean signifying whether to use published or computed exceedance probabilities", Value = true}
                        }
 
                     };
@@ -1733,17 +1736,40 @@ namespace NSSAgent
             }//end switch
             return null;
         }
-        private void evaluateExtension(Extension ext, SimpleRegressionRegion regressionregion)
+        private async void evaluateExtension(Extension ext, SimpleRegressionRegion regressionregion)
         {
             ExtensionServiceAgentBase sa = null;
+            GageStatsServiceAgent gs_sa = null;
             try
             {
                 switch (ext.Code.ToUpper())
                 {
                     case "QPPQ":
                     case "FDCTM":
-                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k => 
-                            Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                        bool usePublishedFlows = ext.Parameters.Find(p => p.Code == "usePublishedFlows").Value;
+                        string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
+                        if (usePublishedFlows)
+                        {
+                            // here, send published for second option (computed exceedance properties), add GageStatsServiceAgent, or add to StationServiceAgent, use something similar to getPercentDuration to parse?
+                            // also, check if it exists first!
+                            gs_sa = new GageStatsServiceAgent(gagestatsResource);
+                            try
+                            {
+                                var stationInfo = await gs_sa.GetGageStatsStationAsync(stationID);
+                                // do I need to send the published duration with the results??
+                                sa = new FDCTMServiceAgent(ext, this.getPublishedDuration(stationInfo), nwisResource, this._messages);
+                            }
+                            catch (Exception ex) {
+                                this.sm("Failed to find published exceedance probabilities, using computed values");
+                                sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
+                                    Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                            }
+                        }
+                        else
+                        {
+                            sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
+                                Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                        }
                         break;
                 }//end switch
 
@@ -1761,6 +1787,15 @@ namespace NSSAgent
             var regex2 = new Regex(@"[0-9]");
             if (regex.Match(code).Value != "") return regex.Match(code).Value;
             else return regex2.Match(code).Value;
+        }
+        private SortedDictionary<double, double> getPublishedDuration(GageStatsStation station)
+        {
+            var exceedanceProbabilities = new SortedDictionary<double, double>();
+            foreach (var stat in station.Statistics)
+            {
+                if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit)) exceedanceProbabilities.Add(Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100, stat.Value);
+            }
+            return exceedanceProbabilities;
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

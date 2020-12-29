@@ -69,6 +69,7 @@ namespace NSSServices
             services.Configure<APIConfigSettings>(Configuration.GetSection("APIConfigSettings"));
             services.Configure<JwtBearerSettings>(Configuration.GetSection("JwtBearerSettings"));
             services.Configure<Resource>(Configuration.GetSection("NWIS"));
+            services.Configure<Resource>(Configuration.GetSection("GageStats"));
             services.AddSingleton(sp => sp.GetService<IOptions<Resource>>().Value);
 
             //provides access to httpcontext

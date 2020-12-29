@@ -7,6 +7,7 @@ namespace NSSAgent.Resources
 {
     public class NetworkSettings
     {
-        public Resource NWIS { get; set; }       
+        public Resource NWIS { get; set; }
+        public Resource GageStats { get; set; }
     }
 }

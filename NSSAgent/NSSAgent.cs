@@ -145,8 +145,8 @@ namespace NSSAgent
     {
         #region "Properties"
         private readonly IDictionary<Object,Object> _messages;
-        private readonly Resource nwisResource = null;
-        private readonly Resource gagestatsResource = null;
+        private readonly NWISResource nwisResource = null;
+        private readonly GageStatsResource gagestatsResource = null;
         string[] INSSAgent.allowableGeometries => new String[] { "Polygon", "MultiPolygon" };        
         #endregion
         #region "Collections & Dictionaries"
@@ -156,9 +156,9 @@ namespace NSSAgent
         
         #endregion
         #region Constructors
-        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor, Resource NWISResource, Resource GageStatsResource) : base(context) {
-            nwisResource = NWISResource;
-            gagestatsResource = GageStatsResource;
+        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor, NWISResource _nwisResource, GageStatsResource _gagestatsResource) : base(context) {
+            nwisResource = _nwisResource;
+            gagestatsResource = _gagestatsResource;
             _messages = httpContextAccessor.HttpContext.Items;
             
             //optimize query for disconnected databases.
@@ -1746,33 +1746,29 @@ namespace NSSAgent
                 {
                     case "QPPQ":
                     case "FDCTM":
-                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
+                        bool usePublishedFDC = ext.Parameters.Find(p => p.Code == "usePublishedFDC").Value;
+                        string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
+                        if (usePublishedFDC)
+                        {
+                            // TODO: check if duration value is preferred
+                            gs_sa = new GageStatsServiceAgent(gagestatsResource);
+                            try
+                            {
+                                var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
+                                sa = new FDCTMServiceAgent(ext, this.getPublishedDuration(stationInfo), nwisResource, this._messages);
+                            }
+                            catch (Exception ex)
+                            {
+                                this.sm("Failed to find published exceedance probabilities, using computed values");
+                                sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
+                                    Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                            }
+                        }
+                        else
+                        {
+                            sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
                                 Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
-                        // TODO: try pulling this out of the switch case?
-                        //bool usePublishedFDC = ext.Parameters.Find(p => p.Code == "usePublishedFDC").Value;
-                        //string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
-                        //if (usePublishedFDC)
-                        //{
-                        //    // here, send published for second option (computed exceedance properties), add GageStatsServiceAgent, or add to StationServiceAgent, use something similar to getPercentDuration to parse?
-                        //    // also, check if it exists first!
-                        //    gs_sa = new GageStatsServiceAgent(gagestatsResource);
-                        //    try
-                        //    {
-                        //        var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
-                        //        // do I need to send the published duration with the results??
-                        //        sa = new FDCTMServiceAgent(ext, this.getPublishedDuration(stationInfo), nwisResource, this._messages);
-                        //    }
-                        //    catch (Exception ex) {
-                        //        this.sm("Failed to find published exceedance probabilities, using computed values");
-                        //        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
-                        //            Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
-                        //        Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
-                        //}
+                        }
                         break;
                 }//end switch
 

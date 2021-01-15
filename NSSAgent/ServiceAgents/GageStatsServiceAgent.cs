@@ -36,10 +36,10 @@ namespace NSSAgent.ServiceAgents
     internal class GageStatsServiceAgent : ServiceAgentBase
     {
         #region Properties
-        private Resource Resource { get; set; }
+        private GageStatsResource Resource { get; set; }
         #endregion
         #region Constructor
-        internal GageStatsServiceAgent(Resource resource) : base(resource.baseurl)
+        internal GageStatsServiceAgent(GageStatsResource resource) : base(resource.baseurl)
         {
             this.Resource = resource;
         }

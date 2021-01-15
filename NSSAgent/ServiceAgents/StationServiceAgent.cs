@@ -36,7 +36,7 @@ namespace NSSAgent.ServiceAgents
         private Dictionary<string, string> Resources { get; set; }
         #endregion
         #region Constructor
-        internal StationServiceAgent(Resource resource) : base(resource.baseurl)
+        internal StationServiceAgent(NWISResource resource) : base(resource.baseurl)
         {
             this.Resources = resource.resources;
         }

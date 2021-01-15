@@ -46,7 +46,7 @@ namespace NSSAgent.ServiceAgents
     {
         #region "Properties"   
         private IDictionary<object, object> _messages { get; set; }
-        private Resource _nwisResource { get; set; }
+        private NWISResource _nwisResource { get; set; }
         public DateTime? StartDate { get; private set; }
         public DateTime? EndDate { get; private set; }
         
@@ -64,7 +64,7 @@ namespace NSSAgent.ServiceAgents
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, Resource nwisResource, IDictionary<object, object> messages = null)
+        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null)
         {
 
             this._messages = messages != null? messages: new Dictionary<object, object>();

@@ -5,9 +5,18 @@ using WIM.Utilities.Resources;
 
 namespace NSSAgent.Resources
 {
-    public class NetworkSettings
+    public class NWISResource
     {
-        public Resource NWIS { get; set; }
-        public Resource GageStats { get; set; }
+
+        public string baseurl { get; set; }
+        public Dictionary<string, string> resources { get; set; }
+    }
+
+    public class GageStatsResource
+    {
+
+        public string baseurl { get; set; }
+        public Dictionary<string, string> resources { get; set; }
+
     }
 }

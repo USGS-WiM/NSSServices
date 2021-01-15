@@ -712,7 +712,7 @@ namespace NSSAgent
                                 Value = (eOps.Value * unit.factor).Round()
                             });
                         }//next equation
-                        regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion));
+                        regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion)); // not working, moves onto line 717 first
                     }//next regressionregion
                     if (canAreaWeight(scenario.RegressionRegions))
                     {
@@ -1728,7 +1728,7 @@ namespace NSSAgent
                         Parameters = new List<ExtensionParameter>{new ExtensionParameter() { Code = "sid", Name="NWIS Station ID", Description="USGS NWIS Station Identifier", Value="01234567" },
                                      new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  DateTime.MinValue },
                                      new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today },
-                                     new ExtensionParameter() { Code = "usePublishedFlows", Name = "Published Flow Indicator", Description="boolean signifying whether to use published or computed exceedance probabilities", Value = true}
+                                     new ExtensionParameter() { Code = "usePublishedFDC", Name = "Published FDC Indicator", Description="boolean signifying whether to use published flow duration curves or daily flow values", Value = true}
                        }
 
                     };
@@ -1746,9 +1746,9 @@ namespace NSSAgent
                 {
                     case "QPPQ":
                     case "FDCTM":
-                        bool usePublishedFlows = ext.Parameters.Find(p => p.Code == "usePublishedFlows").Value;
+                        bool usePublishedFDC = ext.Parameters.Find(p => p.Code == "usePublishedFDC").Value;
                         string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
-                        if (usePublishedFlows)
+                        if (usePublishedFDC)
                         {
                             // here, send published for second option (computed exceedance properties), add GageStatsServiceAgent, or add to StationServiceAgent, use something similar to getPercentDuration to parse?
                             // also, check if it exists first!

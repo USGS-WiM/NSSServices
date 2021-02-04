@@ -1748,27 +1748,25 @@ namespace NSSAgent
                     case "FDCTM":
                         bool usePublishedFDC = ext.Parameters.Find(p => p.Code == "usePublishedFDC").Value;
                         string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
+                        var exceedanceProbabilities = new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
+                                    Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value));
+                        var publishedFDC = new SortedDictionary<double, double>();
                         if (usePublishedFDC)
                         {
-                            // TODO: check if duration value is preferred
                             gs_sa = new GageStatsServiceAgent(gagestatsResource);
                             try
                             {
                                 var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
-                                sa = new FDCTMServiceAgent(ext, this.getPublishedDuration(stationInfo), nwisResource, this._messages);
+                                publishedFDC = this.getPublishedDuration(stationInfo);
                             }
                             catch (Exception ex)
                             {
                                 this.sm("Failed to find published exceedance probabilities, using computed values");
-                                sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
-                                    Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                                usePublishedFDC = false;
                             }
                         }
-                        else
-                        {
-                            sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
-                                Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
-                        }
+
+                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, usePublishedFDC, publishedFDC);
                         break;
                 }//end switch
 

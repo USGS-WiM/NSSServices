@@ -42,14 +42,14 @@ using WIM.Utilities.Resources;
 
 namespace NSSAgent.ServiceAgents
 {
-    public class FDCTMServiceAgent:ExtensionServiceAgentBase
+    public class FDCTMServiceAgent : ExtensionServiceAgentBase
     {
         #region "Properties"   
         private IDictionary<object, object> _messages { get; set; }
         private NWISResource _nwisResource { get; set; }
         public DateTime? StartDate { get; private set; }
         public DateTime? EndDate { get; private set; }
-        
+
         #endregion
         #region "Collections & Dictionaries"
         private Dictionary<Double, TimeSeriesObservation> FDCTMExceedanceTimeseries { get; set; }
@@ -61,29 +61,34 @@ namespace NSSAgent.ServiceAgents
             }
         }
         public List<ExtensionParameter> Parameters { get; private set; }
+        public bool usePublishedFlows { get; private set; }
+        public SortedDictionary<Double, Double> PublishedFDC { get; private set; }
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null)
+        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null, bool usePublishedFlows = false, SortedDictionary<Double, Double> PublishedFDC = null)
         {
 
-            this._messages = messages != null? messages: new Dictionary<object, object>();
+            this._messages = messages != null ? messages : new Dictionary<object, object>();
             _nwisResource = nwisResource;
             this.isInitialized = false;
             this.Parameters = qppqExtension.Parameters;
             Result = new QPPQResult();
+            this.usePublishedFlows = usePublishedFlows;
             ((QPPQResult)Result).ExceedanceProbabilities = ExceedanceProbabilities;
+            this.PublishedFDC = PublishedFDC;
 
             this.isInitialized = init();
         }
         #endregion
         #endregion
         #region "Methods"
-        public override Boolean init() {
+        public override Boolean init()
+        {
             try
             {
                 //load refGage flows
-                var sid = Parameters.FirstOrDefault(i => String.Equals(i.Code, "SID",StringComparison.OrdinalIgnoreCase));
+                var sid = Parameters.FirstOrDefault(i => String.Equals(i.Code, "SID", StringComparison.OrdinalIgnoreCase));
                 var sdate = Parameters.FirstOrDefault(i => String.Equals(i.Code, "sdate", StringComparison.OrdinalIgnoreCase));
                 var edate = Parameters.FirstOrDefault(i => String.Equals(i.Code, "edate", StringComparison.OrdinalIgnoreCase));
 
@@ -91,11 +96,18 @@ namespace NSSAgent.ServiceAgents
                 this.StartDate = Convert.ToDateTime(sdate.Value);
                 this.EndDate = Convert.ToDateTime(edate.Value);
 
-                ((QPPQResult)Result).ReferanceGage = Station.NWISStation(sid.Value,_nwisResource);
+                ((QPPQResult)Result).ReferanceGage = Station.NWISStation(sid.Value, _nwisResource);
 
                 if (!((QPPQResult)Result).ReferanceGage.LoadFullRecord()) throw new Exception("Failed to load reference gage ");
-                transferFlowDuration(((QPPQResult)Result).ReferanceGage.GetExceedanceProbability());
-                
+                if (this.usePublishedFlows)
+                {
+                    getFlowsFromPublishedDuration(((QPPQResult)Result).ReferanceGage.Discharge);
+
+                } else
+                {
+                    transferFlowDuration(((QPPQResult)Result).ReferanceGage.GetExceedanceProbability());
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -104,7 +116,8 @@ namespace NSSAgent.ServiceAgents
                 return false;
             }
         }
-        public override Boolean Execute() {
+        public override Boolean Execute()
+        {
             try
             {
                 if (FDCTMExceedanceTimeseries == null || FDCTMExceedanceTimeseries.Count < 1) throw new Exception("Referance gage or gage discharge is invalid");
@@ -140,7 +153,7 @@ namespace NSSAgent.ServiceAgents
                 Isok = (this.StartDate.HasValue && StartDate.Value.Year > 1900 &&
                         EndDate.HasValue && EndDate.Value.Year > 1900);
 
-               return (Isok);
+                return (Isok);
             }
             catch (Exception)
             {
@@ -151,15 +164,87 @@ namespace NSSAgent.ServiceAgents
         protected void transferFlowDuration(IDictionary<Double, TimeSeriesObservation> FD)
         {
             FDCTMExceedanceTimeseries = new Dictionary<Double, TimeSeriesObservation>();
-            //loop threw FD, from gage, and extend/sync dates w/ regressional equations
+            //loop through FD, from gage, and extend/sync dates w/ regressional equations
             foreach (var item in FD)
             {
                 FDCTMExceedanceTimeseries.Add(item.Key, new TimeSeriesObservation(item.Value.Date, getRegressionFlowAtExceedance(item.Key)));
+                // change this to get probability then flow for published
             }//next item 
 
 
         }
+        protected void getFlowsFromPublishedDuration(FlowTimeSeries TS)
+        {
+            FDCTMExceedanceTimeseries = new Dictionary<Double, TimeSeriesObservation>();
+            var observations = TS.Observations;
+            var key = 0;
+            foreach (var item in observations)
+            {
+                
+                if (this.EndDate.Value <= item.Date || item.Date <= this.StartDate.Value.AddDays(-1)) continue; // TODO: does this need to be fixed elsewhere instead?
+
+                // if the discharge is equal to a published curve value, use the probability from the curve (80, 90, etc.)
+                double? probQ; double? Qs;
+
+                var Q = item.Value;
+
+                var equalQ = PublishedFDC.Where(p => p.Value == Q).FirstOrDefault();
+                if (equalQ.Value != null)
+                {
+                    probQ = equalQ.Value;
+                } else
+                {
+                    var upper = PublishedFDC.TakeWhile(p => Q <= p.Value)?.LastOrDefault();
+                    var lower = PublishedFDC.SkipWhile(p => Q < p.Value)?.FirstOrDefault();
+                    var EXClower = lower?.Key * 100;
+                    var EXCupper = upper?.Key * 100;
+                    var Qlower = lower?.Value;
+                    var Qupper = upper?.Value;
+
+                    probQ = EXClower + (Q - Qlower) / (Qupper - Qlower) * (EXCupper - EXClower);
+                }
+
+
+                // what will happen if there's nothing above/below or an NaN number?
+                // also, we have to do the fix for zero flows
+
+
+                // if the PROBQ is equal to a probability in the regression equations, use the equation value
+                var equalProbQ = ExceedanceProbabilities.Where(p => p.Value == probQ).FirstOrDefault();
+                if (equalProbQ.Value != null)
+                {
+                    Qs = equalProbQ.Value;
+                } else
+                {
+                    var regUpper = ExceedanceProbabilities.TakeWhile(p => Q <= p.Value)?.LastOrDefault();
+                    var regLower = ExceedanceProbabilities.SkipWhile(p => Q < p.Value)?.FirstOrDefault();
+                    var EXCREGlower = regLower?.Key * 100; // get closest item less than
+                    var EXCREGupper = regUpper?.Key * 100; // get closest item greater than
+                    var QREGlower = regLower?.Value;
+                    var QREGupper = regUpper?.Value;
+
+                    // NA (send as NA or some sort of null)
+
+                    //var Qs = QREGlower + (probQ - QREGlower) / (QREGupper - QREGlower) * (EXCREGupper - EXCREGlower); // this is not computing correctly
+                    Qs = QREGlower + (probQ - EXCREGupper) / (EXCREGlower - EXCREGupper) * (QREGupper - QREGlower);
+                }
+                // =Y3+(T3-V3)/(W3-V3)*(X3-Y3) // from spreadsheet
+                // = Qb + (probQ - proba)/(probb - proba) * (Qa - Qb)
+                FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
+                key++;
+
+            }//next item
+        }
+
         protected Double getRegressionFlowAtExceedance(Double exceedanceValue)
+        //pmm: this assumes that the exceedance value of the daily discharge is known, which when using published flow we will need to solve
+        //pmm: elseIf computing flow durations for the index gage
+        //pmm: Using ALLDaily(), sort,rank, and compute probabilities using r/(N+1) or the prebuilt function, 
+        //pmm: the probabilities computed in the previous function are prob(Q) which can be added to ALLDaily() as a new column
+        //pmm: solve the streamflow values for the standarddard exceedance probabilities of 0.01, .02, etc to print in report
+        //pmm: loop through the sorted dictionary to find the two values that are on either side of a standard probability. 
+        //pmm: so if your standard probabiity is .01 you may have probabilities of .009976 (EXClower) and .0103845 (EXCupper). Each of those will have a discharge value Qlower and Qupper
+        //pmm: for computedexcprob(.01) Q(0.1)=Qlower + (.01-EXClower)/(EXCupper-EXClower)*(Qupper-Qlower)
         {
             KeyValuePair<Double, Double> exc1, exc2;
             Double? interpolatedVal;
@@ -255,8 +340,8 @@ namespace NSSAgent.ServiceAgents
             public Double Probability { get; set; }
             public String Equation { get; set; }
         }
-        
+
         #endregion
     }//end class
-    
+
 }//end namespace

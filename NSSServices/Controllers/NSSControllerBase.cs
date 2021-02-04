@@ -90,10 +90,10 @@ namespace NSSServices.Controllers
             if (isStreamStats)
             {
                 if (env.ToUpper() == "PRODUCTION") return query.Where(s => SSProdStatus.Any(stat => stat == s.Name));
-                else if (env.ToUpper() == "STAGING") return query.Where(s => SSStagingStatus.Any(stat => stat == s.Name));
+                else if (env.ToUpper() == "STAGING" || env.ToUpper() == "DEVELOPMENT") return query.Where(s => SSStagingStatus.Any(stat => stat == s.Name));
             }
 
-            if (env.ToUpper() == "STAGING") return query.Where(s => NSSStagingStatus.Any(stat => stat == s.Name));
+            if (env.ToUpper() == "STAGING" || env.ToUpper() == "DEVELOPMENT") return query.Where(s => NSSStagingStatus.Any(stat => stat == s.Name));
 
             // default is return all SS/NSS approved
             return query.Where(s => NSSProdStatus.Any(stat => stat == s.Name));

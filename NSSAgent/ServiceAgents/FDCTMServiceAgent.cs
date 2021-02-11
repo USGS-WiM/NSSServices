@@ -189,7 +189,7 @@ namespace NSSAgent.ServiceAgents
                 var Q = item.Value;
 
                 var equalQ = PublishedFDC.Where(p => p.Value == Q).FirstOrDefault();
-                if (equalQ.Value != null)
+                if (equalQ.Key != 0)
                 {
                     probQ = equalQ.Value;
                 } else
@@ -211,7 +211,7 @@ namespace NSSAgent.ServiceAgents
 
                 // if the PROBQ is equal to a probability in the regression equations, use the equation value
                 var equalProbQ = ExceedanceProbabilities.Where(p => p.Value == probQ).FirstOrDefault();
-                if (equalProbQ.Value != null)
+                if (equalQ.Key != 0)
                 {
                     Qs = equalProbQ.Value;
                 } else

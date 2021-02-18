@@ -216,8 +216,8 @@ namespace NSSAgent.ServiceAgents
                     Qs = equalProbQ.Value;
                 } else
                 {
-                    var regUpper = ExceedanceProbabilities.TakeWhile(p => Q <= p.Value)?.LastOrDefault();
-                    var regLower = ExceedanceProbabilities.SkipWhile(p => Q < p.Value)?.FirstOrDefault();
+                    var regUpper = ExceedanceProbabilities.SkipWhile(p => (p.Key * 100) < probQ)?.FirstOrDefault();
+                    var regLower = ExceedanceProbabilities.TakeWhile(p => (p.Key * 100) < probQ)?.LastOrDefault();
                     var EXCREGlower = regLower?.Key * 100; // get closest item less than
                     var EXCREGupper = regUpper?.Key * 100; // get closest item greater than
                     var QREGlower = regLower?.Value;
@@ -225,7 +225,7 @@ namespace NSSAgent.ServiceAgents
 
                     // NA (send as NA or some sort of null)
 
-                    //var Qs = QREGlower + (probQ - QREGlower) / (QREGupper - QREGlower) * (EXCREGupper - EXCREGlower); // this is not computing correctly
+                    //Qs = QREGlower + (probQ - QREGlower) / (QREGupper - QREGlower) * (EXCREGupper - EXCREGlower); // this is not computing correctly
                     Qs = QREGlower + (probQ - EXCREGupper) / (EXCREGlower - EXCREGupper) * (QREGupper - QREGlower);
                 }
                 // =Y3+(T3-V3)/(W3-V3)*(X3-Y3) // from spreadsheet

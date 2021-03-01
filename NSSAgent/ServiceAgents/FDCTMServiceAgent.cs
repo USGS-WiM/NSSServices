@@ -181,7 +181,10 @@ namespace NSSAgent.ServiceAgents
             foreach (var item in observations)
             {
                 
-                if (this.EndDate.Value <= item.Date || item.Date <= this.StartDate.Value.AddDays(-1)) continue; // TODO: does this need to be fixed elsewhere instead?
+                if (this.EndDate.Value <= item.Date || item.Date <= this.StartDate.Value.AddDays(-1)) continue;
+
+                // what will happen if there's nothing above/below or an NaN number? 
+                // TODO: Pete says we'll need to use linear interpolation (y = mx + b), to be discussed when he has time
 
                 // if the discharge is equal to a published curve value, use the probability from the curve (80, 90, etc.)
                 double? probQ; double? Qs;
@@ -189,9 +192,22 @@ namespace NSSAgent.ServiceAgents
                 var Q = item.Value;
 
                 var equalQ = PublishedFDC.Where(p => p.Value == Q).FirstOrDefault();
-                if (equalQ.Key != 0)
+                var equalQs = PublishedFDC.Where(p => p.Value == Q).ToDictionary(kvp => kvp.Key, kvp => kvp.Value).Keys;
+                if (equalQs.Count > 0)
                 {
-                    probQ = equalQ.Value;
+                    if (equalQs.Count > 1)
+                    {
+                        // fix for 0 flows
+                        var firstKey = equalQs.First();
+                        var lastKey = equalQs.Last();
+                        // find the midpoint of the probabilities with 0 flow
+                        var middleKey = (firstKey + lastKey) / 2;
+                        // find nearest regression value to the midpoint
+                        probQ = ExceedanceProbabilities.OrderBy(p => Math.Abs(middleKey - p.Key)).FirstOrDefault().Key;
+                    } else
+                    {
+                        probQ = equalQs.First();
+                    }
                 } else
                 {
                     var upper = PublishedFDC.TakeWhile(p => Q <= p.Value)?.LastOrDefault();
@@ -204,32 +220,23 @@ namespace NSSAgent.ServiceAgents
                     probQ = EXClower + (Q - Qlower) / (Qupper - Qlower) * (EXCupper - EXClower);
                 }
 
-
-                // what will happen if there's nothing above/below or an NaN number?
-                // also, we have to do the fix for zero flows
-
-
                 // if the PROBQ is equal to a probability in the regression equations, use the equation value
-                var equalProbQ = ExceedanceProbabilities.Where(p => p.Value == probQ).FirstOrDefault();
-                if (equalQ.Key != 0)
+                // this includes the fix for zero flows (it is assigned a probability that exists in the regression equations)
+                var equalProbQ = ExceedanceProbabilities.Where(p => p.Key == probQ).FirstOrDefault();
+                if (equalProbQ.Key != 0)
                 {
                     Qs = equalProbQ.Value;
                 } else
                 {
                     var regUpper = ExceedanceProbabilities.SkipWhile(p => (p.Key * 100) < probQ)?.FirstOrDefault();
                     var regLower = ExceedanceProbabilities.TakeWhile(p => (p.Key * 100) < probQ)?.LastOrDefault();
-                    var EXCREGlower = regLower?.Key * 100; // get closest item less than
-                    var EXCREGupper = regUpper?.Key * 100; // get closest item greater than
+                    var EXCREGlower = regLower?.Key * 100;
+                    var EXCREGupper = regUpper?.Key * 100;
                     var QREGlower = regLower?.Value;
                     var QREGupper = regUpper?.Value;
 
-                    // NA (send as NA or some sort of null)
-
-                    //Qs = QREGlower + (probQ - QREGlower) / (QREGupper - QREGlower) * (EXCREGupper - EXCREGlower); // this is not computing correctly
                     Qs = QREGlower + (probQ - EXCREGupper) / (EXCREGlower - EXCREGupper) * (QREGupper - QREGlower);
                 }
-                // =Y3+(T3-V3)/(W3-V3)*(X3-Y3) // from spreadsheet
-                // = Qb + (probQ - proba)/(probb - proba) * (Qa - Qb)
                 FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                 key++;
 
@@ -237,14 +244,6 @@ namespace NSSAgent.ServiceAgents
         }
 
         protected Double getRegressionFlowAtExceedance(Double exceedanceValue)
-        //pmm: this assumes that the exceedance value of the daily discharge is known, which when using published flow we will need to solve
-        //pmm: elseIf computing flow durations for the index gage
-        //pmm: Using ALLDaily(), sort,rank, and compute probabilities using r/(N+1) or the prebuilt function, 
-        //pmm: the probabilities computed in the previous function are prob(Q) which can be added to ALLDaily() as a new column
-        //pmm: solve the streamflow values for the standarddard exceedance probabilities of 0.01, .02, etc to print in report
-        //pmm: loop through the sorted dictionary to find the two values that are on either side of a standard probability. 
-        //pmm: so if your standard probabiity is .01 you may have probabilities of .009976 (EXClower) and .0103845 (EXCupper). Each of those will have a discharge value Qlower and Qupper
-        //pmm: for computedexcprob(.01) Q(0.1)=Qlower + (.01-EXClower)/(EXCupper-EXClower)*(Qupper-Qlower)
         {
             KeyValuePair<Double, Double> exc1, exc2;
             Double? interpolatedVal;

@@ -61,12 +61,11 @@ namespace NSSAgent.ServiceAgents
             }
         }
         public List<ExtensionParameter> Parameters { get; private set; }
-        public bool usePublishedFlows { get; private set; }
         public SortedDictionary<Double, Double> PublishedFDC { get; private set; }
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null, bool usePublishedFlows = false, SortedDictionary<Double, Double> PublishedFDC = null)
+        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null, SortedDictionary<Double, Double> PublishedFDC = null)
         {
 
             this._messages = messages != null ? messages : new Dictionary<object, object>();
@@ -74,7 +73,6 @@ namespace NSSAgent.ServiceAgents
             this.isInitialized = false;
             this.Parameters = qppqExtension.Parameters;
             Result = new QPPQResult();
-            this.usePublishedFlows = usePublishedFlows;
             ((QPPQResult)Result).ExceedanceProbabilities = ExceedanceProbabilities;
             this.PublishedFDC = PublishedFDC;
 
@@ -99,14 +97,7 @@ namespace NSSAgent.ServiceAgents
                 ((QPPQResult)Result).ReferanceGage = Station.NWISStation(sid.Value, _nwisResource);
 
                 if (!((QPPQResult)Result).ReferanceGage.LoadFullRecord()) throw new Exception("Failed to load reference gage ");
-                if (this.usePublishedFlows)
-                {
-                    getFlowsFromPublishedDuration(((QPPQResult)Result).ReferanceGage.Discharge);
-
-                } else
-                {
-                    transferFlowDuration(((QPPQResult)Result).ReferanceGage.GetExceedanceProbability());
-                }
+                getFlowsFromPublishedDuration(((QPPQResult)Result).ReferanceGage.Discharge);
 
                 return true;
             }
@@ -129,6 +120,7 @@ namespace NSSAgent.ServiceAgents
                 foreach (var observ in tseries)
                 {
                     if (observ.Value.Value.HasValue) ((QPPQResult)Result).EstimatedFlow.Add(observ.Value.Date, observ.Value.Value.Value);
+                    else if (observ.Value.Value == null) ((QPPQResult)Result).EstimatedFlow.Add(observ.Value);
                 }//next observ
 
                 ((QPPQResult)Result).ReferanceGage.LimitDischarge(StartDate.Value, EndDate.Value);
@@ -182,6 +174,13 @@ namespace NSSAgent.ServiceAgents
             {
                 
                 if (this.EndDate.Value <= item.Date || item.Date <= this.StartDate.Value.AddDays(-1)) continue;
+                if (item.Value == null)
+                {
+
+                    FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, null));
+                    key++;
+                    continue;
+                }
 
                 // what will happen if there's nothing above/below or an NaN number? 
                 // TODO: Pete says we'll need to use linear interpolation (y = mx + b), to be discussed when he has time

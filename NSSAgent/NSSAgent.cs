@@ -1728,7 +1728,6 @@ namespace NSSAgent
                         Parameters = new List<ExtensionParameter>{new ExtensionParameter() { Code = "sid", Name="NWIS Station ID", Description="USGS NWIS Station Identifier", Value="01234567" },
                                      new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  DateTime.MinValue },
                                      new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today },
-                                     new ExtensionParameter() { Code = "usePublishedFDC", Name = "Published FDC Indicator", Description="boolean signifying whether to use published flow duration curves or daily flow values", Value = true}
                        }
 
                     };
@@ -1746,27 +1745,23 @@ namespace NSSAgent
                 {
                     case "QPPQ":
                     case "FDCTM":
-                        bool usePublishedFDC = ext.Parameters.Find(p => p.Code == "usePublishedFDC").Value;
                         string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
                         var exceedanceProbabilities = new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
                                     Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value));
                         var publishedFDC = new SortedDictionary<double, double>();
-                        if (usePublishedFDC)
+                        gs_sa = new GageStatsServiceAgent(gagestatsResource);
+                        try
                         {
-                            gs_sa = new GageStatsServiceAgent(gagestatsResource);
-                            try
-                            {
-                                var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
-                                publishedFDC = this.getPublishedDuration(stationInfo);
-                            }
-                            catch (Exception ex)
-                            {
-                                this.sm("Failed to find published exceedance probabilities, using computed values");
-                                usePublishedFDC = false;
-                            }
+                            var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
+                            publishedFDC = this.getPublishedDuration(stationInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.sm($"Failed to find published exceedance probabilities: {ex.Message}",  WIM.Resources.MessageType.error);
+                            break;
                         }
 
-                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, usePublishedFDC, publishedFDC);
+                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC);
                         break;
                 }//end switch
 

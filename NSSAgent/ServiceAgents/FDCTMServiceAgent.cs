@@ -202,10 +202,10 @@ namespace NSSAgent.ServiceAgents
                         // find the midpoint of the probabilities with 0 flow
                         var middleKey = (firstKey + lastKey) / 2;
                         // find nearest regression value to the midpoint
-                        probQ = ExceedanceProbabilities.OrderBy(p => Math.Abs(middleKey - p.Key)).FirstOrDefault().Key;
+                        probQ = ExceedanceProbabilities.OrderBy(p => Math.Abs(middleKey - p.Key)).FirstOrDefault().Key * 100;
                     } else
                     {
-                        probQ = equalQs.First();
+                        probQ = equalQs.First() * 100;
                     }
                 } else
                 {
@@ -221,7 +221,7 @@ namespace NSSAgent.ServiceAgents
 
                 // if the PROBQ is equal to a probability in the regression equations, use the equation value
                 // this includes the fix for zero flows (it is assigned a probability that exists in the regression equations)
-                var equalProbQ = ExceedanceProbabilities.Where(p => p.Key == probQ).FirstOrDefault();
+                var equalProbQ = ExceedanceProbabilities.Where(p => (p.Key * 100) == probQ).FirstOrDefault();
                 if (equalProbQ.Key != 0)
                 {
                     Qs = equalProbQ.Value;

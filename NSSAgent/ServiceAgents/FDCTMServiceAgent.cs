@@ -234,7 +234,7 @@ namespace NSSAgent.ServiceAgents
                     var QREGlower = regLower?.Value;
                     var QREGupper = regUpper?.Value;
 
-                    Qs = QREGlower + (probQ - EXCREGupper) / (EXCREGlower - EXCREGupper) * (QREGupper - QREGlower);
+                    Qs = QREGupper - (probQ - EXCREGupper) / (EXCREGlower - EXCREGupper) * (QREGupper - QREGlower);
                 }
                 FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                 key++;

@@ -176,65 +176,115 @@ namespace NSSAgent.ServiceAgents
                 if (this.EndDate.Value <= item.Date || item.Date <= this.StartDate.Value.AddDays(-1)) continue;
                 if (item.Value == null)
                 {
-
+                    // send null if no daily flow measured
                     FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, null));
                     key++;
                     continue;
                 }
 
-                // what will happen if there's nothing above/below or an NaN number? 
-                // TODO: Pete says we'll need to use linear interpolation (y = mx + b), to be discussed when he has time
-
-                // if the discharge is equal to a published curve value, use the probability from the curve (80, 90, etc.)
                 double? probQ; double? Qs;
 
-                var Q = item.Value;
+                // if flow value is negative, change it to 0
+                var Q = item.Value > 0 ? item.Value : 0;
 
                 var equalQ = PublishedFDC.Where(p => p.Value == Q).FirstOrDefault();
                 var equalQs = PublishedFDC.Where(p => p.Value == Q).ToDictionary(kvp => kvp.Key, kvp => kvp.Value).Keys;
                 if (equalQs.Count > 0)
                 {
+                    // if there are multiple published FDC values equal to Q, find the midpoint of probabilities
+                    // usually this is just for when values are 0
                     if (equalQs.Count > 1)
                     {
-                        // fix for 0 flows
                         var firstKey = equalQs.First();
                         var lastKey = equalQs.Last();
-                        // find the midpoint of the probabilities with 0 flow
-                        var middleKey = (firstKey + lastKey) / 2;
-                        // find nearest regression value to the midpoint
-                        probQ = ExceedanceProbabilities.OrderBy(p => Math.Abs(middleKey - p.Key)).FirstOrDefault().Key * 100;
+                        // assign probQ the midpoint of the probabilities
+                        probQ = (firstKey + lastKey) / 2 * 100;
                     } else
                     {
+                        // if the discharge is equal to a published curve value, use the probability from the curve (80, 90, etc.)
                         probQ = equalQs.First() * 100;
                     }
                 } else
                 {
-                    var upper = PublishedFDC.TakeWhile(p => Q <= p.Value)?.LastOrDefault();
-                    var lower = PublishedFDC.SkipWhile(p => Q < p.Value)?.FirstOrDefault();
-                    var EXClower = lower?.Key * 100;
-                    var EXCupper = upper?.Key * 100;
-                    var Qlower = lower?.Value;
-                    var Qupper = upper?.Value;
+                    KeyValuePair<double, double>? upper; KeyValuePair<double, double>? lower;
+                    if (PublishedFDC.LastOrDefault().Value > Q)
+                    {
+                        // if Q is less than the lowest duration value
+                        Int32 numberOfItems = PublishedFDC.Count() - 1;
 
-                    probQ = EXClower + (Q - Qlower) / (Qupper - Qlower) * (EXCupper - EXClower);
+                        upper = PublishedFDC.ElementAt(numberOfItems - 1);
+                        lower = PublishedFDC.ElementAt(numberOfItems);
+                    } else if (PublishedFDC.FirstOrDefault().Value < Q)
+                    {
+                        // if Q is greater than the highest duration value
+                        upper = PublishedFDC.ElementAt(0);
+                        lower = PublishedFDC.ElementAt(1);
+                    } else
+                    {
+                        //traverses the keys using the fact that they are ordered and compares 
+                        //all two keys following each other in order
+                        var points = PublishedFDC.Values.Zip(PublishedFDC.Values.Skip(1),
+                                      (a, b) => new { a, b })
+                                        .Where(x => x.a >= Q && x.b <= Q)
+                                        .FirstOrDefault();
+
+                        upper = PublishedFDC.FirstOrDefault(o => o.Value == points.a);
+                        lower = PublishedFDC.FirstOrDefault(o => o.Value == points.b);
+                    }
+                    // get published FDC items above and below the measured flow
+                    var EXClower = Convert.ToDouble(lower?.Key * 100);
+                    var EXCupper = Convert.ToDouble(upper?.Key * 100);
+                    var Qlower = Convert.ToDouble(lower?.Value);
+                    var Qupper = Convert.ToDouble(upper?.Value);
+                    if (Qlower == 0) Qlower = 0.001;
+
+                    // compute probability of Q
+                    probQ = Math.Exp(Math.Log(EXCupper) - (Math.Log(Convert.ToDouble(Q)) - Math.Log(Qupper)) / (Math.Log(Qlower) - Math.Log(Qupper)) * (Math.Log(EXCupper) - Math.Log(EXClower)));
                 }
 
-                // if the PROBQ is equal to a probability in the regression equations, use the equation value
-                // this includes the fix for zero flows (it is assigned a probability that exists in the regression equations)
+                // if the PROBQ is equal to a probability in the regression equations, use the regression value
                 var equalProbQ = ExceedanceProbabilities.Where(p => (p.Key * 100) == probQ).FirstOrDefault();
                 if (equalProbQ.Key != 0)
                 {
                     Qs = equalProbQ.Value;
                 } else
                 {
-                    var regUpper = ExceedanceProbabilities.SkipWhile(p => (p.Key * 100) < probQ)?.FirstOrDefault();
-                    var regLower = ExceedanceProbabilities.TakeWhile(p => (p.Key * 100) < probQ)?.LastOrDefault();
-                    var EXCREGlower = regLower?.Key * 100;
-                    var EXCREGupper = regUpper?.Key * 100;
-                    var QREGlower = regLower?.Value;
-                    var QREGupper = regUpper?.Value;
+                    KeyValuePair<double, double>? regUpper; KeyValuePair<double, double>? regLower;
+                    if ((ExceedanceProbabilities.LastOrDefault().Key * 100) < probQ)
+                    {
+                        // if Q is greater than the highest probability
+                        Int32 numberOfItems = ExceedanceProbabilities.Count() - 1;
 
-                    Qs = QREGupper - (probQ - EXCREGupper) / (EXCREGlower - EXCREGupper) * (QREGupper - QREGlower);
+                        regUpper = ExceedanceProbabilities.ElementAt(numberOfItems);
+                        regLower = ExceedanceProbabilities.ElementAt(numberOfItems - 1);
+                    }
+                    else if ((ExceedanceProbabilities.FirstOrDefault().Key * 100) > probQ)
+                    {
+                        // if Q is less than the lowest probability
+                        regUpper = ExceedanceProbabilities.ElementAt(1);
+                        regLower = ExceedanceProbabilities.ElementAt(0);
+                    }
+                    else
+                    {
+                        //traverses the keys using the fact that they are ordered and compares 
+                        //all two keys following each other in order
+                        var points = ExceedanceProbabilities.Keys.Zip(ExceedanceProbabilities.Keys.Skip(1),
+                                      (a, b) => new { a, b })
+                                        .Where(x => (x.a * 100) <= probQ && (x.b * 100) >= probQ)
+                                        .FirstOrDefault();
+
+                        regUpper = ExceedanceProbabilities.FirstOrDefault(o => o.Key == points.a);
+                        regLower = ExceedanceProbabilities.FirstOrDefault(o => o.Key == points.b);
+                    }
+                    // get regression probabilities above and below probQ
+                    var EXCREGlower = Convert.ToDouble(regLower?.Key * 100);
+                    var EXCREGupper = Convert.ToDouble(regUpper?.Key * 100);
+                    var QREGlower = Convert.ToDouble(regLower?.Value);
+                    var QREGupper = Convert.ToDouble(regUpper?.Value);
+                    if (QREGlower == 0) QREGlower = 0.001;
+
+                    // compute estimated flow
+                    Qs = Math.Exp(Math.Log(QREGupper) - (Math.Log(Convert.ToDouble(probQ)) - Math.Log(EXCREGupper)) / (Math.Log(EXCREGlower) - Math.Log(EXCREGupper)) * (Math.Log(QREGupper) - Math.Log(QREGlower)));
                 }
                 FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                 key++;

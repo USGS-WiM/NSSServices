@@ -712,7 +712,7 @@ namespace NSSAgent
                                 Value = (eOps.Value * unit.factor).Round()
                             });
                         }//next equation
-                        regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion)); // not working, moves onto line 717 first
+                        regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion));
                     }//next regressionregion
                     if (canAreaWeight(scenario.RegressionRegions))
                     {

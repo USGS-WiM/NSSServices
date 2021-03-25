@@ -6,9 +6,9 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2017 WIM - USGS
+// copyright:   2021 WIM - USGS
 
-//    authors:  Jeremy K. Newson USGS Web Informatics and Mapping
+//    authors:  Katrin E. Jacobsen USGS Web Informatics and Mapping
 //              
 //  
 //   purpose:   Simple Plain Old Class Object (POCO) 

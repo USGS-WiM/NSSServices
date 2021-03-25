@@ -76,7 +76,7 @@ namespace NSSAgent.ServiceAgents
             RequestInfo requestInfo = null;
             try
             {
-                requestInfo = new RequestInfo(string.Format(GetResourcrUrl(requestType),args));
+                requestInfo = new RequestInfo(string.Format(GetResourceUrl(requestType),args));
                 
                 return requestInfo;
             }
@@ -86,7 +86,7 @@ namespace NSSAgent.ServiceAgents
                 throw;
             }
         }
-        private String GetResourcrUrl(stationservicetype filetype)
+        private String GetResourceUrl(stationservicetype filetype)
         {
             try
             {

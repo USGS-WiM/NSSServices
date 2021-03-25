@@ -6,7 +6,7 @@
 //       01234567890123456789012345678901234567890123456789012345678901234567890
 //-------+---------+---------+---------+---------+---------+---------+---------+
 
-// copyright:   2019 WIM - USGS
+// copyright:   2021 WIM - USGS
 
 //    authors:  Katrin E. Jacobsen USGS Web Informatics and Mapping
 //              
@@ -48,7 +48,6 @@ namespace NSSAgent.ServiceAgents
         public async Task<GageStatsStation> GetGageStatsStationAsync(string stationCode)
         {
             var r = this.GetRequestInfo(gagestatsservicetype.e_stationinfo, new object[] { stationCode });
-            //var test_string = await ExecuteAsync<string>(r);
             var siteresult = await ExecuteAsync<string>(r);
             var station = JObject.Parse(siteresult);
             GageStatsStation stat_object = station.ToObject<GageStatsStation>();
@@ -62,7 +61,7 @@ namespace NSSAgent.ServiceAgents
             RequestInfo requestInfo = null;
             try
             {
-                requestInfo = new RequestInfo(this.Resource.baseurl + string.Format(GetResourcrUrl(requestType), args));
+                requestInfo = new RequestInfo(this.Resource.baseurl + string.Format(GetResourceUrl(requestType), args));
 
                 return requestInfo;
             }
@@ -72,7 +71,7 @@ namespace NSSAgent.ServiceAgents
                 throw;
             }
         }
-        private String GetResourcrUrl(gagestatsservicetype filetype)
+        private String GetResourceUrl(gagestatsservicetype filetype)
         {
             try
             {

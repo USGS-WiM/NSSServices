@@ -42,14 +42,14 @@ using WIM.Utilities.Resources;
 
 namespace NSSAgent.ServiceAgents
 {
-    public class FDCTMServiceAgent:ExtensionServiceAgentBase
+    public class FDCTMServiceAgent : ExtensionServiceAgentBase
     {
         #region "Properties"   
         private IDictionary<object, object> _messages { get; set; }
-        private Resource _nwisResource { get; set; }
+        private NWISResource _nwisResource { get; set; }
         public DateTime? StartDate { get; private set; }
         public DateTime? EndDate { get; private set; }
-        
+
         #endregion
         #region "Collections & Dictionaries"
         private Dictionary<Double, TimeSeriesObservation> FDCTMExceedanceTimeseries { get; set; }
@@ -61,29 +61,32 @@ namespace NSSAgent.ServiceAgents
             }
         }
         public List<ExtensionParameter> Parameters { get; private set; }
+        public SortedDictionary<Double, Double> PublishedFDC { get; private set; }
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, Resource nwisResource, IDictionary<object, object> messages = null)
+        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null, SortedDictionary<Double, Double> PublishedFDC = null)
         {
 
-            this._messages = messages != null? messages: new Dictionary<object, object>();
+            this._messages = messages != null ? messages : new Dictionary<object, object>();
             _nwisResource = nwisResource;
             this.isInitialized = false;
             this.Parameters = qppqExtension.Parameters;
             Result = new QPPQResult();
             ((QPPQResult)Result).ExceedanceProbabilities = ExceedanceProbabilities;
+            this.PublishedFDC = PublishedFDC;
 
             this.isInitialized = init();
         }
         #endregion
         #endregion
         #region "Methods"
-        public override Boolean init() {
+        public override Boolean init()
+        {
             try
             {
                 //load refGage flows
-                var sid = Parameters.FirstOrDefault(i => String.Equals(i.Code, "SID",StringComparison.OrdinalIgnoreCase));
+                var sid = Parameters.FirstOrDefault(i => String.Equals(i.Code, "SID", StringComparison.OrdinalIgnoreCase));
                 var sdate = Parameters.FirstOrDefault(i => String.Equals(i.Code, "sdate", StringComparison.OrdinalIgnoreCase));
                 var edate = Parameters.FirstOrDefault(i => String.Equals(i.Code, "edate", StringComparison.OrdinalIgnoreCase));
 
@@ -91,11 +94,11 @@ namespace NSSAgent.ServiceAgents
                 this.StartDate = Convert.ToDateTime(sdate.Value);
                 this.EndDate = Convert.ToDateTime(edate.Value);
 
-                ((QPPQResult)Result).ReferanceGage = Station.NWISStation(sid.Value,_nwisResource);
+                ((QPPQResult)Result).ReferanceGage = Station.NWISStation(sid.Value, _nwisResource);
 
                 if (!((QPPQResult)Result).ReferanceGage.LoadFullRecord()) throw new Exception("Failed to load reference gage ");
-                transferFlowDuration(((QPPQResult)Result).ReferanceGage.GetExceedanceProbability());
-                
+                getFlowsFromPublishedDuration(((QPPQResult)Result).ReferanceGage.Discharge);
+
                 return true;
             }
             catch (Exception ex)
@@ -104,7 +107,8 @@ namespace NSSAgent.ServiceAgents
                 return false;
             }
         }
-        public override Boolean Execute() {
+        public override Boolean Execute()
+        {
             try
             {
                 if (FDCTMExceedanceTimeseries == null || FDCTMExceedanceTimeseries.Count < 1) throw new Exception("Referance gage or gage discharge is invalid");
@@ -116,6 +120,7 @@ namespace NSSAgent.ServiceAgents
                 foreach (var observ in tseries)
                 {
                     if (observ.Value.Value.HasValue) ((QPPQResult)Result).EstimatedFlow.Add(observ.Value.Date, observ.Value.Value.Value);
+                    else if (observ.Value.Value == null) ((QPPQResult)Result).EstimatedFlow.Add(observ.Value);
                 }//next observ
 
                 ((QPPQResult)Result).ReferanceGage.LimitDischarge(StartDate.Value, EndDate.Value);
@@ -140,7 +145,7 @@ namespace NSSAgent.ServiceAgents
                 Isok = (this.StartDate.HasValue && StartDate.Value.Year > 1900 &&
                         EndDate.HasValue && EndDate.Value.Year > 1900);
 
-               return (Isok);
+                return (Isok);
             }
             catch (Exception)
             {
@@ -148,82 +153,137 @@ namespace NSSAgent.ServiceAgents
                 return false;
             }
         }
-        protected void transferFlowDuration(IDictionary<Double, TimeSeriesObservation> FD)
+        protected void getFlowsFromPublishedDuration(FlowTimeSeries TS)
         {
-            FDCTMExceedanceTimeseries = new Dictionary<Double, TimeSeriesObservation>();
-            //loop threw FD, from gage, and extend/sync dates w/ regressional equations
-            foreach (var item in FD)
-            {
-                FDCTMExceedanceTimeseries.Add(item.Key, new TimeSeriesObservation(item.Value.Date, getRegressionFlowAtExceedance(item.Key)));
-            }//next item 
 
-
-        }
-        protected Double getRegressionFlowAtExceedance(Double exceedanceValue)
-        {
-            KeyValuePair<Double, Double> exc1, exc2;
-            Double? interpolatedVal;
-            Double result = -999;
             try
             {
-                //check if val exists in list
-                if (ExceedanceProbabilities.ContainsKey(exceedanceValue))
-                    return ExceedanceProbabilities[exceedanceValue];
-
-                //check if the value is below the first item
-                if (ExceedanceProbabilities.FirstOrDefault().Key > exceedanceValue)
+                FDCTMExceedanceTimeseries = new Dictionary<Double, TimeSeriesObservation>();
+                var observations = TS.Observations;
+                var key = 0;
+                foreach (var item in observations)
                 {
-                    //interpolate below exceedance based the  log value
-                    exc1 = ExceedanceProbabilities.ElementAt(0);
-                    exc2 = ExceedanceProbabilities.ElementAt(1);
-                }//end if
-                else if (ExceedanceProbabilities.LastOrDefault().Key < exceedanceValue)
-                {
-                    // past end of exceedance list
-                    Int32 numberOfItems = ExceedanceProbabilities.Count() - 1;
-
-                    exc1 = ExceedanceProbabilities.ElementAt(numberOfItems - 1);
-                    exc2 = ExceedanceProbabilities.ElementAt(numberOfItems);
-                }
-                else
-                {
-                    //traverses the keys using the fact that they are ordered and compares 
-                    //all two keys following each other in order
-                    var points = ExceedanceProbabilities.Keys.Zip(ExceedanceProbabilities.Keys.Skip(1),
-                                  (a, b) => new { a, b })
-                                    .Where(x => x.a <= exceedanceValue && x.b >= exceedanceValue)
-                                    .FirstOrDefault();
-
-                    exc1 = ExceedanceProbabilities.FirstOrDefault(o => o.Key == points.a);
-                    exc2 = ExceedanceProbabilities.FirstOrDefault(o => o.Key == points.b);
-
-                }//end if
-
-                interpolatedVal = MathOps.LinearInterpolate(Math.Log(exc1.Key), Math.Log(exc2.Key), Math.Log(exc1.Value), Math.Log(exc2.Value), Math.Log(exceedanceValue));
-                if (interpolatedVal.HasValue)
-                {
-                    result = Math.Exp(interpolatedVal.Value);
-                }
-                else
-                {
-                    //last ditch effort
-                    Double lastDitch;
-                    // use the smallest or largest value in the set which ever is
-                    // closer to valueX
-                    if (Math.Abs(ExceedanceProbabilities.FirstOrDefault().Key - exceedanceValue) < Math.Abs(exceedanceValue - ExceedanceProbabilities.LastOrDefault().Key))
+                    if (this.EndDate.Value <= item.Date || item.Date <= this.StartDate.Value.AddDays(-1)) continue;
+                    if (item.Value == null)
                     {
-                        lastDitch = ExceedanceProbabilities.FirstOrDefault().Key;
+                        // send null if no daily flow measured
+                        FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, null));
+                        key++;
+                        continue;
+                    }
+
+                    double? probQ; double? Qs;
+
+                    // if flow value is negative, change it to 0
+                    var Q = item.Value > 0 ? item.Value : 0;
+
+                    // find any published flow durations where value is equal to Q
+                    var equalQs = PublishedFDC.Where(p => p.Value == Q).ToDictionary(kvp => kvp.Key, kvp => kvp.Value).Keys;
+                    if (equalQs.Count > 0)
+                    {
+                        // if there are multiple published FDC values equal to Q, find the midpoint of probabilities
+                        // usually this is just for when values are 0
+                        if (equalQs.Count > 1)
+                        {
+                            var firstKey = equalQs.First();
+                            var lastKey = equalQs.Last();
+                            // assign probQ the midpoint of the probabilities
+                            probQ = (firstKey + lastKey) / 2 * 100;
+                        }
+                        else
+                        {
+                            // if the discharge is equal to a published curve value, use the probability from the curve (80, 90, etc.)
+                            probQ = equalQs.First() * 100;
+                        }
                     }
                     else
                     {
-                        lastDitch = ExceedanceProbabilities.LastOrDefault().Key;
-                    }//end if
+                        KeyValuePair<double, double>? upper; KeyValuePair<double, double>? lower;
+                        if (PublishedFDC.LastOrDefault().Value > Q)
+                        {
+                            // if Q is less than the lowest duration value
+                            Int32 numberOfItems = PublishedFDC.Count() - 1;
 
-                    result = getRegressionFlowAtExceedance(lastDitch);
+                            upper = PublishedFDC.ElementAt(numberOfItems - 1);
+                            lower = PublishedFDC.ElementAt(numberOfItems);
+                        }
+                        else if (PublishedFDC.FirstOrDefault().Value < Q)
+                        {
+                            // if Q is greater than the highest duration value
+                            upper = PublishedFDC.ElementAt(0);
+                            lower = PublishedFDC.ElementAt(1);
+                        }
+                        else
+                        {
+                            //traverses the keys using the fact that they are ordered and compares 
+                            //all two keys following each other in order
+                            var points = PublishedFDC.Values.Zip(PublishedFDC.Values.Skip(1),
+                                          (a, b) => new { a, b })
+                                            .Where(x => x.a >= Q && x.b <= Q)
+                                            .FirstOrDefault();
 
-                }//end if
+                            upper = PublishedFDC.FirstOrDefault(o => o.Value == points.a);
+                            lower = PublishedFDC.FirstOrDefault(o => o.Value == points.b);
+                        }
+                        // get published FDC items above and below the measured flow
+                        var EXClower = Convert.ToDouble(lower?.Key * 100);
+                        var EXCupper = Convert.ToDouble(upper?.Key * 100);
+                        var Qlower = Convert.ToDouble(lower?.Value);
+                        var Qupper = Convert.ToDouble(upper?.Value);
+                        if (Qlower == 0) Qlower = 0.001;
 
-                return result;
+                        // compute probability of Q
+                        probQ = Math.Exp(Math.Log(EXCupper) - (Math.Log(Convert.ToDouble(Q)) - Math.Log(Qupper)) / (Math.Log(Qlower) - Math.Log(Qupper)) * (Math.Log(EXCupper) - Math.Log(EXClower)));
+                    }
+
+                    // if the PROBQ is equal to a probability in the regression equations, use the regression value
+                    var equalProbQ = ExceedanceProbabilities.Where(p => (p.Key * 100) == probQ).FirstOrDefault();
+                    if (equalProbQ.Key != 0)
+                    {
+                        Qs = equalProbQ.Value;
+                    }
+                    else
+                    {
+                        KeyValuePair<double, double>? regUpper; KeyValuePair<double, double>? regLower;
+                        if ((ExceedanceProbabilities.LastOrDefault().Key * 100) < probQ)
+                        {
+                            // if Q is greater than the highest probability
+                            Int32 numberOfItems = ExceedanceProbabilities.Count() - 1;
+
+                            regUpper = ExceedanceProbabilities.ElementAt(numberOfItems);
+                            regLower = ExceedanceProbabilities.ElementAt(numberOfItems - 1);
+                        }
+                        else if ((ExceedanceProbabilities.FirstOrDefault().Key * 100) > probQ)
+                        {
+                            // if Q is less than the lowest probability
+                            regUpper = ExceedanceProbabilities.ElementAt(1);
+                            regLower = ExceedanceProbabilities.ElementAt(0);
+                        }
+                        else
+                        {
+                            //traverses the keys using the fact that they are ordered and compares 
+                            //all two keys following each other in order
+                            var points = ExceedanceProbabilities.Keys.Zip(ExceedanceProbabilities.Keys.Skip(1),
+                                          (a, b) => new { a, b })
+                                            .Where(x => (x.a * 100) <= probQ && (x.b * 100) >= probQ)
+                                            .FirstOrDefault();
+
+                            regUpper = ExceedanceProbabilities.FirstOrDefault(o => o.Key == points.a);
+                            regLower = ExceedanceProbabilities.FirstOrDefault(o => o.Key == points.b);
+                        }
+                        // get regression probabilities above and below probQ
+                        var EXCREGlower = Convert.ToDouble(regLower?.Key * 100);
+                        var EXCREGupper = Convert.ToDouble(regUpper?.Key * 100);
+                        var QREGlower = Convert.ToDouble(regLower?.Value);
+                        var QREGupper = Convert.ToDouble(regUpper?.Value);
+                        if (QREGlower == 0) QREGlower = 0.001;
+
+                        // compute estimated flow
+                        Qs = Math.Exp(Math.Log(QREGupper) - (Math.Log(Convert.ToDouble(probQ)) - Math.Log(EXCREGupper)) / (Math.Log(EXCREGlower) - Math.Log(EXCREGupper)) * (Math.Log(QREGupper) - Math.Log(QREGlower)));
+                    }
+                    FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
+                    key++;
+                }//next item
             }
             catch (Exception)
             {
@@ -231,6 +291,7 @@ namespace NSSAgent.ServiceAgents
                 throw;
             }
         }
+
         protected void sm(string msg, MessageType type = MessageType.info)
         {
             sm(new Message() { msg = msg, type = type });
@@ -255,8 +316,8 @@ namespace NSSAgent.ServiceAgents
             public Double Probability { get; set; }
             public String Equation { get; set; }
         }
-        
+
         #endregion
     }//end class
-    
+
 }//end namespace

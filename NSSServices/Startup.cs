@@ -68,8 +68,10 @@ namespace NSSServices
             services.AddScoped<IAnalyticsAgent, GoogleAnalyticsAgent>((gaa) => new GoogleAnalyticsAgent(Configuration["AnalyticsKey"]));
             services.Configure<APIConfigSettings>(Configuration.GetSection("APIConfigSettings"));
             services.Configure<JwtBearerSettings>(Configuration.GetSection("JwtBearerSettings"));
-            services.Configure<Resource>(Configuration.GetSection("NWIS"));
-            services.AddSingleton(sp => sp.GetService<IOptions<Resource>>().Value);
+            services.Configure<NWISResource>(Configuration.GetSection("NWIS"));
+            services.Configure<GageStatsResource>(Configuration.GetSection("GageStats"));
+            services.AddSingleton(sp => sp.GetService<IOptions<NWISResource>>().Value);
+            services.AddSingleton(sp => sp.GetService<IOptions<GageStatsResource>>().Value);
 
             //provides access to httpcontext
             services.AddHttpContextAccessor();
@@ -127,7 +129,7 @@ namespace NSSServices
                 options.AddPolicy("CorsPolicy", builder => builder.AllowAnyOrigin()
                                                                  .AllowAnyMethod()
                                                                  .AllowAnyHeader()
-                                                                 .WithExposedHeaders(new string[]{this._hostKey,X_MessagesDefault.msgheader})
+                                                                 .WithExposedHeaders(new string[]{this._hostKey,X_MessagesDefault.msgheader, "X-Version"})
                                                                  );
             });
             

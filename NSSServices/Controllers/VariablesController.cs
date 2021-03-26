@@ -29,6 +29,9 @@ using System.Collections.Generic;
 using SharedAgent;
 using WIM.Services.Attributes;
 using WIM.Security.Authorization;
+using System.Linq;
+using NSSAgent.Resources;
+using NSSDB.Resources;
 
 namespace NSSServices.Controllers
 {
@@ -37,19 +40,23 @@ namespace NSSServices.Controllers
     public class VariablesController : VariablesControllerBase
     {
         protected INSSAgent agent;
+        protected ISharedAgent shared;
         public VariablesController(INSSAgent sa, ISharedAgent shared_sa) : base(shared_sa)
         {
             this.agent = sa;
+            this.shared = shared_agent;
         }
 
         #region METHOD
         [HttpGet(Name ="Variables")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Get.md")]
-        public override async Task<IActionResult> Get()
+        public async Task<IActionResult> GetVariables([FromQuery] string statisticgroups = "")
         {
+            List<string> statisticgroupList = null;
             try
             {
-                return Ok(agent.GetVariables());  
+                statisticgroupList = parse(statisticgroups);
+                return Ok(agent.GetVariableTypes(statisticgroupList));
             }
             catch (Exception ex)
             {
@@ -64,14 +71,81 @@ namespace NSSServices.Controllers
             try
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
-                return Ok(await agent.GetVariable(id));
+                return Ok(agent.GetVariableType(id));
             }
             catch (Exception ex)
             {
                 return await HandleExceptionAsync(ex);
             }
         }
-        
+
+        [HttpPost(Name = "Add Variable")][Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Add.md")]
+        public async Task<IActionResult> Post([FromBody] VariableType entity)
+        {
+            try
+            {
+                if (!isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
+                return Ok(await shared.Add(entity));
+
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPost("[action]", Name = "Variable Batch Upload")][Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Batch.md")]
+        public async Task<IActionResult> Batch([FromBody] List<VariableType> entities)
+        {
+            try
+            {
+                entities.ForEach(e => e.ID = 0);
+                if (!isValid(entities)) return new BadRequestObjectResult("Object is invalid");
+
+                return Ok(await shared.Add(entities));
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
+        [HttpPut("{id}", Name = "Edit Variable")][Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Edit.md")]
+        public async Task<IActionResult> Put(int id, [FromBody] VariableType entity)
+        {
+            try
+            {
+                if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+                return Ok(await shared.Update(id, entity));
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+
+        }
+
+        [HttpDelete("{id}", Name = "Delete Variable")][Authorize(Policy = Policy.AdminOnly)]
+        [APIDescription(type = DescriptionType.e_link, Description = "/Docs/Variables/Delete.md")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (id < 1) return new BadRequestResult();
+
+                shared.DeleteVariableType(id).Wait();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return await HandleExceptionAsync(ex);
+            }
+        }
+
 
         #endregion
     }

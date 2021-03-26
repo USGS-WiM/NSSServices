@@ -19,7 +19,7 @@
 //   
 
 using System.ComponentModel.DataAnnotations;
-namespace NSSDB.Resources
+namespace SharedDB.Resources
 {
     public partial class RegionManager
     {

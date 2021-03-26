@@ -41,6 +41,8 @@ namespace NSSAgent.Resources
         public string Code { get; set; }//x
         public string Description { get; set; }
         public int? StatusID { get; set; }
+        public int? MethodID { get; set; }
+        public int? CitationID { get; set; }
         public double? PercentWeight { get; set; }
         public Double? AreaSqMile { get; set; }
         public bool ShouldSerializePercentWeight()

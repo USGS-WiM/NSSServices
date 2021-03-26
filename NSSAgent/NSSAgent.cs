@@ -40,6 +40,7 @@ using WIM.Exceptions.Services;
 using System.ComponentModel.DataAnnotations;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
+using System.Text.RegularExpressions;
 
 namespace NSSAgent
 {
@@ -54,6 +55,7 @@ namespace NSSAgent
         IQueryable<Citation> GetManagerCitations(int managerID);
         Task<Citation> Update(Int32 pkId, Citation item);
         Task DeleteCitation(Int32 id);
+        Task<Citation> Add(Citation item);
 
         //Limitations
         IQueryable<Limitation> GetLimitation(Int32 ID);
@@ -66,10 +68,6 @@ namespace NSSAgent
         //Managers
         IQueryable<Manager> GetManagers();
         Manager GetManager(Int32 ID);
-        Task<Manager> Add(Manager item);
-        Task<IEnumerable<Manager>> Add(List<Manager> items);
-        Task<Manager> Update(Int32 pkId, Manager item);
-        Task DeleteManager(Int32 pkID);
 
         //Regions
         IQueryable<Region> GetRegions();
@@ -77,10 +75,6 @@ namespace NSSAgent
         Task<Region> GetRegion(Int32 ID);
         Region GetRegionByIDOrCode(string identifier);
         IQueryable<Region> GetManagerRegions(int managerID);
-        Task<Region> Add(Region item);
-        Task<IEnumerable<Region>> Add(List<Region> items);
-        Task<Region> Update(Int32 pkId, Region item);
-        Task DeleteRegion(Int32 pkID);
 
         //RegressionRegions
         IQueryable<RegressionRegion> GetRegressionRegions(List<string> regionList = null, Geometry geom = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
@@ -106,13 +100,32 @@ namespace NSSAgent
         IQueryable<Status> GetStatus();
         Task<Status> GetDistinctStatus(Int32 ID);
 
+        //Method
+        IQueryable<Method> GetMethods();
+        Task<Method> GetMethod(Int32 ID);
+        Task<Method> Update(Int32 pkId, Method item);
+        Task DeleteMethod(Int32 id);
+        Task<Method> Add(Method item);
+
         //Scenarios
         //IQueryable<Scenario> GetScenarios(List<string> regionList, List<string> regressionRegionList, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0);
         IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressionTypeIDList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null);
         IQueryable<Scenario> EstimateScenarios(List<string> regionList, List<Scenario> scenarioList, List<string> regionEquationList, List<string> statisticgroupList, List<string> regressiontypeList, List<string> extensionMethodList, Int32 systemtypeID = 0);
-        Task<Scenario> Update(Scenario item, string existingStatisticGroup = null);
-        Task<IQueryable<Scenario>> Add(Scenario item);
+        Task<Scenario> Update(Scenario item, string existingStatisticGroup = null, bool skipCheck = false);
+        Task<IQueryable<Scenario>> Add(Scenario item, bool skipCheck = false);
         Task DeleteScenario(int regressionregionID, int statisticgroupID, int regressiontypeID);
+
+        //Variables
+        Task<Variable> Add(Variable item);
+        Task<IEnumerable<Variable>> Add(List<Variable> items);
+        Task<Variable> Update(Int32 pkId, Variable item);
+        Variable GetDefaultUnitVariable(Int32 varTypeID);
+        Boolean CanDeleteVariable(Int32 ID);
+        Task DeleteVariable(Int32 ID);
+
+        // Variable types
+        IQueryable<VariableType> GetVariableTypes(List<string> statisticGroupList = null);
+        VariableType GetVariableType(Int32 ID);
 
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
@@ -120,22 +133,20 @@ namespace NSSAgent
         IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null);
         IQueryable<RegressionType> GetManagedRegressions(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null);
         Task<RegressionType> GetRegression(Int32 ID);
-        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null);
-        IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null);
+        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null, List<string> defTypeList = null);
+        IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null, List<string> defTypeList = null);
         Task<StatisticGroupType> GetStatisticGroup(Int32 ID);
         IQueryable<UnitType> GetUnits();
         Task<UnitType> GetUnit(Int32 ID);
         IQueryable<UnitSystemType> GetUnitSystems();
         Task<UnitSystemType> GetUnitSystem(Int32 ID);
-        IQueryable<VariableType> GetVariables();
-        Task<VariableType> GetVariable(Int32 ID);
-        Task DeleteVariable(Int32 ID);
     }
     public class NSSServiceAgent : DBAgentBase, INSSAgent
     {
         #region "Properties"
         private readonly IDictionary<Object,Object> _messages;
-        private readonly Resource nwisResource = null;
+        private readonly NWISResource nwisResource = null;
+        private readonly GageStatsResource gagestatsResource = null;
         string[] INSSAgent.allowableGeometries => new String[] { "Polygon", "MultiPolygon" };        
         #endregion
         #region "Collections & Dictionaries"
@@ -145,8 +156,9 @@ namespace NSSAgent
         
         #endregion
         #region Constructors
-        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor, Resource NWISResource) : base(context) {
-            nwisResource = NWISResource;
+        public NSSServiceAgent(NSSDBContext context, IHttpContextAccessor httpContextAccessor, NWISResource _nwisResource, GageStatsResource _gagestatsResource) : base(context) {
+            nwisResource = _nwisResource;
+            gagestatsResource = _gagestatsResource;
             _messages = httpContextAccessor.HttpContext.Items;
             
             //optimize query for disconnected databases.
@@ -221,6 +233,10 @@ namespace NSSAgent
         {
             return this.Delete<Citation>(pkID);
         }
+        public Task<Citation> Add(Citation item)
+        {
+            return this.Add<Citation>(item);
+        }
         #endregion
         #region Limitations
         public IQueryable<Limitation> GetLimitation(int ID)
@@ -258,7 +274,6 @@ namespace NSSAgent
         {
             try
             {
-
                 return Select<Manager>().AsEnumerable().FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));                    
             }
             catch (Exception ex)
@@ -300,22 +315,6 @@ namespace NSSAgent
         {
             return this.GetManagers().Include(m => m.RegionManagers).FirstOrDefault(m => m.ID == ID);
         }
-        public Task<Manager> Add(Manager item)
-        {
-            return this.Add<Manager>(item);
-        }
-        public Task<IEnumerable<Manager>> Add(List<Manager> items)
-        {
-            return this.Add<Manager>(items);
-        }
-        public Task<Manager> Update(int pkId, Manager item)
-        {
-            return this.Update<Manager>(pkId, item);
-        }
-        public Task DeleteManager(int pkID)
-        {
-            return this.Delete<Manager>(pkID);
-        }
         #endregion        
         #region Region
         public Region GetRegionByIDOrCode(string identifier)
@@ -356,22 +355,6 @@ namespace NSSAgent
         {
             return Select<RegionManager>().Where(rm => rm.ManagerID == managerID)
                                 .Include("Region").Select(rm => rm.Region);
-        }
-        public Task<Region> Add(Region item)
-        {
-            return this.Add<Region>(item);
-        }
-        public Task<IEnumerable<Region>> Add(List<Region> items)
-        {
-            return this.Add<Region>(items);
-        }
-        public Task<Region> Update(int pkId, Region item)
-        {
-            return this.Update<Region>(pkId, item);
-        }
-        public Task DeleteRegion(int pkID)
-        {
-            return this.Delete<Region>(pkID);
         }
         #endregion
         #region RegressionRegion
@@ -537,6 +520,28 @@ namespace NSSAgent
         {
             return this.Find<Status>(ID);
         }
+        #endregion
+        #region Method
+        public IQueryable<Method> GetMethods()
+        {
+            return this.Select<Method>();
+        }
+        public Task<Method> GetMethod(Int32 ID)
+        {
+            return this.Find<Method>(ID);
+        }
+        public Task<Method> Update(int pkId, Method item)
+        {
+            return this.Update<Method>(pkId, item);
+        }
+        public Task DeleteMethod(Int32 pkID)
+        {
+            return this.Delete<Method>(pkID);
+        }
+        public Task<Method> Add(Method item)
+        {
+            return this.Add<Method>(item);
+        }
         #endregion        
         #region Scenarios
         public IQueryable<Scenario> GetScenarios(List<string> regionList=null, Geometry geom=null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null, List<string> extensionMethodList = null, Int32 systemtypeID = 0, Manager manager = null, IQueryable<Status> applicableStatus = null)
@@ -587,6 +592,8 @@ namespace NSSAgent
                             Code = r.groupedparameters.First().RegressionRegion.Code,
                             Description = r.groupedparameters.First().RegressionRegion.Description,
                             StatusID = r.groupedparameters.First().RegressionRegion.StatusID,
+                            MethodID = r.groupedparameters.First().RegressionRegion.MethodID,
+                            CitationID = r.groupedparameters.First().RegressionRegion.CitationID,
                             PercentWeight = (regressionRegions!=null && regressionRegions.ContainsKey(r.groupkey))?regressionRegions[r.groupkey].PercentWeight:null,
                             AreaSqMile = (regressionRegions != null && regressionRegions.ContainsKey(r.groupkey)) ? regressionRegions[r.groupkey].Area : null,
                             Regressions = (manager?.Username != null) ? r.groupedparameters.Select(rg=>new Regression()
@@ -730,7 +737,7 @@ namespace NSSAgent
                 throw;
             }
         }
-        public async Task<IQueryable<Scenario>> Add(Scenario item)
+        public async Task<IQueryable<Scenario>> Add(Scenario item, bool skipCheck = false)
         {
             
             List<Equation> newEquations = new List<Equation>();
@@ -777,7 +784,7 @@ namespace NSSAgent
                         };
 
                         //check if valid before uploading
-                        if (valid(neq,regression.Expected))
+                        if (valid(neq,regression.Expected, skipCheck))
                             newEquations.Add(neq);
 
                     }//next regression
@@ -796,7 +803,7 @@ namespace NSSAgent
                 throw;
             }
         }
-        public async Task<Scenario> Update(Scenario item, string existingStatisticGroup = null)
+        public async Task<Scenario> Update(Scenario item, string existingStatisticGroup = null, bool skipCheck = false)
         {
             List<string> regressiontypeList = null;
             List<RegressionRegion> regressionregionList = null;
@@ -918,7 +925,7 @@ namespace NSSAgent
                         v.UnitType = null;
                     });
 
-                    if (valid(equation, regression.Expected))
+                    if (valid(equation, regression.Expected, skipCheck))
                         await this.Update<Equation>(equation.ID, equation);
                     else
                         throw new Exception("Scenario failed to update. See messages for more information.");
@@ -956,6 +963,47 @@ namespace NSSAgent
             }
         }
         #endregion
+
+        #region Variables
+        public Task<Variable> Add(Variable item)
+        {
+            return this.Add<Variable>(item);
+        }
+        public Task<IEnumerable<Variable>> Add(List<Variable> items)
+        {
+            return this.Add<Variable>(items);
+        }
+        public Task<Variable> Update(Int32 pkId, Variable item)
+        {
+            return this.Update<Variable>(pkId, item);
+        }
+        public Variable GetDefaultUnitVariable(Int32 varTypeID)
+        {
+            return this.Select<Variable>().FirstOrDefault(x => x.VariableTypeID == varTypeID && x.Comments == "Default unit");
+        }
+        public Boolean CanDeleteVariable(Int32 ID)
+        {
+            var defaultVariable = this.GetDefaultUnitVariable(ID);
+            var allVariables = this.Select<Variable>().Where(v => v.VariableTypeID == ID && v.Comments != "Default unit");
+
+            if (allVariables.Count() > 0)
+            {
+                return false;
+            }
+
+            if (defaultVariable != null)
+            {
+                this.Delete<Variable>(defaultVariable.ID);
+                return true;
+            }
+            return allVariables.Count() == 0;
+        }
+        public Task DeleteVariable(Int32 ID)
+        {
+            return this.Delete<Variable>(ID);
+        }
+        #endregion
+
         #region ReadOnly
         public IQueryable<ErrorType> GetErrors()
         {
@@ -1021,10 +1069,17 @@ namespace NSSAgent
         {
             return this.Select<StatisticGroupType>().FirstOrDefault(s => s.Code == code);
         }
-        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null)
+        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null, List<string> defTypeList = null)
         {
             if (regionList?.Any() != true && geom == null && regressionRegionList?.Any() != true && regressionsList?.Any() != true)
-                return this.Select<StatisticGroupType>();
+            {
+                var query = this.Select<StatisticGroupType>();
+                if (defTypeList != null && defTypeList.Count > 0)
+                {
+                    query = query.Where(sg => defTypeList.Contains(sg.DefType.ToLower())).OrderBy(st => st.ID);
+                }
+                return query.OrderBy(sg => sg.ID);
+            }
 
             var equations = this.GetEquations(regionList, regressionRegionList, null, regressionsList);
 
@@ -1034,10 +1089,10 @@ namespace NSSAgent
             return equations.Select(e => e.StatisticGroupType).Distinct().OrderBy(e => e.ID);
 
         }
-        public IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null)
+        public IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null, List<string> defTypeList = null)
         {
             if (manager.Role.Equals(Role.Admin))
-                return GetStatisticGroups(regionList, geom, regressionRegionList, regressionsList);
+                return GetStatisticGroups(regionList, geom, regressionRegionList, regressionsList, defTypeList);
 
             //return only managed citations
             var query = this.Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include("RegressionRegion.Equations.StatisticGroupType")
@@ -1088,21 +1143,22 @@ namespace NSSAgent
         {
             return this.Find<UnitSystemType>(ID);
         }
-        public IQueryable<VariableType> GetVariables()
+        public IQueryable<VariableType> GetVariableTypes(List<string> statisticGroupList = null)
         {
-            return this.Select<VariableType>();
+            IQueryable<VariableType> query = this.Select<VariableType>().Include(vt => vt.MetricUnitType).Include(vt => vt.EnglishUnitType).Include(vt => vt.StatisticGroupType);
+            if (statisticGroupList != null && statisticGroupList.Count > 0)
+            {
+                query = query.Where(vt => statisticGroupList.Contains(vt.StatisticGroupTypeID.ToString().Trim()) || statisticGroupList.Contains(vt.StatisticGroupType.Code.ToLower()));
+            }
+            return query.OrderBy(vt => vt.ID);
         }
-        public Task<VariableType> GetVariable(Int32 ID)
+        public VariableType GetVariableType(Int32 ID)
         {
-            return this.Find<VariableType>(ID);
+            return this.GetVariableTypes().FirstOrDefault(vt => vt.ID == ID);
         }
         public VariableType GetVariableByCode(string code)
         {
             return this.Select<VariableType>().FirstOrDefault(v => v.Code == code);
-        }
-        public Task DeleteVariable(Int32 ID)
-        {
-            return this.Delete<Variable>(ID);
         }
         #endregion
         #endregion
@@ -1320,7 +1376,7 @@ namespace NSSAgent
                 return false;
             }
         }
-        private bool valid (Equation equation,ExpectedValue expected)
+        private bool valid (Equation equation,ExpectedValue expected, bool skipCheck = false)
         {
             ExpressionOps eOps = null;
             try
@@ -1345,14 +1401,14 @@ namespace NSSAgent
                 var expectedValueRounded = expected.Value.Round();
 
                 if (!eOps.IsValid) { sm($"Scenario expression failed to execute. {equation.Expression} is invalid"); return false; }
-                if (eopsValueRounded != expectedValueRounded) { sm($"Expected value {expectedValueRounded} does not match computed {eopsValueRounded}"); return false; }
+                if (eopsValueRounded != expectedValueRounded && !skipCheck) { sm($"Expected value {expectedValueRounded} does not match computed {eopsValueRounded}"); return false; }
 
                 if (equation.PredictionInterval != null)
                 {
                     IntervalBounds computedBound = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
                     var expectedUpperRounded = computedBound != null ? expected.IntervalBounds.Upper.Round() : 0;
                     var expectedLowerRounded = computedBound != null ? expected.IntervalBounds.Lower.Round() : 0;
-                    if (computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded)
+                    if ((computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded) && !skipCheck)
                     {
                         sm($"Expected interval bound values; Upper: {expectedUpperRounded}, Lower: {expectedLowerRounded} do not match computed; Upper: {computedBound?.Upper}, Lower: {computedBound?.Lower}");
                         return false;
@@ -1671,7 +1727,7 @@ namespace NSSAgent
                         Name = "Flow Duration Curve Transfer Method",
                         Parameters = new List<ExtensionParameter>{new ExtensionParameter() { Code = "sid", Name="NWIS Station ID", Description="USGS NWIS Station Identifier", Value="01234567" },
                                      new ExtensionParameter() { Code = "sdate", Name="Start Date", Description="start date of returned flow estimate", Value=  DateTime.MinValue },
-                                     new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today }
+                                     new ExtensionParameter() { Code = "edate", Name ="End Date", Description="end date of returned flow estimate", Value= DateTime.Today },
                        }
 
                     };
@@ -1682,13 +1738,30 @@ namespace NSSAgent
         private void evaluateExtension(Extension ext, SimpleRegressionRegion regressionregion)
         {
             ExtensionServiceAgentBase sa = null;
+            GageStatsServiceAgent gs_sa = null;
             try
             {
                 switch (ext.Code.ToUpper())
                 {
                     case "QPPQ":
                     case "FDCTM":
-                        sa = new FDCTMServiceAgent(ext, new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k => Convert.ToDouble(k.Name.Replace("Percent Duration", "").Trim()) / 100, v => v.Value.Value)), nwisResource, this._messages);
+                        string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
+                        var exceedanceProbabilities = new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
+                                    Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value));
+                        var publishedFDC = new SortedDictionary<double, double>();
+                        gs_sa = new GageStatsServiceAgent(gagestatsResource);
+                        try
+                        {
+                            var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
+                            publishedFDC = this.getPublishedDuration(stationInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.sm($"Failed to find published exceedance probabilities: {ex.Message}",  WIM.Resources.MessageType.error);
+                            break;
+                        }
+
+                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC);
                         break;
                 }//end switch
 
@@ -1699,6 +1772,27 @@ namespace NSSAgent
             {
                 this.sm($"Error evaluating extension: {ex.Message}", WIM.Resources.MessageType.error);
             }
+        }
+        private string getPercentDuration(string code)
+        {
+            var regex = new Regex(@"[0-9](.*)[0-9]");
+            var regex2 = new Regex(@"[0-9]");
+            if (regex.Match(code).Value != "") return regex.Match(code).Value;
+            else return regex2.Match(code).Value;
+        }
+        private SortedDictionary<double, double> getPublishedDuration(GageStatsStation station)
+        {
+            var exceedanceProbabilities = new SortedDictionary<double, double>();
+            foreach (var stat in station.Statistics)
+            {
+                if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit))
+                {
+                    var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
+                    if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
+                    else exceedanceProbabilities.Add(key, stat.Value);
+                }
+            }
+            return exceedanceProbabilities;
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

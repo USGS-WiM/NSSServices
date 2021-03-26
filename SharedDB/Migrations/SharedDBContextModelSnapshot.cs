@@ -15,20 +15,24 @@ namespace SharedDB.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("shared")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("SharedDB.Resources.ErrorType", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Code")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -58,18 +62,116 @@ namespace SharedDB.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SharedDB.Resources.Manager", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OtherInfo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryPhone")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondaryPhone")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Managers","shared");
+                });
+
+            modelBuilder.Entity("SharedDB.Resources.Region", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Regions","shared");
+                });
+
+            modelBuilder.Entity("SharedDB.Resources.RegionManager", b =>
+                {
+                    b.Property<int>("ManagerID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RegionID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ManagerID", "RegionID");
+
+                    b.HasIndex("RegionID");
+
+                    b.ToTable("RegionManager","shared");
+                });
+
             modelBuilder.Entity("SharedDB.Resources.RegressionType", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Code")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -10262,13 +10364,20 @@ namespace SharedDB.Migrations
             modelBuilder.Entity("SharedDB.Resources.StatisticGroupType", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Code")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DefType")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -10475,13 +10584,18 @@ namespace SharedDB.Migrations
             modelBuilder.Entity("SharedDB.Resources.UnitConversionFactor", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<double>("Factor");
+                    b.Property<double>("Factor")
+                        .HasColumnType("double precision");
 
-                    b.Property<int>("UnitTypeInID");
+                    b.Property<int>("UnitTypeInID")
+                        .HasColumnType("integer");
 
-                    b.Property<int>("UnitTypeOutID");
+                    b.Property<int>("UnitTypeOutID")
+                        .HasColumnType("integer");
 
                     b.HasKey("ID");
 
@@ -10833,10 +10947,13 @@ namespace SharedDB.Migrations
             modelBuilder.Entity("SharedDB.Resources.UnitSystemType", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("UnitSystem")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -10866,15 +10983,20 @@ namespace SharedDB.Migrations
             modelBuilder.Entity("SharedDB.Resources.UnitType", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Abbreviation")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("UnitSystemTypeID");
+                    b.Property<int>("UnitSystemTypeID")
+                        .HasColumnType("integer");
 
                     b.HasKey("ID");
 
@@ -11307,20 +11429,40 @@ namespace SharedDB.Migrations
             modelBuilder.Entity("SharedDB.Resources.VariableType", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Code")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EnglishUnitTypeID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MetricUnitTypeID")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("StatisticGroupTypeID")
+                        .HasColumnType("integer");
 
                     b.HasKey("ID");
 
                     b.HasIndex("Code")
                         .IsUnique();
+
+                    b.HasIndex("EnglishUnitTypeID");
+
+                    b.HasIndex("MetricUnitTypeID");
+
+                    b.HasIndex("StatisticGroupTypeID");
 
                     b.ToTable("VariableType","shared");
 
@@ -11330,3270 +11472,4686 @@ namespace SharedDB.Migrations
                             ID = 1,
                             Code = "DRNAREA",
                             Description = "Area that drains to a point on a stream",
-                            Name = "Drainage Area"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Drainage Area",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 2,
                             Code = "LAKEAREA",
                             Description = "Percentage of Lakes and Ponds",
-                            Name = "Percent Lakes and Ponds"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Lakes and Ponds",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 3,
                             Code = "PRECIP",
                             Description = "Mean Annual Precipitation",
-                            Name = "Mean Annual Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 4,
                             Code = "JANMINTMP",
                             Description = "Mean Minimum January Temperature",
-                            Name = "Mean Min January Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Min January Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 5,
                             Code = "FOREST",
                             Description = "Percentage of area covered by forest",
-                            Name = "Percent Forest"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Forest",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 6,
                             Code = "ELEV",
                             Description = "Mean Basin Elevation",
-                            Name = "Mean Basin Elevation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Elevation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 7,
                             Code = "CONTDA",
                             Description = "Area that contributes flow to a point on a stream",
-                            Name = "Contributing Drainage Area"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Contributing Drainage Area",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 8,
                             Code = "CSL10_85",
                             Description = "Change in elevation divided by length between points 10 and 85 percent of distance along main channel to basin divide - main channel method not known",
-                            Name = "Stream Slope 10 and 85 Method"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Stream Slope 10 and 85 Method",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 9,
                             Code = "BSHAPE",
                             Description = "Basin Shape Factor for Area",
-                            Name = "Basin Shape Factor"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Shape Factor",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 10,
                             Code = "BSLDEM30M",
                             Description = "Mean basin slope computed from 30 m DEM",
-                            Name = "Mean Basin Slope from 30m DEM"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Slope from 30m DEM",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 11,
                             Code = "LAT_GAGE",
                             Description = "Latitude",
-                            Name = "Latitude"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Latitude",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 12,
                             Code = "BSLDEM10M",
                             Description = "Mean basin slope computed from 10 m DEM",
-                            Name = "Mean Basin Slope from 10m DEM"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Slope from 10m DEM",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 13,
                             Code = "EL7500",
                             Description = "Percent of area above 7500 ft",
-                            Name = "Percent above 7500 ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent above 7500 ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 14,
                             Code = "I6H100Y",
                             Description = "6-hour precipitation that is expected to occur on average once in 100 years",
-                            Name = "6 Hour 100 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "6 Hour 100 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 15,
                             Code = "I24H2Y",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 2 years - Equivalent to precipitation intensity index",
-                            Name = "24 Hour 2 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "24 Hour 2 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 16,
                             Code = "I24H10Y",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 10 years",
-                            Name = "24 Hour 10 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "24 Hour 10 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 17,
                             Code = "I24H25Y",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 25 years",
-                            Name = "24 Hour 25 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "24 Hour 25 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 18,
                             Code = "I24H50Y",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 50 years",
-                            Name = "24 Hour 50 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "24 Hour 50 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 19,
                             Code = "I24H100Y",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 100 years",
-                            Name = "24 Hour 100 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "24 Hour 100 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 20,
                             Code = "SOILA",
                             Description = "Percentage of area of Hydrologic Soil Type A",
-                            Name = "Percent Hydrologic Soil Type A"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Hydrologic Soil Type A",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 21,
                             Code = "STORNHD",
                             Description = "Percent storage (wetlands and waterbodies) determined from 1:24K NHD",
-                            Name = "Percent Storage from NHD"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Storage from NHD",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 22,
                             Code = "IMPNLCD01",
                             Description = "Percentage of impervious area determined from NLCD 2001 impervious dataset",
-                            Name = "Percent Impervious NLCD2001"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Impervious NLCD2001",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 23,
                             Code = "AIMPERV",
                             Description = "Impervious area",
-                            Name = "Area of Impervious Surfaces"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Area of Impervious Surfaces",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 24,
                             Code = "BDF",
                             Description = "Urbanization index described by Sauer and others (1981) - Also called Urbanization Index in Texas",
-                            Name = "Basin Development Factor"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Development Factor",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 25,
                             Code = "ADETEN",
                             Description = "Lake and Detention Basin Area",
-                            Name = "Area of Lake and Detention Basin"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Area of Lake and Detention Basin",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 26,
                             Code = "LC92STOR",
                             Description = "Percentage of water bodies and wetlands determined from the NLCD",
-                            Name = "Percent Storage from NLCD1992"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Storage from NLCD1992",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 27,
                             Code = "PCTREG1",
                             Description = "Percentage of drainage area located in Region 1",
-                            Name = "Percent Area in Region 1"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Area in Region 1",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 28,
                             Code = "PCTREG2",
                             Description = "Percentage of drainage area located in Region 2",
-                            Name = "Percent Area in Region 2"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Area in Region 2",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 29,
                             Code = "PCTREG3",
                             Description = "Percentage of drainage area located in Region 3",
-                            Name = "Percent Area in Region 3"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Area in Region 3",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 30,
                             Code = "PCTREG4",
                             Description = "Percentage of drainage area located in Region 4",
-                            Name = "Percent Area in Region 4"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Area in Region 4",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 31,
                             Code = "PCTREG5",
                             Description = "Percentage of drainage area located in Region 5",
-                            Name = "Percent Area in Region 5"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Area in Region 5",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 32,
                             Code = "LC06IMP",
                             Description = "Percentage of impervious area determined from NLCD 2006 impervious dataset",
-                            Name = "Percent Impervious NLCD2006"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Impervious NLCD2006",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 33,
                             Code = "LC06DEV",
                             Description = "Percentage of land-use from NLCD 2006 classes 21-24",
-                            Name = "Percent Developed from NLCD2006"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Developed from NLCD2006",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 34,
                             Code = "CCM",
                             Description = "Constant of channel maintenance computed as drainage area divided by total stream length",
-                            Name = "Constant of Channel Maintenance"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Constant of Channel Maintenance",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 35,
                             Code = "DESMOIN",
                             Description = "Area underlain by Des Moines Lobe",
-                            Name = "Des Moines Lobe"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Des Moines Lobe",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 36,
                             Code = "SSURGOKSAT",
                             Description = "Saturated hydraulic conductivity in micrometers per second from NRCS SSURGO database",
-                            Name = "SSURGO Saturated Hydraulic Conductivity"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "SSURGO Saturated Hydraulic Conductivity",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 37,
                             Code = "STORNWI",
                             Description = "Percentage of strorage (combined water bodies and wetlands) from the Nationa Wetlands Inventory",
-                            Name = "Percentage of Storage from NWI"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percentage of Storage from NWI",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 38,
                             Code = "LC06STOR",
                             Description = "Percentage of water bodies and wetlands determined from the NLCD 2006",
-                            Name = "Percent Storage from NLCD2006"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Storage from NLCD2006",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 39,
                             Code = "PRECPRIS10",
                             Description = "Basin average mean annual precipitation for 1981 to 2010 from PRISM",
-                            Name = "Mean Annual Precip PRISM 1981 2010"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Precip PRISM 1981 2010",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 40,
                             Code = "OHREGC",
                             Description = "Ohio Region C Indicator",
-                            Name = "Ohio Region C Indicator 1 if in C else 0"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Ohio Region C Indicator 1 if in C else 0",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 41,
                             Code = "OHREGA",
                             Description = "Ohio Region A Indicator",
-                            Name = "Ohio Region A Indicator 1 if in A else 0"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Ohio Region A Indicator 1 if in A else 0",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 42,
                             Code = "CSL1085LFP",
                             Description = "Change in elevation divided by length between points 10 and 85 percent of distance along the longest flow path to the basin divide, LFP from 2D grid",
-                            Name = "Stream Slope 10 and 85 Longest Flow Path"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Stream Slope 10 and 85 Longest Flow Path",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 43,
                             Code = "NFSL30_30M",
                             Description = "Percent area with north-facing slopes greater than 30 percent from 30-meter DEM.",
-                            Name = "N Facing Slopes gt 30pct from 30m DEM"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "N Facing Slopes gt 30pct from 30m DEM",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 44,
                             Code = "SOILPERM",
                             Description = "Average Soil Permeability",
-                            Name = "Average Soil Permeability"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Average Soil Permeability",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 45,
                             Code = "ILREG1",
                             Description = "Indicator variable for IL region 1, enter 1 if site is in region 1 else 0",
-                            Name = "Region 1 Indicator  enter 1"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Region 1 Indicator  enter 1",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 46,
                             Code = "WACTCH",
                             Description = "Width of active channel",
-                            Name = "Width Of Active Channel"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Width Of Active Channel",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 47,
                             Code = "URBAN",
                             Description = "Percentage of basin with urban development",
-                            Name = "Percent Urban"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Urban",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 48,
                             Code = "WETLAND",
                             Description = "Percentage of Wetlands",
-                            Name = "Percent Wetlands"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Wetlands",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 49,
                             Code = "SSURGOA",
                             Description = "Percentage of area of Hydrologic Soil Type A from SSURGO",
-                            Name = "SSURGO Percent Hydrologic Soil Type A"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "SSURGO Percent Hydrologic Soil Type A",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 50,
                             Code = "BSLDEM10ff",
                             Description = "Mean basin slope computed from 10 m DEM in feet per foot",
-                            Name = "Mean Basin Slope from 10m DEM ft per ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Slope from 10m DEM ft per ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 51,
                             Code = "SOILCorD",
                             Description = "Percentage of area of Hydrologic Soil Type C or D from SSURGO",
-                            Name = "Percent SSURGO Soil Type C or D"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent SSURGO Soil Type C or D",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 52,
                             Code = "IMPERV",
                             Description = "Percentage of impervious area",
-                            Name = "Percent Impervious"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Impervious",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 53,
                             Code = "LIME",
                             Description = "Percentage of area of limestone geology",
-                            Name = "Percent Limestone"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Limestone",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 54,
                             Code = "FOREST_MD",
                             Description = "Percent forest from Maryland 2010 land-use data",
-                            Name = "Percent forest from MD 2010 land use"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent forest from MD 2010 land use",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 55,
                             Code = "WBANKFULL",
                             Description = "Width of channel at bankfull",
-                            Name = "Width Of Bankfull Channel"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Width Of Bankfull Channel",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 56,
                             Code = "PLCHSWAMP",
                             Description = "Percentage of the main channel length that flows through swamps",
-                            Name = "Percent Length of Main Channel Swamps"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Length of Main Channel Swamps",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 57,
                             Code = "SLENRAT",
                             Description = "Main channel length - squared - divided by the contributing drainage area",
-                            Name = "Slenderness Ratio"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Slenderness Ratio",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 58,
                             Code = "OUTWASH",
                             Description = "Percentage of area of outwash",
-                            Name = "Percent Outwash"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Outwash",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 59,
                             Code = "MUCK",
                             Description = "Percentage of area of peat and muck",
-                            Name = "Percent Peat and Muck"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Peat and Muck",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 60,
                             Code = "MORTILL",
                             Description = "Percentage of End Moraines of Fine-Textured Till",
-                            Name = "End Moraines of Fine Textured Till"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "End Moraines of Fine Textured Till",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 61,
                             Code = "MEDTILL",
                             Description = "Percentage of area of medium-textured glacial till",
-                            Name = "Percent Medium Till"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Medium Till",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 62,
                             Code = "PCLAY",
                             Description = "Percentage of lacustrine clay and silt",
-                            Name = "Percent Lacustrine Clay and Silt"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Lacustrine Clay and Silt",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 63,
                             Code = "TILROCK",
                             Description = "Percentage of area of thin glacial till over bedrock",
-                            Name = "Percent Thin Till over Bedrock"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Thin Till over Bedrock",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 64,
                             Code = "CRSTILL",
                             Description = "Percentage of area of coarse till",
-                            Name = "Percent Coarse Till"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Coarse Till",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 65,
                             Code = "GENRO",
                             Description = "Generalized mean annual runoff in Minnesota 1951-85",
-                            Name = "Generalized Runoff"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Generalized Runoff",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 66,
                             Code = "LOGDA",
                             Description = "Logarithm base 10 of drainage area",
-                            Name = "Log of Drainage Area"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Log of Drainage Area",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 67,
                             Code = "CSL10_85fm",
                             Description = "Change in elevation between points 10 and 85 percent of length along main channel to basin divide divided by length between points ft per mi",
-                            Name = "Stream Slope 10 and 85 Method ft per mi"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Stream Slope 10 and 85 Method ft per mi",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 68,
                             Code = "LENGTH",
                             Description = "Length along the main channel from the measuring location extended to the basin divide",
-                            Name = "Main Channel Length"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Main Channel Length",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 69,
                             Code = "ELEV1000",
                             Description = "Elevation in Thousands",
-                            Name = "Elevation in Thousands"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Elevation in Thousands",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 70,
                             Code = "DAUNREG",
                             Description = "Unregulated drainage area used in OK regulated equations",
-                            Name = "Unregulated Drainage Area"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Unregulated Drainage Area",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 71,
                             Code = "CLIMFAC2YR",
                             Description = "Two-year climate factor from Lichy and Karlinger (1990)",
-                            Name = "Tennessee Climate Factor 2 Year"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Tennessee Climate Factor 2 Year",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 72,
                             Code = "WATCAP",
                             Description = "Available water capacity of the top 60 inches of soil - determined from STATSGO data",
-                            Name = "Available Water Capacity"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Available Water Capacity",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 73,
                             Code = "BSLOPCM",
                             Description = "Mean basin slope determined by summing lengths of all contours in basin mulitplying by contour interval and dividing product by drainage area",
-                            Name = "Mean Basin Slope ft per mi"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Slope ft per mi",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 74,
                             Code = "DRNFREQ",
                             Description = "Number of first order streams per square mile of drainage area",
-                            Name = "Drainage Frequency"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Drainage Frequency",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 75,
                             Code = "RELRELF",
                             Description = "Basin relief divided by basin perimeter",
-                            Name = "Relative Relief"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Relative Relief",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 76,
                             Code = "LSTPERM",
                             Description = "Permeability of least permeable layer",
-                            Name = "Least Permeable Layer Permeability"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Least Permeable Layer Permeability",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 77,
                             Code = "COMPRAT",
                             Description = "A measure of basin shape related to basin perimeter and drainage area",
-                            Name = "Compactness Ratio"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Compactness Ratio",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 78,
                             Code = "AVMXSS",
                             Description = "Average Maximum Soil Slope",
-                            Name = "Average Maximum Soil Slope"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Average Maximum Soil Slope",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 79,
                             Code = "STRDEN",
                             Description = "Stream Density -- total length of streams divided by drainage area",
-                            Name = "Stream Density"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Stream Density",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 80,
                             Code = "STORAGE",
                             Description = "Percentage of area of storage (lakes ponds reservoirs wetlands)",
-                            Name = "Percent Storage"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Storage",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 81,
                             Code = "POPDENS",
                             Description = "Basin Population Density",
-                            Name = "Basin Population Density"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Population Density",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 82,
                             Code = "CELVBLUE",
                             Description = "Average of outlet elevation and the elevation at the upstream extent of the mapped stream",
-                            Name = "Average Channel Elevation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Average Channel Elevation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 83,
                             Code = "APRAVPRE",
                             Description = "Mean April Precipitation",
-                            Name = "Mean April Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean April Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 84,
                             Code = "PII_SD",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 2 years minus 1.5 inches",
-                            Name = "S Dakota Precipitation Intensity Index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "S Dakota Precipitation Intensity Index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 85,
                             Code = "GUTTER",
                             Description = "Length of gutters per square mile of drainage area",
-                            Name = "Gutter Length"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Gutter Length",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 86,
                             Code = "JANMAXTMP",
                             Description = "Mean Maximum January Temperature",
-                            Name = "Mean Maximum January Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Maximum January Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 87,
                             Code = "CARBON",
                             Description = "Percentage of area of carbonate rock",
-                            Name = "Percent Carbonate"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Carbonate",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 88,
                             Code = "ROCKDEP",
                             Description = "Depth to rock",
-                            Name = "Depth to Rock"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Depth to Rock",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 89,
                             Code = "LONG_OUT",
                             Description = "Longitude of Basin Outlet",
-                            Name = "Longitude of Basin Outlet"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Longitude of Basin Outlet",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 90,
                             Code = "WATWET",
                             Description = "Percent open water and herbaceous wetland from NLCD",
-                            Name = "Percent Open Water & Herb Wetland"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Open Water & Herb Wetland",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 91,
                             Code = "ILREG3",
                             Description = "Indicator variable for IL region 3, enter 1 if site is in region 3 else 0",
-                            Name = "Region 3 Indicator  enter 1"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Region 3 Indicator  enter 1",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 92,
                             Code = "BASLENAH",
                             Description = "Basin length from outlet to basin divide determined using the method in the ArcHydro Toolset",
-                            Name = "Basin Length ArcHydro Method"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Length ArcHydro Method",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 93,
                             Code = "EVAPAN",
                             Description = "Mean Annual Pan Evaporation",
-                            Name = "Mean Annual Pan Evaporation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Pan Evaporation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 94,
                             Code = "LNG_GAGE",
                             Description = "Longitude",
-                            Name = "Longitude"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Longitude",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 95,
                             Code = "CSLBlue",
                             Description = "Change in elevation of the longest blue-line stream (not extended to the boundary) divided by stream length",
-                            Name = "Stream Slope Blue Line Method"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Stream Slope Blue Line Method",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 96,
                             Code = "TXURBINDEX",
                             Description = "Urbanization index defined in WRIR 82-18",
-                            Name = "Texas Urbanization Index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Texas Urbanization Index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 97,
                             Code = "CONVEY",
                             Description = "Conveyance of main stream channel at bank-full conditions",
-                            Name = "Bank Full Channel Conveyance"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Bank Full Channel Conveyance",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 98,
                             Code = "CSLBlue_ff",
                             Description = "Change in elevation of the longest blue-line stream divided by stream length",
-                            Name = "Main Channel Slope ft per ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Main Channel Slope ft per ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 99,
                             Code = "OmegaEM",
                             Description = "Generalized regression residual as defined in TX SIR 2009-5087",
-                            Name = "OmegaEM residual from 2009 5087"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "OmegaEM residual from 2009 5087",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 100,
                             Code = "ILREG5",
                             Description = "Indicator variable for IL region 5, enter 1 if site is in region 5 else 0",
-                            Name = "Region 5 Indicator  enter 1"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Region 5 Indicator  enter 1",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 101,
                             Code = "ILREG6",
                             Description = "Indicator variable for IL region 6, enter 1 if site is in region 6 else 0",
-                            Name = "Region 6 Indicator  enter 1"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Region 6 Indicator  enter 1",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 102,
                             Code = "ILREG7",
                             Description = "Indicator variable for IL region 7, enter 1 if site is in region 7 else 0",
-                            Name = "Region 7 Indicator  enter 1"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Region 7 Indicator  enter 1",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 103,
                             Code = "LU92HRBN",
                             Description = "Percent Natural  Herbaceous Upland from NLCD1992",
-                            Name = "Percent Nat Herb Upland from NLCD1992"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Nat Herb Upland from NLCD1992",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 104,
                             Code = "SNOFALL",
                             Description = "Mean Annual Snowfall",
-                            Name = "Mean Annual Snowfall"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Snowfall",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 105,
                             Code = "SOILINDEX",
                             Description = "Mean STATSGO Hydrologic Soils Index (from PL. 2 WRIR 03-4107 for WY)",
-                            Name = "Mean Basin Hydrologic Soils Index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Hydrologic Soils Index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 106,
                             Code = "MARAVPRE",
                             Description = "Mean March Precipitation",
-                            Name = "Mean March Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean March Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 107,
                             Code = "LAT_OUT",
                             Description = "Latitude of Basin Outlet",
-                            Name = "Latitude of Basin Outlet"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Latitude of Basin Outlet",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 108,
                             Code = "JANAVPRE",
                             Description = "Mean January Precipitation",
-                            Name = "Mean January Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean January Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 109,
                             Code = "I2H2Y",
                             Description = "Maximum 2-hour precipitation that occurs on average once in 2 years",
-                            Name = "2 Hour 2 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "2 Hour 2 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 110,
                             Code = "PRECless35",
                             Description = "Mean Annual Precip - 35 (LA ROI Parm)",
-                            Name = "Mean Annual Precip less 35 LA ROI Parm"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Precip less 35 LA ROI Parm",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 111,
                             Code = "STORAGEp1",
                             Description = "Percent Storage plus 1 (MN ROI Parm)",
-                            Name = "Percent Storage add 1 MN ROI Parm"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Storage add 1 MN ROI Parm",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 112,
                             Code = "LAKESp1",
                             Description = "Percent Lakes plus 1 (MN ROI Parm)",
-                            Name = "Percent Lakes add 1 MN ROI Parm"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Lakes add 1 MN ROI Parm",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 113,
                             Code = "FORESTp1",
                             Description = "Percent Forest plus 1 (ID ROI Parm)",
-                            Name = "Percent Forest add 1 ID ROI Parm"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Forest add 1 ID ROI Parm",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 114,
                             Code = "PSFSLp1",
                             Description = "Pct. South Facing Slopes plus 1 (ID ROI Parm)",
-                            Name = "Pct South Facing Slopes add 1 ID ROI"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Pct South Facing Slopes add 1 ID ROI",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 115,
                             Code = "CHANCOND",
                             Description = "Condition between points 100- 75- 50- and 25-percent along main channel - 2 if entirely paved - 1 if unpaved",
-                            Name = "Average Channel Condition"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Average Channel Condition",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 116,
                             Code = "SLOP30_30M",
                             Description = "Percent area with slopes greater than 30 percent from 30-meter DEM.",
-                            Name = "Slopes gt 30pct from 30m DEM"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Slopes gt 30pct from 30m DEM",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 117,
                             Code = "EL6000",
                             Description = "Percent of area above 6000 ft",
-                            Name = "Percent above 6000 ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent above 6000 ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 118,
                             Code = "HOMEDENS",
                             Description = "Average homes per acre in watershed",
-                            Name = "Housing Density"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Housing Density",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 119,
                             Code = "DEVNLCD01",
                             Description = "Percentage of land-use categories 21-24 from NLCD 2001",
-                            Name = "Percent developed from NLCD2001"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent developed from NLCD2001",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 120,
                             Code = "LC11DEV",
                             Description = "Percentage of developed (urban) land from NLCD 2011 classes 21-24",
-                            Name = "Percent Developed from NLCD2011"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Developed from NLCD2011",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 121,
                             Code = "LAGFACTOR",
                             Description = "Lag Factor as defined in SIR 2006-5112",
-                            Name = "Lag Factor"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Lag Factor",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 122,
                             Code = "MAR",
                             Description = "Mean annual runoff for the period of record in inches",
-                            Name = "Mean Annual Runoff in inches"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Runoff in inches",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 123,
                             Code = "MXSNO",
                             Description = "50th percentile of seasonal maximum snow depth from Northeast Regional Climate Center atlas by Cember and Wilks, 1993",
-                            Name = "Median Seasonal Maximum Snow Depth"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Median Seasonal Maximum Snow Depth",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 124,
                             Code = "SLOPERATIO",
                             Description = "Ratio of main channel slope to basin slope as defined in SIR 2006-5112",
-                            Name = "Slope Ratio NY"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Slope Ratio NY",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 125,
                             Code = "EL1200",
                             Description = "Percentage of basin at or above 1200 ft elevation",
-                            Name = "Percentage of Basin Above 1200 ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percentage of Basin Above 1200 ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 126,
                             Code = "I48H2Y",
                             Description = "Maximum 48-hour precipitation that occurs on average once in 2 years",
-                            Name = "48 Hour 2 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "48 Hour 2 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 127,
                             Code = "I48H5Y",
                             Description = "Maximum 48-hour precipitation that occurs on average once in 5 years",
-                            Name = "48 Hour 5 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "48 Hour 5 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 128,
                             Code = "RELIEF",
                             Description = "Maximum - minimum elevation",
-                            Name = "Relief"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Relief",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 129,
                             Code = "VOLCANIC",
                             Description = "Percent of drainage area as surficial volcanic rocks as defined in SIR 2006-5035",
-                            Name = "Percent Volcanic"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Volcanic",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 130,
                             Code = "SLOP50",
                             Description = "Slopes Greater Than 50 Percent as percent of drainage area",
-                            Name = "Slopes Greater Than 50 Percent"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Slopes Greater Than 50 Percent",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 131,
                             Code = "BSLDEM250",
                             Description = "Mean basin slope computed from 1:250K DEM",
-                            Name = "Mean Basin Slope from 250K DEM"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Slope from 250K DEM",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 132,
                             Code = "DRFTPERSTR",
                             Description = "Area of stratified drift per unit of stream length",
-                            Name = "Stratified Drift per Stream Length"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Stratified Drift per Stream Length",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 133,
                             Code = "MAREGION",
                             Description = "Region of Massachusetts 0 for Eastern 1 for Western",
-                            Name = "Massachusetts Region"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Massachusetts Region",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 134,
                             Code = "KYVARIND10",
                             Description = "Mapped streamflow-variability index as defined in SIR 2010-5217",
-                            Name = "KY Streamflow Variability Index 2010"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "KY Streamflow Variability Index 2010",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 135,
                             Code = "FDRATIO",
                             Description = "20-percent flow duration divided by 90-percent flow duration",
-                            Name = "Flow Duration Ratio"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Flow Duration Ratio",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 136,
                             Code = "STATSGOA",
                             Description = "Percentage of area of Hydrologic Soil Type A from STATSGO",
-                            Name = "STATSGO Percent Hydrologic Soil Type A"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSGO Percent Hydrologic Soil Type A",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 137,
                             Code = "STATSGOD",
                             Description = "Percentage of area of Hydrologic Soil Type D from STATSGO",
-                            Name = "STATSGO Percent Hydrologic Soil Type D"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSGO Percent Hydrologic Soil Type D",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 138,
                             Code = "NCMR",
                             Description = "North Carolina mean annual runoff",
-                            Name = "North Carolina Mean Annual Runoff"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "North Carolina Mean Annual Runoff",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 139,
                             Code = "RECESS",
                             Description = "Number of days required for streamflow to recede one order of magnitude when hydrograph is plotted on logarithmic scale",
-                            Name = "Recession Index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Recession Index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 140,
                             Code = "PERMGTE2IN",
                             Description = "Percent of area underlain by soils with permeability greater than or equal to 2 inches per hour",
-                            Name = "Percent permeability gte 2 in per hr"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent permeability gte 2 in per hr",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 141,
                             Code = "GLACIER",
                             Description = "Percentage of area of Glaciers",
-                            Name = "Percent Glaciers"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Glaciers",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 142,
                             Code = "ELEVMAX",
                             Description = "Maximum basin elevation",
-                            Name = "Maximum Basin Elevation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Maximum Basin Elevation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 143,
                             Code = "HIELONGRAT",
                             Description = "Ratio of (1)diameter of circle with equal area as basin to (2)basin length, as defined in SIR 2004-5262",
-                            Name = "Hawaii Elongation Ratio"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Hawaii Elongation Ratio",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 144,
                             Code = "HIMARRATE",
                             Description = "Mean annual rainfall rate determined based on the method described in SIR 2004-5262",
-                            Name = "Hawaii Mean Rainfall Rate"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Hawaii Mean Rainfall Rate",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 145,
                             Code = "PCTSNDGRV",
                             Description = "Percentage of land surface underlain by sand and gravel deposits",
-                            Name = "Percent Underlain By Sand And Gravel"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Underlain By Sand And Gravel",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 146,
                             Code = "SANDGRAVAF",
                             Description = "Fraction of land surface underlain by sand and gravel aquifers",
-                            Name = "Fraction of Sand and Gravel Aquifers"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Fraction of Sand and Gravel Aquifers",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 147,
                             Code = "SANDGRAVAP",
                             Description = "Percentage of land surface underlain by sand and gravel aquifers",
-                            Name = "Percentage of Sand and Gravel Aquifers"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percentage of Sand and Gravel Aquifers",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 148,
                             Code = "COASTDIST",
                             Description = "Shortest distance from the coastline to the basin centroid",
-                            Name = "Distance From Coast To Basin Centroid"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Distance From Coast To Basin Centroid",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 149,
                             Code = "PRDECFEB90",
                             Description = "Basin average mean precipitation for December to  February from PRISM 1961-1990",
-                            Name = "Basin Ave Precip Dec Feb PRISM 1990"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Ave Precip Dec Feb PRISM 1990",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 150,
                             Code = "CONIF",
                             Description = "Percentaqe of land surface covered by coniferous forest",
-                            Name = "Percent Coniferous Forest"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Coniferous Forest",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 151,
                             Code = "PREBC0103",
                             Description = "Mean annual precipitation of basin centroid for January 1 to March 15 winter period",
-                            Name = "Jan to Mar Basin Centroid Precip"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Jan to Mar Basin Centroid Precip",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 152,
                             Code = "TEMP",
                             Description = "Mean Annual Temperature",
-                            Name = "Mean Annual Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 153,
                             Code = "TEMP_06_10",
                             Description = "Basinwide average temperature for June to October summer period",
-                            Name = "Jun to Oct Mean Basinwide Temp"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Jun to Oct Mean Basinwide Temp",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 154,
                             Code = "PREG_06_10",
                             Description = "Mean precipitation at gaging station location for June to October summer period",
-                            Name = "Jun to Oct Gage Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Jun to Oct Gage Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 155,
                             Code = "MIXFOR",
                             Description = "Percentage of land area covered by mixed deciduous and coniferous forest",
-                            Name = "Percent Mixed Forest"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Mixed Forest",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 156,
                             Code = "PREG_03_05",
                             Description = "Mean precipitation at gaging station location for March 16 to May 31 spring period",
-                            Name = "Mar to May Gage Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mar to May Gage Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 157,
                             Code = "PREC10to4",
                             Description = "Mean precipitation for winter period defined as October to April",
-                            Name = "Mean Oct to Apr Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Oct to Apr Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 158,
                             Code = "STREAM_VARG",
                             Description = "Streamflow variability index as defined in WRIR 02-4068, computed from regional grid",
-                            Name = "Streamflow Variability Index from Grid"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Streamflow Variability Index from Grid",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 159,
                             Code = "LAT_CENT",
                             Description = "Latitude of Basin Centroid",
-                            Name = "Latitude of Basin Centroid"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Latitude of Basin Centroid",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 160,
                             Code = "LONG_CENT",
                             Description = "Longitude Basin Centroid",
-                            Name = "Longitude of Basin Centroid"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Longitude of Basin Centroid",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 161,
                             Code = "BSLOPD",
                             Description = "Mean basin slope measured in degrees",
-                            Name = "Mean Basin Slope degrees"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Slope degrees",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 162,
                             Code = "GLACIATED",
                             Description = "Percentage of basin area that was historically covered by glaciers",
-                            Name = "Percent of Glaciation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent of Glaciation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 163,
                             Code = "BASINPERIM",
                             Description = "Perimeter of the drainage basin as defined in SIR 2004-5262",
-                            Name = "Basin Perimeter"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Perimeter",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 164,
                             Code = "BSLOPGM",
                             Description = "Mean basin slope determined using the grid-sampling method",
-                            Name = "Mean Basin Slope ft per ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Slope ft per ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 165,
                             Code = "DV_OF_DA",
                             Description = "Developed Land in Percentage of Drainage Area (Idaho Logistic Regression Equations SIR 2006-5035",
-                            Name = "Dev Land percentage"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Dev Land percentage",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 166,
                             Code = "AG_OF_DA",
                             Description = "Agricultural Land in Percentage of Drainage Area (Idaho Logistic Regression Equations SIR 2006-5035",
-                            Name = "Ag Land Percentage"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Ag Land Percentage",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 167,
                             Code = "FEBAVPRE",
                             Description = "Mean February Precipitation",
-                            Name = "Mean February Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean February Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 168,
                             Code = "JUNAVPRE",
                             Description = "Mean June Precipitation",
-                            Name = "Mean June Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean June Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 169,
                             Code = "DECAVPRE",
                             Description = "Mean December Precipitation",
-                            Name = "Mean December Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean December Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 170,
                             Code = "SLOP30_10M",
                             Description = "Percent area with slopes greater than 30 percent from 10-meter NED",
-                            Name = "Slopes gt 30pct from 10m NED"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Slopes gt 30pct from 10m NED",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 171,
                             Code = "AUGAVPRE",
                             Description = "Mean August Precipitation",
-                            Name = "Mean August Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean August Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 172,
                             Code = "NOVAVPRE",
                             Description = "Mean November Precipitation",
-                            Name = "Mean November Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean November Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 173,
                             Code = "SEPAVPRE",
                             Description = "Mean September Precipitation",
-                            Name = "Mean September Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean September Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 174,
                             Code = "OCTAVPRE",
                             Description = "Mean October Precipitation",
-                            Name = "Mean October Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean October Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 175,
                             Code = "TNSOILFAC",
                             Description = "Tennessee soil factor, percentage of area underlain by a soil permeability greater than or equal to 2 inches per hour",
-                            Name = "Tennessee Soil Factor"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Tennessee Soil Factor",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 176,
                             Code = "OUTLETELEV",
                             Description = "Elevation of the stream outlet in thousands of feet above NAVD88.",
-                            Name = "Elevation of Gage"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Elevation of Gage",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 177,
                             Code = "PREG_11_05",
                             Description = "Mean monthly precipitation for November through May at the stream outlet",
-                            Name = "Nov to May Gage Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Nov to May Gage Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 178,
                             Code = "CANOPY_PCT",
                             Description = "Percentage of drainage area covered by canopy as described in OK SIR 2009_5267",
-                            Name = "Percent Area Under Canopy"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Area Under Canopy",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 179,
                             Code = "PRECIPOUT",
                             Description = "Mean annual precip at the stream outlet (based on annual PRISM precip data in inches from 1971-2000)",
-                            Name = "Mean Annual Precip at Gage"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Precip at Gage",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 180,
                             Code = "CRSDFT",
                             Description = "Percentage of area of coarse-grained stratified drift",
-                            Name = "Percent Coarse Stratified Drift"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Coarse Stratified Drift",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 181,
                             Code = "PRCWINTER",
                             Description = "Mean annual precipitation for December through February",
-                            Name = "Mean Annual Winter Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Winter Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 182,
                             Code = "MINTEMP",
                             Description = "Mean annual minimum air temperature over basin surface area as defined in SIR 2008-5126",
-                            Name = "Mean Annual Min Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Min Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 183,
                             Code = "MINBSLOPD",
                             Description = "Minimum basin slope, in degrees, using ArcInfo Grid with NHDPlus 30-m resolution elevation data.",
-                            Name = "Minimum Basin Slope in deg"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Minimum Basin Slope in deg",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 184,
                             Code = "OR_HIPERMA",
                             Description = "Percent basin surface area containing high permeability aquifer units as defined in SIR 2008-5126",
-                            Name = "OR Percent HighPerm Aquifer"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "OR Percent HighPerm Aquifer",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 185,
                             Code = "MAXBSLOPD",
                             Description = "Maximum basin slope, in degrees, using ArcInfo Grid with NHDPlus 30-m resolution elevation data.",
-                            Name = "Maximum Basin Slope in deg"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Maximum Basin Slope in deg",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 186,
                             Code = "DRNDENSITY",
                             Description = "Basin drainage density defined as total stream length divided by drainage area.",
-                            Name = "Basin Drainage Density"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Drainage Density",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 187,
                             Code = "MAXTEMP",
                             Description = "Mean annual maximum air temperature over basin area from PRISM 1971-2000 800-m grid",
-                            Name = "Mean Annual Max Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Max Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 188,
                             Code = "OR_HIPERMG",
                             Description = "Percent basin surface area containing high permeability geologic units as defined in SIR 2008-5126",
-                            Name = "OR Percent HighPerm Geologic"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "OR Percent HighPerm Geologic",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 189,
                             Code = "MINBELEV",
                             Description = "Minimum basin elevation",
-                            Name = "Minimum Basin Elevation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Minimum Basin Elevation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 190,
                             Code = "ELV10_85",
                             Description = "Average of channel elevations at points 10- and 85- percent above gage - Equivalent to Altitude Index",
-                            Name = "Elevation of 10 and 85 points"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Elevation of 10 and 85 points",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 191,
                             Code = "ORDOMISS",
                             Description = "Percent Surficial Geology as Ordovician and Mississippian Rocks",
-                            Name = "Percent SurficialGeology Ordo and Miss"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent SurficialGeology Ordo and Miss",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 192,
                             Code = "PRNOVAPR00",
                             Description = "Precipitation November-April basin average, mean seasonal from PRISM 1971-2000",
-                            Name = "Basin Ave Rainfall Nov Apr PRISM 2000"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Ave Rainfall Nov Apr PRISM 2000",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 193,
                             Code = "PRNOVAPR90",
                             Description = "Precipitation November-April basin average, mean seasonal from PRISM 1961-1990",
-                            Name = "Basin Ave Rainfall Nov Apr PRISM 1990"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Ave Rainfall Nov Apr PRISM 1990",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 194,
                             Code = "TAU_ANN_G",
                             Description = "Tau, Average annual base-flow recession time constant as defined in SIR 2008-5065",
-                            Name = "Tau Annual from Grid"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Tau Annual from Grid",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 195,
                             Code = "TAU_SPR",
                             Description = "Tau, Average base-flow recession time constant determined from daily values for March through April as defined in SIR 2008-5065",
-                            Name = "Tau Mar Apr"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Tau Mar Apr",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 196,
                             Code = "TAU_WIN",
                             Description = "Tau, Average base-flow recession time constant determined from daily values for November through December as defined in SIR 2008-5065",
-                            Name = "Tau Nov Dec"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Tau Nov Dec",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 197,
                             Code = "PRENOVDEC",
                             Description = "Precipitation November-December basin average, mean monthly as defined in SIR 2008-5065",
-                            Name = "Basin Ave Rainfall Nov Dec"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Ave Rainfall Nov Dec",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 198,
                             Code = "PREMARAPR",
                             Description = "Precipitation March-April basin average, mean monthly as defined in SIR 2008-5065",
-                            Name = "Basin Ave Rainfall Mar Apr"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Ave Rainfall Mar Apr",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 199,
                             Code = "OH_INF_IND",
                             Description = "Index of relative infiltration from Koltun(1986)",
-                            Name = "Ohio Infiltration Index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Ohio Infiltration Index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 200,
                             Code = "BFI",
                             Description = "Proportion of mean annual flow that is from ground water (base flow)",
-                            Name = "Base Flow Index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Base Flow Index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 201,
                             Code = "RSD",
                             Description = "Relative stream density first defined in SIR 2012_5171",
-                            Name = "Relative Stream Density"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Relative Stream Density",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 202,
                             Code = "SSURGOB",
                             Description = "Percentage of area of Hydrologic Soil Type B from SSURGO",
-                            Name = "SSURGO Percent Hydrologic Soil Type B"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "SSURGO Percent Hydrologic Soil Type B",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 203,
                             Code = "SSURGOC",
                             Description = "Percentage of area of Hydrologic Soil Type C from SSURGO",
-                            Name = "SSURGO Percent Hydrologic Soil Type C"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "SSURGO Percent Hydrologic Soil Type C",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 204,
                             Code = "SOILD",
                             Description = "Percentage of area of  Hydrologic Soil Type D",
-                            Name = "Percent Hydrologic Soil Type D"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Hydrologic Soil Type D",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 205,
                             Code = "SSURGOD",
                             Description = "Percentage of area of Hydrologic Soil Type D from SSURGO",
-                            Name = "SSURGO Percent Hydrologic Soil Type D"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "SSURGO Percent Hydrologic Soil Type D",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 206,
                             Code = "HYSEP",
                             Description = "Median percentage of baseflow to annual streamflow",
-                            Name = "Hydrograph separation percent"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Hydrograph separation percent",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 207,
                             Code = "STATSGORO",
                             Description = "Drainage runoff number from STATSGO database where 1 is well and 7 is poor",
-                            Name = "Drainage Runoff Number STATSGO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Drainage Runoff Number STATSGO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 208,
                             Code = "PERMSSUR",
                             Description = "Area-weighted average soil permeability from NRCS SSURGO database",
-                            Name = "Average Soil Permeability from SSURGO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Average Soil Permeability from SSURGO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 209,
                             Code = "STRDENED",
                             Description = "Stream Density -- total length of streams divided by drainage area, edited from NHD",
-                            Name = "Stream Density Edited"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Stream Density Edited",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 210,
                             Code = "LFPLENGTH",
                             Description = "Length of longest flow path",
-                            Name = "LFP length"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LFP length",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 211,
                             Code = "PRECIPCENT",
                             Description = "Mean Annual Precip at Basin Centroid",
-                            Name = "Mean Annual Precip at Basin Centroid"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Precip at Basin Centroid",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 212,
                             Code = "MINTEMP_W",
                             Description = "Mean winter minimum air temperature over basin surface area",
-                            Name = "Mean Winter Min Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Winter Min Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 213,
                             Code = "PREBC_1112",
                             Description = "Mean annual precipitation of basin centroid for November 1 to December 31 period",
-                            Name = "Nov to Dec Basin Centroid Precip"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Nov to Dec Basin Centroid Precip",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 214,
                             Code = "ASANDGRAV",
                             Description = "Area of land surface underlain by sand and gravel deposits",
-                            Name = "Area Underlain By Sand And Gravel"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Area Underlain By Sand And Gravel",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 215,
                             Code = "ATILL",
                             Description = "Surface area covered by till deposits",
-                            Name = "Area of Till"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Area of Till",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 216,
                             Code = "MARCFSM",
                             Description = "Mean annual runoff for the period of record in cubic feet persecond",
-                            Name = "Mean Annual Runoff in cfsm"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Runoff in cfsm",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 217,
                             Code = "AWETSG",
                             Description = "Area of lakes and wetlands underlain by sand and gravel deposits",
-                            Name = "Wetland Area Underlain By Sand Gravel"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Wetland Area Underlain By Sand Gravel",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 218,
                             Code = "NY_UNDFLOW",
                             Description = "Rate of underflow downvalley through sand and gravel according to NY 2010-5063",
-                            Name = "NY Underflow Factor"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "NY Underflow Factor",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 219,
                             Code = "KYVARIND93",
                             Description = "Mapped streamflow variability index as defined in WRIR 92-4173",
-                            Name = "KY Streamflow Variability Index 1993"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "KY Streamflow Variability Index 1993",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 220,
                             Code = "TRUN0711",
                             Description = "Mean annual dry season total runoff, July through November",
-                            Name = "Dry Season Total Runoff"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Dry Season Total Runoff",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 221,
                             Code = "STRMTOT",
                             Description = "total length of all mapped streams (1:24,000-scale) in the basin",
-                            Name = "Stream Length Total"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Stream Length Total",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 222,
                             Code = "PRECPRIS00",
                             Description = "Basin average mean annual precipitation for 1971 to 2000 from PRISM",
-                            Name = "Mean Annual Precip PRISM 1971 2000"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Precip PRISM 1971 2000",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 223,
                             Code = "BSLDEM30ff",
                             Description = "Mean basin slope computed from 30 m DEM in feet per foot",
-                            Name = "Mean Basin Slope from 30m DEM ft/ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Basin Slope from 30m DEM ft/ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 224,
                             Code = "TAU_SPR_G",
                             Description = "Tau, Average base-flow recession time constant for March through April as defined in SIR 2008-5065, estimated from a grid",
-                            Name = "Tau Mar Apr from Grid"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Tau Mar Apr from Grid",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 225,
                             Code = "TAU_WIN_G",
                             Description = "Tau, Average base-flow recession time constant for November through December as defined in SIR 2008-5065, estimated from a grid",
-                            Name = "Tau Nov Dec from Grid"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Tau Nov Dec from Grid",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 226,
                             Code = "STATSCLAY",
                             Description = "Percentage of clay soils from STATSGO",
-                            Name = "STATSGO Percentage of Clay Soils"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSGO Percentage of Clay Soils",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 227,
                             Code = "DETEN",
                             Description = "Percentage of area of lakes and detention basins",
-                            Name = "Percent_Lake_and_Detention_Basin"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Lake_and_Detention_Basin",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 228,
                             Code = "DRAININD",
                             Description = "Drainage index from STATSGO soil properties computed as in SIR 2014-5177",
-                            Name = "Drainage_Index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Drainage_Index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 229,
                             Code = "WATCAPINIL",
                             Description = "Available water capacity  from Miller and White 1998 in cm per 100 cm",
-                            Name = "Available_Water_Capacity_for_IN_and_IL"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Available_Water_Capacity_for_IN_and_IL",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 230,
                             Code = "QSSPERMTHK",
                             Description = "Index of the permeability of surficial Quaternary sediments computed as in SIR 2014-5177",
-                            Name = "Permeability_Index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Permeability_Index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 231,
                             Code = "STATSPERM",
                             Description = "Area-weighted average soil permeability from NRCS STATSGO database",
-                            Name = "Average_Soil_Permeability_from_STATSGO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Average_Soil_Permeability_from_STATSGO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 232,
                             Code = "URBTHE2010",
                             Description = "Fraction of drainage area that is in urban classes 7 to 10 from Theobald 2010",
-                            Name = "Fraction_of_Urban_Land_Theobald_2010"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Fraction_of_Urban_Land_Theobald_2010",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 233,
                             Code = "FLC11DVLMH",
                             Description = "Fraction of drainage area that is in low to high developed land-use classes 22-24 from NLCD 2011",
-                            Name = "Frac_Lo_Med_Hi_Developed_from_NLCD2011"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Frac_Lo_Med_Hi_Developed_from_NLCD2011",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 234,
                             Code = "FSSURGDC78",
                             Description = "Fraction of land area that is in very poorly drained and unknown likely water drainage classes 7 and 8  from SSURGO",
-                            Name = "Fraction_SSURGO_Drainage_Classes_7_and_8"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Fraction_SSURGO_Drainage_Classes_7_and_8",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 235,
                             Code = "PRDECFEB00",
                             Description = "Basin average mean precipitation for December to  February from PRISM 1971-2000",
-                            Name = "Basin_Ave_Precip_Dec_Feb_PRISM_2000"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin_Ave_Precip_Dec_Feb_PRISM_2000",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 236,
                             Code = "PRSEPNOV00",
                             Description = "Basin average mean precipitation for September to November from PRISM 1971-2000",
-                            Name = "Basin_Ave_Precip_Sept_Nov_PRISM_2000"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin_Ave_Precip_Sept_Nov_PRISM_2000",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 237,
                             Code = "LC11CRPHAY",
                             Description = "Percentage of cultivated crops and hay, classes 81 and 82, from NLCD 2011",
-                            Name = "Percent_Crops_and_Hay_from_NLCD2011"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Crops_and_Hay_from_NLCD2011",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 238,
                             Code = "PRJULDEC10",
                             Description = "Basin average mean precipitation for July to December from PRISM 1981-2010",
-                            Name = "Basin_Ave_Precip_Jul_Dec_PRISM_2010"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin_Ave_Precip_Jul_Dec_PRISM_2010",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 240,
                             Code = "LC06WATER",
                             Description = "Percent of open water, class 11, from NLCD 2006",
-                            Name = "Percent_Water_from_NLCD2006"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Water_from_NLCD2006",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 241,
                             Code = "SSURGOM",
                             Description = "Percentage of organic matter in soils from SSURGO",
-                            Name = "Percent_SSURGO_Soil_Organic_Matter"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_SSURGO_Soil_Organic_Matter",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 242,
                             Code = "PMPE",
                             Description = "Precipitation minus potential evaporation from Wolock 2003 unpublished data",
-                            Name = "Precip_Minus_Potential_Evap"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Precip_Minus_Potential_Evap",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 243,
                             Code = "PFLATLOW",
                             Description = "Flat lands lower than median elevation from Wolock 2003 unpublished data",
-                            Name = "Flat_Lands_Below_Median_Elevation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Flat_Lands_Below_Median_Elevation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 244,
                             Code = "LC06CROP",
                             Description = "Percentage of area of cultivated crops from NLCD 2006 class 82",
-                            Name = "Percent_Cultivated_Crops_from_NLCD2006"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Cultivated_Crops_from_NLCD2006",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 245,
                             Code = "LC06FOREST",
                             Description = "Percentage of forest from NLCD 2006 classes 41-43",
-                            Name = "Percent_Forest_from_NLCD2006"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Forest_from_NLCD2006",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 246,
                             Code = "SLOP50_30M",
                             Description = "Percent area with slopes greater than 50 percent from 30-meter DEM.",
-                            Name = "Slopes_gt_50pct_from_30m_DEM"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Slopes_gt_50pct_from_30m_DEM",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 247,
                             Code = "ET0306MOD",
                             Description = "Spring (March-June) mean monthly evapotranspiration (2001-2011), MODIS",
-                            Name = "Mean_Monthly_EvapTrans_Mar_to_Jun_MODIS"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean_Monthly_EvapTrans_Mar_to_Jun_MODIS",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 248,
                             Code = "EL5000",
                             Description = "Percent of area above 5000 ft",
-                            Name = "Percent_above_5000_ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_above_5000_ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 249,
                             Code = "PERENNIAL",
                             Description = "Stream characterized as having flow at all times",
-                            Name = "Perennial_Stream_Flag_1_if_peren_else_0"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Perennial_Stream_Flag_1_if_peren_else_0",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 250,
                             Code = "LC11IMP",
                             Description = "Average percentage of impervious area determined from NLCD 2011 impervious dataset",
-                            Name = "Percent_Impervious_NLCD2011"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Impervious_NLCD2011",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 251,
                             Code = "RUGGED",
                             Description = "Ruggedness number computed as stream density times basin relief",
-                            Name = "Ruggedness_Number"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Ruggedness_Number",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 252,
                             Code = "WATCAPORC",
                             Description = "Available water capacity  from STATSGO data using methods from SIR 2005-5116",
-                            Name = "Available_Water_Capacity_OR_Cooper"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Available_Water_Capacity_OR_Cooper",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 253,
                             Code = "WATCAPORR",
                             Description = "Available water capacity from STATSGO data using methods from SIR 2008-5126",
-                            Name = "Available_Water_Capacity_OR_Risley"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Available_Water_Capacity_OR_Risley",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 254,
                             Code = "LC01DEV",
                             Description = "Percentage of land-use from NLCD 2001 classes 21-24",
-                            Name = "Percent_Developed_from_NLCD2001"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Developed_from_NLCD2001",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 255,
                             Code = "LOWREG",
                             Description = "Low Flow Region Number",
-                            Name = "Low Flow Region Number"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Low Flow Region Number",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 256,
                             Code = "HIGHREG",
                             Description = "HIGHREG",
-                            Name = "HIGHREG"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "HIGHREG",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 257,
                             Code = "PZNSSREGNO",
                             Description = "Zeroflow Region Number",
-                            Name = "PZNSSREGNO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "PZNSSREGNO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 258,
                             Code = "BFREGNO",
                             Description = "BFREGNO",
-                            Name = "BFREGNO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "BFREGNO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 259,
                             Code = "ORREG2",
                             Description = "Oregon Region Number",
-                            Name = "Oregon Region Number"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Oregon Region Number",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 260,
                             Code = "LFREGNO",
                             Description = "Low Flow Region Number",
-                            Name = "Low Flow Region Number"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Low Flow Region Number",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 261,
                             Code = "PKREGNO",
                             Description = "Peak Flow Region Number",
-                            Name = "Peak Flow Region Number"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Peak Flow Region Number",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 262,
                             Code = "FD_Region",
                             Description = "FD_Region",
-                            Name = "FD_Region"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "FD_Region",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 263,
                             Code = "LC11DVOPN",
                             Description = "Percentage of developed open area from NLCD 2011 class 21",
-                            Name = "Percent_Open_Developed_from_NLCD2011"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Open_Developed_from_NLCD2011",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 264,
                             Code = "ALVM",
                             Description = "Percentage of the basin covered by Quaternary alluvial deposits from Reed & Bush (2005)",
-                            Name = "Percent_Quaternary_Alluvium"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Quaternary_Alluvium",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 265,
                             Code = "LC11PAST",
                             Description = "Percentage of area of pasture area from NLCD 2011 class 81",
-                            Name = "Percent_Pasture_from_NLCD2011"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Pasture_from_NLCD2011",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 266,
                             Code = "UPZ",
                             Description = "Percentage of the basin covered by upper Paleozoic strata from Reed & Bush (2005)",
-                            Name = "Percent_Upper_Paleozoic"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Upper_Paleozoic",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 267,
                             Code = "K1INDNR",
                             Description = "Average hydraulic conductivity (ft/d) for the top 70 ft of unconsolidated deposits from InDNR well database.",
-                            Name = "Avg_Hydraulic_Conductivity_Upper_70ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Avg_Hydraulic_Conductivity_Upper_70ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 268,
                             Code = "T2INDNR",
                             Description = "Average transmissivity (ft2/d) for the full depth of unconsolidated deposits from InDNR well database.",
-                            Name = "Avg_Transmissivity"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Avg_Transmissivity",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 269,
                             Code = "K2INDNR",
                             Description = "Average hydraulic conductivity (ft/d) for the full depth of unconsolidated deposits from InDNR well database.",
-                            Name = "Avg_Hydraulic_Conductivity_Full_Depth"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Avg_Hydraulic_Conductivity_Full_Depth",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 270,
                             Code = "LC01FOREST",
                             Description = "Percentage of forest from NLCD 2001 classes 41-43",
-                            Name = "Percent_Forest_from_NLCD2001"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent_Forest_from_NLCD2001",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 271,
                             Code = "ST2INDNR",
                             Description = "Average transmissivity (ft2/d) for the full depth of unconsolidated deposits within 1000 ft of stream channel from InDNR well database.",
-                            Name = "Avg_Transmissivity_Near_Channel"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Avg_Transmissivity_Near_Channel",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 272,
                             Code = "JANMAXT2K",
                             Description = "Mean Maximum January Temperature from 2K resolution PRISM 1961-1990 data",
-                            Name = "Mean Maximum January Temperature from 2K resolution PRISM 1961-1990 data"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Maximum January Temperature from 2K resolution PRISM 1961-1990 data",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 273,
                             Code = "JANMINT2K",
                             Description = "Mean Minimum January Temperature from 2K resolution PRISM PRISM 1961-1990 data",
-                            Name = "Mean Minimum January Temperature from 2K resolution PRISM PRISM 1961-1990 data"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Minimum January Temperature from 2K resolution PRISM PRISM 1961-1990 data",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 274,
                             Code = "FOSTREAM",
                             Description = "Number of First Order Streams",
-                            Name = "Number of First Order Streams"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Number of First Order Streams",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 275,
                             Code = "MAPM",
                             Description = "Mean Annual Precip Basin Average",
-                            Name = "Mean Annual Precip Basin Average"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean Annual Precip Basin Average",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 276,
                             Code = "CENTROIDY",
                             Description = "Basin centroid vertical (y) location in state plane units",
-                            Name = "CENTROIDY"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "CENTROIDY",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 277,
                             Code = "CENTROIDX",
                             Description = "Basin centroid horizontal (x) location in state plane coordinates",
-                            Name = "CENTROIDX"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "CENTROIDX",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 278,
                             Code = "OUTLETY",
                             Description = "Basin outlet vertical (y) location in state plane coordinates",
-                            Name = "OUTLETY"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "OUTLETY",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 279,
                             Code = "OUTLETX",
                             Description = "Basin outlet horizontal (x) location in state plane coordinates",
-                            Name = "OUTLETX"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "OUTLETX",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 280,
                             Code = "LC06AGRI",
                             Description = "Percent agriculture computed as total of grass, pasture, and crops, NLCD classes 71, 81 and 82",
-                            Name = "Percent agriculture"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent agriculture",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 281,
                             Code = "SLPFM3D",
                             Description = "Change in elevation divided by length between points 10 and 85 percent of distance along the longest flow path to the basin divide, LFP from 3D grid",
-                            Name = "SLPFM3D"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "SLPFM3D",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 282,
                             Code = "ELEV10FT",
                             Description = "Elevation at 10 percent from outlet along longest flow path slope using DEM",
-                            Name = "ELEV10FT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "ELEV10FT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 283,
                             Code = "ELEV85FT",
                             Description = "Elevation at 85 percent from outlet along longest flow path slope using DEM",
-                            Name = "ELEV85FT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "ELEV85FT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 284,
                             Code = "ELEV10FT3D",
                             Description = "Elevation at 10 percent from outlet along longest flow path slope using 3D line",
-                            Name = "ELEV10FT3D"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "ELEV10FT3D",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 285,
                             Code = "ELEV85FT3D",
                             Description = "Elevation at 85 percent from outlet along longest flow path slope using 3D line",
-                            Name = "ELEV85FT3D"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "ELEV85FT3D",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 286,
                             Code = "I60M2Y",
                             Description = "Maximum 60-min precipitation that occurs on average once in 2 years",
-                            Name = "I60M2Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I60M2Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 287,
                             Code = "I6H2Y",
                             Description = "Maximum 6-hour precipitation that occurs on average once in 2 years",
-                            Name = "6 Hour 2 Year Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "6 Hour 2 Year Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 288,
                             Code = "I60M5Y",
                             Description = "Maximum 60-min precipitation that occurs on average once in 5 years",
-                            Name = "I60M5Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I60M5Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 289,
                             Code = "I6H5Y",
                             Description = "Maximum 6-hour precipitation that occurs on average once in 5 years",
-                            Name = "I6H5Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I6H5Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 290,
                             Code = "I24H5Y",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 5 years",
-                            Name = "I24H5Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I24H5Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 291,
                             Code = "I60M10Y",
                             Description = "Maximum 60-min precipitation that occurs on average once in 10 years",
-                            Name = "I60M10Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I60M10Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 292,
                             Code = "I6H10Y",
                             Description = "Maximum 6-hour precipitation that occurs on average once in 10 years",
-                            Name = "I6H10Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I6H10Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 293,
                             Code = "I48H10Y",
                             Description = "Maximum 48-hour precipitation that occurs on average once in 10 years",
-                            Name = "I48H10Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I48H10Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 294,
                             Code = "I60M25Y",
                             Description = "Maximum 60-min precipitation that occurs on average once in 25 years",
-                            Name = "I60M25Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I60M25Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 295,
                             Code = "I6H25Y",
                             Description = "Maximum 6-hour precipitation that occurs on average once in 25 years",
-                            Name = "I6H25Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I6H25Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 296,
                             Code = "I48H25Y",
                             Description = "Maximum 48-hour precipitation that occurs on average once in 25 years",
-                            Name = "I48H25Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I48H25Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 297,
                             Code = "I60M50Y",
                             Description = "Maximum 60-min precipitation that occurs on average once in 50 years",
-                            Name = "I60M50Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I60M50Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 298,
                             Code = "I6H50Y",
                             Description = "Maximum 6-hour precipitation that occurs on average once in 50 years",
-                            Name = "I6H50Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I6H50Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 299,
                             Code = "I48H50Y",
                             Description = "Maximum 48-hour precipitation that occurs on average once in 50 years",
-                            Name = "I48H50Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I48H50Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 300,
                             Code = "I60M100Y",
                             Description = "Maximum 60-min precipitation that occurs on average once in 100 years",
-                            Name = "I60M100Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I60M100Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 301,
                             Code = "I48H100Y",
                             Description = "Maximum 48-hour precipitation that occurs on average once in 100 years",
-                            Name = "I48H100Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I48H100Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 302,
                             Code = "I60M500Y",
                             Description = "Maximum 60-min precipitation that occurs on average once in 500 years",
-                            Name = "I60M500Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I60M500Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 303,
                             Code = "I6H500Y",
                             Description = "Maximum 6-hour precipitation that occurs on average once in 500 years",
-                            Name = "I6H500Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I6H500Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 304,
                             Code = "I24H500Y",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 500 years",
-                            Name = "I24H500Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I24H500Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 305,
                             Code = "I48H500Y",
                             Description = "Maximum 48-hour precipitation that occurs on average once in 500 years",
-                            Name = "I48H500Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "I48H500Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 306,
                             Code = "LC01OPNLO",
                             Description = "Percentage of area developed, open space and low intensity combined, NLCD2001 cat. 21 and 22",
-                            Name = "LC01OPNLO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01OPNLO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 307,
                             Code = "LC01DEVMD",
                             Description = "Percentage of area developed, medium intensity, NLCD 2001 category 23",
-                            Name = "LC01DEVMD"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01DEVMD",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 308,
                             Code = "LC01DEVHI",
                             Description = "Percentage of area developed, high intensity, NLCD 2001 category 24",
-                            Name = "LC01DEVHI"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01DEVHI",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 309,
                             Code = "LC01BARE",
                             Description = "Percentage of area barren land, NLCD 2001 category 31",
-                            Name = "LC01BARE"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01BARE",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 310,
                             Code = "LC01EVERG",
                             Description = "Percentage of area evergreen forest, NLCD 2001 category 42",
-                            Name = "LC01EVERG"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01EVERG",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 311,
                             Code = "LC01CROP",
                             Description = "Percentage of area crop, NLCD 2001 category ",
-                            Name = "LC01CROP"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01CROP",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 312,
                             Code = "PERM12IN",
                             Description = "Area-weighted average soil permeability for top 12 inches of soil",
-                            Name = "PERM12IN"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "PERM12IN",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 313,
                             Code = "PERM24IN",
                             Description = "Area-weighted average soil permeability for top 24 inches of soil",
-                            Name = "PERM24IN"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "PERM24IN",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 314,
                             Code = "ACRSDFT",
                             Description = "Area underlain by stratified drift",
-                            Name = "ACRSDFT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "ACRSDFT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 315,
                             Code = "MAXTEMPC",
                             Description = "Mean annual maximum air temperature over basin area, in degrees Centigrade",
-                            Name = "MAXTEMPC"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "MAXTEMPC",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 316,
                             Code = "LC11ADEV",
                             Description = "Area of developed land-use from NLCD 2011 classes 21-24",
-                            Name = "LC11ADEV"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11ADEV",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 317,
                             Code = "LC11ADVOPN",
                             Description = "Area of developed open land from NLCD 2011 class 21",
-                            Name = "LC11ADVOPN"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11ADVOPN",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 318,
                             Code = "LC11ADEVLO",
                             Description = "Area of developed land, low intensity, from NLCD 2011 class 22",
-                            Name = "LC11ADEVLO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11ADEVLO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 319,
                             Code = "LC11ADEVMD",
                             Description = "Area of developed land, medium intensity, NLCD 2011 class 23",
-                            Name = "LC11ADEVMD"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11ADEVMD",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 320,
                             Code = "LC11ADEVHI",
                             Description = "Area of developed land, high intensity, NLCD 2011 class 24",
-                            Name = "LC11ADEVHI"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11ADEVHI",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 321,
                             Code = "LC11DEVLMH",
                             Description = "Percentage drainage area that is in low to high developed land-use classes 22-24 from NLCD 2011",
-                            Name = "LC11DEVLMH"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11DEVLMH",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 322,
                             Code = "LC11DINT",
                             Description = "Impervious percentage computed as ((.10*A21+.25*A22+.65*A23+.90*A24)/DA)*100 from NLCD 2011",
-                            Name = "LC11DINT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11DINT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 323,
                             Code = "LC11FOREST",
                             Description = "Percentage of forest from NLCD 2011 classes 41-43",
-                            Name = "LC11FOREST"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11FOREST",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 324,
                             Code = "LC11AWATER",
                             Description = "Area of water from NLCD 2011 class 11",
-                            Name = "LC11AWATER"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11AWATER",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 325,
                             Code = "LC11WATER",
                             Description = "Percent of open water, class 11, from NLCD 2011",
-                            Name = "LC11WATER"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11WATER",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 326,
                             Code = "LC11AWETL",
                             Description = "Area of wetlands from NLCD 2011 classes 90 and 95",
-                            Name = "LC11AWETL"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11AWETL",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 327,
                             Code = "LC11WETLND",
                             Description = "Percentage of wetlands, classes 90 and 95,  from NLCD 2011",
-                            Name = "LC11WETLND"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11WETLND",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 328,
                             Code = "LC11STOR",
                             Description = "Percentage of water bodies and wetlands determined from the NLCD 2011",
-                            Name = "LC11STOR"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11STOR",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 329,
                             Code = "IRRIGAT_MT",
                             Description = "Percent of basin that is irrigated based on Montana Final Land Unit (FLU) classification",
-                            Name = "IRRIGAT_MT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "IRRIGAT_MT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 330,
                             Code = "LAKESNHDH",
                             Description = "Percent of basin in lakes, ponds, and reservoirs fom high resolution National Hydrography Dataset",
-                            Name = "LAKESNHDH"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LAKESNHDH",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 331,
                             Code = "LC01CRPHAY",
                             Description = "Percentage of cultivated crops and hay, classes 81 and 82, from NLCD 2001",
-                            Name = "LC01CRPHAY"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01CRPHAY",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 332,
                             Code = "LC01WETLND",
                             Description = "Percentage of wetlands, classes 90 and 95,  from NLCD 2001",
-                            Name = "LC01WETLND"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01WETLND",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 333,
                             Code = "ET0710MOD",
                             Description = "Summer (July-October) mean monthly evapotranspiration (2001-2011), MODIS",
-                            Name = "ET0710MOD"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "ET0710MOD",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 334,
                             Code = "STATE_HWY",
                             Description = "Length of state highways in basin",
-                            Name = "STATE_HWY"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATE_HWY",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 335,
                             Code = "MAJ_ROADS",
                             Description = "Length of non-state major roads in basin",
-                            Name = "MAJ_ROADS"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "MAJ_ROADS",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 336,
                             Code = "MIN_ROADS",
                             Description = "Length of non-state minor roads in basin",
-                            Name = "MIN_ROADS"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "MIN_ROADS",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 337,
                             Code = "LC11BARE",
                             Description = "Percentage of barren from NLCD 2011 class 31",
-                            Name = "LC11BARE"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11BARE",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 338,
                             Code = "LC11FORSHB",
                             Description = "Percentage of forests and shrub lands, classes 41 to 52, from NLCD 2011",
-                            Name = "LC11FORSHB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11FORSHB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 339,
                             Code = "LC11HERB",
                             Description = "Percentage of herbaceous from NLCD 2011 classes 71-74",
-                            Name = "LC11HERB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11HERB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 340,
                             Code = "LC11DVLO",
                             Description = "Percentage of developed area, low intensity, from NLCD 2011 class 22",
-                            Name = "LC11DVLO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11DVLO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 341,
                             Code = "LC11DVMD",
                             Description = "Percentage of area developed, medium intensity, NLCD 2011 class 23",
-                            Name = "LC11DVMD"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11DVMD",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 342,
                             Code = "LC11DEVHI",
                             Description = "Percentage of area developed, high intensity, NLCD 2011 class 24",
-                            Name = "LC11DEVHI"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11DEVHI",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 343,
                             Code = "NFSL30",
                             Description = "North-Facing Slopes Greater Than 30 Percent",
-                            Name = "NFSL30"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "NFSL30",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 344,
                             Code = "LC01HERB",
                             Description = "Percentage of herbaceous upland from NLCD 2001 class 71",
-                            Name = "LC01HERB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01HERB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 345,
                             Code = "LC01WATER",
                             Description = "Percentage of open water, class 11, from NLCD 2001",
-                            Name = "LC01WATER"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01WATER",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 346,
                             Code = "CLIFAC25Y",
                             Description = "25-year climate factor from Litchy and Karlinger (1990)",
-                            Name = "CLIFAC25Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "CLIFAC25Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 347,
                             Code = "CLIFAC100Y",
                             Description = "100-year climate factor from Litchy and Karlinger (1990)",
-                            Name = "CLIFAC100Y"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "CLIFAC100Y",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 348,
                             Code = "LC11WDWET",
                             Description = "Percentage of area of wooded wetlands from NLCD 2011 class 90",
-                            Name = "LC11WDWET"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11WDWET",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 349,
                             Code = "LC11EMWET",
                             Description = "Percentage of area of emergent herbaceous wetlands from NLCD 2011 class 95",
-                            Name = "LC11EMWET"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11EMWET",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 350,
                             Code = "MAYAVPRE",
                             Description = "Mean May Precipitation",
-                            Name = "Mean May Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean May Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 351,
                             Code = "JULAVPRE",
                             Description = "Mean July Precipitation",
-                            Name = "Mean July Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean July Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 352,
                             Code = "JANAVTMP",
                             Description = "Mean January Temperature",
-                            Name = "Mean January Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean January Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 353,
                             Code = "FEBAVTMP",
                             Description = "Mean February Temperature",
-                            Name = "Mean February Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean February Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 354,
                             Code = "MARAVTMP",
                             Description = "Mean March Temperature",
-                            Name = "Mean March Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean March Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 355,
                             Code = "APRAVTMP",
                             Description = "Mean AprilTemperature",
-                            Name = "Mean April Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean April Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 356,
                             Code = "MAYAVTMP",
                             Description = "Mean May Temperature",
-                            Name = "Mean May Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean May Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 357,
                             Code = "JUNEAVTMP",
                             Description = "Mean June Temperature",
-                            Name = "Mean June Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean June Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 358,
                             Code = "JULYAVTMP",
                             Description = "Mean July Temperature",
-                            Name = "Mean July Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean July Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 359,
                             Code = "AUGAVTMP",
                             Description = "Mean August Temperature",
-                            Name = "Mean AugustTemperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean AugustTemperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 360,
                             Code = "SEPAVTMP",
                             Description = "Mean September Temperature",
-                            Name = "Mean September Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean September Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 361,
                             Code = "OCTAVTMP",
                             Description = "Mean October Temperature",
-                            Name = "Mean October Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean October Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 362,
                             Code = "NOVAVTMP",
                             Description = "Mean November Temperature",
-                            Name = "Mean November Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean November Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 363,
                             Code = "DECAVTMP",
                             Description = "Mean December Temperature",
-                            Name = "Mean December Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean December Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 364,
                             Code = "I24H200Y",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 200 years",
-                            Name = "Maximum 24-hour precipitation that occurs on average once in 200 years"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Maximum 24-hour precipitation that occurs on average once in 200 years",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 365,
                             Code = "LC92FOREST",
                             Description = "Percentage of forest from NLCD 1992 classes 41-43",
-                            Name = "Percentage of forest"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percentage of forest",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 366,
                             Code = "LC92DEV",
                             Description = "Percentage of developed land from NLCD 1992",
-                            Name = "Percentage of developed land from NLCD 1992"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percentage of developed land from NLCD 1992",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 367,
                             Code = "CH92_01FOR",
                             Description = "Percent Difference between 1992 and 2001 area covered by forest using NLCD",
-                            Name = "Percent Difference between 1992 and 2001 area covered by forest using NLCD"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Difference between 1992 and 2001 area covered by forest using NLCD",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 368,
                             Code = "CH92_01DEV",
                             Description = "Percent Difference between 1992 and 2001 area covered by developed land using NLCD",
-                            Name = "Percent Difference between 1992 and 2001 area covered by developed land using NLCD"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Difference between 1992 and 2001 area covered by developed land using NLCD",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 369,
                             Code = "AZ_HIPERMA",
                             Description = "Percent basin surface area containing high permeability aquifer units as defined for Arizona in SIR 2014-5211",
-                            Name = "Percent basin surface area containing high permeability aquifer units as defined for Arizona"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent basin surface area containing high permeability aquifer units as defined for Arizona",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 370,
                             Code = "AZ_HIPERMG",
                             Description = "Percent basin surface area containing high permeability geologic units as defined for Arizona in SIR 2014-5211",
-                            Name = "Percent basin surface area containing high permeability geologic units as defined for Arizona"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent basin surface area containing high permeability geologic units as defined for Arizona",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 371,
                             Code = "NFSL30_10M",
                             Description = "Percent area with north-facing slopes greater than 30 percent from 10-meter NED.",
-                            Name = "Percent area with north-facing slopes greater than 30 percent from 10-meter NED."
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent area with north-facing slopes greater than 30 percent from 10-meter NED.",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 372,
                             Code = "NRCSPCT",
                             Description = "Percent of contributing drainage area regulated by NRCS floodwater-retarding structures",
-                            Name = "Percent of contributing drainage area regulated by NRCS floodwater-retarding structures"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent of contributing drainage area regulated by NRCS floodwater-retarding structures",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 373,
                             Code = "MAXBSLOP",
                             Description = "Maximum basin slope, in percent",
-                            Name = "Maximum Basin Slope in Percent"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Maximum Basin Slope in Percent",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 374,
                             Code = "MINBSLOP",
                             Description = "Minimum basin slope, in percent",
-                            Name = "Minimum Basin Slope in Percent"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Minimum Basin Slope in Percent",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 375,
                             Code = "SLOPERAT",
                             Description = "Slope ratio computed as longest flow path (10-85) slope divided by basin slope",
-                            Name = "Slope Ratio"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Slope Ratio",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 376,
                             Code = "NONCONTDA",
                             Description = "Area covered by noncontributing drainage area",
-                            Name = "Area Covered by Noncontributing Drainage Area"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Area Covered by Noncontributing Drainage Area",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 377,
                             Code = "LAKESNWI",
                             Description = "Percent lakes and ponds as determined from the National Wetlands Inventory (2001)",
-                            Name = "Percent Lakes and Ponds"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Lakes and Ponds",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 378,
                             Code = "WETLNDNWI",
                             Description = "Percent wetlands as determined from the National Wetlands Inventory (2001)",
-                            Name = "Percent Wetlands"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Wetlands",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 379,
                             Code = "SD_LSTLZ",
                             Description = "Percent Limestone Loss Zone from Sando and others (2008)",
-                            Name = "Percent Limestone Loss Zone"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Limestone Loss Zone",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 380,
                             Code = "SD_LSTHW",
                             Description = "Percent Limestone Headwaters from Sando and others (2008)",
-                            Name = "Percent Limestone Headwaters"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Limestone Headwaters",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 381,
                             Code = "SD_CC",
                             Description = "Percent Crystalline Core from Sando and others (2008)",
-                            Name = "Percent Crystalline Core"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Crystalline Core",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 382,
                             Code = "SD_AS",
                             Description = "Percent Artesian Spring from Sando and others (2008)",
-                            Name = "Percent Artesian Spring"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Artesian Spring",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 383,
                             Code = "SD_ASLZ",
                             Description = "Percent Loss Zone/Artesian Spring from Sando and others (2008)",
-                            Name = "Percent Loss Zone/Artesian Spring"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Loss Zone/Artesian Spring",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 384,
                             Code = "SD_BHEXT",
                             Description = "Percent Black Hills Exterior from Sando and others (2008)",
-                            Name = "Percent Black Hills Exterior"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Black Hills Exterior",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 385,
                             Code = "SD_SNDHLS",
                             Description = "Percent Sand Hills setting from Sando and others (2008)",
-                            Name = "Percent Sand Hills setting"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Sand Hills setting",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 386,
                             Code = "SSURGSAND",
                             Description = "SSURGO percent sand",
-                            Name = "SSURGO Percent Sand"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "SSURGO Percent Sand",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 387,
                             Code = "SSURGPDRN",
                             Description = "SSURGO Percent Poor Drainage",
-                            Name = "SSURGO Percent Poor Drainage "
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "SSURGO Percent Poor Drainage ",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 388,
                             Code = "PRDECFEB10",
                             Description = "PRISM Precip Mean Winter (dec,jan,feb) (inches)",
-                            Name = "PRISM Precip Mean Winter (dec,jan,feb) (inches)"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "PRISM Precip Mean Winter (dec,jan,feb) (inches)",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 389,
                             Code = "CSL100",
                             Description = "Longest flow path slope in feet per miles, using DEM",
-                            Name = "Longest flow path slope in feet per miles"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Longest flow path slope in feet per miles",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 390,
                             Code = "ADJCOEFF",
                             Description = "Coefficient to adjust estimates for percentage of carbonate rock in Western Maryland",
-                            Name = "Adjustment Coefficient"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Adjustment Coefficient",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 391,
                             Code = "BSLDEM30FT",
                             Description = "Mean basin slope, based on slope percent grid",
-                            Name = "Mean basin slope"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean basin slope",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 392,
                             Code = "PROTECTED",
                             Description = "Percent of area of protected Federal and State owned land",
-                            Name = "Percent of area of protected Federal and State owned land"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent of area of protected Federal and State owned land",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 393,
                             Code = "LU92BARE",
                             Description = "Percent of area covered by barren rock using 1992 NLCD",
-                            Name = "LU92BARE"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LU92BARE",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 394,
                             Code = "LU92DEV",
                             Description = "Percent of area covered by all densities of developed land using 1992 NLCD",
-                            Name = "LU92DEV"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LU92DEV",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 395,
                             Code = "LU92PLANT",
                             Description = "Percent of area in cultivation using 1992 NLCD",
-                            Name = "LU92PLANT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LU92PLANT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 396,
                             Code = "LU92WATER",
                             Description = "Percent of area covered by water using 1992 NLCD",
-                            Name = "LU92WATER"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LU92WATER",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 397,
                             Code = "LU92WETLN",
                             Description = "Percent of area covered by wetland using 1992 NLCD",
-                            Name = "LU92WETLN"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LU92WETLN",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 398,
                             Code = "LC01IMP",
                             Description = "Percent imperviousness of basin area 2001 NLCD",
-                            Name = "LC01IMP"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01IMP",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 399,
                             Code = "LC01SHRUB",
                             Description = "Percent of area covered by shrubland using 2001 NLCD",
-                            Name = "LC01SHRUB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01SHRUB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 400,
                             Code = "LC06BARE",
                             Description = "Percent of area covered by barren rock using 2006 NLCD",
-                            Name = "LC06BARE"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC06BARE",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 401,
                             Code = "LC06PLANT",
                             Description = "Percent of area in cultivation using 2006 NLCD",
-                            Name = "LC06PLANT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC06PLANT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 402,
                             Code = "LC06GRASS",
                             Description = "Percent of area covered by grassland/herbaceous using 2006 NLCD",
-                            Name = "LC06GRASS"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC06GRASS",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 403,
                             Code = "LC06SHRUB",
                             Description = "Percent of area covered by shrubland using 2006 NLCD",
-                            Name = "LC06SHRUB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC06SHRUB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 404,
                             Code = "LC06WETLND",
                             Description = "Percent of area covered by wetland using 2006 NLCD",
-                            Name = "LC06WETLND"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC06WETLND",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 405,
                             Code = "LC11GRASS",
                             Description = "Percent of area covered by grassland/herbaceous using 2011 NLCD",
-                            Name = "LC11GRASS"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11GRASS",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 406,
                             Code = "LC11SHRUB",
                             Description = "Percent of area covered by shrubland using 2011 NLCD",
-                            Name = "LC11SHRUB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC11SHRUB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 407,
                             Code = "TNCLFACT2",
                             Description = "Tennessee climate factor, 2-year interval",
-                            Name = "Tennessee Climate Factor"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Tennessee Climate Factor",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 408,
                             Code = "CSL1085LO",
                             Description = "10-85 slope of lower half of main channel in feet per mile.",
-                            Name = "10-85 slope of lower half of main channel"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "10-85 slope of lower half of main channel",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 409,
                             Code = "CSL1085UP",
                             Description = "10-85 slope of upper half of main channel in feet per mile.",
-                            Name = "10-85 slope of upper half of main channel"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "10-85 slope of upper half of main channel",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 410,
                             Code = "CONTOUR",
                             Description = "Total length of all elevation contours in drainage area in miles",
-                            Name = "Total length of all elevation contours in drainage area"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Total length of all elevation contours in drainage area",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 411,
                             Code = "PRJUNAUG00",
                             Description = "Basin average mean precip for June to August from PRISM 1971-2000",
-                            Name = "Basin average mean precip for June to August"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin average mean precip for June to August",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 412,
                             Code = "JUNMAXTMP",
                             Description = "Maximum June Temperature, in degrees F",
-                            Name = "Maximum June Temperature"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Maximum June Temperature",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 413,
                             Code = "DRN",
                             Description = "Drainage quality index from STATSGO",
-                            Name = "Drainage quality index"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Drainage quality index",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 414,
                             Code = "BSLOPDRAW",
                             Description = "Unadjusted basin slope, in degrees",
-                            Name = "Unadjusted basin slope"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Unadjusted basin slope",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 415,
                             Code = "CENTROXA83",
                             Description = "X coordinate of the centroid, in NAD_1983_Albers, meters",
-                            Name = "X coordinate of the centroid, in NAD_1983_Albers"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "X coordinate of the centroid, in NAD_1983_Albers",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 416,
                             Code = "CENTROYA83",
                             Description = "Basin centroid horizontal (y) location in NAD 1983 Albers",
-                            Name = "Basin centroid Y, in NAD 1983 Albers"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin centroid Y, in NAD 1983 Albers",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 417,
                             Code = "OUTLETXA83",
                             Description = "X coordinate of the outlet, in NAD_1983_Albers,meters",
-                            Name = "X coordinate of the outlet, in NAD_1983_Albers"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "X coordinate of the outlet, in NAD_1983_Albers",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 418,
                             Code = "OUTLETYA83",
                             Description = "Y coordinate of the outlet, in NAD_1983_Albers, meters",
-                            Name = "Y coordinate of the outlet, in NAD_1983_Albers"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Y coordinate of the outlet, in NAD_1983_Albers",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 419,
                             Code = "WATER",
                             Description = "Percent of area covered by open water (lakes, ponds, reservoirs)",
-                            Name = "WATER"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "WATER",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 420,
                             Code = "CROPS",
                             Description = "Percent of area covered by agriculture",
-                            Name = "CROPS"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "CROPS",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 421,
                             Code = "STRMTOTED",
                             Description = "Total stream length in miles - edited NHD",
-                            Name = "STRMTOTED"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STRMTOTED",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 422,
                             Code = "BSHAPELFP",
                             Description = "Basin Shape Factor computed as the square of the longest flow path divided by drainage area",
-                            Name = "Basin Shape Factor, Longest flow path method"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Shape Factor, Longest flow path method",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 423,
                             Code = "LC01FORSHB",
                             Description = "Percentage of forests and shrub lands, classes 41 to 52, from NLCD 2001",
-                            Name = "LC01FORSHB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC01FORSHB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 424,
                             Code = "LC06FORSHB",
                             Description = "Percentage of forests and shrub lands, classes 41 to 52, from NLCD 2006",
-                            Name = "LC06FORSHB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC06FORSHB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 425,
                             Code = "LC06CRPHAY",
                             Description = "Percentage of cultivated crops and hay, classes 81 and 82, from NLCD 2006",
-                            Name = "LC06CRPHAY"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "LC06CRPHAY",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 426,
                             Code = "BRMETA",
                             Description = "Percent area of metamorphic rocks within the Blue Ridge Physiographic Region",
-                            Name = "BRMETA"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "BRMETA",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 427,
                             Code = "CPSED",
                             Description = "Percent area of sedimentary rockswithin the Coastal Plain Physiographic Region",
-                            Name = "CPSED"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "CPSED",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 428,
                             Code = "PDIGMET",
                             Description = "Percent area of igneous and metamorphic  within the Piedmont Physiographic Region",
-                            Name = "PDIGMET"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "PDIGMET",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 429,
                             Code = "MESZOIC",
                             Description = "Percent of area within the Mesozoic Basins",
-                            Name = "MESZOIC"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "MESZOIC",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 430,
                             Code = "VRPLSLC",
                             Description = "Percent of area of siliciclastic rocks witin the Valley and Ridge or Appalachian Plateau Physiographic Regions",
-                            Name = "VRPLSLC"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "VRPLSLC",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 431,
                             Code = "VRCARB",
                             Description = "Percent of area of carbonate rocks within the Valley and Ridge Physiographic Region",
-                            Name = "VRCARB"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "VRCARB",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 432,
                             Code = "STATSWATCP",
                             Description = "Available water capacity of the top 60 inches of soil - determined from STATSGO data",
-                            Name = "STATSWATCP"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSWATCP",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 433,
                             Code = "STATSGODEP",
                             Description = "Area-weighted average soil depth from NRCS STATSGO database",
-                            Name = "STATSGODEP"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSGODEP",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 434,
                             Code = "STATSCLAY10",
                             Description = "Percentage of  soils with less than 10 percent clay from STATSGO",
-                            Name = "STATSCLAY10"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSCLAY10",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 435,
                             Code = "STATSCLY20",
                             Description = "Percentage of  soils with greater than 10 percent and less than or equal to 20 percent clay from STATSGO",
-                            Name = "STATSCLY20"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSCLY20",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 436,
                             Code = "STATSCLY30",
                             Description = "Percentage of  soils with greater than 20 percent and less than or equal to 30 percent  clay from STATSGO",
-                            Name = "STATSCLY30"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSCLY30",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 437,
                             Code = "STATSCLY40",
                             Description = "Percentage of  soils with greater than 30 percent and less than or equal to 40 percent  clay from STATSGO",
-                            Name = "STATSCLY40"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSCLY40",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 438,
                             Code = "STATSCLY50",
                             Description = "Percentage of  soils with greater than 40 percent and less than or equal to 50 percent  clay from STATSGO",
-                            Name = "STATSCLY50"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSCLY50",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 439,
                             Code = "STATSCLY60",
                             Description = "Percentage of  soils with greater than 50 percent and less than or equal to 60 percent  clay from STATSGO",
-                            Name = "STATSCLY60"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSCLY60",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 440,
                             Code = "STATSOM0_5",
                             Description = "Percentage of  soils with less than 0.5 percent organic matter from STATSGO",
-                            Name = "STATSOM0_5"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSOM0_5",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 441,
                             Code = "STATSOM2_6",
                             Description = "Percentage of  soils with greater than 0.50 percent and less than or equal to 2.60 percent organic matter from STATSGO",
-                            Name = "STATSOM2_6"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSOM2_6",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 442,
                             Code = "STATSOM7_3",
                             Description = "Percentage of  soils with greater than 2.6 percent and less than or equal to 7.3 percent organic matter from STATSGO",
-                            Name = "STATSOM7_3"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATSOM7_3",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 443,
                             Code = "STATOM19_8",
                             Description = "Percentage of  soils with greater than 7.3 percent and less than or equal to 19.8 percent organic matter from STATSGO",
-                            Name = "STATOM19_8"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATOM19_8",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 444,
                             Code = "STATOM55_7",
                             Description = "Percentage of  soils with greater than 19.8 percent and less than or equal to 55.7 percent organic matter from STATSGO",
-                            Name = "STATOM55_7"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "STATOM55_7",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 445,
                             Code = "CENTRXUTM",
                             Description = "Basin centroid horizontal (x) location in UTM meters",
-                            Name = "Basin Centroid X UTM"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Centroid X UTM",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 446,
                             Code = "CENTRYUTM",
                             Description = "Basin centroid horizontal (y) location in UTM meters",
-                            Name = "Basin Centroid Y UTM"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin Centroid Y UTM",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 447,
                             Code = "I24H100YA2",
                             Description = "Maximum 24-hour precipitation that occurs on average once in 100 years from NOAA Atlas 2",
-                            Name = "24 Hour 100 Year Precipitation Atlas2"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "24 Hour 100 Year Precipitation Atlas2",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 448,
                             Code = "INSINKHOLE",
                             Description = "Percent Sinkhole drainage area per basin from Indiana Geological Survey.",
-                            Name = "Percent Sinkhole Drainage Area"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Sinkhole Drainage Area",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 449,
                             Code = "INSINKING",
                             Description = "Percent Sinking stream drainage area from Indiana Geological Survey.",
-                            Name = "Percent Sinking Stream Drainage Area"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Sinking Stream Drainage Area",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 450,
                             Code = "RELRELFff",
                             Description = "Basin relief divided by basin parameter in ft per ft",
-                            Name = "Relative Relief ft/ft"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Relative Relief ft/ft",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 451,
                             Code = "RRMEAN",
                             Description = "Relief ratio defined as (ELEV-MINBELEV)/(ELEVMAX-MINBELEV)",
-                            Name = "Relief Ratio Mean"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Relief Ratio Mean",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 452,
                             Code = "SSURGWDRN",
                             Description = "Percentage of well drained soil, from SSURGO",
-                            Name = "Percent Well Drained Soil from SSURGO"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent Well Drained Soil from SSURGO",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 453,
                             Code = "SGSL",
                             Description = "Total stream length intersecting sand and gravel deposits ( in miles )",
-                            Name = "Total stream length intersecting sand and gravel deposits ( in miles )"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Total stream length intersecting sand and gravel deposits ( in miles )",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 454,
                             Code = "LC11SNOIC",
                             Description = "Percent snow and ice from NLCD 2011 class 12",
-                            Name = "Percent snow and ice from NLCD 2011 class 12"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Percent snow and ice from NLCD 2011 class 12",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 455,
                             Code = "RCN",
                             Description = "Runoff-curve number as defined by NRCS (http://policy.nrcs.usda.gov/OpenNonWebContent.aspx?content=17758.wba)",
-                            Name = "Runoff-Curve Number"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Runoff-Curve Number",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 456,
                             Code = "RUNCO_CO",
                             Description = "Soil runoff coefficient as defined by Verdin and Gross (2017)",
-                            Name = "Soil Runoff Coefficient"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Soil Runoff Coefficient",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 457,
                             Code = "TOC",
                             Description = "Time of concentration in hours",
-                            Name = "Time of concentration in hours"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Time of concentration in hours",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 458,
                             Code = "CSL1085RAW",
                             Description = "Unadjusted 10-85 stream slope method in feet per mile.",
-                            Name = "CSL1085RAW"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "CSL1085RAW",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 459,
                             Code = "CSL1085ADJ",
                             Description = "Adjusted 10-85 slope in feet per mile",
-                            Name = "CSL1085ADJ"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "CSL1085ADJ",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 460,
                             Code = "CN",
                             Description = "Composite NRCS curve number",
-                            Name = "Curve Number"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Curve Number",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 461,
                             Code = "GWHEAD",
                             Description = "Mean basin elevation minus minimum basin elevation",
-                            Name = "Ground water head"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Ground water head",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 462,
                             Code = "HA1PCT",
                             Description = "Percent of area within Hydrologic Area 1",
-                            Name = "HA1PCT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "HA1PCT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 463,
                             Code = "HA2PCT",
                             Description = "Percent of area within Hydrologic Area 2",
-                            Name = "HA2PCT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "HA2PCT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 464,
                             Code = "HA3PCT",
                             Description = "Percent of area within Hydrologic Area 3",
-                            Name = "HA3PCT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "HA3PCT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 465,
                             Code = "HA4PCT",
                             Description = "Percent of area within Hydrologic Area 4",
-                            Name = "HA4PCT"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "HA4PCT",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 466,
                             Code = "ASPECT",
                             Description = "basin average of topographic slope compass directions from elevation grid",
-                            Name = "Basin average aspect"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Basin average aspect",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 467,
                             Code = "JANAVPRE2K",
                             Description = "Mean January Precipitation",
-                            Name = "Mean January Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean January Precipitation",
+                            StatisticGroupTypeID = 0
                         },
                         new
                         {
                             ID = 468,
                             Code = "JULAVPRE2K",
                             Description = "Mean July Average Precipitation",
-                            Name = "Mean July Precipitation"
+                            EnglishUnitTypeID = 0,
+                            MetricUnitTypeID = 0,
+                            Name = "Mean July Precipitation",
+                            StatisticGroupTypeID = 0
                         });
+                });
+
+            modelBuilder.Entity("SharedDB.Resources.RegionManager", b =>
+                {
+                    b.HasOne("SharedDB.Resources.Manager", "Manager")
+                        .WithMany("RegionManagers")
+                        .HasForeignKey("ManagerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SharedDB.Resources.Region", "Region")
+                        .WithMany("RegionManagers")
+                        .HasForeignKey("RegionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SharedDB.Resources.UnitConversionFactor", b =>
@@ -14601,12 +16159,14 @@ namespace SharedDB.Migrations
                     b.HasOne("SharedDB.Resources.UnitType", "UnitTypeIn")
                         .WithMany("UnitConversionFactorsIn")
                         .HasForeignKey("UnitTypeInID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("SharedDB.Resources.UnitType", "UnitTypeOut")
                         .WithMany("UnitConversionFactorsOut")
                         .HasForeignKey("UnitTypeOutID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SharedDB.Resources.UnitType", b =>
@@ -14614,7 +16174,29 @@ namespace SharedDB.Migrations
                     b.HasOne("SharedDB.Resources.UnitSystemType", "UnitSystemType")
                         .WithMany("UnitTypes")
                         .HasForeignKey("UnitSystemTypeID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SharedDB.Resources.VariableType", b =>
+                {
+                    b.HasOne("SharedDB.Resources.UnitType", "EnglishUnitType")
+                        .WithMany()
+                        .HasForeignKey("EnglishUnitTypeID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SharedDB.Resources.UnitType", "MetricUnitType")
+                        .WithMany()
+                        .HasForeignKey("MetricUnitTypeID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SharedDB.Resources.StatisticGroupType", "StatisticGroupType")
+                        .WithMany()
+                        .HasForeignKey("StatisticGroupTypeID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

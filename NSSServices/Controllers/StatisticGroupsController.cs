@@ -51,20 +51,21 @@ namespace NSSServices.Controllers
         [HttpGet(Name ="Statistic Groups")]
         [HttpGet("/Regions/{regions}/[controller]", Name ="Region Statistic Groups")]
         [APIDescription(type = DescriptionType.e_link, Description = "/Docs/StatisticGroups/Get.md")]
-        public async Task<IActionResult> Get(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "")
+        public async Task<IActionResult> Get(string regions="", [FromQuery] string regressionRegions = "", [FromQuery] string regressions = "", [FromQuery] string defTypes = "")
         {
             IQueryable<StatisticGroupType> entities = null;
             List<string> RegionList = null;
             List<string> regressionRegionList = null;
             List<string> regressionsList = null;
+            List<string> defTypeList = null;
             try
             {
                 RegionList = parse(regions);
                 regressionRegionList = parse(regressionRegions);
                 regressionsList = parse(regressions);
-
+                defTypeList = parse(defTypes);
                 
-                 entities = agent.GetStatisticGroups(RegionList, null, regressionRegionList, regressionsList);
+                 entities = agent.GetStatisticGroups(RegionList, null, regressionRegionList, regressionsList, defTypeList);
 
                 sm($"statistic group count {entities.Count()}");
                 return Ok(entities);

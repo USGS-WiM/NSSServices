@@ -9,7 +9,7 @@ namespace NSSAgent.Resources
     public class Station
     {
         #region "Properties"
-        public Resource Resource{ get; set; }
+        public NWISResource Resource{ get; set; }
         public bool ShouldSerializeResource()
         { return false; }
         public String StationID { get; set; }
@@ -90,7 +90,7 @@ namespace NSSAgent.Resources
         }
         #endregion
         #region "Static Methods"
-        public static Station NWISStation(string stationID, Resource nwisResource)
+        public static Station NWISStation(string stationID, NWISResource nwisResource)
         {            
             StationServiceAgent sa = new StationServiceAgent(nwisResource);
             var station = sa.GetNWISStation(stationID);

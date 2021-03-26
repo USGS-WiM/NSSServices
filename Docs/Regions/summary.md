@@ -1,1 +1,1 @@
-Represents a region, such as a state or river basin.
+Represents a region, such as a state or river basin. (Referred to as "study area" in some StreamStats-affiliated web clients.)

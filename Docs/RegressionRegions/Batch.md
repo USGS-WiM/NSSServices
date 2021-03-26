@@ -16,12 +16,18 @@ content-length: 276
 	{
         "name":"Test Regression Region",
         "code":"GCTEST",
-        "description":"test regression region"
+        "description":"test regression region",
+        "citationID": 1,
+        "statusID": 1,
+        "methodID": 1
 	},
 	{
         "name":"Test Regression Region 2",
         "code":"GCTEST2",
-        "description":"test regression region 2"
+        "description":"test regression region 2",
+        "citationID": 1,
+        "statusID": 1,
+        "methodID": 1
 	}
 ]
 ```
@@ -33,13 +39,19 @@ HTTP/1.1 200 OK
         "id": 1,
         "name":"Test Regression Region",
         "code":"GCTEST",
-        "description":"test regression region"
+        "description":"test regression region",
+        "citationID": 1,
+        "statusID": 1,
+        "methodID": 1
 	},
 	{
         "id": 2,
         "name":"Test Regression Region 2",
         "code":"GCTEST2",
-        "description":"test regression region 2"
+        "description":"test regression region 2",
+        "citationID": 1,
+        "statusID": 1,
+        "methodID": 1
 	}
 ]
 ```

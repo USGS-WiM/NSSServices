@@ -227,6 +227,11 @@ namespace NSSServices.Controllers
                     entity.StatusID = (int?)2;
                     sm("Status set to Review, disabled for public users due to a missing citation or status");
                 }
+                // remove extra limitation variables
+                foreach(var lim in entity.Limitations)
+                {
+                    agent.RemoveLimitationVariables(lim.ID, lim.Variables.ToList());
+                }
 
                 return Ok(await agent.Update(id,entity));
             }

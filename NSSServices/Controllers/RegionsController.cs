@@ -58,7 +58,7 @@ namespace NSSServices.Controllers
                     entities = agent.GetManagedRegions(LoggedInUser());
                 }
                 else
-                    entities = agent.GetRegions();
+                    entities = agent.GetRegions().OrderBy(r => r.ID);
                 return Ok(entities);
             }
             catch (Exception ex)

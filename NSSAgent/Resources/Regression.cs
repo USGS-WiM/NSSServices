@@ -16,6 +16,8 @@ namespace NSSAgent.Resources
     public class Regression : RegressionBase
     {
         public double? EquivalentYears { get; set; }
+        public double? DA_Exponent { get; set; }
+        public int? OrderIndex { get; set; }
 
         [Required]
         public ExpectedValue Expected { get; set; }

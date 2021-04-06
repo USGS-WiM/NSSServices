@@ -61,7 +61,6 @@ namespace NSSAgent
         IQueryable<Limitation> GetLimitation(Int32 ID);
         IQueryable<Limitation> GetRegressionRegionLimitations(Int32 RegressionRegionID);
         Task<IEnumerable<Limitation>> AddRegressionRegionLimitations(Int32 RegressionRegionID, List<Limitation> items);
-        IEnumerable<Limitation> RemoveRegressionRegionLimitations(Int32 RegressionRegionID, List<Limitation> items);
         Task<Limitation> Update(Int32 pkId, Limitation item);
         Task DeleteLimitation(Int32 pkID);
 
@@ -122,6 +121,7 @@ namespace NSSAgent
         Variable GetDefaultUnitVariable(Int32 varTypeID);
         Boolean CanDeleteVariable(Int32 ID);
         Task DeleteVariable(Int32 ID);
+        void RemoveLimitationVariables(Int32 limID, List<Variable> items);
 
         // Variable types
         IQueryable<VariableType> GetVariableTypes(List<string> statisticGroupList = null);
@@ -253,15 +253,6 @@ namespace NSSAgent
             items.ForEach(i => i.RegressionRegionID = RegressionRegionID);
             return this.Add<Limitation>(items);
         }
-        public IEnumerable<Limitation> RemoveRegressionRegionLimitations(int RegressionRegionID, List<Limitation> items)
-        {
-            //find limitations
-            this.Select<Limitation>()
-                .Where(l => l.RegressionRegionID == RegressionRegionID)
-                .Where(l => items.Contains(l)).ToList().ForEach(item=> this.Delete(item));
-
-            return this.Select<Limitation>().Where(l => l.RegressionRegionID == RegressionRegionID).AsEnumerable();
-        }
         public Task<Limitation> Update(Int32 pkId, Limitation item) {
             return this.Update<Limitation>(pkId, item);
         }
@@ -336,7 +327,7 @@ namespace NSSAgent
         }
         public IQueryable<Region> GetRegions()
         {
-            return this.Select<Region>();
+            return this.Select<Region>().OrderBy(r => r.ID);
         }
         public IQueryable<Region> GetManagedRegions(Manager manager)
         {
@@ -571,11 +562,11 @@ namespace NSSAgent
                         throw new BadRequestException("When authenticated, user must specify a managed region");
                 }
 
-                var equ = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList)
-                    .Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(e => e.RegressionRegion)
+                var equ = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList);
+                equ = equ.Include("Variables.VariableType").Include("Variables.UnitType").Include(e => e.StatisticGroupType).Include(e => e.RegressionRegion)
                     .Include("PredictionInterval").Include("EquationErrors.ErrorType").Include(e => e.UnitType);
 
-                if (applicableStatus != null) equ.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
+                if (applicableStatus != null) equ = equ.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
 
 
                 return equ.AsEnumerable().GroupBy(e => e.StatisticGroupTypeID, e => e, (key, g) => new { groupkey = key, groupedparameters = g })
@@ -612,6 +603,8 @@ namespace NSSAgent
                                                                                                         Unit = new SimpleUnitType() { ID = rg.UnitTypeID, Abbr = rg.UnitType?.Abbreviation, Unit = rg.UnitType?.Name},
                                                                                                         Equation = rg.Expression,
                                                                                                         EquivalentYears = rg.EquivalentYears,
+                                                                                                        OrderIndex = rg.OrderIndex,
+                                                                                                        DA_Exponent = rg.DA_Exponent,
                                                                                                         PredictionInterval = rg.PredictionIntervalID.HasValue? new PredictionInterval() {
                                                                                                                                                                                             ID = rg.PredictionIntervalID.Value,
                                                                                                                                                                                             BiasCorrectionFactor = rg.PredictionInterval.BiasCorrectionFactor,
@@ -767,6 +760,8 @@ namespace NSSAgent
                             RegressionTypeID = reg.ID,
                             StatisticGroupTypeID = sg.ID,
                             EquivalentYears = regression.EquivalentYears,
+                            OrderIndex = regression.OrderIndex,
+                            DA_Exponent = regression.DA_Exponent,
                             Variables = (rregion.Parameters.Any() ? rregion.Parameters : regression.Parameters).Select(p=> new Variable()
                             {
                                 VariableTypeID = variables.FirstOrDefault(e=>e.Code.ToLower() == p.Code.ToLower()).ID,
@@ -847,6 +842,8 @@ namespace NSSAgent
                     equation.Expression = regression.Equation;
                     equation.StatisticGroupTypeID = item.StatisticGroupID;
                     equation.EquivalentYears = regression.EquivalentYears;
+                    if (regression.DA_Exponent != null) equation.DA_Exponent = regression.DA_Exponent;
+                    if (regression.OrderIndex != null) equation.OrderIndex = regression.OrderIndex;
 
                     //predictionInterval
                     if (regression.PredictionInterval != null)
@@ -1001,6 +998,14 @@ namespace NSSAgent
         public Task DeleteVariable(Int32 ID)
         {
             return this.Delete<Variable>(ID);
+        }
+        public void RemoveLimitationVariables(Int32 limID, List<Variable> items)
+        {
+            var variables = this.Select<Variable>().Where(v => v.LimitationID == limID)
+                    .Where(v => !items.Contains(v));
+            context.RemoveRange(variables);
+            context.SaveChanges();
+            return;
         }
         #endregion
 
@@ -1397,21 +1402,27 @@ namespace NSSAgent
                 var variables = expected.Parameters.ToDictionary(k => k.Key, v => (double?)v.Value);
                 eOps = new ExpressionOps(equation.Expression, variables);
 
-                var eopsValueRounded = eOps.Value.Round();
-                var expectedValueRounded = expected.Value.Round();
 
                 if (!eOps.IsValid) { sm($"Scenario expression failed to execute. {equation.Expression} is invalid"); return false; }
-                if (eopsValueRounded != expectedValueRounded && !skipCheck) { sm($"Expected value {expectedValueRounded} does not match computed {eopsValueRounded}"); return false; }
 
-                if (equation.PredictionInterval != null)
+                if (!skipCheck)
                 {
-                    IntervalBounds computedBound = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
-                    var expectedUpperRounded = computedBound != null ? expected.IntervalBounds.Upper.Round() : 0;
-                    var expectedLowerRounded = computedBound != null ? expected.IntervalBounds.Lower.Round() : 0;
-                    if ((computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded) && !skipCheck)
+                    var eopsValueRounded = eOps.Value.Round();
+                    var expectedValueRounded = expected.Value.Round();
+
+                    if (eopsValueRounded != expectedValueRounded) { sm($"Expected value {expectedValueRounded} does not match computed {eopsValueRounded}"); return false; }
+
+
+                    if (equation.PredictionInterval != null)
                     {
-                        sm($"Expected interval bound values; Upper: {expectedUpperRounded}, Lower: {expectedLowerRounded} do not match computed; Upper: {computedBound?.Upper}, Lower: {computedBound?.Lower}");
-                        return false;
+                        IntervalBounds computedBound = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
+                        var expectedUpperRounded = computedBound != null ? expected.IntervalBounds.Upper.Round() : 0;
+                        var expectedLowerRounded = computedBound != null ? expected.IntervalBounds.Lower.Round() : 0;
+                        if ((computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded) && !skipCheck)
+                        {
+                            sm($"Expected interval bound values; Upper: {expectedUpperRounded}, Lower: {expectedLowerRounded} do not match computed; Upper: {computedBound?.Upper}, Lower: {computedBound?.Lower}");
+                            return false;
+                        }
                     }
                 }
 

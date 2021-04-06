@@ -842,6 +842,8 @@ namespace NSSAgent
                     equation.Expression = regression.Equation;
                     equation.StatisticGroupTypeID = item.StatisticGroupID;
                     equation.EquivalentYears = regression.EquivalentYears;
+                    if (regression.DA_Exponent != null) equation.DA_Exponent = regression.DA_Exponent;
+                    if (regression.OrderIndex != null) equation.OrderIndex = regression.OrderIndex;
 
                     //predictionInterval
                     if (regression.PredictionInterval != null)

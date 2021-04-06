@@ -120,6 +120,11 @@ namespace NSSServices.Controllers
             try
             {
                 if (id < 0 || !isValid(entity)) return new BadRequestResult(); // This returns HTTP 404
+
+                // If unit types are the same, including the full object results in DB error
+                if (entity.MetricUnitTypeID != null && entity.MetricUnitType != null) entity.MetricUnitType = null;
+                if (entity.EnglishUnitTypeID != null && entity.EnglishUnitType != null) entity.EnglishUnitType = null;
+
                 return Ok(await shared.Update(id, entity));
             }
             catch (Exception ex)

@@ -98,6 +98,9 @@ namespace NSSServices.Controllers
                 RegressionRegion rr = agent.GetRegressionRegion(l.RegressionRegionID).FirstOrDefault();
                 if (!IsAuthorizedToEdit(rr)) return Unauthorized();
 
+                // remove extra variables
+                agent.RemoveLimitationVariables(entity.ID, entity.Variables.ToList());
+
                 return Ok(await agent.Update(id, entity));
             }
             catch (Exception ex)

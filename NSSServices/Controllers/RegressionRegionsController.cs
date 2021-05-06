@@ -228,9 +228,12 @@ namespace NSSServices.Controllers
                     sm("Status set to Review, disabled for public users due to a missing citation or status");
                 }
                 // remove extra limitation variables
-                foreach(var lim in entity.Limitations)
+                if (entity.Limitations != null && entity.Limitations.Count > 0)
                 {
-                    agent.RemoveLimitationVariables(lim.ID, lim.Variables.ToList());
+                    foreach (var lim in entity.Limitations)
+                    {
+                        agent.RemoveLimitationVariables(lim.ID, lim.Variables.ToList());
+                    }
                 }
 
                 return Ok(await agent.Update(id,entity));

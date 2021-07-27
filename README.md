@@ -21,9 +21,9 @@ https://help.github.com/articles/cloning-a-repository/
 Open the solution file (.sln) using preferred IDE. Visual Studio Community is recommended.
 
 In order to conduct database functions, you'll need to configure the User Secrets using the database credentials. To do so:
-1. Open the .sln in Visual Studio Community
-2. In the Solution Explorer, find the "NSSServices" item, right click on it and select "Manage User Secrets".
-3. In the secrets.json, copy the following code and fill in the corresponding information for the StreamStats RDS Test instance (found in the WIM Keepass or ask a WIM team member for the information):
+* Open the .sln in Visual Studio Community
+* In the Solution Explorer, find the "NSSServices" item, right click on it and select "Manage User Secrets".
+* In the secrets.json, copy the following code and fill in the corresponding information for the StreamStats RDS Test instance (found in the WIM Keepass or ask a WIM team member for the information):
 ```
 {
   "dbuser": "",
@@ -34,10 +34,21 @@ In order to conduct database functions, you'll need to configure the User Secret
 
 ## Building and testing
 
+To run the services locally:
+* Open the .sln file in Visual Studio Community
+* In the Solution Explorer, find the "NSSServices" item, right click on it and select "Settings".
+* In the left hand sidebar, go to "Debug". If no profile called "NSSServices" exists, hit "New..." and name the profile "NSSServices"
+    * For Launch, select "Project"
+    * Check "Launch browser" and type "apiconfig"
+    * Add an environment variable with the name "ASPNETCORE_ENVIRONMENT" and value "Development" (you can change this to other values when testing)
+    * Set the App URL to "http://localhost:53813". This can be any url but this keeps it consistent with other developers and different from the GageStatsServices.
+* Save and go to the nav bar. Where it has the green play arrow and says IIS Express, select the down arrow and select "NSSServices" from the dropdown.
+* This should open a browser to http://localhost:53813/apiconfig.
+
 To build a `dist` folder before deployment to a server:
-1. Open the .sln file in Visual Studio Community
-2. In the Solution Explorer, find the "NSSServices" item, right click on it and select "Publish".
-3. In the Publish screen, keep the default information and hit the Publish button.
+* Open the .sln file in Visual Studio Community
+* In the Solution Explorer, find the "NSSServices" item, right click on it and select "Publish".
+* In the Publish screen, keep the default information and hit the Publish button.
 
 ## Deployment on IIS
 

@@ -41,7 +41,7 @@ To build a `dist` folder before deployment to a server:
 
 ## Deployment on IIS
 
-see [link](https://docs.microsoft.com/en-us/aspnet/core/publishing/iis?tabs=aspnetcore2x)  for detailed instructions for deploying to windows server.
+see [link](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/iis/?view=aspnetcore-5.0)  for detailed instructions for deploying to windows server.
 
 * Download and install [windows server hosting bundle](https://www.microsoft.com/net/download/core#/runtime) on the server.
 * Create new application pool specifying the .netCLR version property to "No Managed Code".
@@ -59,7 +59,7 @@ see [link](https://docs.microsoft.com/en-us/aspnet/core/publishing/apache-proxy)
 
 ## Built With
 
-* [Dotnetcore 2.0](https://github.com/dotnet/core) - ASP.Net core Framework
+* [Dotnetcore 3.1](https://github.com/dotnet/core) - ASP.Net core Framework
 
 ## Contributing
 

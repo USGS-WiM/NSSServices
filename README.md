@@ -36,7 +36,7 @@ In order to conduct database functions, you'll need to configure the User Secret
 
 To run the services locally:
 * Open the .sln file in Visual Studio Community
-* In the Solution Explorer, find the "NSSServices" item, right click on it and select "Settings".
+* In the Solution Explorer, find the "NSSServices" item, right click on it and select "Properties".
 * In the left hand sidebar, go to "Debug". If no profile called "NSSServices" exists, hit "New..." and name the profile "NSSServices"
     * For Launch, select "Project"
     * Check "Launch browser" and type "apiconfig"

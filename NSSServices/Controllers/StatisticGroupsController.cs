@@ -64,7 +64,6 @@ namespace NSSServices.Controllers
                 regressionRegionList = parse(regressionRegions);
                 regressionsList = parse(regressions);
                 defTypeList = parse(defTypes);
-
                 entities = agent.GetStatisticGroups(RegionList, null, regressionRegionList, regressionsList, defTypeList, GetApplicableStatus());
 
                 sm($"statistic group count {entities.Count()}");

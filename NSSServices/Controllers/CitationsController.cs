@@ -31,8 +31,6 @@ using WIM.Services.Attributes;
 using System.ComponentModel;
 using WIM.Security.Authorization;
 using NetTopologySuite.Geometries;
-using System.Security.Claims;
-using SharedDB.Resources;
 
 namespace NSSServices.Controllers
 {

@@ -50,7 +50,7 @@ namespace NSSAgent
 
         //Citations
         Task<Citation> GetCitation(Int32 ID);
-        IQueryable<Citation> GetCitations(List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
+        IQueryable<Citation> GetCitations(List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null, IQueryable<Status> applicableStatus = null);
         IQueryable<Citation> GetManagedCitations(Manager manager, List<string> regionList=null, Geometry geometry = null, List<string> regressionRegionList=null, List<string> statisticgroupList=null, List<string> regressiontypeList=null);
         IQueryable<Citation> GetManagerCitations(int managerID);
         Task<Citation> Update(Int32 pkId, Citation item);
@@ -173,7 +173,7 @@ namespace NSSAgent
         {
             return this.Find<Citation>(ID);
         }
-        public IQueryable<Citation> GetCitations(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
+        public IQueryable<Citation> GetCitations(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null, IQueryable<Status> applicableStatus = null)
         {
             if (!regionList.Any() && geom == null && !regressionRegionList.Any()&& !statisticgroupList.Any() && !regressiontypeList.Any())
                 return this.Select<Citation>().Include(c => c.RegressionRegions);
@@ -182,11 +182,15 @@ namespace NSSAgent
                 return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion).ThenInclude(rr=>rr.Citation)
                        .Where(rer => (regionList.Contains(rer.Region.Code.ToLower().Trim())
                                || regionList.Contains(rer.RegionID.ToString())) && rer.RegressionRegion.CitationID !=null).Select(r => r.RegressionRegion.Citation).Distinct().AsQueryable();
-
+            
             if (geom != null)
                 regressionRegionList = getRegressionRegionsByGeometry(geom).Select(rr => rr.ID.ToString()).ToList();
-   
-            return this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID);
+
+            var equations = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList);
+            if (applicableStatus != null) equations = equations.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
+
+            return equations.Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID);
+
         }
         public IQueryable<Citation> GetManagedCitations(Manager manager, List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null)
         {

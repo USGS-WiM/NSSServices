@@ -141,7 +141,6 @@ namespace NSSServices.Controllers
         }
         public IQueryable<Status> GetApplicableStatus()
         {
-            System.Diagnostics.Debug.WriteLine("getapplicableStatus");
             var query = agent.GetStatus();
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var manager = getLoggedInUser();

@@ -132,7 +132,7 @@ namespace NSSAgent
         Task<ErrorType> GetError(Int32 ID);
         IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null);
         IQueryable<RegressionType> GetManagedRegressions(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null);
-        Task<RegressionType> GetRegression(Int32 ID);
+        RegressionType GetRegression(Int32 ID);
         IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null, List<string> defTypeList = null);
         IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null, List<string> defTypeList = null);
         Task<StatisticGroupType> GetStatisticGroup(Int32 ID);
@@ -1027,15 +1027,15 @@ namespace NSSAgent
             return this.Select<RegressionType>().FirstOrDefault(r => r.Code == code);
         }
         public IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null)
-        {          
+        {
             if (regionList?.Any() != true && geom == null && regressionRegionList?.Any()!= true && statisticgroupList?.Any()!=true)
-                    return this.Select<RegressionType>();
+                    return this.Select<RegressionType>().Include(rt => rt.MetricUnitType).Include(rt => rt.EnglishUnitType).Include(rt => rt.StatisticGroupType);
 
             var equations = this.GetEquations(regionList, regressionRegionList, statisticgroupList);
             if (geom != null)
                 equations = equations.Where(e => getRegressionRegionsByGeometry(geom).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
 
-            return equations.Select(e => e.RegressionType).Distinct().OrderBy(e => e.ID);
+            return equations.Select(e => e.RegressionType).Distinct().OrderBy(e => e.ID).Include(rt => rt.MetricUnitType).Include(rt => rt.EnglishUnitType).Include(rt => rt.StatisticGroupType);
         }
         public IQueryable<RegressionType> GetManagedRegressions(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null)
         {
@@ -1066,9 +1066,9 @@ namespace NSSAgent
 
             return query.SelectMany(rrr => rrr.RegressionRegion.Equations.Select(e=>e.RegressionType)).Distinct();
         }
-        public Task<RegressionType> GetRegression(Int32 ID)
+        public RegressionType GetRegression(Int32 ID)
         {
-            return this.Find<RegressionType>(ID);
+            return this.GetRegressions().FirstOrDefault(rt => rt.ID == ID);
         }
         public StatisticGroupType GetStatisticGroupByCode(string code)
         {

@@ -130,7 +130,8 @@ namespace NSSServices.Controllers
                 return new Manager()
                 {
                     ID = Convert.ToInt32(User.Claims.Where(c => c.Type == ClaimTypes.PrimarySid).Select(c => c.Value).SingleOrDefault()),
-                    Role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).SingleOrDefault()
+                    Role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).SingleOrDefault(),
+                    Username = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault()
                 };
             }
             catch (Exception)

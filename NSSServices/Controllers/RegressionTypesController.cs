@@ -80,7 +80,7 @@ namespace NSSServices.Controllers
             {
                 if(id<0) return new BadRequestResult(); // This returns HTTP 404
 
-                return Ok(await agent.GetRegression(id));
+                return Ok(agent.GetRegression(id));
             }
             catch (Exception ex)
             {

@@ -50,7 +50,7 @@ namespace NSSAgent
 
         //Citations
         Task<Citation> GetCitation(Int32 ID);
-        IQueryable<Citation> GetCitations(List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
+        IQueryable<Citation> GetCitations(List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null, IQueryable<Status> applicableStatus = null);
         IQueryable<Citation> GetManagedCitations(Manager manager, List<string> regionList=null, Geometry geometry = null, List<string> regressionRegionList=null, List<string> statisticgroupList=null, List<string> regressiontypeList=null);
         IQueryable<Citation> GetManagerCitations(int managerID);
         Task<Citation> Update(Int32 pkId, Citation item);
@@ -130,10 +130,10 @@ namespace NSSAgent
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
         Task<ErrorType> GetError(Int32 ID);
-        IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null);
+        IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null, IQueryable<Status> applicableStatus = null);
         IQueryable<RegressionType> GetManagedRegressions(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null);
+        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null, List<string> defTypeList = null, IQueryable<Status> applicableStatus = null);
         RegressionType GetRegression(Int32 ID);
-        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null, List<string> defTypeList = null);
         IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null, List<string> defTypeList = null);
         Task<StatisticGroupType> GetStatisticGroup(Int32 ID);
         IQueryable<UnitType> GetUnits();
@@ -173,7 +173,7 @@ namespace NSSAgent
         {
             return this.Find<Citation>(ID);
         }
-        public IQueryable<Citation> GetCitations(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
+        public IQueryable<Citation> GetCitations(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null, IQueryable<Status> applicableStatus = null)
         {
             if (!regionList.Any() && geom == null && !regressionRegionList.Any()&& !statisticgroupList.Any() && !regressiontypeList.Any())
                 return this.Select<Citation>().Include(c => c.RegressionRegions);
@@ -182,11 +182,15 @@ namespace NSSAgent
                 return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion).ThenInclude(rr=>rr.Citation)
                        .Where(rer => (regionList.Contains(rer.Region.Code.ToLower().Trim())
                                || regionList.Contains(rer.RegionID.ToString())) && rer.RegressionRegion.CitationID !=null).Select(r => r.RegressionRegion.Citation).Distinct().AsQueryable();
-
+            
             if (geom != null)
                 regressionRegionList = getRegressionRegionsByGeometry(geom).Select(rr => rr.ID.ToString()).ToList();
-   
-            return this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID);
+
+            var equations = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList);
+            if (applicableStatus != null) equations = equations.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
+
+            return equations.Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID);
+
         }
         public IQueryable<Citation> GetManagedCitations(Manager manager, List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null)
         {
@@ -501,7 +505,6 @@ namespace NSSAgent
         }
 
         #endregion
-
         #region Status
         public IQueryable<Status> GetStatus()
         {
@@ -1011,7 +1014,6 @@ namespace NSSAgent
             }
         }
         #endregion
-
         #region Variables
         public Task<Variable> Add(Variable item)
         {
@@ -1059,7 +1061,6 @@ namespace NSSAgent
             return;
         }
         #endregion
-
         #region ReadOnly
         public IQueryable<ErrorType> GetErrors()
         {
@@ -1077,12 +1078,14 @@ namespace NSSAgent
         {
             return this.Select<RegressionType>().FirstOrDefault(r => r.Code == code);
         }
-        public IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null)
+        public IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null, IQueryable<Status> applicableStatus = null)
         {
             if (regionList?.Any() != true && geom == null && regressionRegionList?.Any()!= true && statisticgroupList?.Any()!=true)
                     return this.Select<RegressionType>().Include(rt => rt.MetricUnitType).Include(rt => rt.EnglishUnitType).Include(rt => rt.StatisticGroupType);
 
             var equations = this.GetEquations(regionList, regressionRegionList, statisticgroupList);
+
+            if (applicableStatus != null) equations = equations.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
             if (geom != null)
                 equations = equations.Where(e => getRegressionRegionsByGeometry(geom).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
 
@@ -1125,7 +1128,7 @@ namespace NSSAgent
         {
             return this.Select<StatisticGroupType>().FirstOrDefault(s => s.Code == code);
         }
-        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null, List<string> defTypeList = null)
+        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null, List<string> defTypeList = null, IQueryable<Status> applicableStatus = null)
         {
             if (regionList?.Any() != true && geom == null && regressionRegionList?.Any() != true && regressionsList?.Any() != true)
             {
@@ -1139,6 +1142,7 @@ namespace NSSAgent
 
             var equations = this.GetEquations(regionList, regressionRegionList, null, regressionsList);
 
+            if (applicableStatus != null) equations = equations.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
             if (geom != null)
                 equations = equations.Where(e => getRegressionRegionsByGeometry(geom).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
 

@@ -64,8 +64,7 @@ namespace NSSServices.Controllers
                 regressionRegionList = parse(regressionRegions);
                 regressionsList = parse(regressions);
                 defTypeList = parse(defTypes);
-                
-                 entities = agent.GetStatisticGroups(RegionList, null, regressionRegionList, regressionsList, defTypeList);
+                entities = agent.GetStatisticGroups(RegionList, null, regressionRegionList, regressionsList, defTypeList, GetApplicableStatus());
 
                 sm($"statistic group count {entities.Count()}");
                 return Ok(entities);
@@ -96,7 +95,7 @@ namespace NSSServices.Controllers
                     entities = agent.GetManagedStatisticGroups(getLoggedInUser(), RegionList, geom, null, regressionsList);
                 }
                 else
-                    entities = agent.GetStatisticGroups(RegionList, geom, null, regressionsList);
+                    entities = agent.GetStatisticGroups(RegionList, geom, null, regressionsList, null, GetApplicableStatus());
 
                 sm($"statistic group count {entities.Count()}");
                 return Ok(entities);
@@ -131,13 +130,42 @@ namespace NSSServices.Controllers
                 return new Manager()
                 {
                     ID = Convert.ToInt32(User.Claims.Where(c => c.Type == ClaimTypes.PrimarySid).Select(c => c.Value).SingleOrDefault()),
-                    Role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).SingleOrDefault()
+                    Role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).SingleOrDefault(),
+                    Username = User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).SingleOrDefault()
                 };
             }
             catch (Exception)
             {
                 return null;
             }
+        }
+        public IQueryable<Status> GetApplicableStatus()
+        {
+            var query = agent.GetStatus();
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var manager = getLoggedInUser();
+            bool isStreamStats = false;
+            if (Request.Headers.FirstOrDefault(h => h.Key.ToUpper() == "X-IS-STREAMSTATS").Value.FirstOrDefault() == "true") isStreamStats = true;
+
+            // set applicable Status for each environment
+            var SSProdStatus = new List<string> { "SS Approved" };
+            var SSStagingStatus = new List<string> { "SS Approved", "Review" };
+            var NSSStagingStatus = new List<string> { "Review", "Approved", "SS Approved" };
+            var NSSProdStatus = new List<string> { "Approved", "SS Approved" };
+
+            // if logged in, allow all Status
+            if (manager?.Username != null) return query;
+
+            if (isStreamStats)
+            {
+                if (env.ToUpper() == "PRODUCTION") return query.Where(s => SSProdStatus.Any(stat => stat == s.Name));
+                else if (env.ToUpper() == "STAGING" || env.ToUpper() == "DEVELOPMENT") return query.Where(s => SSStagingStatus.Any(stat => stat == s.Name));
+            }
+
+            if (env.ToUpper() == "STAGING" || env.ToUpper() == "DEVELOPMENT") return query.Where(s => NSSStagingStatus.Any(stat => stat == s.Name));
+
+            // default is return all SS/NSS approved
+            return query.Where(s => NSSProdStatus.Any(stat => stat == s.Name));
         }
         #endregion
     }

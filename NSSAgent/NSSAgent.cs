@@ -41,6 +41,10 @@ using System.ComponentModel.DataAnnotations;
 using WIM.Utilities.Resources;
 using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
+using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Microsoft.Extensions.Configuration;
 
 namespace NSSAgent
 {
@@ -160,11 +164,19 @@ namespace NSSAgent
             nwisResource = _nwisResource;
             gagestatsResource = _gagestatsResource;
             _messages = httpContextAccessor.HttpContext.Items;
-            
-            //optimize query for disconnected databases.
-            this.context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-            this.unitConversionFactors = Select<UnitConversionFactor>().AsTracking().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
-            this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+
+            try
+            {
+                //optimize query for disconnected databases.
+                this.context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+                this.unitConversionFactors = Select<UnitConversionFactor>().AsTracking().Include("UnitTypeIn.UnitConversionFactorsIn.UnitTypeOut").ToList();
+                this.limitations = Select<Limitation>().Include("Variables.VariableType").Include("Variables.UnitType").ToList();
+            }
+
+            catch (Exception ex)
+            {
+                sm("Issue with this.unitConversionFactors: " + " " + ex.Message);
+            }
         }
         #endregion
         #region Methods
@@ -1863,6 +1875,10 @@ namespace NSSAgent
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {
+            RegionEndpoint bucketRegion = RegionEndpoint.USEast1;
+            IAmazonS3 client = new AmazonS3Client(bucketRegion);
+            WritingAnObjectAsync(client, msg).Wait();
+
             sm(new Message() { msg = msg, type = type });
         }
         private void sm(Message msg)
@@ -1875,6 +1891,47 @@ namespace NSSAgent
             ((List<Message>)this._messages["wim_msgs"]).Add(msg);
         }
         #endregion
+
+        static async Task WritingAnObjectAsync(IAmazonS3 client, string msg)
+        {
+            try
+            {
+                // 1. Put object-specify only key name for the new object.
+                var putRequest1 = new PutObjectRequest
+                {
+                    BucketName = "ss-error-logs",
+                    Key = "errorLog" + DateTime.UtcNow.ToShortDateString() + "-" + DateTime.UtcNow.ToShortTimeString(),
+                    ContentBody = "Error: " + msg
+                };
+
+                PutObjectResponse response1 = await client.PutObjectAsync(putRequest1);
+
+                // 2. Put the object-set ContentType and add metadata.
+                /*var putRequest2 = new PutObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = keyName2,
+                    FilePath = filePath,
+                    ContentType = "text/plain"
+                };
+
+                putRequest2.Metadata.Add("x-amz-meta-title", "someTitle");
+                PutObjectResponse response2 = await client.PutObjectAsync(putRequest2);*/
+            }
+            catch (AmazonS3Exception e)
+            {
+                Console.WriteLine(
+                        "Error encountered ***. Message:'{0}' when writing an object"
+                        , e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(
+                    "Unknown encountered on server. Message:'{0}' when writing an object"
+                    , e.Message);
+            }
+        }
+
 
         private enum sqltypeenum
         {

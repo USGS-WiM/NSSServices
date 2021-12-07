@@ -30,6 +30,8 @@ using System.Xml;
 using System.IO;
 using System.Threading;
 
+using MathNet.Numerics.Distributions;
+
 using Newtonsoft;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

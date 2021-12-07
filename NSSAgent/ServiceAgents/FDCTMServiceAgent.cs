@@ -235,7 +235,7 @@ namespace NSSAgent.ServiceAgents
                         if (Qlower == 0) Qlower = 0.001;
 
                         // compute probability of Q
-                        probQ = Math.Exp(Math.Log(EXCupper) - (Math.Log(Convert.ToDouble(Q)) - Math.Log(Qupper)) / (Math.Log(Qlower) - Math.Log(Qupper)) * (Math.Log(EXCupper) - Math.Log(EXClower)));
+                        probQ = Normal.InvCDF(0,1,Normal.CDF(0,1,EXCupper) - (Normal.CDF(0,1,Convert.ToDouble(Q)) - Normal.CDF(0,1,Qupper)) / (Normal.CDF(0,1,Qlower) - Normal.CDF(0,1,Qupper)) * (Normal.CDF(0,1,EXCupper) - Normal.CDF(0,1,EXClower)));
                     }
 
                     // if the PROBQ is equal to a probability in the regression equations, use the regression value

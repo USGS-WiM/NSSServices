@@ -63,11 +63,11 @@ namespace NSSAgent.ServiceAgents
             }
         }
         public List<ExtensionParameter> Parameters { get; private set; }
-        public SortedDictionary<Double, Double> PublishedFDC { get; private set; }
+        public Tuple<SortedDictionary<Double, Double>, Double> PublishedFDC { get; private set; }
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null, SortedDictionary<Double, Double> PublishedFDC = null)
+        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null, Tuple<SortedDictionary<Double, Double>,double> PublishedFDC = null)
         {
 
             this._messages = messages != null ? messages : new Dictionary<object, object>();
@@ -180,17 +180,27 @@ namespace NSSAgent.ServiceAgents
                     var Q = item.Value > 0 ? item.Value : 0;
 
                     // find any published flow durations where value is equal to Q
-                    var equalQs = PublishedFDC.Where(p => p.Value == Q).ToDictionary(kvp => kvp.Key, kvp => kvp.Value).Keys;
+                    var equalQs = PublishedFDC.Item1.Where(p => p.Value == Q).ToDictionary(kvp => kvp.Key, kvp => kvp.Value).Keys;
+                    Console.WriteLine(equalQs);
                     if (equalQs.Count > 0)
                     {
                         // if there are multiple published FDC values equal to Q, find the midpoint of probabilities
                         // usually this is just for when values are 0
                         if (equalQs.Count > 1)
                         {
-                            var firstKey = equalQs.First();
-                            var lastKey = equalQs.Last();
-                            // assign probQ the midpoint of the probabilities
-                            probQ = (firstKey + lastKey) / 2 * 100;
+                            // if Q = 0
+                            if (item.Value == 0)
+                            {
+                                probQ = PublishedFDC.Item2;
+                            } 
+                            else
+                            {
+                                var firstKey = equalQs.First();
+                                var lastKey = equalQs.Last();
+                                // assign probQ the midpoint of the probabilities
+                                probQ = (firstKey + lastKey) / 2 * 100;
+                            }
+                            
                         }
                         else
                         {
@@ -201,31 +211,31 @@ namespace NSSAgent.ServiceAgents
                     else
                     {
                         KeyValuePair<double, double>? upper; KeyValuePair<double, double>? lower;
-                        if (PublishedFDC.LastOrDefault().Value > Q)
+                        if (PublishedFDC.Item1.LastOrDefault().Value > Q)
                         {
                             // if Q is less than the lowest duration value
-                            Int32 numberOfItems = PublishedFDC.Count() - 1;
+                            Int32 numberOfItems = PublishedFDC.Item1.Count() - 1;
 
-                            upper = PublishedFDC.ElementAt(numberOfItems - 1);
-                            lower = PublishedFDC.ElementAt(numberOfItems);
+                            upper = PublishedFDC.Item1.ElementAt(numberOfItems - 1);
+                            lower = PublishedFDC.Item1.ElementAt(numberOfItems);
                         }
-                        else if (PublishedFDC.FirstOrDefault().Value < Q)
+                        else if (PublishedFDC.Item1.FirstOrDefault().Value < Q)
                         {
                             // if Q is greater than the highest duration value
-                            upper = PublishedFDC.ElementAt(0);
-                            lower = PublishedFDC.ElementAt(1);
+                            upper = PublishedFDC.Item1.ElementAt(0);
+                            lower = PublishedFDC.Item1.ElementAt(1);
                         }
                         else
                         {
                             //traverses the keys using the fact that they are ordered and compares 
                             //all two keys following each other in order
-                            var points = PublishedFDC.Values.Zip(PublishedFDC.Values.Skip(1),
+                            var points = PublishedFDC.Item1.Values.Zip(PublishedFDC.Item1.Values.Skip(1),
                                           (a, b) => new { a, b })
                                             .Where(x => x.a >= Q && x.b <= Q)
                                             .FirstOrDefault();
 
-                            upper = PublishedFDC.FirstOrDefault(o => o.Value == points.a);
-                            lower = PublishedFDC.FirstOrDefault(o => o.Value == points.b);
+                            upper = PublishedFDC.Item1.FirstOrDefault(o => o.Value == points.a);
+                            lower = PublishedFDC.Item1.FirstOrDefault(o => o.Value == points.b);
                         }
                         // get published FDC items above and below the measured flow
                         var EXClower = Convert.ToDouble(lower?.Key * 100);

@@ -1815,7 +1815,7 @@ namespace NSSAgent
                         string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
                         var exceedanceProbabilities = new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
                                     Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value));
-                        var publishedFDC = new SortedDictionary<double, double>();
+                        Tuple<SortedDictionary<double, double>, double> publishedFDC;
                         gs_sa = new GageStatsServiceAgent(gagestatsResource);
                         try
                         {
@@ -1847,19 +1847,29 @@ namespace NSSAgent
             if (regex.Match(code).Value != "") return regex.Match(code).Value;
             else return regex2.Match(code).Value;
         }
-        private SortedDictionary<double, double> getPublishedDuration(GageStatsStation station)
+        private Tuple<SortedDictionary<double, double>, double> getPublishedDuration(GageStatsStation station)
         {
             var exceedanceProbabilities = new SortedDictionary<double, double>();
+            double xIntercept = 1;
             foreach (var stat in station.Statistics)
             {
                 if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit))
                 {
-                    var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
-                    if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
-                    else exceedanceProbabilities.Add(key, stat.Value);
+                    // This is the X-intercept, which is the exceedance probability where Q = 0 
+                    if (stat.RegressionType.Code == "D_0_XINT")
+                    {
+                        xIntercept = Convert.ToDouble(stat.Value);
+                    } 
+                    else
+                    {
+                        var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
+                        if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
+                        else exceedanceProbabilities.Add(key, stat.Value);
+                    }
+                    
                 }
             }
-            return exceedanceProbabilities;
+            return Tuple.Create(exceedanceProbabilities, xIntercept);
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

@@ -235,7 +235,7 @@ namespace NSSAgent.ServiceAgents
                         if (Qlower == 0) Qlower = 0.001;
 
                         // compute probability of Q
-                        probQ = Normal.InvCDF(0,1,Normal.CDF(0,1,EXCupper) - (Normal.CDF(0,1,Convert.ToDouble(Q)) - Normal.CDF(0,1,Qupper)) / (Normal.CDF(0,1,Qlower) - Normal.CDF(0,1,Qupper)) * (Normal.CDF(0,1,EXCupper) - Normal.CDF(0,1,EXClower)));
+                        probQ = Normal.InvCDF(0,1,Normal.CDF(0,1,EXCupper/100) - (Normal.CDF(0,1,Convert.ToDouble(Q)) - Normal.CDF(0,1,Qupper)) / (Normal.CDF(0,1,Qlower) - Normal.CDF(0,1,Qupper)) * (Normal.CDF(0,1,EXCupper/100) - Normal.CDF(0,1,EXClower/100))) * 100;
                     }
 
                     // if the PROBQ is equal to a probability in the regression equations, use the regression value
@@ -281,7 +281,7 @@ namespace NSSAgent.ServiceAgents
                         if (QREGlower == 0) QREGlower = 0.001;
 
                         // compute estimated flow
-                        Qs = Math.Exp(Math.Log(QREGupper) - (Math.Log(Convert.ToDouble(probQ)) - Math.Log(EXCREGupper)) / (Math.Log(EXCREGlower) - Math.Log(EXCREGupper)) * (Math.Log(QREGupper) - Math.Log(QREGlower)));
+                        Qs = Normal.InvCDF(0,1,Normal.CDF(0,1,QREGupper) - (Normal.CDF(0,1,Convert.ToDouble(probQ/100)) - Normal.CDF(0,1,EXCREGupper/100)) / (Normal.CDF(0,1,EXCREGlower/100) - Normal.CDF(0,1,EXCREGupper/100)) * (Normal.CDF(0,1,QREGupper) - Normal.CDF(0,1,QREGlower)));
                     }
                     FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                     key++;

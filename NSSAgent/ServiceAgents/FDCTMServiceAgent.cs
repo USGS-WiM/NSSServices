@@ -203,13 +203,13 @@ namespace NSSAgent.ServiceAgents
                             }
 
                             // assign probQ the midpoint of the probabilities
-                            probQ = (firstKey + lastKey) / 2 * 100;
+                            probQ = (firstKey + lastKey) / 2;
 
                         }
                         else
                         {
                             // if the discharge is equal to a published curve value, use the probability from the curve (80, 90, etc.)
-                            probQ = equalQs.First() * 100;
+                            probQ = equalQs.First();
                         }
                     }
                     else
@@ -242,23 +242,23 @@ namespace NSSAgent.ServiceAgents
                             lower = PublishedFDC.FirstOrDefault(o => o.Value == points.b);
                         }
                         // get published FDC items above and below the measured flow
-                        var EXClower = Convert.ToDouble(lower?.Key * 100);
-                        var EXCupper = Convert.ToDouble(upper?.Key * 100);
+                        var EXClower = Convert.ToDouble(lower?.Key);
+                        var EXCupper = Convert.ToDouble(upper?.Key);
                         var Qlower = Convert.ToDouble(lower?.Value);
                         var Qupper = Convert.ToDouble(upper?.Value);
                         if (Qlower == 0)
                         {
                             Qlower = 0.01; // Need to confirm this value with Pete
-                            EXClower = Convert.ToDouble(FDCXIntercept * 100);
+                            EXClower = Convert.ToDouble(FDCXIntercept);
                         }
 
                         // compute exceedance probability of Q
-                        probQ = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCupper / 100.0) - (Math.Log10(Convert.ToDouble(Q)) - Math.Log10(Qupper)) / (Math.Log10(Qlower) - Math.Log10(Qupper)) * (Normal.CDF(0, 1, EXCupper / 100.0) - Normal.CDF(0, 1, EXClower / 100.0))) * 100.0;
+                        probQ = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCupper) - (Math.Log10(Convert.ToDouble(Q)) - Math.Log10(Qupper)) / (Math.Log10(Qlower) - Math.Log10(Qupper)) * (Normal.CDF(0, 1, EXCupper) - Normal.CDF(0, 1, EXClower)));
 
                     }
 
                     // if probQ is equal to a probability in the regression equations, use the regression value
-                    var equalProbQ = ExceedanceProbabilities.Where(p => (p.Key * 100) == probQ).FirstOrDefault();
+                    var equalProbQ = ExceedanceProbabilities.Where(p => (p.Key) == probQ).FirstOrDefault();
                     if (equalProbQ.Key != 0)
                     {
                         Qs = equalProbQ.Value;
@@ -266,7 +266,7 @@ namespace NSSAgent.ServiceAgents
                     else
                     {
                         KeyValuePair<double, double>? regUpper; KeyValuePair<double, double>? regLower;
-                        if ((ExceedanceProbabilities.LastOrDefault().Key * 100) < probQ)
+                        if ((ExceedanceProbabilities.LastOrDefault().Key) < probQ)
                         {
                             // if Q is greater than the highest probability
                             Int32 numberOfItems = ExceedanceProbabilities.Count() - 1;
@@ -274,7 +274,7 @@ namespace NSSAgent.ServiceAgents
                             regUpper = ExceedanceProbabilities.ElementAt(numberOfItems);
                             regLower = ExceedanceProbabilities.ElementAt(numberOfItems - 1);
                         }
-                        else if ((ExceedanceProbabilities.FirstOrDefault().Key * 100) > probQ)
+                        else if ((ExceedanceProbabilities.FirstOrDefault().Key) > probQ)
                         {
                             // if Q is less than the lowest probability
                             regUpper = ExceedanceProbabilities.ElementAt(1);
@@ -286,21 +286,21 @@ namespace NSSAgent.ServiceAgents
                             // all two keys following each other in order
                             var points = ExceedanceProbabilities.Keys.Zip(ExceedanceProbabilities.Keys.Skip(1),
                                           (a, b) => new { a, b })
-                                            .Where(x => (x.a * 100) <= probQ && (x.b * 100) >= probQ)
+                                            .Where(x => (x.a) <= probQ && (x.b) >= probQ)
                                             .FirstOrDefault();
 
                             regUpper = ExceedanceProbabilities.FirstOrDefault(o => o.Key == points.a);
                             regLower = ExceedanceProbabilities.FirstOrDefault(o => o.Key == points.b);
                         }
                         // get regression probabilities above and below probQ
-                        var EXCREGlower = Convert.ToDouble(regLower?.Key * 100);
-                        var EXCREGupper = Convert.ToDouble(regUpper?.Key * 100);
+                        var EXCREGlower = Convert.ToDouble(regLower?.Key);
+                        var EXCREGupper = Convert.ToDouble(regUpper?.Key);
                         var QREGlower = Convert.ToDouble(regLower?.Value);
                         var QREGupper = Convert.ToDouble(regUpper?.Value);
                         if (QREGlower == 0) QREGlower = 0.001; // need to check this value with Pete
 
                         // compute estimated flow
-                        Qs = Math.Pow(10, (Math.Log10(QREGupper) - (Normal.CDF(0, 1, Convert.ToDouble(probQ / 100.0)) - Normal.CDF(0, 1, EXCREGupper / 100.0)) / (Normal.CDF(0, 1, EXCREGlower / 100.0) - Normal.CDF(0, 1, EXCREGupper / 100.0)) * (Math.Log10(QREGupper) - Math.Log10(QREGlower))));
+                        Qs = Math.Pow(10, (Math.Log10(QREGupper) - (Normal.CDF(0, 1, Convert.ToDouble(probQ)) - Normal.CDF(0, 1, EXCREGupper)) / (Normal.CDF(0, 1, EXCREGlower) - Normal.CDF(0, 1, EXCREGupper)) * (Math.Log10(QREGupper) - Math.Log10(QREGlower))));
                     }
                     FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                     key++;

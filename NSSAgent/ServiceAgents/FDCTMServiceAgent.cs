@@ -63,11 +63,12 @@ namespace NSSAgent.ServiceAgents
             }
         }
         public List<ExtensionParameter> Parameters { get; private set; }
-        public Tuple<SortedDictionary<Double, Double>, Double> PublishedFDC { get; private set; }
+        public SortedDictionary<Double, Double> PublishedFDC { get; private set; }
+        public double? FDCXIntercept { get; private set; }
         #endregion
         #region "Constructor and IDisposable Support"
         #region Constructors
-        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null, Tuple<SortedDictionary<Double, Double>,double> PublishedFDC = null)
+        public FDCTMServiceAgent(Extension qppqExtension, SortedDictionary<Double, Double> ExceedanceProbabilities, NWISResource nwisResource, IDictionary<object, object> messages = null, SortedDictionary<Double, Double> PublishedFDC = null, double? FDCXIntercept = null)
         {
 
             this._messages = messages != null ? messages : new Dictionary<object, object>();
@@ -77,6 +78,7 @@ namespace NSSAgent.ServiceAgents
             Result = new QPPQResult();
             ((QPPQResult)Result).ExceedanceProbabilities = ExceedanceProbabilities;
             this.PublishedFDC = PublishedFDC;
+            this.FDCXIntercept = FDCXIntercept;
 
             this.isInitialized = init();
         }
@@ -175,32 +177,34 @@ namespace NSSAgent.ServiceAgents
                     }
 
                     double? probQ; double? Qs;
+                    double? firstKey; double? lastKey;
 
                     // if flow value is negative, change it to 0
                     var Q = item.Value > 0 ? item.Value : 0;
 
                     // find any published flow durations where value is equal to Q
-                    var equalQs = PublishedFDC.Item1.Where(p => p.Value == Q).ToDictionary(kvp => kvp.Key, kvp => kvp.Value).Keys;
-                    Console.WriteLine(equalQs);
+                    var equalQs = PublishedFDC.Where(p => p.Value == Q).ToDictionary(kvp => kvp.Key, kvp => kvp.Value).Keys;
                     if (equalQs.Count > 0)
                     {
                         // if there are multiple published FDC values equal to Q, find the midpoint of probabilities
                         // usually this is just for when values are 0
                         if (equalQs.Count > 1)
                         {
-                            // if Q = 0
-                            if (item.Value == 0)
+                            // if Q = 0 and there is an x-intercept statistic
+                            if (item.Value == 0 && FDCXIntercept != null)
                             {
-                                probQ = PublishedFDC.Item2;
+                                firstKey = FDCXIntercept;
+                                lastKey = 1.00;
                             } 
                             else
                             {
-                                var firstKey = equalQs.First();
-                                var lastKey = equalQs.Last();
-                                // assign probQ the midpoint of the probabilities
-                                probQ = (firstKey + lastKey) / 2 * 100;
+                                firstKey = equalQs.First();
+                                lastKey = equalQs.Last();
                             }
-                            
+
+                            // assign probQ the midpoint of the probabilities
+                            probQ = (firstKey + lastKey) / 2 * 100;
+
                         }
                         else
                         {
@@ -211,44 +215,49 @@ namespace NSSAgent.ServiceAgents
                     else
                     {
                         KeyValuePair<double, double>? upper; KeyValuePair<double, double>? lower;
-                        if (PublishedFDC.Item1.LastOrDefault().Value > Q)
+                        if (PublishedFDC.LastOrDefault().Value > Q)
                         {
                             // if Q is less than the lowest duration value
-                            Int32 numberOfItems = PublishedFDC.Item1.Count() - 1;
+                            Int32 numberOfItems = PublishedFDC.Count() - 1;
 
-                            upper = PublishedFDC.Item1.ElementAt(numberOfItems - 1);
-                            lower = PublishedFDC.Item1.ElementAt(numberOfItems);
+                            upper = PublishedFDC.ElementAt(numberOfItems - 1);
+                            lower = PublishedFDC.ElementAt(numberOfItems);
                         }
-                        else if (PublishedFDC.Item1.FirstOrDefault().Value < Q)
+                        else if (PublishedFDC.FirstOrDefault().Value < Q)
                         {
                             // if Q is greater than the highest duration value
-                            upper = PublishedFDC.Item1.ElementAt(0);
-                            lower = PublishedFDC.Item1.ElementAt(1);
+                            upper = PublishedFDC.ElementAt(0);
+                            lower = PublishedFDC.ElementAt(1);
                         }
                         else
                         {
                             //traverses the keys using the fact that they are ordered and compares 
                             //all two keys following each other in order
-                            var points = PublishedFDC.Item1.Values.Zip(PublishedFDC.Item1.Values.Skip(1),
+                            var points = PublishedFDC.Values.Zip(PublishedFDC.Values.Skip(1),
                                           (a, b) => new { a, b })
                                             .Where(x => x.a >= Q && x.b <= Q)
                                             .FirstOrDefault();
 
-                            upper = PublishedFDC.Item1.FirstOrDefault(o => o.Value == points.a);
-                            lower = PublishedFDC.Item1.FirstOrDefault(o => o.Value == points.b);
+                            upper = PublishedFDC.FirstOrDefault(o => o.Value == points.a);
+                            lower = PublishedFDC.FirstOrDefault(o => o.Value == points.b);
                         }
                         // get published FDC items above and below the measured flow
                         var EXClower = Convert.ToDouble(lower?.Key * 100);
                         var EXCupper = Convert.ToDouble(upper?.Key * 100);
                         var Qlower = Convert.ToDouble(lower?.Value);
                         var Qupper = Convert.ToDouble(upper?.Value);
-                        if (Qlower == 0) Qlower = 0.001;
+                        if (Qlower == 0)
+                        {
+                            Qlower = 0.01; // Need to confirm this value with Pete
+                            EXClower = Convert.ToDouble(FDCXIntercept * 100);
+                        }
 
-                        // compute probability of Q
-                        probQ = Normal.InvCDF(0,1,Normal.CDF(0,1,EXCupper/100) - (Normal.CDF(0,1,Convert.ToDouble(Q)) - Normal.CDF(0,1,Qupper)) / (Normal.CDF(0,1,Qlower) - Normal.CDF(0,1,Qupper)) * (Normal.CDF(0,1,EXCupper/100) - Normal.CDF(0,1,EXClower/100))) * 100;
+                        // compute exceedance probability of Q
+                        probQ = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCupper / 100.0) - (Math.Log10(Convert.ToDouble(Q)) - Math.Log10(Qupper)) / (Math.Log10(Qlower) - Math.Log10(Qupper)) * (Normal.CDF(0, 1, EXCupper / 100.0) - Normal.CDF(0, 1, EXClower / 100.0))) * 100.0;
+
                     }
 
-                    // if the PROBQ is equal to a probability in the regression equations, use the regression value
+                    // if probQ is equal to a probability in the regression equations, use the regression value
                     var equalProbQ = ExceedanceProbabilities.Where(p => (p.Key * 100) == probQ).FirstOrDefault();
                     if (equalProbQ.Key != 0)
                     {
@@ -273,8 +282,8 @@ namespace NSSAgent.ServiceAgents
                         }
                         else
                         {
-                            //traverses the keys using the fact that they are ordered and compares 
-                            //all two keys following each other in order
+                            // traverses the keys using the fact that they are ordered and compares 
+                            // all two keys following each other in order
                             var points = ExceedanceProbabilities.Keys.Zip(ExceedanceProbabilities.Keys.Skip(1),
                                           (a, b) => new { a, b })
                                             .Where(x => (x.a * 100) <= probQ && (x.b * 100) >= probQ)
@@ -288,10 +297,10 @@ namespace NSSAgent.ServiceAgents
                         var EXCREGupper = Convert.ToDouble(regUpper?.Key * 100);
                         var QREGlower = Convert.ToDouble(regLower?.Value);
                         var QREGupper = Convert.ToDouble(regUpper?.Value);
-                        if (QREGlower == 0) QREGlower = 0.001;
+                        if (QREGlower == 0) QREGlower = 0.001; // need to check this value with Pete
 
                         // compute estimated flow
-                        Qs = Normal.InvCDF(0,1,Normal.CDF(0,1,QREGupper) - (Normal.CDF(0,1,Convert.ToDouble(probQ/100)) - Normal.CDF(0,1,EXCREGupper/100)) / (Normal.CDF(0,1,EXCREGlower/100) - Normal.CDF(0,1,EXCREGupper/100)) * (Normal.CDF(0,1,QREGupper) - Normal.CDF(0,1,QREGlower)));
+                        Qs = Math.Pow(10, (Math.Log10(QREGupper) - (Normal.CDF(0, 1, Convert.ToDouble(probQ / 100.0)) - Normal.CDF(0, 1, EXCREGupper / 100.0)) / (Normal.CDF(0, 1, EXCREGlower / 100.0) - Normal.CDF(0, 1, EXCREGupper / 100.0)) * (Math.Log10(QREGupper) - Math.Log10(QREGlower))));
                     }
                     FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                     key++;

@@ -1815,12 +1815,14 @@ namespace NSSAgent
                         string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
                         var exceedanceProbabilities = new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
                                     Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value));
-                        Tuple<SortedDictionary<double, double>, double> publishedFDC;
+                        SortedDictionary<double, double> publishedFDC;
+                        double? FDCXIntercept;
                         gs_sa = new GageStatsServiceAgent(gagestatsResource);
                         try
                         {
                             var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
                             publishedFDC = this.getPublishedDuration(stationInfo);
+                            FDCXIntercept = this.getFDCXIntercept(stationInfo);
                         }
                         catch (Exception ex)
                         {
@@ -1828,7 +1830,7 @@ namespace NSSAgent
                             break;
                         }
 
-                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC);
+                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC, FDCXIntercept);
                         break;
                 }//end switch
 
@@ -1847,29 +1849,30 @@ namespace NSSAgent
             if (regex.Match(code).Value != "") return regex.Match(code).Value;
             else return regex2.Match(code).Value;
         }
-        private Tuple<SortedDictionary<double, double>, double> getPublishedDuration(GageStatsStation station)
+        private SortedDictionary<double, double> getPublishedDuration(GageStatsStation station)
         {
             var exceedanceProbabilities = new SortedDictionary<double, double>();
-            double xIntercept = 1;
             foreach (var stat in station.Statistics)
             {
                 if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit))
                 {
-                    // This is the X-intercept, which is the exceedance probability where Q = 0 
-                    if (stat.RegressionType.Code == "D_0_XINT")
-                    {
-                        xIntercept = Convert.ToDouble(stat.Value);
-                    } 
-                    else
-                    {
-                        var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
-                        if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
-                        else exceedanceProbabilities.Add(key, stat.Value);
-                    }
-                    
+                    var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
+                    if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
+                    else exceedanceProbabilities.Add(key, stat.Value);
                 }
             }
-            return Tuple.Create(exceedanceProbabilities, xIntercept);
+            return exceedanceProbabilities;
+        }
+        private double? getFDCXIntercept(GageStatsStation station)
+        {
+            try
+            {
+                return Convert.ToDouble((station.Statistics.Where(statistic => statistic.RegressionType.Code == "D_0_XINT").First()).Value);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

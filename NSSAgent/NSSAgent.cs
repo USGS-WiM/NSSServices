@@ -695,7 +695,7 @@ namespace NSSAgent
                             if (!eOps.IsValid) break;// next equation
 
                             var unit = getUnit(equation.UnitType, systemtypeID > 0 ? systemtypeID : equation.UnitType.UnitSystemTypeID);
-
+                            dynamic intervalsAndSEP = evaluateUncertainty(equation.PredictionInterval, variables, (eOps.Value * unit.factor).Round());
                             regressionregion.Results.Add(new RegressionResult()
                             {
                                 Equation = eOps.InfixExpression,
@@ -705,8 +705,9 @@ namespace NSSAgent
                                 Unit = unit,
                                 Errors = paramsOutOfRange ? new List<Error>() : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType?.Name, Value = e.Value, Code = e.ErrorType?.Code }).ToList(),
                                 EquivalentYears = paramsOutOfRange ? null : equation.EquivalentYears,
-                                IntervalBounds = paramsOutOfRange ? null : evaluateUncertainty(equation.PredictionInterval, variables, (eOps.Value * unit.factor).Round()),
-                                Value = (eOps.Value * unit.factor).Round()
+                                IntervalBounds = paramsOutOfRange ? null : intervalsAndSEP?.intervalBounds,
+                                Value = (eOps.Value * unit.factor).Round(),
+                                SEP = paramsOutOfRange ? null : intervalsAndSEP?.Si
                             });
                         }//next equation
                         regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion));
@@ -1471,7 +1472,8 @@ namespace NSSAgent
 
                     if (equation.PredictionInterval != null)
                     {
-                        IntervalBounds computedBound = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
+                        dynamic intervalsAndSEP = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
+                        IntervalBounds computedBound = intervalsAndSEP?.intervalBounds;
                         var expectedUpperRounded = computedBound != null ? expected.IntervalBounds.Upper.Round() : 0;
                         var expectedLowerRounded = computedBound != null ? expected.IntervalBounds.Lower.Round() : 0;
                         if ((computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded) && !skipCheck)
@@ -1490,7 +1492,7 @@ namespace NSSAgent
                 return false;
             }
         }
-        private IntervalBounds evaluateUncertainty(PredictionInterval predictionInterval, Dictionary<string, double?> variables, Double Q)
+        private dynamic evaluateUncertainty(PredictionInterval predictionInterval, Dictionary<string, double?> variables, Double Q)
         {
             //Prediction Intervals for the true value of a streamflow statistic obtained for an ungaged site can be 
             //computed by use of a weighted regression equations corrected for bias by:
@@ -1559,7 +1561,8 @@ namespace NSSAgent
                 double lowerRounded = lowerBound.Round();
                 double upperRounded = upperBound.Round();
 
-                return new IntervalBounds() { Lower = lowerRounded, Upper = upperRounded };
+                IntervalBounds intervalBounds = new IntervalBounds() { Lower = lowerRounded, Upper = upperRounded };
+                return new { intervalBounds, Si };
             }
             catch (Exception ex)
             {

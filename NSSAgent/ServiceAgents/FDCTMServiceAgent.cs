@@ -176,7 +176,7 @@ namespace NSSAgent.ServiceAgents
                         continue;
                     }
 
-                    double? probQ; double? Qs;
+                    double? probQ; double? Qs; 
                     double? firstKey; double? lastKey;
 
                     // if flow value is negative, change it to 0
@@ -248,7 +248,7 @@ namespace NSSAgent.ServiceAgents
                         var Qupper = Convert.ToDouble(upper?.Value);
                         if (Qlower == 0)
                         {
-                            Qlower = 0.01; // Need to confirm this value with Pete
+                            Qlower = 0.01;
                             EXClower = Convert.ToDouble(FDCXIntercept);
                         }
 
@@ -256,6 +256,8 @@ namespace NSSAgent.ServiceAgents
                         probQ = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCupper) - (Math.Log10(Convert.ToDouble(Q)) - Math.Log10(Qupper)) / (Math.Log10(Qlower) - Math.Log10(Qupper)) * (Normal.CDF(0, 1, EXCupper) - Normal.CDF(0, 1, EXClower)));
 
                     }
+
+                    double probQ0 = Convert.ToDouble(probQ);
 
                     // if probQ is equal to a probability in the regression equations, use the regression value
                     var equalProbQ = ExceedanceProbabilities.Where(p => (p.Key) == probQ).FirstOrDefault();
@@ -297,10 +299,39 @@ namespace NSSAgent.ServiceAgents
                         var EXCREGupper = Convert.ToDouble(regUpper?.Key);
                         var QREGlower = Convert.ToDouble(regLower?.Value);
                         var QREGupper = Convert.ToDouble(regUpper?.Value);
-                        if (QREGlower == 0) QREGlower = 0.001; // need to check this value with Pete
+                        if (QREGlower == 0)
+                        {
+                            // Handle the case where the flow is between the last non-zero value and the first zero value
+
+                            // Should probQ0 use the last two non-zero points of the 2 points already provided?
+
+
+                            // Go find the last two non-zero flows to find the intercept with 0.01
+                            // Linear interpolation using Math.Log10(Q) - qnorm(EP) space
+                            // Solve for EP with a given discharge
+                            // Will need to go up one step in key- not sure how
+                            // See probQ equation
+
+                            // What is the probability when Q = 0.01 
+                            // QREGlower = 0.01 and EXCREGlower (probQ0) = whatever we just calculated 
+                            // IF probQ is greater than probQ0, then Q = 0
+
+
+                            // If probQ is less than probQ0, then solve Qs for QREGlower = 0.01 and EXCREGlower = probQ0
+
+                            // probQ0 is the exceedance probability where Q = 0.01 (close to the x-intercept)
+                            probQ0 = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCREGupper) - (Math.Log10(Convert.ToDouble(0.01)) - Math.Log10(QREGupper)) / (Math.Log10(QREGlower) - Math.Log10(QREGupper)) * (Normal.CDF(0, 1, EXCREGupper) - Normal.CDF(0, 1, EXCREGlower)));
+
+                            if (probQ0 > probQ)
+                            {
+                                QREGlower = 0.01;
+                                EXCREGlower = probQ0;
+                            }
+                        }
 
                         // compute estimated flow
-                        Qs = Math.Pow(10, (Math.Log10(QREGupper) - (Normal.CDF(0, 1, Convert.ToDouble(probQ)) - Normal.CDF(0, 1, EXCREGupper)) / (Normal.CDF(0, 1, EXCREGlower) - Normal.CDF(0, 1, EXCREGupper)) * (Math.Log10(QREGupper) - Math.Log10(QREGlower))));
+                        if (probQ0 < probQ) Qs = 0;
+                        else Qs = Math.Pow(10, (Math.Log10(QREGupper) - (Normal.CDF(0, 1, Convert.ToDouble(probQ)) - Normal.CDF(0, 1, EXCREGupper)) / (Normal.CDF(0, 1, EXCREGlower) - Normal.CDF(0, 1, EXCREGupper)) * (Math.Log10(QREGupper) - Math.Log10(QREGlower))));
                     }
                     FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                     key++;

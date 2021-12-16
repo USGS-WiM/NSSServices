@@ -1854,11 +1854,18 @@ namespace NSSAgent
             var exceedanceProbabilities = new SortedDictionary<double, double>();
             foreach (var stat in station.Statistics)
             {
-                if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit) && stat.RegressionType.Code != "D_0_XINT")
+                if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit))
                 {
-                    var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
-                    if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
-                    else exceedanceProbabilities.Add(key, stat.Value);
+                    if (stat.RegressionType.Code == "D_0_XINT")
+                    {
+                        exceedanceProbabilities.Add(stat.Value, 0.01);
+                    } 
+                    else
+                    {
+                        var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
+                        if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
+                        else exceedanceProbabilities.Add(key, stat.Value);
+                    }
                 }
             }
             return exceedanceProbabilities;

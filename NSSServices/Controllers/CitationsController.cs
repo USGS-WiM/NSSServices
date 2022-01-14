@@ -66,7 +66,7 @@ namespace NSSServices.Controllers
                     entities = agent.GetManagedCitations(LoggedInUser(), RegionList, null, regressionRegionList, statisticgroupList, regressiontypeList);
                 }
                 else
-                    entities = agent.GetCitations(RegionList, null, regressionRegionList, statisticgroupList, regressiontypeList);
+                    entities = agent.GetCitations(RegionList, null, regressionRegionList, statisticgroupList, regressiontypeList, GetApplicableStatus());
 
 
                 sm($"citation count {entities.Count()}");
@@ -101,7 +101,7 @@ namespace NSSServices.Controllers
                     entities = agent.GetManagedCitations(LoggedInUser(), RegionList, geom, null, statisticgroupList, regressiontypeList);
                 }
                 else
-                    entities = agent.GetCitations(RegionList, geom, null, statisticgroupList, regressiontypeList);
+                    entities = agent.GetCitations(RegionList, geom, null, statisticgroupList, regressiontypeList, GetApplicableStatus());
 
 
                 sm($"citation count {entities.Count()}");

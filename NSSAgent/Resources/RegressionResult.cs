@@ -20,7 +20,8 @@ namespace NSSAgent.Resources
         [Required]
         public string code { get; set; }
         public string Description { get; set; }
-        public Double? Value { get; set; }        
+        public Double? Value { get; set; }
+        public Double? SEP { get; set; }
         public List<Error> Errors { get; set; }
         [XmlElement("UnitType")]
         [Required]

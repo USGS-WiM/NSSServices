@@ -165,7 +165,7 @@ namespace NSSAgent.ServiceAgents
                 FDCTMExceedanceTimeseries = new Dictionary<Double, TimeSeriesObservation>();
                 var observations = TS.Observations;
                 var key = 0;
-                bool timeSeriesHasValues = true;
+                bool timeSeriesHasOnlyNulls = true;
                 foreach (var item in observations)
                 {
                     
@@ -173,7 +173,6 @@ namespace NSSAgent.ServiceAgents
                     
                     if (item.Value == null)
                     {
-                        timeSeriesHasValues = false;
                         Console.WriteLine(item.Date);
                         Console.WriteLine("item.Value null");
                         // send null if no daily flow measured
@@ -183,7 +182,7 @@ namespace NSSAgent.ServiceAgents
                     }
                     else
                     {
-
+                        timeSeriesHasOnlyNulls = false;
                         Console.WriteLine(item.Date);
                         Console.WriteLine("item.Value " + item.Value);
                     }
@@ -363,7 +362,7 @@ namespace NSSAgent.ServiceAgents
 
                 
 
-                if (timeSeriesHasValues == false)
+                if (timeSeriesHasOnlyNulls)
                 {
                     throw new Exception("Index gage does not have any valid flow values for selected date range.");
                 }

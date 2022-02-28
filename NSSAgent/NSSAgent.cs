@@ -675,7 +675,7 @@ namespace NSSAgent
                     foreach (SimpleRegressionRegion regressionregion in scenario.RegressionRegions)
                     {
                         regressionregion.Results = new List<RegressionBase>();
-                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).ToList();                            
+                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).ToList();
 
                         Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                         if (paramsOutOfRange)
@@ -1422,6 +1422,8 @@ namespace NSSAgent
                             break;
                     }
                     var variables = regressionRegion.Parameters.Where(e => item.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, item.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
+                    Console.WriteLine(variables);
+                    Console.WriteLine(item.Criteria);
                     eOps = new ExpressionOps(item.Criteria, variables);
                     if (!eOps.IsValid) throw new Exception("Validation equation invalid.");
                     if (!Convert.ToBoolean(eOps.Value))
@@ -1862,12 +1864,14 @@ namespace NSSAgent
                     if (stat.RegressionType.Code == "D_0_XINT")
                     {
                         exceedanceProbabilities.Add(stat.Value, 0.01);
+                        //Console.WriteLine(stat.RegressionType.Code + " " + stat.Value + " " + 0.01);
                     } 
                     else
                     {
                         var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
                         if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
                         else exceedanceProbabilities.Add(key, stat.Value);
+                        //Console.WriteLine(stat.RegressionType.Code + " " + key + " " + stat.Value);
                     }
                 }
             }

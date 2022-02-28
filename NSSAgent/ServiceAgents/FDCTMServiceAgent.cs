@@ -107,7 +107,7 @@ namespace NSSAgent.ServiceAgents
             }
             catch (Exception ex)
             {
-                sm($"Failed to initialize FDCTMService Agent {ex.Message}", MessageType.error);
+                sm($"Failed to compute FDCTM. {ex.Message}", MessageType.error);
                 return false;
             }
         }
@@ -165,15 +165,27 @@ namespace NSSAgent.ServiceAgents
                 FDCTMExceedanceTimeseries = new Dictionary<Double, TimeSeriesObservation>();
                 var observations = TS.Observations;
                 var key = 0;
+                bool timeSeriesHasValues = true;
                 foreach (var item in observations)
                 {
+                    
                     if (this.EndDate.Value <= item.Date || item.Date <= this.StartDate.Value.AddDays(-1)) continue;
+                    
                     if (item.Value == null)
                     {
+                        timeSeriesHasValues = false;
+                        Console.WriteLine(item.Date);
+                        Console.WriteLine("item.Value null");
                         // send null if no daily flow measured
                         FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, null));
                         key++;
                         continue;
+                    }
+                    else
+                    {
+
+                        Console.WriteLine(item.Date);
+                        Console.WriteLine("item.Value " + item.Value);
                     }
 
                     double? probQ; double? Qs; 
@@ -181,6 +193,7 @@ namespace NSSAgent.ServiceAgents
 
                     // if flow value is negative, change it to 0
                     var Q = item.Value > 0 ? item.Value : 0;
+                    Console.WriteLine("Q " + Q);
 
                     // find any published flow durations where value is equal to Q
                     var equalQs = PublishedFDC.Where(p => p.Value == Q).ToDictionary(kvp => kvp.Key, kvp => kvp.Value).Keys;
@@ -246,6 +259,11 @@ namespace NSSAgent.ServiceAgents
                         var EXCupper = Convert.ToDouble(upper?.Key);
                         var Qlower = Convert.ToDouble(lower?.Value);
                         var Qupper = Convert.ToDouble(upper?.Value);
+                        Console.WriteLine("EXClower " + EXClower);
+                        Console.WriteLine("EXCupper " + EXCupper);
+                        Console.WriteLine("Qlower " + Qlower);
+                        Console.WriteLine("Qupper " + Qupper);
+
                         if (Qlower == 0)
                         {
                             Qlower = 0.01;
@@ -256,6 +274,8 @@ namespace NSSAgent.ServiceAgents
                         probQ = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCupper) - (Math.Log10(Convert.ToDouble(Q)) - Math.Log10(Qupper)) / (Math.Log10(Qlower) - Math.Log10(Qupper)) * (Normal.CDF(0, 1, EXCupper) - Normal.CDF(0, 1, EXClower)));
 
                     }
+
+                    Console.WriteLine("probQ " + probQ);
 
                     double probQ0 = Convert.ToDouble(probQ);
 
@@ -332,14 +352,24 @@ namespace NSSAgent.ServiceAgents
                         // compute estimated flow
                         if (probQ0 < probQ) Qs = 0;
                         else Qs = Math.Pow(10, (Math.Log10(QREGupper) - (Normal.CDF(0, 1, Convert.ToDouble(probQ)) - Normal.CDF(0, 1, EXCREGupper)) / (Normal.CDF(0, 1, EXCREGlower) - Normal.CDF(0, 1, EXCREGupper)) * (Math.Log10(QREGupper) - Math.Log10(QREGlower))));
+                        Console.WriteLine("Qs " + Qs);
                     }
+                    Console.WriteLine(" ");
+                    // Console.WriteLine(item.Date + ", " + Qs);
                     FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                     key++;
                 }//next item
+
+
+                
+
+                if (timeSeriesHasValues == false)
+                {
+                    throw new Exception("Index gage does not have any valid flow values for selected date range.");
+                }
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

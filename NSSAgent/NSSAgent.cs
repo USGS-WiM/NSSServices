@@ -670,7 +670,7 @@ namespace NSSAgent
                     foreach (SimpleRegressionRegion regressionregion in scenario.RegressionRegions)
                     {
                         regressionregion.Results = new List<RegressionBase>();
-                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).ToList();                            
+                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).ToList();
 
                         Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                         if (paramsOutOfRange)
@@ -1417,6 +1417,8 @@ namespace NSSAgent
                             break;
                     }
                     var variables = regressionRegion.Parameters.Where(e => item.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, item.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
+                    Console.WriteLine(variables);
+                    Console.WriteLine(item.Criteria);
                     eOps = new ExpressionOps(item.Criteria, variables);
                     if (!eOps.IsValid) throw new Exception("Validation equation invalid.");
                     if (!Convert.ToBoolean(eOps.Value))
@@ -1813,12 +1815,14 @@ namespace NSSAgent
                         string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
                         var exceedanceProbabilities = new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
                                     Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value));
-                        var publishedFDC = new SortedDictionary<double, double>();
+                        SortedDictionary<double, double> publishedFDC;
+                        double? FDCXIntercept;
                         gs_sa = new GageStatsServiceAgent(gagestatsResource);
                         try
                         {
                             var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
                             publishedFDC = this.getPublishedDuration(stationInfo);
+                            FDCXIntercept = this.getFDCXIntercept(stationInfo);
                         }
                         catch (Exception ex)
                         {
@@ -1826,7 +1830,7 @@ namespace NSSAgent
                             break;
                         }
 
-                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC);
+                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC, FDCXIntercept);
                         break;
                 }//end switch
 
@@ -1852,12 +1856,32 @@ namespace NSSAgent
             {
                 if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit))
                 {
-                    var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
-                    if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
-                    else exceedanceProbabilities.Add(key, stat.Value);
+                    if (stat.RegressionType.Code == "D_0_XINT")
+                    {
+                        exceedanceProbabilities.Add(stat.Value, 0.01);
+                        //Console.WriteLine(stat.RegressionType.Code + " " + stat.Value + " " + 0.01);
+                    } 
+                    else
+                    {
+                        var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
+                        if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
+                        else exceedanceProbabilities.Add(key, stat.Value);
+                        //Console.WriteLine(stat.RegressionType.Code + " " + key + " " + stat.Value);
+                    }
                 }
             }
             return exceedanceProbabilities;
+        }
+        private double? getFDCXIntercept(GageStatsStation station)
+        {
+            try
+            {
+                return Convert.ToDouble((station.Statistics.Where(statistic => statistic.RegressionType.Code == "D_0_XINT").First()).Value);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

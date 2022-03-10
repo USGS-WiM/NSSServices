@@ -695,14 +695,14 @@ namespace NSSAgent
                             // Check if all BCs are available for the equation 
                             if (variables.Any(v => v.Value <= -999)) // If not
                             {
-                                regressionregion.Results.Add(new RegressionResult() // add NA to the equation value 
+                                regressionregion.Results.Add(new RegressionResult() // add -99999 to the equation value 
                                 {
                                     Equation = eOps.InfixExpression,
                                     Name = equation.RegressionType.Name,
                                     code = equation.RegressionType.Code,
                                     Description = equation.RegressionType.Description,
                                     Unit = unit,
-                                    Value = -9999
+                                    Value = -99999
                                 });
 
                                 var equationCalculationErrormsg = "Equation " + equation.RegressionType.Code + " in " + regressionregion.Code + " could not be calulated due to undefined basin characteristic. ";

@@ -675,7 +675,7 @@ namespace NSSAgent
                         Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                         if (paramsOutOfRange)
                         {
-                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors";
+                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors. ";
                             regressionregion.Disclaimer = outofRangemsg;
                             sm(outofRangemsg, WIM.Resources.MessageType.warning);
                         }//end if
@@ -704,6 +704,11 @@ namespace NSSAgent
                                     Unit = unit,
                                     Value = -9999
                                 });
+
+                                var equationCalculationErrormsg = "Equation " + equation.RegressionType.Code + " in " + regressionregion.Code + " could not be calulated due to undefined basin characteristic. ";
+                                regressionregion.Disclaimer += equationCalculationErrormsg;
+                                sm(equationCalculationErrormsg, WIM.Resources.MessageType.warning);
+
                                 continue; // and contiue to next equation
                             }
                             

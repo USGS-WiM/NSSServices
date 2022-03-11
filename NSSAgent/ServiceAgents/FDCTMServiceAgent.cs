@@ -103,6 +103,8 @@ namespace NSSAgent.ServiceAgents
                 if (!((QPPQResult)Result).ReferanceGage.LoadFullRecord()) throw new Exception("Failed to load reference gage ");
                 getFlowsFromPublishedDuration(((QPPQResult)Result).ReferanceGage.Discharge);
 
+                if ((((QPPQResult)Result).ExceedanceProbabilities).ContainsValue(-99999)) throw new Exception("One or more equation values is undefined. "); ;
+
                 return true;
             }
             catch (Exception ex)
@@ -358,9 +360,7 @@ namespace NSSAgent.ServiceAgents
                     FDCTMExceedanceTimeseries.Add(key, new TimeSeriesObservation(item.Date, Qs));
                     key++;
                 }//next item
-
-
-                
+         
 
                 if (timeSeriesHasOnlyNulls)
                 {

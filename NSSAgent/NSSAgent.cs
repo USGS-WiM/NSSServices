@@ -664,7 +664,7 @@ namespace NSSAgent
 
                 foreach (Scenario scenario in scenarioList)
                 {
-                    //remove if invalid
+                    // removed all 
                     scenario.RegressionRegions.RemoveAll(rr => !valid(rr, scenario.RegressionRegions.Max(r => r.PercentWeight)));
 
                     foreach (SimpleRegressionRegion regressionregion in scenario.RegressionRegions)
@@ -675,7 +675,7 @@ namespace NSSAgent
                         Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                         if (paramsOutOfRange)
                         {
-                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors";
+                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors. ";
                             regressionregion.Disclaimer = outofRangemsg;
                             sm(outofRangemsg, WIM.Resources.MessageType.warning);
                         }//end if
@@ -685,11 +685,33 @@ namespace NSSAgent
                             //equation variables, computed in native units
                             var variables = regressionregion.Parameters.Where(e => equation.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
                             //var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
+
                             eOps = new ExpressionOps(equation.Expression, variables);
 
-                            if (!eOps.IsValid) break;// next equation
+                            if (!eOps.IsValid) continue; // next equation
 
                             var unit = getUnit(equation.UnitType, systemtypeID > 0 ? systemtypeID : equation.UnitType.UnitSystemTypeID);
+
+                            // Check if all BCs are available for the equation 
+                            if (variables.Any(v => v.Value <= -999)) // If not
+                            {
+                                regressionregion.Results.Add(new RegressionResult() // add -99999 to the equation value 
+                                {
+                                    Equation = eOps.InfixExpression,
+                                    Name = equation.RegressionType.Name,
+                                    code = equation.RegressionType.Code,
+                                    Description = equation.RegressionType.Description,
+                                    Unit = unit,
+                                    Value = -99999
+                                });
+
+                                var equationCalculationErrormsg = "Equation " + equation.RegressionType.Code + " in " + regressionregion.Code + " could not be calulated due to undefined basin characteristic. ";
+                                regressionregion.Disclaimer += equationCalculationErrormsg;
+                                sm(equationCalculationErrormsg, WIM.Resources.MessageType.warning);
+
+                                continue; // and contiue to next equation
+                            }
+                            
                             dynamic intervalsAndSEP = evaluateUncertainty(equation.PredictionInterval, variables, (eOps.Value * unit.factor).Round());
                             regressionregion.Results.Add(new RegressionResult()
                             {
@@ -1401,7 +1423,6 @@ namespace NSSAgent
             ExpressionOps eOps = null;
             try
             {
-                if (regressionRegion.Parameters.Any(p => p.Value <= -999)) throw new Exception("One or more parameters are invalid");
                 //check limitations
                 foreach (var item in limitations.Where(l => l.RegressionRegionID == regressionRegion.ID))
                 {
@@ -1417,8 +1438,6 @@ namespace NSSAgent
                             break;
                     }
                     var variables = regressionRegion.Parameters.Where(e => item.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, item.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
-                    Console.WriteLine(variables);
-                    Console.WriteLine(item.Criteria);
                     eOps = new ExpressionOps(item.Criteria, variables);
                     if (!eOps.IsValid) throw new Exception("Validation equation invalid.");
                     if (!Convert.ToBoolean(eOps.Value))

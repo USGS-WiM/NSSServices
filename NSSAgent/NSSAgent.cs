@@ -664,18 +664,18 @@ namespace NSSAgent
 
                 foreach (Scenario scenario in scenarioList)
                 {
-                    //remove if invalid
+                    // removed all 
                     scenario.RegressionRegions.RemoveAll(rr => !valid(rr, scenario.RegressionRegions.Max(r => r.PercentWeight)));
 
                     foreach (SimpleRegressionRegion regressionregion in scenario.RegressionRegions)
                     {
                         regressionregion.Results = new List<RegressionBase>();
-                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).ToList();                            
+                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).ToList();
 
                         Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                         if (paramsOutOfRange)
                         {
-                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors";
+                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors. ";
                             regressionregion.Disclaimer = outofRangemsg;
                             sm(outofRangemsg, WIM.Resources.MessageType.warning);
                         }//end if
@@ -685,11 +685,33 @@ namespace NSSAgent
                             //equation variables, computed in native units
                             var variables = regressionregion.Parameters.Where(e => equation.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
                             //var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
+
                             eOps = new ExpressionOps(equation.Expression, variables);
 
-                            if (!eOps.IsValid) break;// next equation
+                            if (!eOps.IsValid) continue; // next equation
 
                             var unit = getUnit(equation.UnitType, systemtypeID > 0 ? systemtypeID : equation.UnitType.UnitSystemTypeID);
+
+                            // Check if all BCs are available for the equation 
+                            if (variables.Any(v => v.Value <= -999)) // If not
+                            {
+                                regressionregion.Results.Add(new RegressionResult() // add -99999 to the equation value 
+                                {
+                                    Equation = eOps.InfixExpression,
+                                    Name = equation.RegressionType.Name,
+                                    code = equation.RegressionType.Code,
+                                    Description = equation.RegressionType.Description,
+                                    Unit = unit,
+                                    Value = -99999
+                                });
+
+                                var equationCalculationErrormsg = "Equation " + equation.RegressionType.Code + " in " + regressionregion.Code + " could not be calulated due to undefined basin characteristic. ";
+                                regressionregion.Disclaimer += equationCalculationErrormsg;
+                                sm(equationCalculationErrormsg, WIM.Resources.MessageType.warning);
+
+                                continue; // and contiue to next equation
+                            }
+                            
                             dynamic intervalsAndSEP = evaluateUncertainty(equation.PredictionInterval, variables, (eOps.Value * unit.factor).Round());
                             regressionregion.Results.Add(new RegressionResult()
                             {
@@ -1401,7 +1423,6 @@ namespace NSSAgent
             ExpressionOps eOps = null;
             try
             {
-                if (regressionRegion.Parameters.Any(p => p.Value <= -999)) throw new Exception("One or more parameters are invalid");
                 //check limitations
                 foreach (var item in limitations.Where(l => l.RegressionRegionID == regressionRegion.ID))
                 {
@@ -1813,12 +1834,14 @@ namespace NSSAgent
                         string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
                         var exceedanceProbabilities = new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
                                     Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value));
-                        var publishedFDC = new SortedDictionary<double, double>();
+                        SortedDictionary<double, double> publishedFDC;
+                        double? FDCXIntercept;
                         gs_sa = new GageStatsServiceAgent(gagestatsResource);
                         try
                         {
                             var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
                             publishedFDC = this.getPublishedDuration(stationInfo);
+                            FDCXIntercept = this.getFDCXIntercept(stationInfo);
                         }
                         catch (Exception ex)
                         {
@@ -1826,7 +1849,7 @@ namespace NSSAgent
                             break;
                         }
 
-                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC);
+                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC, FDCXIntercept);
                         break;
                 }//end switch
 
@@ -1852,12 +1875,32 @@ namespace NSSAgent
             {
                 if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit))
                 {
-                    var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
-                    if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
-                    else exceedanceProbabilities.Add(key, stat.Value);
+                    if (stat.RegressionType.Code == "D_0_XINT")
+                    {
+                        exceedanceProbabilities.Add(stat.Value, 0.01);
+                        //Console.WriteLine(stat.RegressionType.Code + " " + stat.Value + " " + 0.01);
+                    } 
+                    else
+                    {
+                        var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
+                        if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
+                        else exceedanceProbabilities.Add(key, stat.Value);
+                        //Console.WriteLine(stat.RegressionType.Code + " " + key + " " + stat.Value);
+                    }
                 }
             }
             return exceedanceProbabilities;
+        }
+        private double? getFDCXIntercept(GageStatsStation station)
+        {
+            try
+            {
+                return Convert.ToDouble((station.Statistics.Where(statistic => statistic.RegressionType.Code == "D_0_XINT").First()).Value);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

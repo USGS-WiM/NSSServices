@@ -15,12 +15,18 @@ content-length: 576
 [{
     "name": "example regression type 1",
     "code": "EXREGTYPE1",
-    "description": "example of a regression type 1"
+    "description": "example of a regression type 1",
+	"metricUnitTypeID": "1",
+    "englishUnitTypeID": "1",
+    "statisticGroupTypeID": "1"
 },
 {
     "name": "example regression type 2",
     "code": "EXREGTYPE2",
-    "description": "example of a regression type 2"
+    "description": "example of a regression type 2",
+	"metricUnitTypeID": "1",
+    "englishUnitTypeID": "1",
+    "statisticGroupTypeID": "1"
 }]
 ```
 
@@ -30,12 +36,20 @@ HTTP/1.1 200 OK
     "id": 1,
     "name": "example regression type 1",
     "code": "EXREGTYPE1",
-    "description": "example of a regression type 1"
+    "description": "example of a regression type 1",
+	"unitTypeID": "1",
+    "metricUnitTypeID": "1",
+    "englishUnitTypeID": "1",
+    "statisticGroupTypeID": "1"
 },
 {
     "id": 2,
     "name": "example regression type 2",
     "code": "EXREGTYPE2",
-    "description": "example of a regression type 2"
+    "description": "example of a regression type 2",
+	"unitTypeID": "1",
+    "metricUnitTypeID": "1",
+    "englishUnitTypeID": "1",
+    "statisticGroupTypeID": "1"
 }]
 ```

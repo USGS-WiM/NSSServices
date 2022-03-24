@@ -50,7 +50,7 @@ namespace NSSAgent
 
         //Citations
         Task<Citation> GetCitation(Int32 ID);
-        IQueryable<Citation> GetCitations(List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null);
+        IQueryable<Citation> GetCitations(List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null, IQueryable<Status> applicableStatus = null);
         IQueryable<Citation> GetManagedCitations(Manager manager, List<string> regionList=null, Geometry geometry = null, List<string> regressionRegionList=null, List<string> statisticgroupList=null, List<string> regressiontypeList=null);
         IQueryable<Citation> GetManagerCitations(int managerID);
         Task<Citation> Update(Int32 pkId, Citation item);
@@ -130,10 +130,10 @@ namespace NSSAgent
         //Readonly (Shared Views) methods
         IQueryable<ErrorType> GetErrors();
         Task<ErrorType> GetError(Int32 ID);
-        IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null);
+        IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null, IQueryable<Status> applicableStatus = null);
         IQueryable<RegressionType> GetManagedRegressions(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null);
-        Task<RegressionType> GetRegression(Int32 ID);
-        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null, List<string> defTypeList = null);
+        IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> regressionsList = null, List<string> defTypeList = null, IQueryable<Status> applicableStatus = null);
+        RegressionType GetRegression(Int32 ID);
         IQueryable<StatisticGroupType> GetManagedStatisticGroups(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> regressionsList = null, List<string> defTypeList = null);
         Task<StatisticGroupType> GetStatisticGroup(Int32 ID);
         IQueryable<UnitType> GetUnits();
@@ -173,20 +173,19 @@ namespace NSSAgent
         {
             return this.Find<Citation>(ID);
         }
-        public IQueryable<Citation> GetCitations(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null)
+        public IQueryable<Citation> GetCitations(List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null, List<String> regressiontypeList = null, IQueryable<Status> applicableStatus = null)
         {
             if (!regionList.Any() && geom == null && !regressionRegionList.Any()&& !statisticgroupList.Any() && !regressiontypeList.Any())
                 return this.Select<Citation>().Include(c => c.RegressionRegions);
-            if (statisticgroupList?.Any() != true && regressiontypeList?.Any() != true && !regressiontypeList.Any() != true && geom == null)
-                // for region only list
-                return Select<RegionRegressionRegion>().Include(rrr => rrr.Region).Include(rrr => rrr.RegressionRegion).ThenInclude(rr=>rr.Citation)
-                       .Where(rer => (regionList.Contains(rer.Region.Code.ToLower().Trim())
-                               || regionList.Contains(rer.RegionID.ToString())) && rer.RegressionRegion.CitationID !=null).Select(r => r.RegressionRegion.Citation).Distinct().AsQueryable();
-
+            
             if (geom != null)
                 regressionRegionList = getRegressionRegionsByGeometry(geom).Select(rr => rr.ID.ToString()).ToList();
-   
-            return this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList).Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID);
+
+            var equations = this.GetEquations(regionList, regressionRegionList, statisticgroupList, regressiontypeList);
+            if (applicableStatus != null) equations = equations.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
+
+            return equations.Select(e => e.RegressionRegion.Citation).Distinct().OrderBy(e => e.ID);
+
         }
         public IQueryable<Citation> GetManagedCitations(Manager manager, List<string> regionList = null, Geometry geom = null, List<string> regressionRegionList = null, List<string> statisticgroupList = null, List<string> regressiontypeList = null)
         {
@@ -501,7 +500,6 @@ namespace NSSAgent
         }
 
         #endregion
-
         #region Status
         public IQueryable<Status> GetStatus()
         {
@@ -617,6 +615,7 @@ namespace NSSAgent
                             Parameters = r.groupedparameters.SelectMany(gp=>gp.Variables).Select(p => new Parameter()
                             {
                                 ID = p.ID,
+                                // this isn't working because it's creating a new unit type, which doesn't have the unit conversions attached
                                 UnitType = getUnit(new UnitType() { ID = p.UnitTypeID, Name = p.UnitType.Name, Abbreviation = p.UnitType.Abbreviation, UnitSystemTypeID = p.UnitType.UnitSystemTypeID }, systemtypeID > 0 ? systemtypeID : p.UnitType.UnitSystemTypeID),
                                 Limits = new Limit() { Min = p.MinValue * this.getUnitConversionFactor(p.UnitTypeID, systemtypeID > 0 ? systemtypeID : p.UnitType.UnitSystemTypeID), Max = p.MaxValue * this.getUnitConversionFactor(p.UnitTypeID, systemtypeID > 0 ? systemtypeID : p.UnitType.UnitSystemTypeID) },
                                 Code = p.VariableType.Code,
@@ -665,18 +664,18 @@ namespace NSSAgent
 
                 foreach (Scenario scenario in scenarioList)
                 {
-                    //remove if invalid
+                    // removed all 
                     scenario.RegressionRegions.RemoveAll(rr => !valid(rr, scenario.RegressionRegions.Max(r => r.PercentWeight)));
 
                     foreach (SimpleRegressionRegion regressionregion in scenario.RegressionRegions)
                     {
                         regressionregion.Results = new List<RegressionBase>();
-                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).ToList();                            
+                        EquationList = equery.Where(e => scenario.StatisticGroupID == e.StatisticGroupTypeID && regressionregion.ID == e.RegressionRegionID).ToList();
 
                         Boolean paramsOutOfRange = regressionregion.Parameters.Any(x => x.OutOfRange);
                         if (paramsOutOfRange)
                         {
-                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors";
+                            var outofRangemsg = "One or more of the parameters is outside the suggested range. Estimates were extrapolated with unknown errors. ";
                             regressionregion.Disclaimer = outofRangemsg;
                             sm(outofRangemsg, WIM.Resources.MessageType.warning);
                         }//end if
@@ -686,12 +685,34 @@ namespace NSSAgent
                             //equation variables, computed in native units
                             var variables = regressionregion.Parameters.Where(e => equation.Variables.Any(v => v.VariableType.Code == e.Code)).ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.Variables.FirstOrDefault(e => String.Compare(e.VariableType.Code, v.Code, true) == 0).UnitType.UnitSystemTypeID));
                             //var variables = regressionregion.Parameters.ToDictionary(k => k.Code, v => v.Value * getUnitConversionFactor(v.UnitType.ID, equation.UnitType.UnitSystemTypeID));
+
                             eOps = new ExpressionOps(equation.Expression, variables);
 
-                            if (!eOps.IsValid) break;// next equation
+                            if (!eOps.IsValid) continue; // next equation
 
                             var unit = getUnit(equation.UnitType, systemtypeID > 0 ? systemtypeID : equation.UnitType.UnitSystemTypeID);
 
+                            // Check if all BCs are available for the equation 
+                            if (variables.Any(v => v.Value <= -999)) // If not
+                            {
+                                regressionregion.Results.Add(new RegressionResult() // add -99999 to the equation value 
+                                {
+                                    Equation = eOps.InfixExpression,
+                                    Name = equation.RegressionType.Name,
+                                    code = equation.RegressionType.Code,
+                                    Description = equation.RegressionType.Description,
+                                    Unit = unit,
+                                    Value = -99999
+                                });
+
+                                var equationCalculationErrormsg = "Equation " + equation.RegressionType.Code + " in " + regressionregion.Code + " could not be calulated due to undefined basin characteristic. ";
+                                regressionregion.Disclaimer += equationCalculationErrormsg;
+                                sm(equationCalculationErrormsg, WIM.Resources.MessageType.warning);
+
+                                continue; // and contiue to next equation
+                            }
+                            
+                            dynamic intervalsAndSEP = evaluateUncertainty(equation.PredictionInterval, variables, (eOps.Value * unit.factor).Round());
                             regressionregion.Results.Add(new RegressionResult()
                             {
                                 Equation = eOps.InfixExpression,
@@ -701,8 +722,9 @@ namespace NSSAgent
                                 Unit = unit,
                                 Errors = paramsOutOfRange ? new List<Error>() : equation.EquationErrors.Select(e => new Error() { Name = e.ErrorType?.Name, Value = e.Value, Code = e.ErrorType?.Code }).ToList(),
                                 EquivalentYears = paramsOutOfRange ? null : equation.EquivalentYears,
-                                IntervalBounds = paramsOutOfRange ? null : evaluateUncertainty(equation.PredictionInterval, variables, (eOps.Value * unit.factor).Round()),
-                                Value = (eOps.Value * unit.factor).Round()
+                                IntervalBounds = paramsOutOfRange ? null : intervalsAndSEP?.intervalBounds,
+                                Value = (eOps.Value * unit.factor).Round(),
+                                SEP = paramsOutOfRange ? null : intervalsAndSEP?.Si
                             });
                         }//next equation
                         regressionregion.Extensions?.ForEach(ext => evaluateExtension(ext, regressionregion));
@@ -786,11 +808,61 @@ namespace NSSAgent
                 }//next regregion                                
 
                 //submit
+                //var newItems = Task.WhenAll(newEquations.Select(e => await this.Add<Equation>(e)).ToList());var tasks = new List<Task>();
+                //var newItems = new List<Equation>();
+                //newEquations.Select(e =>
+                //{
+                //    //Task<Equation> equation;
+                //    var task = Task.Factory.StartNew(() => this.Add<Equation>(e));
+                //    await task;
+                //    newItems.Add(e);
+                //});
+                // something is not working... need to wait for add to finish before continuing loop...
+                //newEquations.ForEach(async equ =>
+                //{
+                //    var equation = await this.Add<Equation>(equ);
+                //    newItems.Add(equation);
+                //});
+                //var newItems = await Task.WhenAll(newEquations.Select(async e => {
+                //    var task = Task.Factory.StartNew(() => this.Add<Equation>(e));
+                //    await task;
+                //    return e;
+                //}).ToList());
+                //context.RemoveRange(variables);
+                //context.SaveChanges();
+                //var newItems = new List<Equation>();
+                //var tasks = new List<Task<Equation>>();
+                //foreach (var equ in newEquations)
+                //{
+                //    // var equation = await this.Add<Equation>(equ);
+                //    // UnitType is getting attached somewhere along the way.... I'm wondering if that might be causing errors if it is in both places?
+                //    equ.UnitType = null;
+                //    tasks.Add(this.Add<Equation>(equ));
+                //    // maybe fetch all in a for int loop, then on last one call the getscenarios??
+
+                //}
+                //for (int task = 0; task < tasks.Count; task ++)
+                //{
+                //    // this await is working - the task finishes before continuing... but still get error
+                //    var equation = await tasks[task];
+                //    newItems.Add(equation);
+                //    this.Dispose();
+
+                //    if (task == (tasks.Count() - 1))
+                //    {
+                //        // TODO: need to check count to see if any failed
+                //        if (!newItems.Any()) throw new Exception("Scenario failed to submit to repository. See messages for more information");
+                //        return GetScenarios(null, null, newItems.Select(i => i.RegressionRegionID.ToString()).ToList(), newItems.Select(i => i.StatisticGroupTypeID.ToString()).ToList(),
+                //                                    newItems.Select(i => i.RegressionTypeID.ToString()).ToList(), null, 0, new Manager() { Username = "temporary", Role = Role.Admin });
+                //    }
+                //}
+
                 var newItems = await Task.WhenAll(newEquations.Select(e => this.Add<Equation>(e)).ToList());
                 if (!newItems.Any()) throw new Exception("Scenario failed to submit to repository. See messages for more information");
 
                 return GetScenarios(null, null, newItems.Select(i => i.RegressionRegionID.ToString()).ToList(), newItems.Select(i => i.StatisticGroupTypeID.ToString()).ToList(),
                                                     newItems.Select(i => i.RegressionTypeID.ToString()).ToList(),null,0,new Manager() { Username = "temporary", Role= Role.Admin});
+                
                 
             }
             catch (Exception ex)
@@ -960,7 +1032,6 @@ namespace NSSAgent
             }
         }
         #endregion
-
         #region Variables
         public Task<Variable> Add(Variable item)
         {
@@ -1008,7 +1079,6 @@ namespace NSSAgent
             return;
         }
         #endregion
-
         #region ReadOnly
         public IQueryable<ErrorType> GetErrors()
         {
@@ -1026,16 +1096,18 @@ namespace NSSAgent
         {
             return this.Select<RegressionType>().FirstOrDefault(r => r.Code == code);
         }
-        public IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null)
-        {          
+        public IQueryable<RegressionType> GetRegressions(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList=null, List<String> statisticgroupList=null, IQueryable<Status> applicableStatus = null)
+        {
             if (regionList?.Any() != true && geom == null && regressionRegionList?.Any()!= true && statisticgroupList?.Any()!=true)
-                    return this.Select<RegressionType>();
+                    return this.Select<RegressionType>().Include(rt => rt.MetricUnitType).Include(rt => rt.EnglishUnitType).Include(rt => rt.StatisticGroupType);
 
             var equations = this.GetEquations(regionList, regressionRegionList, statisticgroupList);
+
+            if (applicableStatus != null) equations = equations.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
             if (geom != null)
                 equations = equations.Where(e => getRegressionRegionsByGeometry(geom).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
 
-            return equations.Select(e => e.RegressionType).Distinct().OrderBy(e => e.ID);
+            return equations.Select(e => e.RegressionType).Distinct().OrderBy(e => e.ID).Include(rt => rt.MetricUnitType).Include(rt => rt.EnglishUnitType).Include(rt => rt.StatisticGroupType);
         }
         public IQueryable<RegressionType> GetManagedRegressions(Manager manager, List<String> regionList = null, Geometry geom = null, List<String> regressionRegionList = null, List<String> statisticgroupList = null)
         {
@@ -1066,15 +1138,15 @@ namespace NSSAgent
 
             return query.SelectMany(rrr => rrr.RegressionRegion.Equations.Select(e=>e.RegressionType)).Distinct();
         }
-        public Task<RegressionType> GetRegression(Int32 ID)
+        public RegressionType GetRegression(Int32 ID)
         {
-            return this.Find<RegressionType>(ID);
+            return this.GetRegressions().FirstOrDefault(rt => rt.ID == ID);
         }
         public StatisticGroupType GetStatisticGroupByCode(string code)
         {
             return this.Select<StatisticGroupType>().FirstOrDefault(s => s.Code == code);
         }
-        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null, List<string> defTypeList = null)
+        public IQueryable<StatisticGroupType> GetStatisticGroups(List<String> regionList=null, Geometry geom = null, List<String> regressionRegionList= null, List<String> regressionsList=null, List<string> defTypeList = null, IQueryable<Status> applicableStatus = null)
         {
             if (regionList?.Any() != true && geom == null && regressionRegionList?.Any() != true && regressionsList?.Any() != true)
             {
@@ -1088,6 +1160,7 @@ namespace NSSAgent
 
             var equations = this.GetEquations(regionList, regressionRegionList, null, regressionsList);
 
+            if (applicableStatus != null) equations = equations.Where(e => applicableStatus.Any(s => s.ID == e.RegressionRegion.StatusID)); // filter by regression region statusID
             if (geom != null)
                 equations = equations.Where(e => getRegressionRegionsByGeometry(geom).Select(rr => rr.ID).Contains(e.RegressionRegion.ID));
 
@@ -1312,6 +1385,7 @@ namespace NSSAgent
             {
                 if (inUnitType.UnitSystemTypeID != OutSystemtypeID)
                 {
+                    // this isn't doing anything because the places calling it are creating new unit types which don't have the unitconversionfactors attached
                     return inUnitType.UnitConversionFactorsIn.Where(u => u.UnitTypeOut.UnitSystemTypeID == OutSystemtypeID)
                         .Select(u => new SimpleUnitType()
                         {
@@ -1349,7 +1423,6 @@ namespace NSSAgent
             ExpressionOps eOps = null;
             try
             {
-                if (regressionRegion.Parameters.Any(p => p.Value <= -999)) throw new Exception("One or more parameters are invalid");
                 //check limitations
                 foreach (var item in limitations.Where(l => l.RegressionRegionID == regressionRegion.ID))
                 {
@@ -1415,7 +1488,8 @@ namespace NSSAgent
 
                     if (equation.PredictionInterval != null)
                     {
-                        IntervalBounds computedBound = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
+                        dynamic intervalsAndSEP = evaluateUncertainty(equation.PredictionInterval, variables, eOps.Value);
+                        IntervalBounds computedBound = intervalsAndSEP?.intervalBounds;
                         var expectedUpperRounded = computedBound != null ? expected.IntervalBounds.Upper.Round() : 0;
                         var expectedLowerRounded = computedBound != null ? expected.IntervalBounds.Lower.Round() : 0;
                         if ((computedBound?.Upper != expectedUpperRounded || computedBound?.Lower != expectedLowerRounded) && !skipCheck)
@@ -1434,7 +1508,7 @@ namespace NSSAgent
                 return false;
             }
         }
-        private IntervalBounds evaluateUncertainty(PredictionInterval predictionInterval, Dictionary<string, double?> variables, Double Q)
+        private dynamic evaluateUncertainty(PredictionInterval predictionInterval, Dictionary<string, double?> variables, Double Q)
         {
             //Prediction Intervals for the true value of a streamflow statistic obtained for an ungaged site can be 
             //computed by use of a weighted regression equations corrected for bias by:
@@ -1503,7 +1577,8 @@ namespace NSSAgent
                 double lowerRounded = lowerBound.Round();
                 double upperRounded = upperBound.Round();
 
-                return new IntervalBounds() { Lower = lowerRounded, Upper = upperRounded };
+                IntervalBounds intervalBounds = new IntervalBounds() { Lower = lowerRounded, Upper = upperRounded };
+                return new { intervalBounds, Si };
             }
             catch (Exception ex)
             {
@@ -1759,12 +1834,14 @@ namespace NSSAgent
                         string stationID = ext.Parameters.Find(p => p.Code == "sid").Value;
                         var exceedanceProbabilities = new SortedDictionary<double, double>(regressionregion.Results.ToDictionary(k =>
                                     Convert.ToDouble(this.getPercentDuration(k.code).Replace("_", ".").Trim()) / 100, v => v.Value.Value));
-                        var publishedFDC = new SortedDictionary<double, double>();
+                        SortedDictionary<double, double> publishedFDC;
+                        double? FDCXIntercept;
                         gs_sa = new GageStatsServiceAgent(gagestatsResource);
                         try
                         {
                             var stationInfo = gs_sa.GetGageStatsStationAsync(stationID).Result;
                             publishedFDC = this.getPublishedDuration(stationInfo);
+                            FDCXIntercept = this.getFDCXIntercept(stationInfo);
                         }
                         catch (Exception ex)
                         {
@@ -1772,7 +1849,7 @@ namespace NSSAgent
                             break;
                         }
 
-                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC);
+                        sa = new FDCTMServiceAgent(ext, exceedanceProbabilities, nwisResource, this._messages, publishedFDC, FDCXIntercept);
                         break;
                 }//end switch
 
@@ -1798,12 +1875,32 @@ namespace NSSAgent
             {
                 if (stat.StatisticGroupType.Code == "FDS" && stat.RegressionType.Code.Any(char.IsDigit))
                 {
-                    var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
-                    if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
-                    else exceedanceProbabilities.Add(key, stat.Value);
+                    if (stat.RegressionType.Code == "D_0_XINT")
+                    {
+                        exceedanceProbabilities.Add(stat.Value, 0.01);
+                        //Console.WriteLine(stat.RegressionType.Code + " " + stat.Value + " " + 0.01);
+                    } 
+                    else
+                    {
+                        var key = Convert.ToDouble(this.getPercentDuration(stat.RegressionType.Code).Replace("_", ".").Trim()) / 100;
+                        if (exceedanceProbabilities.ContainsKey(key) && stat.IsPreferred) exceedanceProbabilities[key] = stat.Value; // if stat is preferred, replace value
+                        else exceedanceProbabilities.Add(key, stat.Value);
+                        //Console.WriteLine(stat.RegressionType.Code + " " + key + " " + stat.Value);
+                    }
                 }
             }
             return exceedanceProbabilities;
+        }
+        private double? getFDCXIntercept(GageStatsStation station)
+        {
+            try
+            {
+                return Convert.ToDouble((station.Statistics.Where(statistic => statistic.RegressionType.Code == "D_0_XINT").First()).Value);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
         protected override void sm(string msg, MessageType type = MessageType.info)
         {

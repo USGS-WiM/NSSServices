@@ -272,8 +272,7 @@ namespace NSSAgent.ServiceAgents
                         }
 
                         // compute exceedance probability of Q
-                        probQ = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCupper) - (Math.Log10(Convert.ToDouble(Q)) - Math.Log10(Qupper)) / (Math.Log10(Qlower) - Math.Log10(Qupper)) * (Normal.CDF(0, 1, EXCupper) - Normal.CDF(0, 1, EXClower)));
-
+                        probQ = Normal.CDF(0, 1, Normal.InvCDF(0, 1, EXCupper) - (Math.Log10(Convert.ToDouble(Q)) - Math.Log10(Qupper)) / (Math.Log10(Qlower) - Math.Log10(Qupper)) * (Normal.InvCDF(0, 1, EXCupper) - Normal.InvCDF(0, 1, EXClower)));
                     }
 
                     Console.WriteLine("probQ " + probQ);
@@ -341,8 +340,8 @@ namespace NSSAgent.ServiceAgents
                             // If probQ is less than probQ0, then solve Qs for QREGlower = 0.01 and EXCREGlower = probQ0
 
                             // probQ0 is the exceedance probability where Q = 0.01 (close to the x-intercept)
-                            probQ0 = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCREGupper) - (Math.Log10(Convert.ToDouble(0.01)) - Math.Log10(QREGupper)) / (Math.Log10(QREGlower) - Math.Log10(QREGupper)) * (Normal.CDF(0, 1, EXCREGupper) - Normal.CDF(0, 1, EXCREGlower)));
-
+                            probQ0 = Normal.InvCDF(0, 1, Normal.CDF(0, 1, EXCREGupper) - (Math.Log10(Convert.ToDouble(Q)) - Math.Log10(QREGupper)) / (Math.Log10(QREGlower) - Math.Log10(QREGupper)) * (Normal.CDF(0, 1, EXCREGupper) - Normal.CDF(0, 1, EXCREGlower)));
+                            
                             if (probQ0 > probQ)
                             {
                                 QREGlower = 0.01;
@@ -352,7 +351,7 @@ namespace NSSAgent.ServiceAgents
 
                         // compute estimated flow
                         if (probQ0 < probQ) Qs = 0;
-                        else Qs = Math.Pow(10, (Math.Log10(QREGupper) - (Normal.CDF(0, 1, Convert.ToDouble(probQ)) - Normal.CDF(0, 1, EXCREGupper)) / (Normal.CDF(0, 1, EXCREGlower) - Normal.CDF(0, 1, EXCREGupper)) * (Math.Log10(QREGupper) - Math.Log10(QREGlower))));
+                        else Qs = Math.Pow(10, (Math.Log10(QREGupper) - (Normal.InvCDF(0, 1, Convert.ToDouble(probQ)) - Normal.InvCDF(0, 1, EXCREGupper)) / (Normal.InvCDF(0, 1, EXCREGlower) - Normal.InvCDF(0, 1, EXCREGupper)) * (Math.Log10(QREGupper) - Math.Log10(QREGlower))));
                         Console.WriteLine("Qs " + Qs);
                     }
                     Console.WriteLine(" ");

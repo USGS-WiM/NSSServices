@@ -17,8 +17,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ### Fixed
-- #258 Fix math associated with QPPQ
 
+## [v2.2.1](https://github.com/USGS-WiM/NSSServices/releases/tag/v2.2.1) - 2022-06-14
+
+### Fixed
+- #258 Fix math associated with QPPQ
 
 ## [v2.2.0](https://github.com/USGS-WiM/NSSServices/releases/tag/v2.2.0) - 2022-03-24
 

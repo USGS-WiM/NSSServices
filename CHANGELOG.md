@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/USGS-WiM/NSSServices/tree/dev)
 
 ### Added
+- Added /ApplicationInfos/{state} GET endpoint
+- Added /GeneralInformations/{state} GET endpoint
 
 
 ### Changed

@@ -67,6 +67,9 @@ namespace SharedAgent
         Task<RegionManager> Add(RegionManager item);
         Task<IEnumerable<RegionManager>> Add(List<RegionManager> items);
 
+        IQueryable<ApplicationInfo> GetApplicationInfo(string application);
+        IQueryable<GeneralInfomation> GetGeneralInfomation(string state);
+
     }
     public class SharedAgent: DBAgentBase, ISharedAgent
     {
@@ -238,6 +241,24 @@ namespace SharedAgent
             return this.Add<RegionManager>(items);
         }
         #endregion
+
+        public IQueryable<ApplicationInfo> GetApplicationInfo(string application)
+        {
+            var query = this.Select<ApplicationInfo>();
+            var results = query.Where(x => x.Application.Equals(application));
+
+            return results;
+        }
+
+        public IQueryable<GeneralInfomation> GetGeneralInfomation(string state)
+        {
+            var query = this.Select<GeneralInfomation>();
+            var results = query.Where(x => x.State.Equals(state));
+
+            return results;
+        }
+
+
         #endregion
         #region HELPER METHODS
         private Task Delete<T>(Int32 id) where T : class, new()

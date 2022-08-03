@@ -1,0 +1,1 @@
+Returns an array of all available Application Information for the provided State.

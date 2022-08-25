@@ -3,8 +3,7 @@
     "name": "NSSServices",
     "organization": "U.S. Geological Survey",
     "description": "StreamStats National Streamflow Statistics (NSS) services that provides regional flood-peak streamflow estimates and low flow frequency/duration streamflow estimates. See https://water.usgs.gov/osw/programs/nss/index.html",
-    "version": "V2.3.0",
-    "statusOptionsURL":"https://github.com/GSA/code-gov-web/blob/master/src/assets/schemas/2.0.0.json#L144-L152",
+    "version": "v2.3.0",
 	"status": "Production",	
 
     "permissions": {
@@ -40,12 +39,12 @@
     ],
 
     "contact": {
-      "name": "Katrin Jacobsen",
-      "email": "kjacobsen@usgs.gov"
+      "name": "Harper Wavra",
+      "email": "hwavra@usgs.gov"
     },
 
     "date": {
-      "metadataLastUpdated": "2021-03-26"
+      "metadataLastUpdated": "2022-08-25"
     }
   }
 ]

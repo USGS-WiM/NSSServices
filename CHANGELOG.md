@@ -9,14 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-
 ### Changed
-
 
 ### Removed
 
-
 ### Fixed
+
+## [v2.3.0](https://github.com/USGS-WiM/NSSServices/releases/tag/v2.3.0) - 2022-08-25
+
+### Added
+- Added /ApplicationInfos/{state} GET endpoint
+- Added /GeneralInformations/{state} GET endpoint
 
 ## [v2.2.1](https://github.com/USGS-WiM/NSSServices/releases/tag/v2.2.1) - 2022-06-14
 

@@ -32,6 +32,9 @@ namespace SharedDB
 {
     public class SharedDBContext:DbContext
     {
+        public virtual DbSet<ApplicationInfo> ApplicationInfo { get; set; }
+        public virtual DbSet<GeneralInfomation> GeneralInfomation { get; set; }
+
         public virtual DbSet<ErrorType> ErrorTypes { get; set; }
         public virtual DbSet<RegressionType> RegressionTypes { get; set; }
         public virtual DbSet<StatisticGroupType> StatisticGroupTypes { get; set; }
@@ -63,6 +66,39 @@ namespace SharedDB
             modelBuilder.Entity<Region>().ToTable("Regions", "shared");
             modelBuilder.Entity<Manager>().ToTable("Managers", "shared");
             modelBuilder.Entity<RegionManager>().ToTable("RegionManager", "shared");
+
+            modelBuilder.Entity<ApplicationInfo>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToTable("ApplicationInfo", "shared");
+                entity.Property(e => e.Application).HasMaxLength(255);
+                entity.Property(e => e.ComputationMethod).HasColumnName("Computation method");
+                entity.Property(e => e.DataSource).HasColumnName("Data source");
+                entity.Property(e => e.ReportVar).HasColumnName("Report var");
+                entity.Property(e => e.StatisticLabel)
+                    .HasColumnName("Statistic label")
+                    .HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<GeneralInfomation>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToTable("GeneralInfomation", "shared");
+                entity.Property(e => e.ArcGisVersionUsedForProcessing).HasColumnName("ArcGIS version used for processing");
+                entity.Property(e => e.BasinCharacteristicsComputedUsingContinuousParameterGrids).HasColumnName("Basin characteristics computed using continuous parameter grids");
+                entity.Property(e => e.DemSourceAndDate).HasColumnName("DEM source and date");
+                entity.Property(e => e.ExcludedAreas).HasColumnName("Excluded areas");
+                entity.Property(e => e.GageBasinBoundariesSource).HasColumnName("Gage basin boundaries source");
+                entity.Property(e => e.HydrographySource).HasColumnName("Hydrography source");
+                entity.Property(e => e.InteractiveSnappingTolerance).HasColumnName("Interactive snapping tolerance");
+                entity.Property(e => e.InwallsUsedSource).HasColumnName("Inwalls used & source");
+                entity.Property(e => e.ProjectAreaGeneralDescription).HasColumnName("Project area general description");
+                entity.Property(e => e.ProjectionOfDemAndDerivatives).HasColumnName("Projection of DEM and derivatives");
+                entity.Property(e => e.ResolutionOfDemAndDerivatives).HasColumnName("Resolution of DEM and derivatives");
+                entity.Property(e => e.SpecialFunctionality).HasColumnName("Special functionality");
+                entity.Property(e => e.TopogridUsed).HasColumnName("Topogrid used?");
+                entity.Property(e => e.TypesOfStatisticsAvailable).HasColumnName("Types of statistics available");
+            });
 
             //unique key based on combination of both keys (many to many tables)
             modelBuilder.Entity<RegionManager>().HasKey(k => new { k.ManagerID, k.RegionID });
